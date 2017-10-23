@@ -14,6 +14,7 @@ from bblInit import *
 import ast
 import math
 import xml.etree.cElementTree as ET
+import re
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
@@ -422,7 +423,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
                 templateStr = self.addLabels(templateStr, sum, vec, feature, scaleType, multiplier)
 
-            if diagrammSize > minDiagrammSize:
+            if diagrammSize >= minDiagrammSize:
                 ET.SubElement(root, "label", labelText=templateStr)
 
             offset = diagrammSize if diagrammSize < maxDiagrammSize else maxDiagrammSize
@@ -470,7 +471,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             rule = QgsRuleBasedRendererV2.Rule(symbol)
             rule.setLabel(uniqSymbols[symId])
 
-            args = ("SymbolCode", symId)
             rule.setFilterExpression(u'\"{0}\"={1}'.format("SymbolCode", symId))
             root_rule.appendChild(rule)
 
@@ -501,6 +501,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         return
 
     def addLabels(self, templateStr, sum, fluids, feature, scaleType, multiplier):
+        showZero = int(self.mShowZero.isChecked())
         formatString = "{:."+str(self.decimalEdit.value())+"f}"
         days = feature["Days"]
         if days:
@@ -526,7 +527,13 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                     strVal = formatString.format(val) + percentStr
 
                 colorStr = fluid.labelColor.name()
-                templateStr = templateStr.replace(code, '<span><font color="{0}">{1}</font></span>'.format(colorStr, strVal))
+                if float(formatString.format(val)) > float(0) or showZero == 1:
+                    templateStr = templateStr.replace(code, '<span><font color="{0}">{1}</font></span>'.format(colorStr,
+                                                                                                               strVal))
+                else:
+                    templateStr = templateStr.replace(code, '')
+
+        templateStr = re.sub('^[\,\:\;\.\-/\\_ ]+|[\,\:\;\.\-/\\_ ]+$', '', templateStr)
         return templateStr
 
 
@@ -732,6 +739,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.currentDiagramm = '1_liquidproduction'
         self.maxDiagrammSize.setValue(float(self.currentLayer.customProperty('maxDiagrammSize', 100)))
         self.minDiagrammSize.setValue(float(self.currentLayer.customProperty('minDiagrammSize', 0.0)))
+        self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
 
         self.layerDiagramms = []
         for num in xrange(count):
@@ -768,6 +776,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         self.currentLayer.setCustomProperty("maxDiagrammSize", self.maxDiagrammSize.value())
         self.currentLayer.setCustomProperty("minDiagrammSize", self.minDiagrammSize.value())
+        self.currentLayer.setCustomProperty("alwaysShowZero", int(self.mShowZero.isChecked()))
 
         num = 1
         for val in self.layerDiagramms:
