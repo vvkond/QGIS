@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+              "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1in" height="1in"
+     viewBox="0 0 90 90">
+  <circle fill="black" stroke="none" cx="45.00" cy="45.00" r="15.00" />
+  <line fill="none" stroke="black" x1="4.50" y1="54.90" x2="5.40" y2="54.00" />
+  <line fill="none" stroke="black" x1="5.40" y1="54.00" x2="8.10" y2="54.00" />
+  <line fill="none" stroke="black" x1="8.10" y1="54.00" x2="9.00" y2="54.90" />
+  <line fill="none" stroke="black" x1="9.00" y1="54.90" x2="9.00" y2="61.20" />
+  <line fill="none" stroke="black" x1="9.00" y1="60.30" x2="8.10" y2="61.20" />
+  <line fill="none" stroke="black" x1="8.10" y1="61.20" x2="5.40" y2="61.20" />
+  <line fill="none" stroke="black" x1="5.40" y1="61.20" x2="4.50" y2="60.30" />
+  <line fill="none" stroke="black" x1="4.50" y1="60.30" x2="4.50" y2="57.60" />
+  <line fill="none" stroke="black" x1="4.50" y1="57.60" x2="5.40" y2="56.70" />
+  <line fill="none" stroke="black" x1="5.40" y1="56.70" x2="8.10" y2="56.70" />
+  <line fill="none" stroke="black" x1="8.10" y1="56.70" x2="9.00" y2="57.60" />
+  <line fill="none" stroke="black" x1="12.60" y1="57.60" x2="16.20" y2="57.60" />
+  <line fill="none" stroke="black" x1="16.20" y1="57.60" x2="17.10" y2="56.70" />
+  <line fill="none" stroke="black" x1="17.10" y1="56.70" x2="17.10" y2="54.90" />
+  <line fill="none" stroke="black" x1="17.10" y1="54.90" x2="16.20" y2="54.00" />
+  <line fill="none" stroke="black" x1="16.20" y1="54.00" x2="12.60" y2="54.00" />
+  <line fill="none" stroke="black" x1="12.60" y1="54.00" x2="12.60" y2="61.20" />
+  <line fill="none" stroke="black" x1="20.70" y1="54.00" x2="25.20" y2="54.00" />
+  <line fill="none" stroke="black" x1="22.95" y1="54.00" x2="22.95" y2="61.20" />
+</svg>

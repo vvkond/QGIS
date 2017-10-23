@@ -1,0 +1,42 @@
+SELECT
+    mss.TIG_MAP_X,
+    mss.TIG_MAP_Y,
+    mss.TIG_MAP_Z,
+    mssp.TIG_MAP_PARAM_VRSHRT,
+    ms.TIG_MAP_SET_NO,
+    msp.TIG_MAP_SET_PARAMETER_NO,
+    mss.TIG_MAP_SUBSET_NO,
+    ms.TIG_MAP_SET_NAME,
+    msp.TIG_PARAM_LONG_NAME,
+    mss.TIG_MAP_SUBSET_NAME,
+    mssp.TIG_SUBSET_V_MIN,
+    mssp.TIG_SUBSET_V_MAX,
+    mssp.TIG_SUBSET_V_NULLS,
+    msp.TIG_MAP_SET_CP_SOURCE,
+    msp.TIG_MAP_SET_X_MIN,
+    msp.TIG_MAP_SET_X_MAX,
+    msp.TIG_MAP_SET_Y_MIN,
+    msp.TIG_MAP_SET_Y_MAX,
+    mss.TIG_MAP_SUBSET_X_MIN,
+    mss.TIG_MAP_SUBSET_X_MAX,
+    mss.TIG_MAP_SUBSET_Y_MIN,
+    mss.TIG_MAP_SUBSET_Y_MAX,
+    mss.TIG_MAP_SUBSET_Z_MIN,
+    mss.TIG_MAP_SUBSET_Z_MAX,
+    mss.TIG_MAP_SUBSET_GEOM,
+    mss.TIG_MAP_SUBSET_GEOM_DATA
+FROM
+    TIG_MAP_SET ms,
+    TIG_MAP_SET_PARAM msp,
+    TIG_MAP_SUBSET mss,
+    TIG_MAP_SUBSET_PARAM_VAL mssp
+WHERE
+    ms.TIG_MAP_SET_NO = msp.TIG_MAP_SET_NO
+    AND ms.TIG_MAP_SET_NO = mss.TIG_MAP_SET_NO
+    AND ms.TIG_MAP_SET_NO = mssp.TIG_MAP_SET_NO
+    AND mssp.TIG_MAP_SET_PARAMETER_NO = msp.TIG_MAP_SET_PARAMETER_NO
+    AND mssp.TIG_MAP_SUBSET_NO = mss.TIG_MAP_SUBSET_NO
+    AND(:group_id IS NULL
+    OR ms.TIG_MAP_SET_NO = :group_id)
+    AND msp.TIG_MAP_SET_PARAMETER_NO = :set_id
+    AND ms.TIG_MAP_SET_TYPE = 4

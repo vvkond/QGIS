@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1in"
+   height="1in"
+   viewBox="0 0 90 90"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="245.Разведочная ликвидированная после бурения по техническим причинам.svg">
+  <metadata
+     id="metadata20">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs18">
+    <linearGradient
+       id="linearGradient4148"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop4150" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="824"
+     inkscape:window-height="598"
+     id="namedview16"
+     showgrid="false"
+     inkscape:zoom="2.6222222"
+     inkscape:cx="41.758475"
+     inkscape:cy="45"
+     inkscape:window-x="117"
+     inkscape:window-y="240"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <circle
+     cx="45.00"
+     cy="45.00"
+     r="15.00"
+     id="circle4"
+     style="fill-opacity:1;fill:#f9f9f9;stroke:#000000;stroke-opacity:1"
+     stroke="none"
+     fill="black" />
+  <circle
+     fill="none"
+     stroke="black"
+     cx="45.00"
+     cy="45.00"
+     r="25.00"
+     id="circle6" />
+  <line
+     x1="26.842937"
+     y1="26.842937"
+     x2="13.180195"
+     y2="13.180195"
+     id="line8"
+     style="fill:none;stroke:#000000;stroke-width:0.80253834" />
+  <line
+     x1="62.887402"
+     y1="62.887402"
+     x2="76.819809"
+     y2="76.819809"
+     id="line10"
+     style="fill:none;stroke:#000000;stroke-width:0.81041944" />
+  <line
+     x1="62.348083"
+     y1="27.651915"
+     x2="76.819809"
+     y2="13.180195"
+     id="line12"
+     style="fill:none;stroke:#000000;stroke-width:0.82595605" />
+  <line
+     x1="26.842937"
+     y1="63.157063"
+     x2="13.180195"
+     y2="76.819809"
+     id="line14"
+     style="fill:none;stroke:#000000;stroke-width:0.80253834" />
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:#000000;stroke:none"
+     d="m 45.127119,60 a 15,15 0 0 0 0,-30"
+     id="path6" />
+</svg>

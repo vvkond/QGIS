@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1in"
+   height="1in"
+   viewBox="0 0 90 90"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="246.Нагнетательная ликвидированная после эксплуатации по техническим причинам.svg">
+  <metadata
+     id="metadata26">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs24" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="734"
+     inkscape:window-height="480"
+     id="namedview22"
+     showgrid="false"
+     inkscape:zoom="2.6222222"
+     inkscape:cx="45"
+     inkscape:cy="45"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <circle
+     fill="blue"
+     stroke="none"
+     cx="45.00"
+     cy="45.00"
+     r="15.00"
+     id="circle4"
+     style="fill:none;stroke:#0000ff;stroke-opacity:1" />
+  <line
+     fill="none"
+     stroke="blue"
+     x1="60.00"
+     y1="45.00"
+     x2="90.00"
+     y2="45.00"
+     id="line6" />
+  <line
+     fill="none"
+     stroke="blue"
+     x1="75.00"
+     y1="41.40"
+     x2="90.00"
+     y2="45.00"
+     id="line8" />
+  <line
+     fill="none"
+     stroke="blue"
+     x1="75.00"
+     y1="48.60"
+     x2="90.00"
+     y2="45.00"
+     id="line10" />
+  <line
+     fill="none"
+     stroke="blue"
+     x1="30.00"
+     y1="45.00"
+     x2="0.00"
+     y2="45.00"
+     id="line12" />
+  <line
+     fill="none"
+     stroke="blue"
+     x1="15.00"
+     y1="41.40"
+     x2="0.00"
+     y2="45.00"
+     id="line14" />
+  <line
+     fill="none"
+     stroke="blue"
+     x1="15.00"
+     y1="48.60"
+     x2="0.00"
+     y2="45.00"
+     id="line16" />
+  <line
+     fill="none"
+     stroke="blue"
+     x1="45.00"
+     y1="30.00"
+     x2="45.00"
+     y2="0.00"
+     id="line18" />
+  <line
+     fill="none"
+     stroke="blue"
+     x1="45.00"
+     y1="60.00"
+     x2="45.00"
+     y2="90.00"
+     id="line20" />
+  <path
+     inkscape:connector-curvature="0"
+     style="fill:#0000ff;stroke:none;stroke-opacity:1;fill-opacity:1"
+     d="m 44.364406,60 a 15,15 0 0 0 0,-30"
+     id="path6" />
+</svg>

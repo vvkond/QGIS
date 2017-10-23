@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+              "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1in" height="1in"
+     viewBox="0 0 90 90">
+  <path fill="none" stroke="black" d="M 59.10,39.87 A 15.00,15.00 0 0,0 50.13,30.90" />
+  <path fill="none" stroke="black" d="M 50.13,59.10 A 15.00,15.00 0 0,0 59.10,50.13" />
+  <path fill="none" stroke="black" d="M 30.90,50.13 A 15.00,15.00 0 0,0 39.87,59.10" />
+  <path fill="none" stroke="black" d="M 39.87,30.90 A 15.00,15.00 0 0,0 30.90,39.87" />
+  <line fill="none" stroke="black" x1="13.50" y1="54.00" x2="16.20" y2="54.00" />
+  <line fill="none" stroke="black" x1="16.20" y1="54.00" x2="17.10" y2="54.90" />
+  <line fill="none" stroke="black" x1="17.10" y1="54.90" x2="17.10" y2="60.30" />
+  <line fill="none" stroke="black" x1="17.10" y1="60.30" x2="16.20" y2="61.20" />
+  <line fill="none" stroke="black" x1="16.20" y1="61.20" x2="13.50" y2="61.20" />
+  <line fill="none" stroke="black" x1="13.50" y1="61.20" x2="12.60" y2="60.30" />
+  <line fill="none" stroke="black" x1="12.60" y1="60.30" x2="12.60" y2="54.90" />
+  <line fill="none" stroke="black" x1="12.60" y1="54.90" x2="13.50" y2="54.00" />
+  <line fill="none" stroke="black" x1="20.70" y1="54.00" x2="20.70" y2="61.20" />
+  <line fill="none" stroke="black" x1="20.70" y1="61.20" x2="25.20" y2="61.20" />
+  <line fill="none" stroke="black" x1="25.20" y1="61.20" x2="25.20" y2="63.00" />
+  <line fill="none" stroke="black" x1="24.30" y1="54.00" x2="24.30" y2="61.20" />
+</svg>

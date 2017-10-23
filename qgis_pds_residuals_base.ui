@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>576</width>
+    <height>618</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Остаточные запасы</string>
+  </property>
+  <property name="locale">
+   <locale language="C" country="AnyCountry"/>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Входные параметры</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="11" column="0">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Input NPT raster</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="2">
+       <widget class="QComboBox" name="mRaduisUnitComboBox">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <item>
+         <property name="text">
+          <string>километры</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>метры</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>доли градуса</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Start date</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Max radius</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLineEdit" name="mMaxRadiusLineEdit">
+        <property name="text">
+         <string>1.0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1" colspan="2">
+       <widget class="QLineEdit" name="mShrinkageLineEdit">
+        <property name="text">
+         <string>1.0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Input Porosity value</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>End date</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1" colspan="2">
+       <widget class="QComboBox" name="mZonationComboBox"/>
+      </item>
+      <item row="6" column="1" colspan="2">
+       <widget class="QComboBox" name="mZoneComboBox"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="text">
+         <string>Production kind</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1" colspan="2">
+       <widget class="QComboBox" name="mComponentComboBox">
+        <item>
+         <property name="text">
+          <string>Нефть</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Газ</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="0" colspan="3">
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="title">
+         <string>Wells</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Well coordinates</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="mWellCoordComboBox"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="mUseWellFilterCheckBox">
+           <property name="text">
+            <string>Use well filter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="mWellFilterPushButton">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Well filter...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="9" column="0">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Input HC saturation value</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Input FVF or oil shrinkage</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1" colspan="2">
+       <widget class="QComboBox" name="mStartDateComboBox"/>
+      </item>
+      <item row="8" column="1" colspan="2">
+       <widget class="QLineEdit" name="mPorosityLineEdit">
+        <property name="text">
+         <string>1.0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1" colspan="2">
+       <widget class="QLineEdit" name="mSaturationLineEdit">
+        <property name="text">
+         <string>1.0</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Reservoir element group</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QComboBox" name="mEndDateComboBox"/>
+      </item>
+      <item row="1" column="1" colspan="2">
+       <widget class="QComboBox" name="mReservoirComboBox"/>
+      </item>
+      <item row="11" column="1" colspan="2">
+       <widget class="QComboBox" name="mNPTSurfaceComboBox"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="mZonationLabel">
+        <property name="text">
+         <string>Zonation</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="mZoneLabel">
+        <property name="text">
+         <string>Zone</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Слои результата</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Output feature class</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <item>
+         <widget class="QLineEdit" name="mOutFeatureClassLineEdit"/>
+        </item>
+        <item>
+         <widget class="QToolButton" name="mOutFeatureClassToolButton">
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>254</x>
+     <y>608</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>322</x>
+     <y>608</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWellCoordComboBox</sender>
+   <signal>activated(int)</signal>
+   <receiver>Dialog</receiver>
+   <slot>wellCoordComboBox_activated(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>548</x>
+     <y>215</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>573</x>
+     <y>157</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mZonationComboBox</sender>
+   <signal>activated(int)</signal>
+   <receiver>Dialog</receiver>
+   <slot>zonationComboBox_activated(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>557</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>572</x>
+     <y>142</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>mWellFilterPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>wellFilterPushButton_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>439</x>
+     <y>235</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>0</x>
+     <y>263</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>wellCoordComboBox_activated(int)</slot>
+  <slot>zonationComboBox_activated(int)</slot>
+  <slot>wellFilterPushButton_clicked()</slot>
+ </slots>
+</ui>

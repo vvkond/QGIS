@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/plugins/QgisPDS">
+        <file>icon.png</file>
+        <file>splash_logo.png</file>
+        <file>GeoPROD24.png</file>
+        <file>GeoPROD24a.png</file>
+        <file>GeoPROD24Sum.png</file>
+        <file>ME002.png</file>
+        <file>piechart1.png</file>
+        <file>Refresh.png</file>
+        <file>DR014.png</file>
+        <file>DR028.png</file>
+        <file>DR012.png</file>
+        <file>DR029.png</file>
+        <file>DR030.png</file>
+        <file>CoordFromZonations.png</file>
+        <file>water-drop.png</file>
+        <file>label.png</file>
+        <file>Pressure-50.png</file>
+        <file>statistics.png</file>
+        <file>deviations.png</file>
+        <file>zonation.png</file>
+    </qresource>
+</RCC>

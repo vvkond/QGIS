@@ -1,0 +1,90 @@
+{
+	"columns": [
+		{
+			"field_name": "TIG_MAP_SET_NO",
+			"name": "TIG_MAP_SET_NO",
+			"type": "int"
+		}, {
+			"field_name": "TIG_MAP_SET_PARAMETER_NO",
+			"name": "TIG_MAP_SET_PARAMETER_NO",
+			"type": "int"
+		}, {
+			"field_name": "TIG_MAP_SUBSET_NO",
+			"name": "TIG_MAP_SUBSET_NO",
+			"type": "int"
+		}, {
+			"field_name": "MAP_SET_NAME",
+			"name": "MAP_SET_NAME",
+			"type": "text"
+		}, {
+			"field_name": "PARAM_LONG_NAME",
+			"name": "PARAM_LONG_NAME",
+			"type": "text"
+		}, {
+			"field_name": "MAP_SUBSET_NAME",
+			"name": "MAP_SUBSET_NAME",
+			"type": "text"
+		}, {
+			"field_name": "VALUE",
+			"name": "VALUE",
+			"type": "blob_double"
+		}
+	],
+	"geometry": {
+		"type": "blob_point",
+		"x_column": 7,
+		"y_column": 8
+	},
+	"parameters": [
+		{
+			"id": "connection",
+			"name": "Database Connection",
+			"type": "connection"
+		}, {
+			"id": "project",
+			"name": "Project",
+			"type": "project"
+		}, {
+			"all_message": "All {count} groups",
+			"empty_error_message": "No groups found",
+			"id": "group",
+			"name": "Group",
+			"sql": {
+				"file": "db/ControlPoints_group.sql"
+			},
+			"type": "sql_list"
+		}, {
+			"all_message": "All {count} sets",
+			"empty_error_message": "No sets found",
+			"id": "set",
+			"name": "Set",
+			"sql": {
+				"file": "db/ControlPoints_set.sql"
+			},
+			"sql_args": {
+				"group_id": "group"
+			},
+			"type": "sql_list"
+		}, {
+			"id": "out_feature_class",
+			"name": "Output feature class",
+			"type": "out_feature_class"
+		}
+	],
+	"row_transformer": {
+		"columns": [
+			6,
+			7,
+			8
+		],
+		"element_size": 8,
+		"type": "blob_splitter"
+	},
+	"sql": {
+		"file": "db/ControlPoints.sql"
+	},
+	"sql_args": {
+		"group_id": "group",
+		"set_id": "set"
+	}
+}
