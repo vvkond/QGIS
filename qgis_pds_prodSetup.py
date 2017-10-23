@@ -356,6 +356,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         maxDiagrammSize = self.maxDiagrammSize.value()
         minDiagrammSize = self.minDiagrammSize.value()
+        if maxDiagrammSize < minDiagrammSize:
+            maxDiagrammSize = minDiagrammSize
 
         editLayerProvider = editLayer.dataProvider()
 
@@ -378,6 +380,33 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             diagLabel += u'{0} {1}'.format(d.name, d.scale)
 
         iter = editLayerProvider.getFeatures()
+
+        maxSum = 0.0
+        for feature in iter:
+            for d in self.layerDiagramms:
+                vec = d.fluids
+                if d.unitsType == 0:
+                    scaleType = QgisPDSProductionDialog.attrFluidMass("")
+                else:
+                    scaleType = QgisPDSProductionDialog.attrFluidVolume("")
+
+                prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
+
+                sum = 0
+                multiplier = bblInit.unit_to_mult.get(d.units, 1.0)
+                for attrName in prodFields:
+                    attr = attrName + scaleType
+                    if feature[attr] is not None:
+                        val = feature[attr] * multiplier
+                        sum += val
+
+                if maxSum < sum:
+                    maxSum = sum
+
+        if maxSum == 0.0:
+            maxSum = maxSum + 1
+
+        iter = editLayerProvider.getFeatures()
         for feature in iter:
             FeatureId = feature.id()
 
@@ -394,9 +423,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                     scaleType = QgisPDSProductionDialog.attrFluidVolume("")
 
                 prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
-                # prods = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
 
-                koef = (maxDiagrammSize - minDiagrammSize) / d.scale
+                koef = (maxDiagrammSize - minDiagrammSize) / maxSum # d.scale
                 sum = 0
                 multiplier = bblInit.unit_to_mult.get(d.units, 1.0)
                 for attrName in prodFields:
@@ -654,6 +682,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         tmpStr = self.templateExpression.text()
         self.templateExpression.setText(tmpStr + '-%' + str(row+1))
 
+    def on_maxDiagrammSize_valueChanged(self, val):
+        if type(val) is float:
+            self.minDiagrammSize.blockSignals(True)
+            self.minDiagrammSize.setMaximum(val)
+            self.minDiagrammSize.blockSignals(False)
+
 
     #Read layer settings
     def readSettings(self):
@@ -738,7 +772,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         self.currentDiagramm = '1_liquidproduction'
         self.maxDiagrammSize.setValue(float(self.currentLayer.customProperty('maxDiagrammSize', 100)))
-        self.minDiagrammSize.setValue(float(self.currentLayer.customProperty('minDiagrammSize', 0.0)))
+        self.minDiagrammSize.setValue(float(self.currentLayer.customProperty('minDiagrammSize', 1.0)))
         self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
 
         self.layerDiagramms = []
