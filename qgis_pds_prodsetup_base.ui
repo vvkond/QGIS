@@ -38,7 +38,7 @@
         <x>0</x>
         <y>0</y>
         <width>996</width>
-        <height>503</height>
+        <height>507</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
@@ -140,7 +140,7 @@
            </widget>
           </item>
           <item row="4" column="0">
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="mScaleEditLabel">
             <property name="text">
              <string>Масштаб</string>
             </property>
@@ -441,10 +441,13 @@
                    <property name="rightMargin">
                     <number>0</number>
                    </property>
-                   <item row="1" column="1">
-                    <widget class="QLineEdit" name="templateExpression">
+                   <item row="3" column="1">
+                    <widget class="QPushButton" name="addToTemplate">
+                     <property name="toolTip">
+                      <string>Добавить компонент в шаблон</string>
+                     </property>
                      <property name="text">
-                      <string>%1-%3</string>
+                      <string>Добавить компонент</string>
                      </property>
                     </widget>
                    </item>
@@ -455,13 +458,17 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="3" column="1">
-                    <widget class="QPushButton" name="addToTemplate">
-                     <property name="toolTip">
-                      <string>Добавить компонент в шаблон</string>
-                     </property>
+                   <item row="1" column="1">
+                    <widget class="QLineEdit" name="templateExpression">
                      <property name="text">
-                      <string>Добавить</string>
+                      <string>%1-%3</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="1">
+                    <widget class="QCheckBox" name="mNewLineCheckBox">
+                     <property name="text">
+                      <string>С переносом строки</string>
                      </property>
                     </widget>
                    </item>

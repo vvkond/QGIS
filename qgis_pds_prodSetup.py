@@ -25,6 +25,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         self.setupUi(self)
 
+        self.scaleEdit.setVisible(False)
+        self.mScaleEditLabel.setVisible(False)
+
         self.backColorEdit = QgsColorButtonV2(self)
         self.fluidGridLayout.addWidget(self.backColorEdit, 0, 1)
         QObject.connect(self.backColorEdit, SIGNAL("colorChanged(const QColor &)"), self.backColorChanged)
@@ -539,6 +542,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 fluid = bblInit.fluidCodes[idx]
                 code = '%'+str(idx+1)
                 strVal = '0'
+                val = 0.0
                 percentStr = ''
                 if code in templateStr:
                     attr = fluid.code + scaleType
@@ -680,7 +684,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             return
 
         tmpStr = self.templateExpression.text()
-        self.templateExpression.setText(tmpStr + '-%' + str(row+1))
+        if self.mNewLineCheckBox.isChecked():
+            self.templateExpression.setText(tmpStr + '<div>%' + str(row + 1) + '</div>')
+        else:
+            self.templateExpression.setText(tmpStr + '-%' + str(row+1))
 
     def on_maxDiagrammSize_valueChanged(self, val):
         if type(val) is float:
