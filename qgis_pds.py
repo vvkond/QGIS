@@ -43,6 +43,7 @@ from QgisPDS.qgis_pds_residual import QgisPDSResidualDialog
 from QgisPDS.qgis_pds_pressureMap import QgisPDSPressure
 from QgisPDS.qgis_pds_deviation import QgisPDSDeviation
 from QgisPDS.qgis_pds_statistic import QgisPDSStatisticsDialog
+from QgisPDS.qgis_pds_refreshSetup import QgisPDSRefreshSetup
 import os.path
 
 
@@ -633,14 +634,14 @@ class QgisPDS(QObject):
         #     layer.attributeValueChanged.connect(self.pdsLayerModified)
 
         
-    def loadWells(self, layer, project):
+    def loadWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly):
         wells = QgisPDSWells(self.iface, project)
-        wells.loadWells(layer)
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly)
 
 
-    def loadWellDeviations(self, layer, project):
+    def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly):
         wells = QgisPDSDeviation(self.iface, project)
-        wells.loadWells(layer)
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly)
 
 
     def productionSetup(self):
@@ -675,13 +676,17 @@ class QgisPDS(QObject):
 
         prop = currentLayer.customProperty("qgis_pds_type")
         if prop == "pds_wells":
-            self.loadWells(currentLayer, self.currentProject)
+            dlg = QgisPDSRefreshSetup()
+            if dlg.exec_():
+                self.loadWells(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
         elif prop == "pds_current_production":
             self.loadProduction(currentLayer, self.currentProject, True)
         elif prop == "pds_cumulative_production":
             self.loadProduction(currentLayer, self.currentProject, False)
         elif prop == "pds_well_deviations":
-            self.loadWellDeviations(currentLayer, self.currentProject)
+            dlg = QgisPDSRefreshSetup()
+            if dlg.exec_():
+                self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
 
        
     def addProductionLayer(self):

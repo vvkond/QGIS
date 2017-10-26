@@ -80,7 +80,7 @@ class QgisPDSWells(QObject):
         layer.setCustomProperty("pds_project", str(self.project))
         layer.commitChanges()
 
-        self.loadWells(layer)
+        self.loadWells(layer, True, True, False)
 
         QgsMapLayerRegistry.instance().addMapLayer(layer)
         self.db.disconnect()
@@ -119,7 +119,7 @@ class QgisPDSWells(QObject):
         with open(sql_file_path, 'rb') as f:
             return f.read().decode('utf-8')
 
-    def loadWells(self, layer):
+    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly):
         if self.db is None and layer:
             prjStr = layer.customProperty("pds_project")
             self.project = ast.literal_eval(prjStr)
@@ -146,16 +146,27 @@ class QgisPDSWells(QObject):
 
                     geom = QgsGeometry.fromPoint(pt)
 
-                    args = (self.attrWellId, name)
-                    expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))
-                    searchRes = layer.getFeatures(QgsFeatureRequest(expr))
                     num = 0
                     well = None
-                    for f in searchRes:
-                        refreshed = True
-                        layer.changeGeometry(f.id(), geom)
-                        well = f
-                        num = num + 1
+                    if isSelectedOnly:
+                        searchRes = layer.selectedFeatures()
+                        for f in searchRes:
+                            if f.attribute(self.attrWellId) == name:
+                                well = f
+                                if isRefreshKoords:
+                                    layer.changeGeometry(f.id(), geom)
+                                num = num + 1
+                                break
+                    else:
+                        args = (self.attrWellId, name)
+                        expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))
+                        searchRes = layer.getFeatures(QgsFeatureRequest(expr))
+                        for f in searchRes:
+                            refreshed = True
+                            if isRefreshKoords:
+                                layer.changeGeometry(f.id(), geom)
+                            well = f
+                            num = num + 1
 
                     if not well:
                         well = QgsFeature(layer.fields())
@@ -182,10 +193,11 @@ class QgisPDSWells(QObject):
                     well.setAttribute('Project', projectName)
 
                     if not num:
-                        if lat != 0 or lng != 0:
-                            well.setGeometry(geom)
-                            layer.addFeatures([well])
-                    else:
+                        if not isSelectedOnly:
+                            if lat != 0 or lng != 0:
+                                well.setGeometry(geom)
+                                layer.addFeatures([well])
+                    elif isRefreshData:
                         layer.updateFeature(well)
 
         if refreshed:
