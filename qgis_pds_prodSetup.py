@@ -104,8 +104,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         # self.diagrammType.setCurrentIndex(self.diagrammType.findData(self.currentDiagramm))
 
         # diagramms =  self.currentDiagramm.split(';')
+        self.isCurrentProd = True if self.currentLayer.customProperty("qgis_pds_type") == 'pds_current_production' else False
+        self.defaultUnitNum = 2 if self.isCurrentProd else 3
         if len(self.layerDiagramms) < 1:
-            self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+            self.dailyProduction.setChecked(self.isCurrentProd)
+            self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0,
+                                                units=self.defaultUnitNum, fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
         for d in self.layerDiagramms:
@@ -143,7 +147,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
     def mAddDiagramm_clicked(self):
         newName = u'Диаграмма {}'.format(len(self.layerDiagramms)+1)
-        d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=0,
+        d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=self.defaultUnitNum,
                                             fluids=[0, 0, 0, 0, 0, 0, 0, 0])
         self.layerDiagramms.append(d)
 
@@ -490,11 +494,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         root_rule = renderer.rootRule()
 
         # args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
+        sSize = self.mSymbolSize.value()
         root_rule.children()[0].setLabel(diagLabel)
         for symId in uniqSymbols:
             svg = QgsSvgMarkerSymbolLayerV2()
             svg.setPath(plugin_dir + "/svg/WellSymbol" + str(symId).zfill(3) + ".svg")
-            svg.setSize(4)
+            svg.setSize(sSize)
             svg.setSizeUnit(QgsSymbolV2.MM)
             symbol = QgsMarkerSymbolV2()
             symbol.changeSymbolLayer(0, svg)
@@ -705,8 +710,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             return
 
         self.currentDiagramm = self.bubbleProps['diagrammType'] if 'diagrammType' in self.bubbleProps else '1_liquidproduction'
-        self.maxDiagrammSize.setValue(float(self.bubbleProps["maxDiagrammSize"]) if 'maxDiagrammSize' in self.bubbleProps else 0.01)
-        self.minDiagrammSize.setValue(float(self.bubbleProps["minDiagrammSize"]) if 'minDiagrammSize' in self.bubbleProps else 0.0)
+        # self.maxDiagrammSize.setValue(float(self.bubbleProps["maxDiagrammSize"]) if 'maxDiagrammSize' in self.bubbleProps else 0.01)
+        # self.minDiagrammSize.setValue(float(self.bubbleProps["minDiagrammSize"]) if 'minDiagrammSize' in self.bubbleProps else 0.0)
 
         for d in self.standardDiagramms:
             val = self.standardDiagramms[d]
@@ -773,14 +778,15 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         return
 
     def readSettingsNew(self):
+        self.currentDiagramm = '1_liquidproduction'
+        self.maxDiagrammSize.setValue(float(self.currentLayer.customProperty('maxDiagrammSize', 15)))
+        self.minDiagrammSize.setValue(float(self.currentLayer.customProperty('minDiagrammSize', 3.0)))
+        self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
+        self.mSymbolSize.setValue(float(self.currentLayer.customProperty("defaultSymbolSize", 4.0)))
+
         count = int(self.currentLayer.customProperty("diagrammCount", 0))
         if count < 1:
             return False
-
-        self.currentDiagramm = '1_liquidproduction'
-        self.maxDiagrammSize.setValue(float(self.currentLayer.customProperty('maxDiagrammSize', 100)))
-        self.minDiagrammSize.setValue(float(self.currentLayer.customProperty('minDiagrammSize', 1.0)))
-        self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
 
         self.layerDiagramms = []
         for num in xrange(count):
@@ -818,6 +824,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.currentLayer.setCustomProperty("maxDiagrammSize", self.maxDiagrammSize.value())
         self.currentLayer.setCustomProperty("minDiagrammSize", self.minDiagrammSize.value())
         self.currentLayer.setCustomProperty("alwaysShowZero", int(self.mShowZero.isChecked()))
+        self.currentLayer.setCustomProperty("defaultSymbolSize", self.mSymbolSize.value())
 
         num = 1
         for val in self.layerDiagramms:
