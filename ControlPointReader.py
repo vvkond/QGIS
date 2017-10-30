@@ -95,6 +95,8 @@ class ControlPointReader(ReaderBase):
         self.uri += '&field={}:{}'.format(self.paramNameAttr, "string")
         self.uri += '&field={}:{}'.format(self.subsetNameAttr, "string")
         self.uri += '&field={}:{}'.format(self.parameterAttr, 'double')
+        self.uri += '&field={}:{}'.format("LablX", "double")
+        self.uri += '&field={}:{}'.format("LablY", "double")
         layer = QgsVectorLayer(self.uri, layerName, "memory")
 
         layer.startEditing()
@@ -102,6 +104,18 @@ class ControlPointReader(ReaderBase):
         layer.setCustomProperty("qgis_pds_type", "pds_controlpoints")
 
         self.readData(layer, groupSetId)
+
+        palyr = QgsPalLayerSettings()
+        palyr.readFromLayer(layer)
+        palyr.enabled = True
+        palyr.fieldName = 'parameter'
+        palyr.placement = QgsPalLayerSettings.OverPoint
+        palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
+        palyr.labelOffsetInMapUnits = True
+        # palyr.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '8', '')
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', 'LablX')
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', 'LablY')
+        palyr.writeToLayer(layer)
 
         layer.commitChanges()
 

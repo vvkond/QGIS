@@ -149,11 +149,12 @@ class QgisPDS(QObject):
             editGeom = editFeature.geometry()
             editLayerProvider = editedLayer.dataProvider()
             fields = editLayerProvider.fields()
-	    fieldname = ''
-	    try:
-	    	fieldname = fields[idx].name()
-	    except:
-		pass
+
+            fieldname = ''
+            try:
+                fieldname = fields[idx].name()
+            except:
+                pass
             originX = editGeom.asPoint().x()
             originY = editGeom.asPoint().y()
             pixelOrig = tr.transform(QgsPoint(originX, originY))
