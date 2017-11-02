@@ -44,6 +44,7 @@ from QgisPDS.qgis_pds_pressureMap import QgisPDSPressure
 from QgisPDS.qgis_pds_deviation import QgisPDSDeviation
 from QgisPDS.qgis_pds_statistic import QgisPDSStatisticsDialog
 from QgisPDS.qgis_pds_refreshSetup import QgisPDSRefreshSetup
+from QgisPDS.qgis_pds_saveToPDS import QgisSaveWellsToPDS
 import os.path
 
 
@@ -515,6 +516,13 @@ class QgisPDS(QObject):
             callback=self.calcStatistics,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/mActionFileSave.png'
+        self.add_action(
+            icon_path,
+            text=self.tr(u'Save to PDS'),
+            callback=self.saveLayerToPDS,
+            parent=self.iface.mainWindow())
+
         # icon_path = ':/plugins/QgisPDS/label.png'
         # self.actionCPlaceLabels = self.add_action(
         #     icon_path,
@@ -713,6 +721,18 @@ class QgisPDS(QObject):
         dlg.exec_()
         return
 
+    def saveLayerToPDS(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+        prop = currentLayer.customProperty("qgis_pds_type")
+        if prop == "pds_wells":
+            dlg = QgisSaveWellsToPDS(self.currentProject, self.iface, currentLayer)
+            dlg.exec_()
+        else:
+            self.iface.messageBar().pushMessage(self.tr('Error'),
+                                                self.tr(u'Unsupported layer type'),
+                                                level=QgsMessageBar.CRITICAL)
         
     def saveSettings(self):
         QSettings().setValue('currentProject', self.currentProject)

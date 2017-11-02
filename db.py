@@ -180,6 +180,10 @@ class Oracle(Base):
     def disconnect(self):
         self._connection = None
 
+    def commit(self):
+        if self._connection:
+            self._connection.commit()
+
     _reconnection_exception_codes = frozenset([
         28,  # cx_Oracle.DatabaseError: ORA-00028: your session has been killed
         3113,  # cx_Oracle.OperationalError: ORA-03113: end-of-file on communication channel

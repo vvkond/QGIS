@@ -20,5 +20,6 @@
         <file>statistics.png</file>
         <file>deviations.png</file>
         <file>zonation.png</file>
+        <file>mActionFileSave.png</file>
     </qresource>
 </RCC>
