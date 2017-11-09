@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from PyQt4.QtCore import *
 from qgis.core import *
 from PyQt4 import QtGui, uic, QtCore
@@ -80,6 +82,36 @@ class QgisSaveWellsToPDS(QtGui.QDialog, FORM_CLASS):
         provider = self.currentLayer.dataProvider()
 
         features = provider.getFeatures()
+        infoStr = ''
+        countToSave = 0
+        block = False
+        lastWell = ''
+        for f in features:
+            wellId = f.attribute(fn)
+            count = self.getDbWellCount(wellId)
+            if count == 0:
+                countToSave = countToSave + 1
+                lastWell = str(wellId)
+                if not block:
+                    l = len(infoStr)
+                    if l:
+                        infoStr = infoStr + ', '
+                    infoStr = infoStr + str(wellId)
+                    if l > 100:
+                        infoStr = infoStr + '...'
+                        block = True
+        if block:
+            infoStr = infoStr + str(lastWell)
+
+        if len(infoStr):
+            if QtGui.QMessageBox.question(self, self.tr(u'Save to PDS'), self.tr(u'Save {0} well to PDS?\n({1})')
+                                       .format(countToSave, infoStr),
+                                        QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.No:
+                return
+        else:
+            return
+
+        features = provider.getFeatures()
         for f in features:
             wellId = f.attribute(fn)
             geom = f.geometry()
@@ -99,7 +131,7 @@ class QgisSaveWellsToPDS(QtGui.QDialog, FORM_CLASS):
 
     def getDbWellCount(self, wellId):
         sql = ("SELECT count(*) FROM tig_well_history "
-               "WHERE rtrim(tig_latest_well_name) = '" + wellId + "' ")
+               "WHERE rtrim(tig_latest_well_name) = '" + str(wellId) + "' ")
 
         num = 0
 
@@ -111,9 +143,10 @@ class QgisSaveWellsToPDS(QtGui.QDialog, FORM_CLASS):
 
     def insertWell(self, wellId, coord):
         try:
-            sql = ("INSERT into tig_well_history (db_sldnid, tig_latest_well_name, tig_longitude, tig_latitude )"
+            sql = ("INSERT into tig_well_history (db_sldnid, tig_latest_well_name, tig_longitude, tig_latitude, "
+                   "TIG_INTERPRETER_SLDNID, TIG_GLOBAL_DATA_FLAG, TIG_LATEST_OPERATOR_NAME ) "
                    " VALUES(TIG_WELL_HISTORY_SEQ.nextval, "
-                   "'{0}', {1}, {2})".format(wellId, coord.x(), coord.y()))
+                   "'{0}', {1}, {2}, 1001, 1, 'QGis' )".format(wellId, coord.x(), coord.y()))
             self.db.execute(sql)
             self.db.commit()
         except Exception as e:

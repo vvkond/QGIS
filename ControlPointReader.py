@@ -29,48 +29,10 @@ class ControlPointReader(ReaderBase):
         self.subsetNameAttr = u'subset_name'
         self.parameterAttr = u'parameter'
 
-    def setDb(self, _db):
-        self.db = _db
-
     @cached_property
     def windowTitle(self):
         return self.tr('Control points')        
 
-
-    def getGroups(self):
-        groups = []
-        if self.db is None:
-            return groups
-
-        sqlFile = os.path.join(self.plugin_dir, 'db', 'ControlPoints_group.sql')
-        if os.path.exists(sqlFile):
-            f = open(sqlFile, 'r')
-            sql = f.read()
-            f.close()
-
-            records = self.db.execute(sql)
-
-            for rec in records:
-                groups.append( rec )
-
-        return groups
-
-    def getSets(self, groupId):
-        sets = []
-        if self.db is None:
-            return sets
-
-        sqlFile = os.path.join(self.plugin_dir, 'db', 'ControlPoints_set.sql')
-        if os.path.exists(sqlFile):
-            f = open(sqlFile, 'r')
-            sql = f.read()
-            f.close()
-
-            records = self.db.execute(sql, group_id=groupId)
-            for rec in records:
-                sets.append( rec )
-
-        return sets
 
 
     def createLayer(self, layerName, pdsProject, groupSetId, defaultValue):

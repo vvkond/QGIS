@@ -17,8 +17,6 @@ class ContoursReader(ReaderBase):
     def __init__(self, _dataType):
         super(ContoursReader, self).__init__()
 
-        self.db = None
-        self.layer = None
         self.plugin_dir = os.path.dirname(__file__)
 
         self.setNoAttr = u'set_no'
@@ -36,20 +34,20 @@ class ContoursReader(ReaderBase):
             self.setFile = "Contours_set.sql"
             self.dataFile = "Contours.sql"
             self.geomType = "LineString"
+            self.pdsType = "pds_contours"
         elif self.dataType == 1:         #Polygons
             self.groupFile = "Polygons_group.sql"
             self.setFile = "Polygons_set.sql"
             self.dataFile = "Polygons.sql"
             self.geomType = "Polygon"
+            self.pdsType = "pds_polygon"
         else:                   #Faults
             self.groupFile = "Faults_group.sql"
             self.setFile = "Faults_set.sql"
             self.dataFile = "Faults.sql"
             self.geomType = "LineString"
+            self.pdsType = "pds_faults"
 
-
-    def setDb(self, _db):
-        self.db = _db
 
     @cached_property
     def windowTitle(self):
@@ -69,41 +67,6 @@ class ContoursReader(ReaderBase):
         else:
             dialog.mLoadAsContourCheckBox.setVisible(False)
 
-
-    def getGroups(self):
-        groups = []
-        if self.db is None:
-            return groups
-
-        sqlFile = os.path.join(self.plugin_dir, 'db', self.groupFile)
-        if os.path.exists(sqlFile):
-            f = open(sqlFile, 'r')
-            sql = f.read()
-            f.close()
-
-            records = self.db.execute(sql)
-
-            for rec in records:
-                groups.append( rec )
-
-        return groups
-
-    def getSets(self, groupId):
-        sets = []
-        if self.db is None:
-            return sets
-
-        sqlFile = os.path.join(self.plugin_dir, 'db', self.setFile)
-        if os.path.exists(sqlFile):
-            f = open(sqlFile, 'r')
-            sql = f.read()
-            f.close()
-
-            records = self.db.execute(sql, group_id=groupId)
-            for rec in records:
-                sets.append( rec )
-
-        return sets
 
     def createLayer(self, layerName, pdsProject, groupSetId, defaultValue):
         self.defaultParameter = defaultValue
@@ -137,7 +100,7 @@ class ContoursReader(ReaderBase):
 
         layer.startEditing()
         layer.setCustomProperty("pds_project", str(pdsProject))
-        layer.setCustomProperty("qgis_pds_type", "pds_contours")
+        layer.setCustomProperty("qgis_pds_type", self.pdsType)
 
         self.readData(layer, groupSetId)
 

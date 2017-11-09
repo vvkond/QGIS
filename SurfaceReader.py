@@ -19,53 +19,16 @@ class SurfaceReader(ReaderBase):
     def __init__(self):
         super(SurfaceReader, self).__init__()
 
-        self.db = None
-        self.layer = None
         self.plugin_dir = os.path.dirname(__file__)
         self.tempdir = tempfile.gettempdir()
+        self.groupFile = 'Surface_group.sql'
+        self.setFile = 'Surface_set.sql'
 
-
-    def setDb(self, _db):
-        self.db = _db
 
     @cached_property
     def windowTitle(self):
         return self.tr('Surfaces')
 
-    def getGroups(self):
-        groups = []
-        if self.db is None:
-            return groups
-
-        sqlFile = os.path.join(self.plugin_dir, 'db', 'Surface_group.sql')
-        if os.path.exists(sqlFile):
-            f = open(sqlFile, 'r')
-            sql = f.read()
-            f.close()
-
-            records = self.db.execute(sql)
-
-            for rec in records:
-                groups.append( rec )
-
-        return groups
-
-    def getSets(self, groupId):
-        sets = []
-        if self.db is None:
-            return sets
-
-        sqlFile = os.path.join(self.plugin_dir, 'db', 'Surface_set.sql')
-        if os.path.exists(sqlFile):
-            f = open(sqlFile, 'r')
-            sql = f.read()
-            f.close()
-
-            records = self.db.execute(sql, group_id=groupId)
-            for rec in records:
-                sets.append( rec )
-
-        return sets
 
     def createLayer(self, layerName, pdsProject, groupSetId, defaultValue):
         layer = None
@@ -78,6 +41,8 @@ class SurfaceReader(ReaderBase):
 #            settings.setValue( "/Projections/defaultBehaviour", "useProject" )
 
             layer = QgsRasterLayer(fileName, layerName)
+            layer.setCustomProperty("pds_project", str(pdsProject))
+            layer.setCustomProperty("qgis_pds_type", 'qgis_surface')
             # if layer.isValid() is True:
             #     layer.setCrs( QgsCoordinateReferenceSystem(4326, QgsCoordinateReferenceSystem.EpsgCrsId) )
             # else:

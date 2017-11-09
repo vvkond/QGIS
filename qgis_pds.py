@@ -45,6 +45,7 @@ from QgisPDS.qgis_pds_deviation import QgisPDSDeviation
 from QgisPDS.qgis_pds_statistic import QgisPDSStatisticsDialog
 from QgisPDS.qgis_pds_refreshSetup import QgisPDSRefreshSetup
 from QgisPDS.qgis_pds_saveToPDS import QgisSaveWellsToPDS
+from QgisPDS.qgis_pds_SaveMapsetToPDS import QgisSaveMapsetToPDS
 import os.path
 
 
@@ -728,6 +729,9 @@ class QgisPDS(QObject):
         prop = currentLayer.customProperty("qgis_pds_type")
         if prop == "pds_wells":
             dlg = QgisSaveWellsToPDS(self.currentProject, self.iface, currentLayer)
+            dlg.exec_()
+        elif prop in ['pds_controlpoints', 'pds_contours', 'pds_polygon', 'pds_faults', 'qgis_surface']:
+            dlg = QgisSaveMapsetToPDS(self.currentProject, self.iface, currentLayer)
             dlg.exec_()
         else:
             self.iface.messageBar().pushMessage(self.tr('Error'),
