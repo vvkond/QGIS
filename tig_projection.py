@@ -247,8 +247,11 @@ PROJCS["Transverse_Mercator",
         return self._esri.format(flattening=p.a / (p.a - p.b), **p)
 
 
+#     _qgis = '''
+# +proj=tmerc +lat_0={lat_0} +lon_0={lon_0} +k={k} +x_0={x_0} +y_0={y_0} +ellps=krass +towgs84=24.47,-130.89,-81.56,-0,-0,0.13,-0.22 +units=m +no_defs
+# '''.strip()
     _qgis = '''
-+proj=tmerc +lat_0={lat_0} +lon_0={lon_0} +k={k} +x_0={x_0} +y_0={y_0} +ellps=krass +towgs84=24.47,-130.89,-81.56,-0,-0,0.13,-0.22 +units=m +no_defs
+    +a={a} +lon_0={lon_0} +to_meter={to_meter} +k={k} +y_0={y_0} +b={b} +proj={proj} +x_0={x_0} +lat_0={lat_0} +no_defs
 '''.strip()
 
     @cached_property
