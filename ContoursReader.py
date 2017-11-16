@@ -148,9 +148,6 @@ class ContoursReader(ReaderBase):
                     cPoint = QgsFeature(layer.fields())
 
                     pt = QgsPoint(x, y)
-                    # if sourceCrs is not None:
-                    #     polyLine.append(xform.transform(pt))
-                    # else:
                     polyLine.append(pt)
 
                     i = i + 1

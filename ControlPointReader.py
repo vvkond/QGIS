@@ -49,7 +49,7 @@ class ControlPointReader(ReaderBase):
                                                 level=QgsMessageBar.CRITICAL)
             return
 
-        self.uri = "MultiPoint?crs={}".format(proj4String)
+        self.uri = "Point?crs={}".format(proj4String)
         self.uri += '&field={}:{}'.format(self.setNoAttr, "double")
         self.uri += '&field={}:{}'.format(self.parameterNoAttr, "double")
         self.uri += '&field={}:{}'.format(self.subsetNoAttr, "double")

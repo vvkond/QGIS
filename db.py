@@ -69,7 +69,7 @@ class Base(object):
         return row[0]
 
     def execute(self, sql, **kwargs):
-        assert all(value is None or isinstance(value, (unicode, int, datetime)) for value in kwargs.itervalues()), repr(kwargs)
+        # assert all(value is None or isinstance(value, (unicode, int, datetime)) for value in kwargs.itervalues()), repr(kwargs)
         return self._execute(sql, **kwargs)
 
     def execute_fn(self, fn, sql, *args, **kwargs):

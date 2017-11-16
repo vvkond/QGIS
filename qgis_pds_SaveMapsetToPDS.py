@@ -13,6 +13,8 @@ from QgisPDS.connections import create_connection
 from QgisPDS.utils import to_unicode
 from tig_projection import *
 from bblInit import MyStruct
+import numpy as np
+import cx_Oracle
 
 class FeatureRecord(MyStruct):
     points = []
@@ -252,6 +254,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                                .format(groupNameToSave, self.groupNo, self.mapSetType)):
                 return
 
+
         isPointsGeom = True
         features = self.currentLayer.getFeatures()
         for f in features:
@@ -287,25 +290,72 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
 
     def processAsPoints(self):
         features = self.currentLayer.getFeatures()
-        points = []
+        pointsX = []
+        pointsY = []
+        params = []
+        subsetName = 'Qgis'
         for f in features:
-            subsetName = 'Qgis'
-            parameter = 0
+            parameter = -9999
             if self.subsetFieldIndex >= 0:
                 subsetName = f.attribute(self.subsetFieldName)
             if self.parameterFieldIndex >= 0:
                 parameter = f.attribute(self.parameterFieldName)
-            print subsetName, parameter
 
             geom = f.geometry()
             t = geom.wkbType()
+            pt = None
             if t == QGis.WKBPoint:
-                points.append(self.xform.transform(geom.asPoint()))
+                pt = self.xform.transform(geom.asPoint())
             elif t == QGis.WKBMultiPoint:
                 mpt = geom.asMultiPoint()
-                points.append(self.xform.transform(mpt[0]))
-        print points
+                if len(mpt):
+                    pt = self.xform.transform(mpt[0])
 
+            if pt:
+                pointsX.append(pt.x())
+                pointsY.append(pt.y())
+                params.append(parameter)
+
+        self.writePoints(pointsX, pointsY, params, subsetName)
+
+
+    def writePoints(self, pointsX, pointsY, params, subsetName):
+        assert len(params)==len(pointsX), 'Parameters/points are mismatch'
+        setNameToSave = self.mSetLineEdit.text()
+        subsetNo = self.maxMapSubsetNo+1
+        paramNo = self.maxMapSetParameterNo+1
+
+        npX = np.asarray(pointsX, '>d').tostring()
+        npY = np.asarray(pointsY, '>d').tostring()
+        npZ = np.asarray(params, '>d').tostring()
+        sql = ("insert into tig_map_subset (db_sldnid, tig_map_subset_name, tig_map_set_no, "
+               "tig_map_subset_no, TIG_MAP_X, TIG_MAP_Y) "
+               "values (TIG_MAP_SUBSET_SEQ.nextval, '{0}', {1}, {2}, :blobX, :blobY)"
+               .format(setNameToSave, self.groupNo, subsetNo))
+
+        sql1 = ("insert into tig_map_set_param (db_sldnid, tig_param_short_name, TIG_PARAM_LONG_NAME, "
+                "tig_map_set_no, tig_map_set_parameter_no ) "
+                "values (TIG_MAP_SET_PARAM_SEQ.nextval, '0', '{0}', {1}, {2})"
+                .format(subsetName, self.groupNo, paramNo ))
+
+        sql2 = ("insert into tig_map_subset_param_val (db_sldnid, "
+                "tig_map_set_no, tig_map_subset_no, tig_map_set_parameter_no, TIG_MAP_PARAM_VRLONG ) "
+                "values (TIG_MAP_SUBSET_PARAM_VAL_SEQ.nextval, '0', {0}, {1}, {2}, '{3}')"
+                .format(self.groupNo, subsetNo, paramNo, npZ))
+
+        cursor = self.db.cursor()
+        blobvarX = cursor.var(cx_Oracle.BLOB)
+        blobvarX.setvalue(0, npX)
+        blobvarY = cursor.var(cx_Oracle.BLOB)
+        blobvarY.setvalue(0, npY)
+        # cursor.setinputsizes(blobX=cx_Oracle.BLOB)
+        # cursor.setinputsizes(blobY=cx_Oracle.BLOB)
+        # cursor.execute(sql, {'blobX': blobvarX, 'blobY': blobvarY})
+        # cursor.execute('commit')
+        self.db.execute(sql, blobX=blobvarX, blobY=blobvarY)
+        # self.db.execute(sql1)
+        # self.db.execute(sql2)
+        self.db.commit()
 
     def processAsMultiPoints(self):
         features = self.currentLayer.getFeatures()
@@ -337,5 +387,6 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                     for pt in polyline:
                         points.append(self.xform.transform(pt))
                 print points
+
 
 
