@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>452</width>
-    <height>210</height>
+    <height>236</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -87,17 +87,14 @@
       <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
+      <item row="1" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Поднабор</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QComboBox" name="mSubsetFields"/>
-      </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="label_6">
         <property name="text">
          <string>Параметр</string>
@@ -105,7 +102,20 @@
        </widget>
       </item>
       <item row="1" column="1">
+       <widget class="QComboBox" name="mSubsetFields"/>
+      </item>
+      <item row="2" column="1">
        <widget class="QComboBox" name="mParameterFields"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="mKeyFields"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Номер поднабора (ключ)</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
