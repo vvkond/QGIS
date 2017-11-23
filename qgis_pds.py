@@ -726,17 +726,10 @@ class QgisPDS(QObject):
         currentLayer = self.iface.activeLayer()
         if not currentLayer:
             return
-        prop = currentLayer.customProperty("qgis_pds_type")
-        if prop == "pds_wells":
-            dlg = QgisSaveWellsToPDS(self.currentProject, self.iface, currentLayer)
-            dlg.exec_()
-        elif prop in ['pds_controlpoints', 'pds_contours', 'pds_polygon', 'pds_faults', 'qgis_surface']:
-            dlg = QgisSaveMapsetToPDS(self.currentProject, self.iface, currentLayer)
-            dlg.exec_()
-        else:
-            self.iface.messageBar().pushMessage(self.tr('Error'),
-                                                self.tr(u'Unsupported layer type'),
-                                                level=QgsMessageBar.CRITICAL)
+
+        dlg = QgisSaveMapsetToPDS(self.currentProject, self.iface, currentLayer)
+        dlg.exec_()
+
         
     def saveSettings(self):
         QSettings().setValue('currentProject', self.currentProject)

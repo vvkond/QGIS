@@ -41,7 +41,7 @@ class QgisPDSWells(QObject):
         if not self.initDb():
             return
 
-        self.uri = "MultiPoint?crs={}".format(self.proj4String)
+        self.uri = "Point?crs={}".format(self.proj4String)
         self.uri += '&field={}:{}'.format(self.attrWellId, "string")
         self.uri += '&field={}:{}'.format(self.attrLatitude, "double")
         self.uri += '&field={}:{}'.format(self.attrLongitude, "double")

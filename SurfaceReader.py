@@ -114,13 +114,11 @@ class SurfaceReader(ReaderBase):
                 z = numpy.fromstring(TIG_MAP_Z.read(), '>d').astype('d')
                 min_x, max_x, step_x = x
                 min_y, max_y, step_y = y
-                min_z, max_z, aa = z
 
                 values = numpy.fromstring(TIG_MAP_PARAM_VRSHRT.read(), '>f').astype('d')
 
                 size_x = int((max_x - min_x) / step_x + 1.005)
                 size_y = int((max_y - min_y) / step_y + 1.005)
-
 
                 data = values.reshape((size_x, size_y), order='F')
                 data = numpy.rot90(data)
@@ -151,27 +149,6 @@ class SurfaceReader(ReaderBase):
                 output_raster = None
                 driver = None
 
-                # fileName = u'%s_%s.grd' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
-                # fileName = os.path.join(self.tempdir, fileName)
-                # print fileName
-                # f = open(fileName, 'w')
-                # nulldata = 1.70141E+38
-                #
-                # f.write("DSAA\n")
-                # f.write("%d %d\n" % (size_x, size_y))
-                #
-                # f.write("%f %f\n" % (min_x, max_x))
-                # f.write("%f %f\n" % (max_y, min_y))
-                # f.write("%f %F\n" % (min_z, max_z))
-                # for xx in data:
-                #    for yy in xx:
-                #        if yy < nodata:
-                #            f.write("%g " % yy)
-                #        else:
-                #            f.write("%g " % nulldata)
-                #    f.write("\n")
-                #
-                # f.close()
                 break
          
             
