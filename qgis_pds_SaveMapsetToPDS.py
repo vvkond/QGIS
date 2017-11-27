@@ -41,9 +41,10 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.plugin_dir = os.path.dirname(__file__)
         self.xform = None
 
-        prjStr = self.currentLayer.customProperty("pds_project")
-        if prjStr:
-            self.project = ast.literal_eval(prjStr)
+        # prjStr = self.currentLayer.customProperty("pds_project")
+        # if prjStr:
+        #     self.project = ast.literal_eval(prjStr)
+        self.setWindowTitle(self.windowTitle() + ' - ' + self.project['project'])
 
         self.proj4String = 'epsg:4326'
         self.db = None
@@ -70,6 +71,8 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             self.setFile = 'Surface_set.sql'
             self.mapSetType = 4
 
+        self.interpreter = int(QSettings().value('PDS/SaveToPDS/InterpreterId', -1))
+
         self.updateInterpreters()
         if self.currentLayer.type() == QgsMapLayer.VectorLayer:
             self.updateFieldsComboBox()
@@ -92,8 +95,10 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
     def on_buttonBox_accepted(self):
         # try:
         self.saveToDb()
+        QSettings().setValue('PDS/SaveToPDS/InterpreterId', self.interpreter)
         # except Exception as e:
         #     self.iface.messageBar().pushMessage(self.tr("Error"), str(e), level=QgsMessageBar.CRITICAL)
+
 
     def saveAsActivated(self):
         self.resetMapSetType()
@@ -153,9 +158,15 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         users = self.db.execute(sql)
         if users:
             for user in users:
-                self.mInterpreter.addItem(to_unicode(user[1]), user[0])
-                if user[1] == 'tig':
-                    self.mInterpreter.setCurrentIndex(self.mInterpreter.count()-1)
+                sldnid = int(user[0])
+                self.mInterpreter.addItem(to_unicode(user[1]), sldnid)
+                if self.interpreter == sldnid:
+                    self.mInterpreter.setCurrentIndex(self.mInterpreter.count() - 1)
+
+            if self.interpreter < 0:
+                idx = self.mInterpreter.findText('tig')
+                if idx >= 0:
+                    self.mInterpreter.setCurrentIndex(idx)
 
     def getGroupNo(self, mapSetName):
         mapSetNo = -1
@@ -274,67 +285,66 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.maxMapSetNo = self.getMaxSetNumber('select max(tig_map_set_no) from tig_map_set')
         self.maxMapSubsetNo = self.getMaxSetNumber('select max(tig_map_subset_no) from tig_map_subset')
         self.maxMapSetParameterNo = self.getMaxSetNumber('select max(tig_map_set_parameter_no) from TIG_MAP_SET_PARAM')
+        self.maxMethodAppNo = self.getMaxSetNumber('select max(TIG_MS_METHOD_APPL_NO) from tig_ms_method_applicaton')
 
         if self.currentLayer.type() == QgsMapLayer.RasterLayer:
             self.createGroupSet(groupNameToSave, setNameToSave)
             self.writeSurface()
-            return
-
-
-        provider = self.currentLayer.dataProvider()
-        self.subsetFieldName = self.mSubsetFields.currentText()
-        self.parameterFieldName = self.mParameterFields.currentText()
-        self.keyFieldName = self.mKeyFields.currentText()
-        self.subsetFieldIndex = provider.fieldNameIndex(self.subsetFieldName)
-        self.parameterFieldIndex = provider.fieldNameIndex(self.parameterFieldName)
-        self.keyFieldIndex = provider.fieldNameIndex(self.keyFieldName)
-
-        if self.mapSetType == 0 and self.keyFieldIndex < 0:
-            if QtGui.QMessageBox.question(self, self.tr(u'Save to PDS'), self.tr(u'Key field name is not found. Proceed?'),
-                                       QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.No:
-                return
-
-        if self.subsetFieldIndex < 0:
-            if QtGui.QMessageBox.question(self, self.tr(u'Save to PDS'), self.tr(u'Subset field name is not found. Proceed?'),
-                                       QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.No:
-                return
-
-        if self.parameterFieldIndex < 0:
-            if QtGui.QMessageBox.question(self, self.tr(u'Save to PDS'), self.tr(u'Parameter field name is not found. Proceed?'),
-                                       QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.No:
-                return
-
-        #Create Group/Set
-        self.createGroupSet(groupNameToSave, setNameToSave)
-
-        isPointsGeom = True
-        features = self.currentLayer.getFeatures()
-        for f in features:
-            geom = f.geometry()
-            t = geom.wkbType()
-
-            if t == QGis.WKBPoint:
-                isPointsGeom = True
-                break
-            elif t == QGis.WKBMultiPoint:
-                mpt = geom.asMultiPoint()
-                ll = len(mpt)
-                if ll > 1:
-                    isPointsGeom = False
-                else:
-                    isPointsGeom = True
-                break
-            elif t == QGis.WKBLineString:
-                isPointsGeom = False
-                break
-            elif t == QGis.WKBPolygon:
-                isPointsGeom = False
-                break
-
-        if isPointsGeom:
-            self.processAsPoints()
         else:
-            self.processAsMultiPoints()
+            provider = self.currentLayer.dataProvider()
+            self.subsetFieldName = self.mSubsetFields.currentText()
+            self.parameterFieldName = self.mParameterFields.currentText()
+            self.keyFieldName = self.mKeyFields.currentText()
+            self.subsetFieldIndex = provider.fieldNameIndex(self.subsetFieldName)
+            self.parameterFieldIndex = provider.fieldNameIndex(self.parameterFieldName)
+            self.keyFieldIndex = provider.fieldNameIndex(self.keyFieldName)
+
+            if self.mapSetType == 0 and self.keyFieldIndex < 0:
+                if QtGui.QMessageBox.question(self, self.tr(u'Save to PDS'), self.tr(u'Key field name is not found. Proceed?'),
+                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.No:
+                    return
+
+            if self.subsetFieldIndex < 0:
+                if QtGui.QMessageBox.question(self, self.tr(u'Save to PDS'), self.tr(u'Subset field name is not found. Proceed?'),
+                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.No:
+                    return
+
+            if self.parameterFieldIndex < 0:
+                if QtGui.QMessageBox.question(self, self.tr(u'Save to PDS'), self.tr(u'Parameter field name is not found. Proceed?'),
+                                           QtGui.QMessageBox.Yes | QtGui.QMessageBox.No) == QtGui.QMessageBox.No:
+                    return
+
+            #Create Group/Set
+            self.createGroupSet(groupNameToSave, setNameToSave)
+
+            isPointsGeom = True
+            features = self.currentLayer.getFeatures()
+            for f in features:
+                geom = f.geometry()
+                t = geom.wkbType()
+
+                if t == QGis.WKBPoint:
+                    isPointsGeom = True
+                    break
+                elif t == QGis.WKBMultiPoint:
+                    mpt = geom.asMultiPoint()
+                    ll = len(mpt)
+                    if ll > 1:
+                        isPointsGeom = False
+                    else:
+                        isPointsGeom = True
+                    break
+                elif t == QGis.WKBLineString:
+                    isPointsGeom = False
+                    break
+                elif t == QGis.WKBPolygon:
+                    isPointsGeom = False
+                    break
+
+            if isPointsGeom:
+                self.processAsPoints()
+            else:
+                self.processAsMultiPoints()
 
         self.iface.messageBar().pushMessage(self.tr('{0}/{1} is saved.')
                                                     .format(groupNameToSave, setNameToSave), duration=20)
@@ -547,6 +557,17 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                 "TIG_MAP_PARAM_VRSHRT ) values (TIG_MAP_SUBSET_PARAM_VAL_SEQ.nextval, {0}, {1}, {2}, {3}, :paramZ)"
                 .format(self.groupNo, subsetNo, self.paramNo, self.interpreter))
 
+        methodApplNo = self.maxMethodAppNo + 1
+        sql3 = ("insert into tig_ms_method_applicaton (db_sldnid, tig_ms_method_appl_no, tig_ms_method_no, tig_interpreter_sldnid)"
+                " values (TIG_MS_METHOD_APPLICATON_SEQ.nextval, {0}, 18, {1})".format(methodApplNo, self.interpreter))
+
+        sql4 = ("insert into TIG_MS_SORCE_METHOD_APPL (db_sldnid, tig_map_set_no, tig_map_set_parameter_no, "
+                "tig_ms_method_appl_no, tig_interpreter_sldnid)" 
+               " values (TIG_MS_SORCE_METHOD_APPL_SEQ.nextval, {0}, {1}, {2}, {3})"
+                .format(self.groupNo, self.paramNo, methodApplNo, self.interpreter))
+
         self.db.execute(sql, blobX=blobvarX, blobY=blobvarY)
         self.db.execute(sql2, paramZ=blobvarData)
+        self.db.execute(sql3)
+        self.db.execute(sql4)
         self.db.commit()
