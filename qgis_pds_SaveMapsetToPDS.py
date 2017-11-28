@@ -45,6 +45,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         # if prjStr:
         #     self.project = ast.literal_eval(prjStr)
         self.setWindowTitle(self.windowTitle() + ' - ' + self.project['project'])
+        self.mEmptyValue.setValue(float(QSettings().value('PDS/SaveToPDS/EmptyValue', '-9999')))
 
         self.proj4String = 'epsg:4326'
         self.db = None
@@ -58,18 +59,20 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             self.setFile = "Contours_set.sql"
             self.mapSetCpSource = 4
             self.mSaveAsComboBox.setCurrentIndex(2)
-        if self.prop == 'pds_polygon':
+        elif self.prop == 'pds_polygon':
             self.groupFile = "Polygons_group.sql"
             self.setFile = "Polygons_set.sql"
             self.mSaveAsComboBox.setCurrentIndex(3)
-        if self.prop == 'pds_faults':
+        elif self.prop == 'pds_faults':
             self.groupFile = "Faults_group.sql"
             self.setFile = "Faults_set.sql"
             self.mSaveAsComboBox.setCurrentIndex(1)
-        if self.prop == 'qgis_surface':
+        elif self.prop == 'qgis_surface':
             self.groupFile = 'Surface_group.sql'
             self.setFile = 'Surface_set.sql'
             self.mapSetType = 4
+        else:
+            self.mEmptyValue.setEnabled(True)
 
         self.interpreter = int(QSettings().value('PDS/SaveToPDS/InterpreterId', -1))
 
@@ -96,6 +99,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         # try:
         self.saveToDb()
         QSettings().setValue('PDS/SaveToPDS/InterpreterId', self.interpreter)
+        QSettings().setValue('PDS/SaveToPDS/EmptyValue', self.mEmptyValue.value())
         # except Exception as e:
         #     self.iface.messageBar().pushMessage(self.tr("Error"), str(e), level=QgsMessageBar.CRITICAL)
 
@@ -217,12 +221,14 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.mapSetCpSource = 0
         self.mKeyFields.setEnabled(False)
         self.mKetFieldsLabel.setEnabled(False)
+        self.mEmptyValue.setEnabled(False)
         if self.mSaveAsComboBox.currentIndex() == 0:
             self.mapSetType = 1
             self.groupFile = 'ControlPoints_group.sql'
             self.setFile = 'ControlPoints_set.sql'
             self.mKeyFields.setEnabled(True)
             self.mKetFieldsLabel.setEnabled(True)
+            self.mEmptyValue.setEnabled(True)
         elif self.mSaveAsComboBox.currentIndex() == 1:
             self.mapSetType = 2
             self.groupFile = "Faults_group.sql"
@@ -265,6 +271,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         setNameToSave = self.mSetLineEdit.text()
 
         self.interpreter = int(self.mInterpreter.itemData(self.mInterpreter.currentIndex()))
+        self.noDataValue = self.mEmptyValue.value()
 
         if len(groupNameToSave) < 2 or len(setNameToSave) < 2:
             QtGui.QMessageBox.critical(self, self.tr(u'Save to PDS'), self.tr(u'Group or Set name is empty'))
@@ -385,7 +392,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                 pointsY = []
                 params = []
 
-            parameter = -9999
+            parameter = 1E+20
             if self.subsetFieldIndex >= 0:
                 paramName = f.attribute(self.subsetFieldName)
             if self.parameterFieldIndex >= 0:
@@ -406,6 +413,8 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             if pt:
                 pointsX.append(pt.x())
                 pointsY.append(pt.y())
+                if parameter == self.noDataValue:
+                    parameter = 1E+20
                 params.append(parameter)
 
             prevKey = key
