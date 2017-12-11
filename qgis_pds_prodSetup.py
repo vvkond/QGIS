@@ -481,17 +481,34 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         bubbleMeta = registry.symbolLayerMetadata('BubbleMarker')
         if bubbleMeta is not None:
             bubbleProps = {}
-            bubbleProps['showLineout'] = str(int(self.showLineouts.isChecked()))
+            bubbleProps['showLineout'] = str(int(not self.showLineouts.isChecked()))
+            bubbleProps['showLabels'] = '1'
+            bubbleProps['showDiagramms'] = '1'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
-            bubbleLayer.setSize(0.001)
-            bubbleLayer.setSizeUnit(QgsSymbolV2.MapUnit)
+            bubbleLayer.setSize(3)
+            bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
             symbol.changeSymbolLayer(0, bubbleLayer)
         else:
             symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
 
         renderer = QgsRuleBasedRendererV2(symbol)
         root_rule = renderer.rootRule()
+
+        if bubbleMeta:
+            bubbleProps = {}
+            bubbleProps['showLineout'] = str(int(self.showLineouts.isChecked()))
+            bubbleProps['showLabels'] = '0'
+            bubbleProps['showDiagramms'] = '0'
+            bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+            bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+            bubbleLayer.setSize(3)
+            bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+            symbol1 = QgsMarkerSymbolV2()
+            symbol1.changeSymbolLayer(0, bubbleLayer)
+            rule = QgsRuleBasedRendererV2.Rule(symbol1)
+            rule.setLabel(u'Скважины')
+            root_rule.appendChild(rule)
 
         # args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
         sSize = self.mSymbolSize.value()
