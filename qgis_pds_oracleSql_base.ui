@@ -6,71 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>641</width>
-    <height>390</height>
+    <width>786</width>
+    <height>604</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Создать слой из SQL запроса</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="0" colspan="5">
-    <widget class="QGroupBox" name="groupBox">
-     <property name="title">
-      <string>SQL</string>
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,1,0">
+   <item row="0" column="4">
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>Обзор...</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <property name="spacing">
-         <number>1</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QToolButton" name="mSelectFileToolButton">
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="mRefreshToolButton">
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="mExecuteToolButton">
-          <property name="text">
-           <string>...</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="0">
-       <widget class="QTextEdit" name="textEdit"/>
-      </item>
-     </layout>
     </widget>
    </item>
-   <item row="4" column="0" colspan="5">
+   <item row="1" column="1" colspan="4">
+    <widget class="QLineEdit" name="mLayerNameLineEdit"/>
+   </item>
+   <item row="7" column="0" colspan="5">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -80,21 +34,21 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>Формат геометрии</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="3" colspan="2">
+   <item row="2" column="3" colspan="2">
     <widget class="QRadioButton" name="mAttributesRadioButton">
      <property name="text">
       <string>Только атрибуты</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1" colspan="2">
+   <item row="2" column="1" colspan="2">
     <widget class="QRadioButton" name="mCoordsRadioButton">
      <property name="text">
       <string>Координаты точки</string>
@@ -104,7 +58,14 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="1" colspan="4">
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Имя слоя</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="4">
     <widget class="QFrame" name="frame">
      <property name="frameShape">
       <enum>QFrame::NoFrame</enum>
@@ -156,14 +117,61 @@
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QLabel" name="label_4">
+    <widget class="QLabel" name="label_5">
      <property name="text">
-      <string>Имя слоя</string>
+      <string>Имя файла</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="1" colspan="4">
-    <widget class="QLineEdit" name="mLayerNameLineEdit"/>
+   <item row="0" column="1" colspan="3">
+    <widget class="QLineEdit" name="mFileNameLineEdit">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="5">
+    <widget class="QTableWidget" name="tableWidget"/>
+   </item>
+   <item row="5" column="0" colspan="5">
+    <widget class="QTextEdit" name="mSqlTextEdit"/>
+   </item>
+   <item row="4" column="0" colspan="5">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QToolButton" name="mRefreshToolButton">
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QToolButton" name="mExecuteToolButton">
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
@@ -208,28 +216,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>210</x>
-     <y>42</y>
+     <x>375</x>
+     <y>80</y>
     </hint>
     <hint type="destinationlabel">
-     <x>382</x>
-     <y>78</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mSelectFileToolButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Dialog</receiver>
-   <slot>selectFileClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>28</x>
-     <y>125</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>90</x>
-     <y>57</y>
+     <x>547</x>
+     <y>115</y>
     </hint>
    </hints>
   </connection>
@@ -240,8 +232,8 @@
    <slot>refreshClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>58</x>
-     <y>126</y>
+     <x>70</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>52</x>
@@ -256,12 +248,28 @@
    <slot>executeClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>124</y>
+     <x>96</x>
+     <y>164</y>
     </hint>
     <hint type="destinationlabel">
      <x>117</x>
      <y>68</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>selectFileClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>698</x>
+     <y>17</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>137</x>
+     <y>98</y>
     </hint>
    </hints>
   </connection>
