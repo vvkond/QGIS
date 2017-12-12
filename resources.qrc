@@ -21,5 +21,8 @@
         <file>deviations.png</file>
         <file>zonation.png</file>
         <file>mActionFileSave.png</file>
+        <file>new_sql_query.png</file>
+        <file>ButtonPlayicon.png</file>
+        <file>openfileicon.png</file>
     </qresource>
 </RCC>

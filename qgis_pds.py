@@ -44,8 +44,8 @@ from QgisPDS.qgis_pds_pressureMap import QgisPDSPressure
 from QgisPDS.qgis_pds_deviation import QgisPDSDeviation
 from QgisPDS.qgis_pds_statistic import QgisPDSStatisticsDialog
 from QgisPDS.qgis_pds_refreshSetup import QgisPDSRefreshSetup
-from QgisPDS.qgis_pds_saveToPDS import QgisSaveWellsToPDS
 from QgisPDS.qgis_pds_SaveMapsetToPDS import QgisSaveMapsetToPDS
+from QgisPDS.qgis_pds_oracleSql import QgisOracleSql
 import os.path
 
 
@@ -524,6 +524,13 @@ class QgisPDS(QObject):
             callback=self.saveLayerToPDS,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/new_sql_query.png'
+        self.add_action(
+            icon_path,
+            text=self.tr(u'Layer from Oracle SQL'),
+            callback=self.dataFromOracleSql,
+            parent=self.iface.mainWindow())
+
         # icon_path = ':/plugins/QgisPDS/label.png'
         # self.actionCPlaceLabels = self.add_action(
         #     icon_path,
@@ -730,6 +737,9 @@ class QgisPDS(QObject):
         dlg = QgisSaveMapsetToPDS(self.currentProject, self.iface, currentLayer)
         dlg.exec_()
 
+    def dataFromOracleSql(self):
+        dlg = QgisOracleSql(self.currentProject, self.iface)
+        dlg.exec_()
         
     def saveSettings(self):
         QSettings().setValue('currentProject', self.currentProject)
