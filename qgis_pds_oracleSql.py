@@ -7,6 +7,8 @@ from PyQt4 import QtGui, uic, QtCore
 from PyQt4.QtGui import *
 from qgis import core, gui
 import os
+import csv
+from datetime import *
 import ast
 from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
@@ -35,7 +37,23 @@ class QgisOracleSql(QtGui.QDialog, FORM_CLASS):
         self.setWindowTitle(self.windowTitle() + ' - ' + self.project['project'])
 
         self.mRefreshToolButton.setIcon(QIcon(u':/plugins/QgisPDS/Refresh.png'))
-        self.mExecuteToolButton.setIcon(QIcon(u':/plugins/QgisPDS/ButtonPlayicon.png'))
+        # self.mExecuteToolButton.setIcon(QIcon(u':/plugins/QgisPDS/ButtonPlayicon.png'))
+
+    def on_buttonBox_accepted(self):
+        if self.mCoordsRadioButton.isChecked():
+            self.executeAsLayer()
+        else:
+            fileName = self.executeAsTable()
+            name = os.path.basename(fileName)
+
+            uri = u'file:///{0}?type=csv&geomType=none&subsetIndex=no&watchFile=no'.format(fileName)
+            layer = QgsVectorLayer(uri, name, "delimitedtext")
+            if layer:
+                QgsMapLayerRegistry.instance().addMapLayer(layer)
+            else:
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                                                    self.tr(u'Text file layer create error'),
+                                                    level=QgsMessageBar.CRITICAL)
 
     def initDb(self):
         if self.project is None:
@@ -78,7 +96,7 @@ class QgisOracleSql(QtGui.QDialog, FORM_CLASS):
                 self.mLayerNameLineEdit.setText(os.path.basename(os.path.splitext(fname)[0]))
 
     def refreshClicked(self):
-        pass
+        self.refreshFields()
 
     def executeClicked(self):
         pass
@@ -91,9 +109,145 @@ class QgisOracleSql(QtGui.QDialog, FORM_CLASS):
         except:
             pass
 
-    def refreshFields(self):
-        sql = self.mSqlTextEdit.toPlainText()
-        rows = self.db.execute_assoc(sql)
+    def executeAsTable(self):
+        try:
+            sql = self.mSqlTextEdit.toPlainText()
+            names = self.db.names(sql)
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                                                self.tr(u'SQL error: {0}').format(str(e)),
+                                                level=QgsMessageBar.CRITICAL)
+            return
+
+        fileName = QgsProject.instance().homePath() + '/' + self.mLayerNameLineEdit.text() + '.csv'
+        print fileName
+        out_pipe = open(fileName, "wb")
+        w = csv.writer(out_pipe)
+        w.writerow(names)
+
+        try:
+            rows = self.db.execute(sql)
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                                                self.tr(u'SQL error: {0}').format(str(e)),
+                                                level=QgsMessageBar.CRITICAL)
+            return
         for row in rows:
-            print row.keys()
+            rowdata = []
+            for col in row:
+                rowdata.append(str(col))
+            w.writerow(rowdata)
+
+        return fileName
+
+    def executeAsLayer(self):
+        layerName = self.mLayerNameLineEdit.text()
+        try:
+            sql = self.mSqlTextEdit.toPlainText()
+            rows = self.db.execute_assoc(sql)
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                                                self.tr(u'SQL error: {0}').format(str(e)),
+                                                level=QgsMessageBar.CRITICAL)
+            return
+
+        uri = "Point?crs={}".format(self.proj4String)
+        for row in rows:
+            for key in row.keys():
+                val = row[key]
+                if type(val) == float:
+                    uri += '&field={}:{}'.format(key, "double")
+                elif type(val) == int:
+                    uri += '&field={}:{}'.format(key, "int")
+                else:
+                    uri += '&field={}:{}'.format(key, "string")
             break
+
+        layer = QgsVectorLayer(uri, layerName, "memory")
+        if layer is None:
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(
+                u'Error create wells layer'), QtGui.QMessageBox.Ok)
+
+            return
+
+        try:
+            sql = self.mSqlTextEdit.toPlainText()
+            rows = self.db.execute_assoc(sql)
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                                                self.tr(u'SQL error: {0}').format(str(e)),
+                                                level=QgsMessageBar.CRITICAL)
+            return
+
+        xFieldName = self.mXcomboBox.currentText();
+        yFieldName = self.mYcomboBox.currentText();
+        needConvert = self.mLatLongCheckBox.isChecked()
+
+        with edit(layer):
+            for row in rows:
+                cPoint = QgsFeature(layer.fields())
+                x = None
+                y = None
+                for key in row.keys():
+                    val = row[key]
+                    cPoint.setAttribute(key, val)
+                    if key == xFieldName:
+                        x = val
+                    if key == yFieldName:
+                        y = val
+                if x and y:
+                    pt = QgsPoint(float(x), float(y))
+                    if needConvert and self.xform:
+                        pt = self.xform.transform(pt)
+                    geom = QgsGeometry.fromPoint(pt)
+                    cPoint.setGeometry(geom)
+
+                layer.addFeatures([cPoint])
+
+        layer.setCustomProperty("pds_project", str(self.project))
+
+        QgsMapLayerRegistry.instance().addMapLayer(layer)
+
+
+    def refreshFields(self):
+        self.tableWidget.setRowCount(0)
+        self.mYcomboBox.clear()
+        self.mXcomboBox.clear()
+        try:
+            sql = self.mSqlTextEdit.toPlainText()
+            names = self.db.names(sql)
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                                                self.tr(u'SQL error: {0}').format(str(e)),
+                                                level=QgsMessageBar.CRITICAL)
+            return
+
+
+        horHeaders = names
+        self.tableWidget.setColumnCount(len(horHeaders))
+        self.tableWidget.setHorizontalHeaderLabels(horHeaders)
+
+        for name in names:
+            self.mYcomboBox.addItem(name)
+            self.mXcomboBox.addItem(name)
+
+        try:
+            rows = self.db.execute(sql)
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                                                self.tr(u'SQL error: {0}').format(str(e)),
+                                                level=QgsMessageBar.CRITICAL)
+            return
+
+        for row in rows:
+            numRow = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(numRow)
+            for n, col in enumerate(row):
+                item = col
+                if type(col) != 'float' and type(col) != 'int':
+                    item = str(col)
+                newitem = QTableWidgetItem(item)
+                self.tableWidget.setItem(numRow, n, newitem)
+
+        self.tableWidget.resizeColumnsToContents()
+        self.tableWidget.resizeRowsToContents()

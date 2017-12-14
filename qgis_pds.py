@@ -738,6 +738,11 @@ class QgisPDS(QObject):
         dlg.exec_()
 
     def dataFromOracleSql(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr('Error'),
+                        self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+            return
+
         dlg = QgisOracleSql(self.currentProject, self.iface)
         dlg.exec_()
         

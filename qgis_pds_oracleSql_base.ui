@@ -94,7 +94,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox"/>
+       <widget class="QComboBox" name="mXcomboBox"/>
       </item>
       <item>
        <widget class="QLabel" name="label_3">
@@ -104,10 +104,10 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="comboBox_2"/>
+       <widget class="QComboBox" name="mYcomboBox"/>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QCheckBox" name="mLatLongCheckBox">
         <property name="text">
          <string>Широта/долгота</string>
         </property>
@@ -146,13 +146,9 @@
      </property>
      <item>
       <widget class="QToolButton" name="mRefreshToolButton">
-       <property name="text">
-        <string>...</string>
+       <property name="statusTip">
+        <string>Выполнить запрос и обновить содержимое таблицы</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QToolButton" name="mExecuteToolButton">
        <property name="text">
         <string>...</string>
        </property>
@@ -238,22 +234,6 @@
     <hint type="destinationlabel">
      <x>52</x>
      <y>67</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>mExecuteToolButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Dialog</receiver>
-   <slot>executeClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>164</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>117</x>
-     <y>68</y>
     </hint>
    </hints>
   </connection>
