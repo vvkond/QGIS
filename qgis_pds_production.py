@@ -405,8 +405,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         else:
             self.mStartDate.setDate(QDate(self.mStartDate.date().year(), self.mStartDate.date().month(), 1))
         
-#        self.mSelectedReservoirsText = self.getReservoirsFilter()
-        self.getWells()
+        self.mSelectedReservoirsText = self.getReservoirsFilter()
+        self.getWells(self.mSelectedReservoirsText)
 
         
         for pdw in self.mProductionWells:
@@ -533,7 +533,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     " p_pfnu_port_time.data_value"
                     " from " + tu.table + " production,"
                     " pfnu_prod_act_x, production_aloc, tig_well_history,"
-                    " reservoir_part, wellbore_intv, wellbore, well, p_pfnu_port_time"
+                    " reservoir_part, wellbore_intv, wellbore, well, p_pfnu_port_time, "
+                    "    (select wellbore_intv.geologic_ftr_s ftr_s"
+                    "           from earth_pos_rgn, wellbore_intv, topological_rel, reservoir_part "
+                    "           where earth_pos_rgn_s = topological_rel.prim_toplg_obj_s "
+                    "           and wellbore_intv_s = topological_rel.sec_toplg_obj_s "
+                    "           and earth_pos_rgn.geologic_ftr_s = reservoir_part_s "
+                    "           and entity_type_nm = 'RESERVOIR_ZONE' "
+                    "           and reservoir_part_code in ('" + "','".join(self.mSelectedReservoirs) +"')) res"
 
                     " where "
 
@@ -546,8 +553,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     " production_aloc.production_aloc_s = pfnu_prod_act_x.production_act_s and "
                     " production_aloc.bsasc_source = 'Reallocated Production' and reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s and"
 
-#                    " reservoir_part.reservoir_part_s in (" + self.mSelectedReservoirsText + ") and"
-                    " reservoir_part_code in ('" + "','".join(self.mSelectedReservoirs) +"') and"
+                    # " reservoir_part.reservoir_part_s in (" + self.mSelectedReservoirsText + ") and"
+                    " reservoir_part.reservoir_part_s = res.ftr_s and"
                     " wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s and"
                     " wellbore.wellbore_s=wellbore_intv.wellbore_s and"
                     " well.well_s=wellbore.well_s and"
@@ -597,7 +604,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         
     #Load production wells
-    def getWells(self):
+    def getWells(self, cmpl_id):
         if self.isCurrentProd:
             sql = ("SELECT DISTINCT wellbore.WELL_ID"
                 "    FROM  reservoir_part,"
@@ -633,7 +640,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 "      AND PRODUCTION_ALOC.START_TIME = md.max_time"
                 "      AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate) +
                 "      AND wellbore.WELL_ID=md.w_id"
-#                "      and reservoir_part.reservoir_part_s in (" + cmpl_id + ")"
                 "      and reservoir_part.reservoir_part_s = res.ftr_s"
                 "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
                 "      and wellbore.wellbore_s=wellbore_intv.wellbore_s")
@@ -656,16 +662,67 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 "      and reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s"
                 "      AND PRODUCTION_ALOC.START_TIME >= " + self.to_oracle_date(self.mStartDate) +
                 "      AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate) +
-#                "      and reservoir_part.reservoir_part_s in (" + cmpl_id + ")"
                 "      and reservoir_part.reservoir_part_s = res.ftr_s"
                 "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
                 "      and wellbore.wellbore_s=wellbore_intv.wellbore_s")
 
         result = self.db.execute(sql)
-        
+
         for wl in result:
             self.loadWellByName(to_unicode("".join(wl)))
 
+    # def getWells(self, cmpl_id):
+    #     if self.isCurrentProd:
+    #         sql = ("SELECT DISTINCT wellbore.WELL_ID"
+    #                "    FROM  reservoir_part,"
+    #                "    wellbore_intv,"
+    #                "    wellbore,"
+    #                "    production_aloc,"
+    #                "    pfnu_prod_act_x,"
+    #                "      (SELECT"
+    #                "        wellbore.WELL_ID w_id,"
+    #                "        MAX(PRODUCTION_ALOC.START_TIME) max_time"
+    #                "      FROM  reservoir_part,"
+    #                "        wellbore_intv,"
+    #                "        wellbore,"
+    #                "        production_aloc,"
+    #                "        pfnu_prod_act_x"
+    #                "      WHERE PRODUCTION_ALOC.PRODUCTION_ALOC_S = PFNU_PROD_ACT_X.PRODUCTION_ACT_S"
+    #                "        and production_aloc.bsasc_source = 'Reallocated Production'"
+    #                "        and reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s"
+    #                "        and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
+    #                "        and wellbore.wellbore_s=wellbore_intv.wellbore_s"
+    #                "        AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate) +
+    #                "      GROUP BY wellbore.WELL_ID) md"
+    #                "    WHERE PRODUCTION_ALOC.PRODUCTION_ALOC_S = PFNU_PROD_ACT_X.PRODUCTION_ACT_S"
+    #                "      and production_aloc.bsasc_source = 'Reallocated Production'"
+    #                "      and reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s"
+    #                "      AND PRODUCTION_ALOC.START_TIME = md.max_time"
+    #                "      AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate) +
+    #                "      AND wellbore.WELL_ID=md.w_id"
+    #                "      and reservoir_part.reservoir_part_s in (" + cmpl_id + ")"
+    #                "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
+    #                "      and wellbore.wellbore_s=wellbore_intv.wellbore_s")
+    #     else:
+    #         sql = ("SELECT DISTINCT wellbore.WELL_ID"
+    #                "    FROM  reservoir_part,"
+    #                "    wellbore_intv,"
+    #                "    wellbore,"
+    #                "    production_aloc,"
+    #                "    pfnu_prod_act_x"
+    #                "    WHERE PRODUCTION_ALOC.PRODUCTION_ALOC_S = PFNU_PROD_ACT_X.PRODUCTION_ACT_S"
+    #                "      and production_aloc.bsasc_source = 'Reallocated Production'"
+    #                "      and reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s"
+    #                "      AND PRODUCTION_ALOC.START_TIME >= " + self.to_oracle_date(self.mStartDate) +
+    #                "      AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate) +
+    #                "      and reservoir_part.reservoir_part_s in (" + cmpl_id + ")"
+    #                "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
+    #                "      and wellbore.wellbore_s=wellbore_intv.wellbore_s")
+    #
+    #     result = self.db.execute(sql)
+    #
+    #     for wl in result:
+    #         self.loadWellByName(to_unicode("".join(wl)))
     
     
     #Load well by name
@@ -679,7 +736,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         for id in result:
             wId = id[0]
 
-            symbolId = self.bbl_wellsymbol(wId, self.mEndDate, "','".join(self.mSelectedReservoirs))
+            symbolId = self.bbl_wellsymbol(wId)
 
             self.loadWellFeature(wId, symbolId)
 
@@ -800,7 +857,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
 
 
-    def bbl_wellsymbol(self, sldnid, findat, cmpl_id):
+    def bbl_wellsymbol(self, sldnid):
 
         initialWellRole = self.getWellStrProperty(sldnid, self.mEndDate, "initial well role")
         wellRole = self.getWellStrProperty(sldnid, self.mEndDate, "current well role")
