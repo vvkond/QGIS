@@ -600,7 +600,9 @@ class QgisPDS(QObject):
         dlg = QgisPDSProductionDialog(project, self.iface, isCurrentProd, layer)
         if dlg.isInitialised():
             result = dlg.exec_()
-        # dlg.loadProductionLayer(layer)
+            if result:
+                prodSetup = QgisPDSProdSetup(self.iface, layer)
+                prodSetup.setup(layer)
 
 
     def createCPointsLayer(self):

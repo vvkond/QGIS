@@ -78,7 +78,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'No current PDS project'), QtGui.QMessageBox.Ok)
             return
         else:
-            self.iface.messageBar().pushMessage(self.tr(u'Current PDS project: {0}').format(self.project['project']), duration=10)
+            self.setWindowTitle(self.windowTitle() + ' - ' + self.tr(u'project: {0}').format(self.project['project']))
             
         self.mSelectedReservoirs = []
         self.mPhaseFilter = []
@@ -431,7 +431,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 num = 0
                 for f in searchRes:
                     refreshed = True
-                    self.layer.changeGeometry(f.id(), feature.geometry())
+                    if self.mUpdateWellLocation.isChecked():
+                        self.layer.changeGeometry(f.id(), feature.geometry())
 
                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrDays), feature.attribute(self.attrDays))
                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbol), feature.attribute(self.attrSymbol))
@@ -1070,6 +1071,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.mSelectedReservoirs = settings.value("/PDS/production/selectedReservoirs")
         self.mPhaseFilter = settings.value("/PDS/production/selectedPhases")
         self.mAddAllWells.setChecked(settings.value("/PDS/production/loadAllWells", 'False') == 'True')
+        self.mUpdateWellLocation.setChecked(settings.value("/PDS/production/UpdateWellLocation", 'True') == 'True')
 
         self.currentDiagramm = settings.value("/PDS/production/currentDiagramm", "1LIQUID_PRODUCTION")
         
@@ -1091,6 +1093,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             settings.setValue("/PDS/production/loadAllWells", 'False')
 
         settings.setValue("/PDS/production/currentDiagramm", self.currentDiagramm)
-
+        if self.mUpdateWellLocation.isChecked():
+            settings.setValue("/PDS/production/UpdateWellLocation", 'True')
+        else:
+            settings.setValue("/PDS/production/UpdateWellLocation", 'False')
 
 
