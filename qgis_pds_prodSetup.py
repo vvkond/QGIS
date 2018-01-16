@@ -89,23 +89,31 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         #Read saved layer settings
         self.readSettings()
-
-        # self.diagrammType.blockSignals(True)
-        # self.diagrammType.clear()
-        # for d in self.standardDiagramms:
-        #     name = self.standardDiagramms[d].name
-        #     self.diagrammType.addItem(name, d)
-        # self.diagrammType.blockSignals(False)
     
         self.scaleUnitsMass.setVisible(False)
         self.scaleUnitsVolume.setVisible(False)
-                 
-        #set current diagramm
-        # self.diagrammType.setCurrentIndex(self.diagrammType.findData(self.currentDiagramm))
 
-        # diagramms =  self.currentDiagramm.split(';')
         self.isCurrentProd = True if self.currentLayer.customProperty("qgis_pds_type") == 'pds_current_production' else False
         self.defaultUnitNum = 2 if self.isCurrentProd else 3
+
+        self.updateWidgets()
+        # if len(self.layerDiagramms) < 1:
+        #     self.dailyProduction.setChecked(self.isCurrentProd)
+        #     self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0,
+        #                                         units=self.defaultUnitNum, fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+        #
+        # self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
+        # for d in self.layerDiagramms:
+        #     name = d.name
+        #     item = QtGui.QListWidgetItem(name)
+        #     item.setData(Qt.UserRole, d)
+        #     self.mDiagrammsListWidget.addItem(item)
+
+        return
+
+    def updateWidgets(self):
+        self.mDiagrammsListWidget.clear()
+
         if len(self.layerDiagramms) < 1:
             self.dailyProduction.setChecked(self.isCurrentProd)
             self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0,
@@ -117,9 +125,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             item = QtGui.QListWidgetItem(name)
             item.setData(Qt.UserRole, d)
             self.mDiagrammsListWidget.addItem(item)
-
-        return
-
 
 
     # SLOT
@@ -167,24 +172,30 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
 
-    # def diagrammTypeChanged(self, index):
-    #     if index < 0:
-    #         return
-    #
-    #     self.currentDiagramm = self.diagrammType.itemData(index)
-    #     diagramm = self.standardDiagramms[self.currentDiagramm]
-    #
-    #     self.scaleUnitsType.setCurrentIndex(diagramm.unitsType)
-    #     self.scaleEdit.setValue(diagramm.scale)
-    #     self.scaleUnitsMass.setCurrentIndex(diagramm.units)
-    #     self.scaleUnitsVolume.setCurrentIndex(diagramm.units)
-    #
-    #     self.scaleUnitsMass.setVisible(diagramm.unitsType == 0)
-    #     self.scaleUnitsVolume.setVisible(diagramm.unitsType == 1)
-    #
-    #     vec = diagramm.fluids
-    #     for idx, v in enumerate(vec):
-    #         self.componentsList.item(idx).setCheckState(Qt.Checked if v else Qt.Unchecked)
+    def mImportFromLayer_clicked(self):
+        layers = self.mIface.legendInterface().layers()
+
+        layersList = []
+        for layer in layers:
+            if bblInit.isProductionLayer(layer) and layer.name() != self.currentLayer.name():
+                layersList.append(layer.name())
+
+        name, result = QInputDialog.getItem(self, self.tr("Layers"), self.tr("Select layer"), layersList, 0, False)
+        lay = None
+        for layer in layers:
+            if layer.name() == name:
+                lay = layer
+                break
+
+        if result and lay:
+            saveLayer = self.currentLayer
+            self.currentLayer = lay
+            try:
+                if self.readSettingsNew():
+                    self.updateWidgets()
+            except:
+                pass
+            self.currentLayer = saveLayer
 
 
     # SLOT

@@ -103,8 +103,6 @@ class QgisPDS(QObject):
     def connectToProject(self):
         proj = QgsProject.instance()
         proj.readProject.connect(self.loadData)
-        # QObject.connect(proj, SIGNAL("readProject(const QDomDocument &)"),self.loadData)
-        # QObject.connect(QgsMapLayerRegistry.instance(), SIGNAL("layerWasAdded(QgsMapLayer *)"),self.connectProvider)
         QObject.connect(self.iface.legendInterface(), SIGNAL("currentLayerChanged(QgsMapLayer *)"), self.layerSelected)
         # QObject.connect(self.iface.mapCanvas(), SIGNAL("mapCanvasRefreshed ()"), self.renderComplete)
 
@@ -112,24 +110,36 @@ class QgisPDS(QObject):
     def disconnectFromProject(self):
         proj = QgsProject.instance()
         proj.readProject.disconnect(self.loadData)
-        # QObject.disconnect(proj, SIGNAL("readProject(const QDomDocument &)"),self.loadData)
-        # QObject.disconnect(QgsMapLayerRegistry.instance(), SIGNAL("layerWasAdded(QgsMapLayer *)"),self.connectProvider)
+        self.disconnectFromLayers()
         QObject.disconnect(self.iface.legendInterface(), SIGNAL("currentLayerChanged(QgsMapLayer *)"), self.layerSelected)
+
         # QObject.disconnect(self.iface.mapCanvas(), SIGNAL("mapCanvasRefreshed ()"), self.renderComplete)
 
 
     
     def loadData(self):
-        name = QgsProject.instance().fileName()
         layers = self.iface.legendInterface().layers()
 
         for layer in layers:
             if not layer.type() == 0:
-                return
+                continue
 
             if bblInit.isProductionLayer(layer) or bblInit.isWellLayer(layer):
                 layer.attributeValueChanged.connect(self.pdsLayerModified)
 
+
+    def disconnectFromLayers(self):
+        layers = self.iface.legendInterface().layers()
+
+        for layer in layers:
+            if not layer.type() == 0:
+                continue
+
+            try:
+                if bblInit.isProductionLayer(layer) or bblInit.isWellLayer(layer):
+                    layer.attributeValueChanged.disconnect(self.pdsLayerModified)
+            except:
+                pass
 
     def pdsLayerModified(self, FeatureId, idx, variant):
         sender = self.sender()
@@ -600,7 +610,7 @@ class QgisPDS(QObject):
         dlg = QgisPDSProductionDialog(project, self.iface, isCurrentProd, layer)
         if dlg.isInitialised():
             result = dlg.exec_()
-            if result:
+            if result and layer:
                 prodSetup = QgisPDSProdSetup(self.iface, layer)
                 prodSetup.setup(layer)
 
