@@ -4,27 +4,27 @@
 <context>
     <name>ContoursReader</name>
     <message>
-        <location filename="../ContoursReader.py" line="+57"/>
+        <location filename="../ContoursReader.py" line="+55"/>
         <source>Contours</source>
         <translation>Контуры</translation>
     </message>
     <message>
-        <location line="+120"/>
+        <location line="+79"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6618543"/>
+        <location line="+6618275"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6618543"/>
+        <location line="-6618275"/>
         <source>Coordinates length unmatched</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
     <message>
-        <location line="-118"/>
+        <location line="-77"/>
         <source>Polygons</source>
         <translation>Полигоны</translation>
     </message>
@@ -34,7 +34,7 @@
         <translation>Разломы</translation>
     </message>
     <message>
-        <location line="+52"/>
+        <location line="+22"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>
@@ -42,27 +42,27 @@
 <context>
     <name>ControlPointReader</name>
     <message>
-        <location filename="../ControlPointReader.py" line="+37"/>
+        <location filename="../ControlPointReader.py" line="+34"/>
         <source>Control points</source>
         <translation>Контрольные точки</translation>
     </message>
     <message>
-        <location line="+103"/>
+        <location line="+82"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6618691"/>
+        <location line="+6618459"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6618691"/>
+        <location line="-6618459"/>
         <source>Coordinate count missmatch</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
     <message>
-        <location line="-56"/>
+        <location line="-70"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>
@@ -80,12 +80,7 @@
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+6"/>
-        <source>Размер (мм)</source>
-        <translation></translation>
-    </message>
-    <message utf8="true">
-        <location line="+6"/>
+        <location line="+12"/>
         <source>Минимальный диаметр</source>
         <translation></translation>
     </message>
@@ -95,17 +90,17 @@
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+39"/>
+        <location line="+51"/>
         <source>Заголовок</source>
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+39"/>
+        <location line="+33"/>
         <source>Масштаб</source>
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+8"/>
+        <location line="+72"/>
         <source>Масса</source>
         <translation></translation>
     </message>
@@ -130,17 +125,17 @@
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+45"/>
+        <location line="-57"/>
         <source>Добавить диаграмму</source>
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+10"/>
+        <location line="-67"/>
         <source>Удалить диаграмму</source>
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+10"/>
+        <location line="+181"/>
         <source>Компоненты</source>
         <translation></translation>
     </message>
@@ -215,32 +210,27 @@
         <translation></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+39"/>
         <source>%1-%3</source>
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+7"/>
+        <location line="-7"/>
         <source>Шаблон</source>
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+7"/>
+        <location line="-10"/>
         <source>Добавить компонент в шаблон</source>
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+3"/>
-        <source>Добавить</source>
-        <translation></translation>
-    </message>
-    <message utf8="true">
-        <location line="+10"/>
+        <location line="+34"/>
         <source>В процентах</source>
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+29"/>
+        <location line="-234"/>
         <source>Общее</source>
         <translation></translation>
     </message>
@@ -255,7 +245,7 @@
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="-321"/>
+        <location line="-57"/>
         <source>г</source>
         <translation></translation>
     </message>
@@ -270,7 +260,7 @@
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+9"/>
+        <location line="-90"/>
         <source>м3</source>
         <translation></translation>
     </message>
@@ -287,6 +277,41 @@
     <message utf8="true">
         <location line="+5"/>
         <source>км3</source>
+        <translation></translation>
+    </message>
+    <message utf8="true">
+        <location line="-133"/>
+        <source>Размер круга диаграммы</source>
+        <translation></translation>
+    </message>
+    <message utf8="true">
+        <location line="+155"/>
+        <source> мм</source>
+        <translation></translation>
+    </message>
+    <message utf8="true">
+        <location line="-7"/>
+        <source>Размер символа</source>
+        <translation></translation>
+    </message>
+    <message utf8="true">
+        <location line="+71"/>
+        <source>Взять из слоя...</source>
+        <translation></translation>
+    </message>
+    <message utf8="true">
+        <location line="+213"/>
+        <source>Добавить компонент</source>
+        <translation></translation>
+    </message>
+    <message utf8="true">
+        <location line="+21"/>
+        <source>С переносом строки</source>
+        <translation></translation>
+    </message>
+    <message utf8="true">
+        <location line="+17"/>
+        <source>Показывать значение 0.0</source>
         <translation></translation>
     </message>
 </context>
@@ -337,11 +362,16 @@
         <source>Добавить в слой все скважины</source>
         <translation></translation>
     </message>
+    <message utf8="true">
+        <location line="+7"/>
+        <source>Обновить координаты скважин</source>
+        <translation></translation>
+    </message>
 </context>
 <context>
     <name>QgisPDS</name>
     <message>
-        <location filename="../qgis_pds.py" line="+391"/>
+        <location filename="../qgis_pds.py" line="+411"/>
         <source>Select PDS project</source>
         <translation>Выбор проекта PDS</translation>
     </message>
@@ -411,12 +441,12 @@
         <translation>Остаточные запасы</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+45"/>
         <source>&amp;PDS</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-82"/>
+        <location line="-103"/>
         <source>Load well deviations</source>
         <translation>Загрузить инклинометрию</translation>
     </message>
@@ -431,7 +461,7 @@
         <translation>Статистика</translation>
     </message>
     <message>
-        <location line="+193"/>
+        <location line="+246"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -439,6 +469,21 @@
         <location line="+0"/>
         <source>Save project before using plugin</source>
         <translation>Пожалуйста, сначала сохраните проект</translation>
+    </message>
+    <message>
+        <location line="-239"/>
+        <source>Save to PDS</source>
+        <translation>Сохранить в PDS</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Layer from Oracle SQL</source>
+        <translation>Слой из Oracle SQL</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Create isolines</source>
+        <translation>Создать изолинии</translation>
     </message>
 </context>
 <context>
@@ -452,6 +497,14 @@
         <location line="+0"/>
         <source>Project {0}: {1}</source>
         <translation>Проект {0}: {1}</translation>
+    </message>
+</context>
+<context>
+    <name>QgisPDSCreateIsolines</name>
+    <message>
+        <location filename="../qgis_pds_createIsolines.py" line="+31"/>
+        <source>[Not selected]</source>
+        <translation>[Не выбрано]</translation>
     </message>
 </context>
 <context>
@@ -514,6 +567,19 @@
     </message>
 </context>
 <context>
+    <name>QgisPDSProdSetup</name>
+    <message>
+        <location filename="../qgis_pds_prodSetup.py" line="+183"/>
+        <source>Layers</source>
+        <translation>Слои</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Select layer</source>
+        <translation>Выберите слой</translation>
+    </message>
+</context>
+<context>
     <name>QgisPDSProductionDialog</name>
     <message>
         <location filename="../qgis_pds_production.py" line="+56"/>
@@ -521,12 +587,12 @@
         <translation>Карта накопленной добычи</translation>
     </message>
     <message>
-        <location line="+899"/>
+        <location line="+977"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-594"/>
+        <location line="-669"/>
         <source>No current PDS project</source>
         <translation>Не выбран проект</translation>
     </message>
@@ -536,12 +602,12 @@
         <translation>Текущий проект: {0}</translation>
     </message>
     <message>
-        <location line="+591"/>
+        <location line="+666"/>
         <source>Read production from project {0}: {1}</source>
         <translation>Чтение добычи из проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="-661"/>
+        <location line="-736"/>
         <source>Layer create error</source>
         <translation>Ошибка создания слоя</translation>
     </message>
@@ -551,7 +617,7 @@
         <translation>Не выбран пласт</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+64"/>
         <source>Layer: {0} refreshed</source>
         <translation>Слой {0} обновлен</translation>
     </message>
@@ -561,12 +627,12 @@
         <translation>calcProds: нулевое время для скважины</translation>
     </message>
     <message>
-        <location line="+110"/>
+        <location line="+118"/>
         <source>No fluid for </source>
         <translation>Нет компонента для </translation>
     </message>
     <message>
-        <location line="+176"/>
+        <location line="+242"/>
         <source>unknown well</source>
         <translation>Неизвестная скважина</translation>
     </message>
@@ -576,25 +642,30 @@
         <translation>Чтение скважин из проекта: {0}</translation>
     </message>
     <message>
-        <location line="-640"/>
+        <location line="-715"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>
     <message>
-        <location line="+341"/>
+        <location line="+342"/>
         <source>QGisPDS</source>
         <translation></translation>
+    </message>
+    <message>
+        <location line="-402"/>
+        <source>project: {0}</source>
+        <translation>проект: {0}</translation>
     </message>
 </context>
 <context>
     <name>QgisPDSResidualDialog</name>
     <message>
-        <location filename="../qgis_pds_residual.py" line="+607"/>
+        <location filename="../qgis_pds_residual.py" line="+817"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-489"/>
+        <location line="-691"/>
         <source>Open project {0}: {1}</source>
         <translation>Открытие проекта {0}: {1}</translation>
     </message>
@@ -614,12 +685,7 @@
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>
     <message>
-        <location line="+344"/>
-        <source>Input raster volume: {} m^3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+3"/>
+        <location line="+435"/>
         <source>Creating temp feature class for polygons...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -654,70 +720,90 @@
         <translation>Загрузка интервалов...</translation>
     </message>
     <message>
-        <location line="+102"/>
+        <location line="+106"/>
         <source>PolygonToRaster_conversion made raster of size {0} which is less than input raster of size {1}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+314"/>
+        <location line="+376"/>
         <source>Save layer</source>
         <translation>Сохранить слой</translation>
     </message>
     <message>
-        <location line="-7"/>
+        <location line="+0"/>
         <source>Shape-file ESRI[OGR] (*.shp *.SHP);;All Files (*)</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>GeoTiFF (*.tif *.tiff *.TIF *.TIFF);;All Files (*)</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="-778"/>
+        <location line="-932"/>
         <source>Zone intersection</source>
         <translation>Пластопересечение</translation>
     </message>
     <message>
-        <location line="+315"/>
+        <location line="+396"/>
         <source>Input NPT raster is not selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+52"/>
+        <location line="+59"/>
         <source>Processing intervals %p%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-31"/>
+        <source>Input raster volume: m^3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+196"/>
+        <source>Raster layer add error</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Creating residuals feature class...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copying wells to residuals feature class...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Residuals layer add error</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
     <name>QgisPDSWells</name>
     <message>
-        <location filename="../qgis_pds_wells.py" line="+206"/>
+        <location filename="../qgis_pds_wells.py" line="+234"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-119"/>
+        <location line="-162"/>
         <source>Error create wells layer</source>
         <translation>Ошибка создания слоя скважин</translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+20"/>
         <source>No current PDS project</source>
         <translation>Не выбран проект</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+112"/>
         <source>Layer: {0} refreshed</source>
         <translation>Слой {0} обновлен</translation>
     </message>
     <message>
-        <location line="-112"/>
+        <location line="-92"/>
         <source>Read wells from project {0}: {1}</source>
         <translation type="obsolete">Чтение скважин из проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="-11"/>
+        <location line="-2"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>
@@ -725,12 +811,12 @@
 <context>
     <name>SurfaceReader</name>
     <message>
-        <location filename="../SurfaceReader.py" line="+33"/>
+        <location filename="../SurfaceReader.py" line="+30"/>
         <source>Surfaces</source>
         <translation>Поверхности</translation>
     </message>
     <message>
-        <location line="+75"/>
+        <location line="+43"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>

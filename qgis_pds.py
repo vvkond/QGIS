@@ -46,6 +46,7 @@ from QgisPDS.qgis_pds_statistic import QgisPDSStatisticsDialog
 from QgisPDS.qgis_pds_refreshSetup import QgisPDSRefreshSetup
 from QgisPDS.qgis_pds_SaveMapsetToPDS import QgisSaveMapsetToPDS
 from QgisPDS.qgis_pds_oracleSql import QgisOracleSql
+from QgisPDS.qgis_pds_createIsolines import QgisPDSCreateIsolines
 import os.path
 
 
@@ -541,6 +542,13 @@ class QgisPDS(QObject):
             callback=self.dataFromOracleSql,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/GeoCART24.png'
+        self.add_action(
+            icon_path,
+            text=self.tr(u'Create isolines'),
+            callback=self.createIsolines,
+            parent=self.iface.mainWindow())
+
         # icon_path = ':/plugins/QgisPDS/label.png'
         # self.actionCPlaceLabels = self.add_action(
         #     icon_path,
@@ -756,6 +764,15 @@ class QgisPDS(QObject):
             return
 
         dlg = QgisOracleSql(self.currentProject, self.iface)
+        dlg.exec_()
+
+    def createIsolines(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr('Error'),
+                        self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+            return
+
+        dlg = QgisPDSCreateIsolines(self.iface)
         dlg.exec_()
         
     def saveSettings(self):

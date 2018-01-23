@@ -16,6 +16,7 @@ SOURCES = ../bblInit.py \
 	../SurfaceReader.py \
 	../qgis_pds_cpoints.py \
 	../qgis_pds_residual.py \
-	../qgis_pds_pressureMap.py	
+	../qgis_pds_pressureMap.py \
+	../qgis_pds_createIsolines.py
 
 TRANSLATIONS = QgisPDS_ru.ts
