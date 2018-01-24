@@ -27,30 +27,22 @@
        <number>0</number>
       </property>
       <item row="0" column="1">
-       <widget class="QLineEdit" name="mIsolinesLineEdit">
-        <property name="text">
-         <string>isolines.shp</string>
-        </property>
-       </widget>
+       <widget class="QLineEdit" name="mIsolinesLineEdit"/>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="mContoursLineEdit">
-        <property name="text">
-         <string>contours.shp</string>
-        </property>
-       </widget>
+       <widget class="QLineEdit" name="mContoursLineEdit"/>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Изолинии</string>
+         <string>Имя слоя изолиний</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
-         <string>Контура</string>
+         <string>Имя слоя контуров</string>
         </property>
        </widget>
       </item>
@@ -109,6 +101,9 @@
    </item>
    <item row="2" column="1">
     <widget class="QDoubleSpinBox" name="mStepSpinBox">
+     <property name="specialValueText">
+      <string>10 контуров</string>
+     </property>
      <property name="minimum">
       <double>-10000.000000000000000</double>
      </property>
@@ -119,6 +114,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>mSurfaceComboBox</tabstop>
+  <tabstop>mFaultsComboBox</tabstop>
+  <tabstop>mStepSpinBox</tabstop>
+  <tabstop>mIsolinesLineEdit</tabstop>
+  <tabstop>mContoursLineEdit</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
@@ -128,8 +131,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>200</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -144,8 +147,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>200</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

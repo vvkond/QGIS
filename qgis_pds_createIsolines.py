@@ -3,14 +3,11 @@
 from PyQt4 import QtGui, uic, QtCore
 from PyQt4.QtGui import *
 from qgis import core, gui
-from qgis.gui import QgsColorButtonV2
-from collections import namedtuple
 from qgis_pds_production import *
 from processing.tools.system import getTempFilename
 from processing.tools.vector import VectorWriter
-import ast
-import math
-import re
+import os
+
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_isolines_base.ui'))
@@ -22,6 +19,7 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
         self.setupUi(self)
 
         self.iface = iface
+        self.plugin_dir = os.path.dirname(__file__)
 
         self.updateWidgets()
 
@@ -29,6 +27,9 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
     def updateWidgets(self):
         self.fillCombobox(self.mSurfaceComboBox, QgsMapLayer.RasterLayer)
         self.fillCombobox(self.mFaultsComboBox, QgsMapLayer.VectorLayer)
+
+        if self.mSurfaceComboBox.count() > 0:
+            self.mSurfaceComboBox.setCurrentIndex(0)
 
         self.mFaultsComboBox.insertItem(0, self.tr(u'[Not selected]'), '-1')
         self.mFaultsComboBox.setCurrentIndex(0)
@@ -65,23 +66,25 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
     def createIsolines(self):
         raster = self.input_raster
         if not raster:
-            QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(
-                u'Raster layer is not selected'), QtGui.QMessageBox.Ok)
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'),
+               self.tr(u'Raster layer is not selected'), QtGui.QMessageBox.Ok)
             return
+
         tmpGrid = getTempFilename('grd').replace('\\', '/')
         sourceRasterName = raster.source()
-        runStr = 'gdal_translate -of GS7BG -a_srs "{0}" "{1}" "{2}"'.format(raster.crs().toProj4(), sourceRasterName, tmpGrid)
+        runStr = 'gdal_translate -of GSAG -a_srs "{0}" "{1}" "{2}"'.format(raster.crs().toProj4(), sourceRasterName, tmpGrid)
         self.runProcess(runStr)
         if not os. path.exists(tmpGrid):
-            QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(
-                u'Raster layer conversion error'), QtGui.QMessageBox.Ok)
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'),
+               self.tr(u'Raster layer conversion error'), QtGui.QMessageBox.Ok)
             return
+
+        settings = QSettings()
+        systemEncoding = settings.value('/UI/encoding', 'System')
 
         faultFileName = ''
         faultLayer = self.input_fault
         if faultLayer:
-            settings = QSettings()
-            systemEncoding = settings.value('/UI/encoding', 'System')
             faultFileName = getTempFilename('shp').replace('\\', '/')
             provider = faultLayer.dataProvider()
             fields = provider.fields()
@@ -98,22 +101,85 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
 
             del writer
 
+        prjPath = QgsProject.instance().homePath()
+        sn,se = os.path.splitext(sourceRasterName)
+        isolinePath = os.path.join(prjPath, sn+'_iso.shp')
+        contourPath = os.path.join(prjPath, sn+'_cntr.shp')
+
+        tmpFields = [QgsField('Z', QVariant.Double)]
+        tmpWriter = VectorWriter(isolinePath, systemEncoding, tmpFields, QGis.WKBPolygon, raster.crs())
+        f = QgsFeature()
+        tmpWriter.addFeature(f)
+        del tmpWriter
+
+        tmpWriter = VectorWriter(contourPath, systemEncoding, tmpFields, QGis.WKBPolygon, raster.crs())
+        f = QgsFeature()
+        tmpWriter.addFeature(f)
+        del tmpWriter
+
         ctlFileName = getTempFilename('ctl')
-        print ctlFileName
         with open(ctlFileName, "w") as text_file:
             text_file.write("grid={0}\n".format(tmpGrid))
             if faultFileName:
                 text_file.write('faults={0}\n'.format(faultFileName))
             text_file.write('step={0}\n'.format(self.mStepSpinBox.value()))
-            text_file.write('Isolines={0}\n'.format(self.mIsolinesLineEdit.text()))
-            text_file.write('Contours={0}\n'.format(self.mContoursLineEdit.text()))
+            text_file.write('Isolines={0}\n'.format(isolinePath))
+            text_file.write('Contours={0}\n'.format(contourPath))
+
+        runStr = os.path.join(self.plugin_dir, "bin/grid_contour ") + os.path.realpath(ctlFileName)
+        self.runProcess(runStr)
+
+        isolineName = self.mIsolinesLineEdit.text()
+        if not isolineName:
+            isolineName = self.mIsolinesLineEdit.placeholderText()
+        contourName = self.mContoursLineEdit.text()
+        if not contourName:
+            contourName = self.mContoursLineEdit.placeholderText()
+
+        contourLayer = QgsVectorLayer(contourPath, contourName, 'ogr')
+        if contourLayer:
+            myStyle = QgsStyleV2().defaultStyle()
+            ramp = myStyle.colorRamp('Spectral')
+
+            idx = contourLayer.fieldNameIndex('Z')
+            uniqSymbols = contourLayer.uniqueValues(idx)
+            count = len(uniqSymbols)
+            categories = []
+            num = 0.0
+            for ss in uniqSymbols:
+                symbol = QgsSymbolV2.defaultSymbol(contourLayer.geometryType())
+
+                clr = ramp.color(num / count)
+                num = num + 1.0
+                symbol.setColor(clr)
+                symbol.symbolLayer(0).setBorderColor(symbol.color())
+
+                category = QgsRendererCategoryV2(ss, symbol, str(ss))
+                categories.append(category)
+
+            renderer = QgsCategorizedSymbolRendererV2('Z', categories)
+            renderer.setSourceColorRamp(ramp)
+            contourLayer.setRendererV2(renderer)
+            contourLayer.commitChanges()
+            QgsMapLayerRegistry.instance().addMapLayer(contourLayer)
+
+        isolineLayer = QgsVectorLayer(isolinePath, isolineName, 'ogr')
+        if isolineLayer:
+            QgsMapLayerRegistry.instance().addMapLayer(isolineLayer)
+
 
     def on_buttonBox_accepted(self):
         self.createIsolines()
 
-    def on_mSurfaceComboBox_activated(self, item):
+
+    def on_mSurfaceComboBox_currentIndexChanged(self, item):
         if type(item) is int:
             return
+
+        if not self.mIsolinesLineEdit.text():
+            self.mIsolinesLineEdit.setPlaceholderText(self.tr(u'isolines ') + item)
+        if not self.mContoursLineEdit.text():
+            self.mContoursLineEdit.setPlaceholderText(self.tr(u'contours ') + item)
 
 
     def on_mFaultsComboBox_activated(self, item):
@@ -125,7 +191,7 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
         process = QProcess(self.iface)
         process.start(runStr)
         process.waitForFinished()
-        print process.readAllStandardOutput()
+        # print process.readAllStandardOutput()
         process.kill()
 
 
