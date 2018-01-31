@@ -17,6 +17,12 @@ SOURCES = ../bblInit.py \
 	../qgis_pds_cpoints.py \
 	../qgis_pds_residual.py \
 	../qgis_pds_pressureMap.py \
-	../qgis_pds_createIsolines.py
+	../qgis_pds_createIsolines.py \
+	../qgis_pds_transite.py \
+	../qgis_pds_zonations.py \
+	../qgis_pds_CoordFromZone.py \
+	../qgis_pds_wellFilter.py \
+	../qgis_pds_zoneparams.py \
+	../qgis_pds_statistic.py
 
 TRANSLATIONS = QgisPDS_ru.ts

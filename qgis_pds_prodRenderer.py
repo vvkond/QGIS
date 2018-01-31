@@ -34,45 +34,53 @@ except ImportError:
     # we are using Python3 so QString is not defined
     QString = type("")
 
-class FooSymbolLayer(QgsSvgMarkerSymbolLayerV2):
-    LAYER_TYPE="Bubbles"
+class FooSymbolLayer(QgsMarkerSymbolLayerV2):
 
     def __init__(self, radius=4.0):
-        super(FooSymbolLayer, self).__init__(name = QString("Bubbles"),
-                                            color = QColor(255, 0, 0),
-                                            borderColor = QColor(0,0,0),
-                                            size = 2,
-                                            angle = 0,
-                                            scaleMethod = QgsSymbolV2.ScaleDiameter)
+        QgsMarkerSymbolLayerV2.__init__(self)
         self.radius = radius
+        self.color = QColor(255,0,0)
 
-#    def layerType(self):
-#        return QString("Bubbles")
+    def layerType(self):
+        return "FooMarker"
+
+    def properties(self):
+        return { "radius" : str(self.radius) }
+
+    def startRender(self, context):
+        pass
+
+    def stopRender(self, context):
+        pass
+
+    def renderPoint(self, point, context):
+        # Отрисовка зависит от того выделен символ или нет (Qgis >= 1.5)
+        color = context.selectionColor() if context.selected() else self.color
+        p = context.renderContext().painter()
+        p.setPen(color)
+        p.drawEllipse(point, self.radius, self.radius)
 
     def clone(self):
         return FooSymbolLayer(self.radius)
 
 
-
 class FooSymbolLayerWidget(QgsSymbolLayerV2Widget):
-    def __init__(self, parent=None):
-        super(FooSymbolLayerWidget, self).__init__(parent)
+    def __init__(self, parent=None, vectorLayer = None):
+        QgsSymbolLayerV2Widget.__init__(self, parent, vectorLayer)
 
-        qDebug("create production layer")
         self.layer = None
 
-        # setup a simple UI
+        # создаем простой интерфейс
         self.label = QLabel("Radius:")
         self.spinRadius = QDoubleSpinBox()
         self.hbox = QHBoxLayout()
         self.hbox.addWidget(self.label)
         self.hbox.addWidget(self.spinRadius)
         self.setLayout(self.hbox)
-        self.connect(self.spinRadius, SIGNAL("valueChanged(double)"), \
-            self.radiusChanged)
+        self.connect( self.spinRadius, SIGNAL("valueChanged(double)"), self.radiusChanged)
 
     def setSymbolLayer(self, layer):
-        if layer.layerType() != "Bubbles":
+        if layer.layerType() != "FooMarker":
             return
         self.layer = layer
         self.spinRadius.setValue(layer.radius)
@@ -88,20 +96,14 @@ class FooSymbolLayerWidget(QgsSymbolLayerV2Widget):
 class FooSymbolLayerMetadata(QgsSymbolLayerV2AbstractMetadata):
 
     def __init__(self):
-        qDebug("create production")
-        QgsSymbolLayerV2AbstractMetadata.__init__(self, QString("Bubbles"),
-                                        QString("Production bubbles"),
-                                        QgsSymbolV2.Marker)
+        QgsSymbolLayerV2AbstractMetadata.__init__(self, "FooMarker", u"Круговые диаграммы PDS", QgsSymbolV2.Marker)
 
     def createSymbolLayer(self, props):
-        qDebug("createSymbolLayer called");
         radius = float(props[QString("radius")]) if QString("radius") in props else 4.0
         return FooSymbolLayer(radius)
 
-#    def createSymbolLayerWidget(self, layer):
-#        return None
-#        qDebug("About to create layer widget")
-#        return FooSymbolLayerWidget()
+    def createSymbolLayerWidget(self, vectorLayer):
+        return FooSymbolLayerWidget(None, vectorLayer)
 
 
 

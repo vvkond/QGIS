@@ -31,7 +31,7 @@ from qgis_pds_dialog import QgisPDSDialog
 from qgis_pds_production import QgisPDSProductionDialog
 from qgis_pds_cpoints import QgisPDSCPointsDialog
 from qgis_pds_wells import *
-from qgis_pds_prod_layer import *
+from qgis_pds_prodRenderer import *
 from qgis_pds_prod_layer_type import *
 from qgis_pds_prodSetup import *
 from QgisPDS.ControlPointReader import ControlPointReader
@@ -47,6 +47,7 @@ from QgisPDS.qgis_pds_refreshSetup import QgisPDSRefreshSetup
 from QgisPDS.qgis_pds_SaveMapsetToPDS import QgisSaveMapsetToPDS
 from QgisPDS.qgis_pds_oracleSql import QgisOracleSql
 from QgisPDS.qgis_pds_createIsolines import QgisPDSCreateIsolines
+from QgisPDS.qgis_pds_transite import QgisPDSTransitionsDialog
 import os.path
 
 
@@ -226,6 +227,7 @@ class QgisPDS(QObject):
 
         self.actionProductionSetup.setEnabled(enabled)
         self.actionCoordsFromZone.setEnabled(enabled or enabledWell)
+        self.actionTransiteWells.setEnabled(enabled or enabledWell)
 
 
     
@@ -507,6 +509,14 @@ class QgisPDS(QObject):
             enabled_flag=False,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/mActionFilter.png'
+        self.actionTransiteWells = self.add_action(
+            icon_path,
+            text=self.tr(u'Mark transite wells'),
+            callback=self.transiteWells,
+            enabled_flag=False,
+            parent=self.iface.mainWindow())
+
         icon_path = ':/plugins/QgisPDS/Refresh.png'
         self.actionRefreshLayer = self.add_action(
             icon_path,
@@ -549,12 +559,8 @@ class QgisPDS(QObject):
             callback=self.createIsolines,
             parent=self.iface.mainWindow())
 
-        # icon_path = ':/plugins/QgisPDS/label.png'
-        # self.actionCPlaceLabels = self.add_action(
-        #     icon_path,
-        #     text=u'Расположить подписи',
-        #     callback=self.placeLabels,
-        #     parent=self.iface.mainWindow())
+        # self._metadata = FooSymbolLayerMetadata()
+        # QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
 
 
     def unload(self):
@@ -565,7 +571,7 @@ class QgisPDS(QObject):
         # remove the toolbar
         del self.toolbar
 
-        QgsPluginLayerRegistry.instance().removePluginLayerType(QgisPDSProductionLayer.LAYER_TYPE)
+        # QgsPluginLayerRegistry.instance().removePluginLayerType(QgisPDSProductionLayer.LAYER_TYPE)
 
         #remove SIGNALS
         self.disconnectFromProject()
@@ -701,6 +707,15 @@ class QgisPDS(QObject):
             return
 
         dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, currentLayer)
+        dlg.exec_()
+        return
+
+    def transiteWells(self):
+        currentLayer = self.iface.activeLayer()
+        if currentLayer is None:
+            return
+
+        dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, currentLayer)
         dlg.exec_()
         return
 

@@ -25,8 +25,8 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
 
 
     def updateWidgets(self):
-        self.fillCombobox(self.mSurfaceComboBox, QgsMapLayer.RasterLayer)
-        self.fillCombobox(self.mFaultsComboBox, QgsMapLayer.VectorLayer)
+        self.fillComboboxRaster(self.mSurfaceComboBox,)
+        self.fillComboboxVector(self.mFaultsComboBox, QGis.WKBLineString)
 
         if self.mSurfaceComboBox.count() > 0:
             self.mSurfaceComboBox.setCurrentIndex(0)
@@ -34,14 +34,25 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
         self.mFaultsComboBox.insertItem(0, self.tr(u'[Not selected]'), '-1')
         self.mFaultsComboBox.setCurrentIndex(0)
 
-    def fillCombobox(self, combo, layerType):
+    def fillComboboxVector(self, combo, geomType):
         combo.clear()
 
         layers = self.iface.legendInterface().layers()
 
         for layer in layers:
             lt = layer.type()
-            if lt == layerType:
+            provider = layer.dataProvider()
+            if lt == QgsMapLayer.VectorLayer and provider.geometryType() == geomType:
+                combo.addItem(layer.name(), layer.id())
+
+    def fillComboboxRaster(self, combo):
+        combo.clear()
+
+        layers = self.iface.legendInterface().layers()
+
+        for layer in layers:
+            lt = layer.type()
+            if lt == QgsMapLayer.RasterLayer:
                 combo.addItem(layer.name(), layer.id())
 
     @property
@@ -72,12 +83,16 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
 
         tmpGrid = getTempFilename('grd').replace('\\', '/')
         sourceRasterName = raster.source()
-        runStr = 'gdal_translate -of GSAG -a_srs "{0}" "{1}" "{2}"'.format(raster.crs().toProj4(), sourceRasterName, tmpGrid)
-        self.runProcess(runStr)
-        if not os. path.exists(tmpGrid):
-            QtGui.QMessageBox.critical(None, self.tr(u'Error'),
-               self.tr(u'Raster layer conversion error'), QtGui.QMessageBox.Ok)
-            return
+        sn,se = os.path.splitext(sourceRasterName)
+        if se.lower() == '.grd':
+            tmpGrid = sourceRasterName.replace('\\', '/')
+        else:
+            runStr = 'gdal_translate -of GSAG -a_srs "{0}" "{1}" "{2}"'.format(raster.crs().toProj4(), sourceRasterName, tmpGrid)
+            self.runProcess(runStr)
+            if not os. path.exists(tmpGrid):
+                QtGui.QMessageBox.critical(None, self.tr(u'Error'),
+                   self.tr(u'Raster layer conversion error'), QtGui.QMessageBox.Ok)
+                return
 
         settings = QSettings()
         systemEncoding = settings.value('/UI/encoding', 'System')
@@ -102,20 +117,29 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
             del writer
 
         prjPath = QgsProject.instance().homePath()
-        sn,se = os.path.splitext(sourceRasterName)
-        isolinePath = os.path.join(prjPath, sn+'_iso.shp')
-        contourPath = os.path.join(prjPath, sn+'_cntr.shp')
+        sn,se = os.path.splitext(os.path.basename(sourceRasterName))
+        isolinePath = prjPath + '/' + sn + '_iso.shp'
+        contourPath = prjPath + '/' + sn + '_cntr.shp'
+        isolinePrj = prjPath + '/' + sn + '_iso.prj'
+        contourPrj = prjPath + '/' + sn + '_cntr.prj'
 
-        tmpFields = [QgsField('Z', QVariant.Double)]
-        tmpWriter = VectorWriter(isolinePath, systemEncoding, tmpFields, QGis.WKBPolygon, raster.crs())
-        f = QgsFeature()
-        tmpWriter.addFeature(f)
-        del tmpWriter
+#Create projection files for new created SHP
+        prjWkt = raster.crs().toWkt()
+        with open(isolinePrj, "w") as text_file:
+            text_file.write(prjWkt)
+        with open(contourPrj, "w") as text_file:
+            text_file.write(prjWkt)
 
-        tmpWriter = VectorWriter(contourPath, systemEncoding, tmpFields, QGis.WKBPolygon, raster.crs())
-        f = QgsFeature()
-        tmpWriter.addFeature(f)
-        del tmpWriter
+        # tmpFields = [QgsField('Z', QVariant.Double)]
+        # tmpWriter = VectorWriter(isolinePath, systemEncoding, tmpFields, QGis.WKBPolygon, raster.crs())
+        # f = QgsFeature()
+        # tmpWriter.addFeature(f)
+        # del tmpWriter
+        #
+        # tmpWriter = VectorWriter(contourPath, systemEncoding, tmpFields, QGis.WKBPolygon, raster.crs())
+        # f = QgsFeature()
+        # tmpWriter.addFeature(f)
+        # del tmpWriter
 
         ctlFileName = getTempFilename('ctl')
         with open(ctlFileName, "w") as text_file:
@@ -123,6 +147,8 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
             if faultFileName:
                 text_file.write('faults={0}\n'.format(faultFileName))
             text_file.write('step={0}\n'.format(self.mStepSpinBox.value()))
+            text_file.write('minimum={0}\n'.format(self.mMinSpinBox.value()))
+            text_file.write('maximum={0}\n'.format(self.mMaxSpinBox.value()))
             text_file.write('Isolines={0}\n'.format(isolinePath))
             text_file.write('Contours={0}\n'.format(contourPath))
 
@@ -175,6 +201,17 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
     def on_mSurfaceComboBox_currentIndexChanged(self, item):
         if type(item) is int:
             return
+
+        raster = self.input_raster
+        if raster:
+            rasterProvider = raster.dataProvider()
+            stats = rasterProvider.bandStatistics(1, QgsRasterBandStats.All, raster.extent(), 0)
+            if self.mMinSpinBox.value() == 0:
+                self.mMinSpinBox.setValue(stats.minimumValue)
+            if self.mMaxSpinBox.value() == 0:
+                self.mMaxSpinBox.setValue(stats.maximumValue)
+        else:
+            print 'No raster'
 
         if not self.mIsolinesLineEdit.text():
             self.mIsolinesLineEdit.setPlaceholderText(self.tr(u'isolines ') + item)

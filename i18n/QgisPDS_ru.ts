@@ -14,12 +14,12 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6618275"/>
+        <location line="+6618007"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6618275"/>
+        <location line="-6618007"/>
         <source>Coordinates length unmatched</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
@@ -52,12 +52,12 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6618459"/>
+        <location line="+6618227"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6618459"/>
+        <location line="-6618227"/>
         <source>Coordinate count missmatch</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
@@ -371,7 +371,7 @@
 <context>
     <name>QgisPDS</name>
     <message>
-        <location filename="../qgis_pds.py" line="+411"/>
+        <location filename="../qgis_pds.py" line="+413"/>
         <source>Select PDS project</source>
         <translation>Выбор проекта PDS</translation>
     </message>
@@ -401,12 +401,12 @@
         <translation>Настроить диаграммы добычи</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+24"/>
         <source>Update production layer</source>
         <translation>Обновить слой добычи</translation>
     </message>
     <message>
-        <location line="-93"/>
+        <location line="-101"/>
         <source>Load control points</source>
         <translation>Загрузить контрольные точки</translation>
     </message>
@@ -436,17 +436,17 @@
         <translation>Координаты скважин на пластопересечении</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+23"/>
         <source>Residuals</source>
         <translation>Остаточные запасы</translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+41"/>
         <source>&amp;PDS</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-103"/>
+        <location line="-107"/>
         <source>Load well deviations</source>
         <translation>Загрузить инклинометрию</translation>
     </message>
@@ -456,12 +456,12 @@
         <translation>Загрузить параметры пластов</translation>
     </message>
     <message>
-        <location line="+37"/>
+        <location line="+45"/>
         <source>Calculate statistics</source>
         <translation>Статистика</translation>
     </message>
     <message>
-        <location line="+246"/>
+        <location line="+251"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -471,7 +471,7 @@
         <translation>Пожалуйста, сначала сохраните проект</translation>
     </message>
     <message>
-        <location line="-239"/>
+        <location line="-244"/>
         <source>Save to PDS</source>
         <translation>Сохранить в PDS</translation>
     </message>
@@ -484,6 +484,11 @@
         <location line="+7"/>
         <source>Create isolines</source>
         <translation>Создать изолинии</translation>
+    </message>
+    <message>
+        <location line="-43"/>
+        <source>Mark transite wells</source>
+        <translation>Пометить транзитные скважины</translation>
     </message>
 </context>
 <context>
@@ -500,11 +505,54 @@
     </message>
 </context>
 <context>
+    <name>QgisPDSCoordFromZoneDialog</name>
+    <message>
+        <location filename="../qgis_pds_CoordFromZone.py" line="+41"/>
+        <source>Project {0}: {1}</source>
+        <translation>Проект {0}: {1}</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location line="-16"/>
+        <source>Project projection read error {0}: {1}</source>
+        <translation>Ошибка чтения проекции {0}: {1}</translation>
+    </message>
+</context>
+<context>
     <name>QgisPDSCreateIsolines</name>
     <message>
-        <location filename="../qgis_pds_createIsolines.py" line="+31"/>
+        <location filename="../qgis_pds_createIsolines.py" line="+34"/>
         <source>[Not selected]</source>
         <translation>[Не выбрано]</translation>
+    </message>
+    <message>
+        <location line="+59"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location line="-13"/>
+        <source>Raster layer is not selected</source>
+        <translation>Не выбран растер</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Raster layer conversion error</source>
+        <translation>Ошибка преобразования формата растра</translation>
+    </message>
+    <message>
+        <location line="+125"/>
+        <source>isolines </source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>contours </source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -687,12 +735,12 @@
     <message>
         <location line="+435"/>
         <source>Creating temp feature class for polygons...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Creating temp feature class...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+3"/>
@@ -712,7 +760,7 @@
     <message>
         <location line="+4"/>
         <source>Creating output feature class...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+7"/>
@@ -722,7 +770,7 @@
     <message>
         <location line="+106"/>
         <source>PolygonToRaster_conversion made raster of size {0} which is less than input raster of size {1}</source>
-        <translation type="unfinished"></translation>
+        <translation>PolygonToRaster_conversionсоздал растр размером {0}, который меньше чем размер исходного растра {1}</translation>
     </message>
     <message>
         <location line="+376"/>
@@ -742,7 +790,7 @@
     <message>
         <location line="+396"/>
         <source>Input NPT raster is not selected</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+59"/>
@@ -776,6 +824,42 @@
     </message>
 </context>
 <context>
+    <name>QgisPDSStatisticsDialog</name>
+    <message>
+        <location filename="../qgis_pds_statistic.py" line="+195"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location line="-143"/>
+        <source>Project {0}: {1}</source>
+        <translation>Проект {0}: {1}</translation>
+    </message>
+    <message>
+        <location line="+79"/>
+        <source>Text files (*.csv *.txt);;All files (*.*)</source>
+        <translation>Текстовые файлы (*.csv *.txt);;Все файлы (*.*)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Select output file</source>
+        <translation>Выберите файл</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Text file layer create error</source>
+        <translation>Ошибка создания текстового файла</translation>
+    </message>
+</context>
+<context>
+    <name>QgisPDSTransitionsDialog</name>
+    <message>
+        <location filename="../qgis_pds_transite.py" line="+23"/>
+        <source>Transite wells</source>
+        <translation>Транзитные скважины</translation>
+    </message>
+</context>
+<context>
     <name>QgisPDSWells</name>
     <message>
         <location filename="../qgis_pds_wells.py" line="+234"/>
@@ -798,14 +882,68 @@
         <translation>Слой {0} обновлен</translation>
     </message>
     <message>
-        <location line="-92"/>
+        <location line="-204"/>
         <source>Read wells from project {0}: {1}</source>
         <translation type="obsolete">Чтение скважин из проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="-2"/>
+        <location line="+110"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
+    </message>
+</context>
+<context>
+    <name>QgisPDSZonationsDialog</name>
+    <message>
+        <location filename="../qgis_pds_zonations.py" line="+24"/>
+        <source>Zonation parameters</source>
+        <translation>Загрузить параметры пластов</translation>
+    </message>
+    <message>
+        <location line="+71"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Layer create error {0}</source>
+        <translation>Ошибка создания слоя {0}</translation>
+    </message>
+</context>
+<context>
+    <name>QgisPDSZoneparamsDialog</name>
+    <message>
+        <location filename="../qgis_pds_zoneparams.py" line="+36"/>
+        <source>Project {0}: {1}</source>
+        <translation>Проект {0}: {1}</translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>ID</source>
+        <translation>ИД</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Short name</source>
+        <translation>Имя</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Long name</source>
+        <translation>Описание</translation>
+    </message>
+</context>
+<context>
+    <name>QgisWellFilterDialog</name>
+    <message>
+        <location filename="../qgis_pds_wellFilter.py" line="+38"/>
+        <source>ID</source>
+        <translation>ИД</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Name</source>
+        <translation>Имя</translation>
     </message>
 </context>
 <context>

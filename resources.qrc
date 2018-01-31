@@ -25,5 +25,6 @@
         <file>ButtonPlayicon.png</file>
         <file>openfileicon.png</file>
         <file>GeoCART24.png</file>
+        <file>mActionFilter.png</file>
     </qresource>
 </RCC>
