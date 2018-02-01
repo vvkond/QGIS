@@ -37,6 +37,6 @@ WHERE
         OR :zonation_id IS NULL)
     AND v.TIG_VARIABLE_TYPE = 2
     AND v.TIG_VARIABLE_SHORT_NAME = 'TopTVD'
-    AND vi.TIG_TOP_POINT_DEPTH >= zz.base_depth
+    AND vi.TIG_TOP_POINT_DEPTH > zz.base_depth
 ORDER BY
     vi.TIG_TOP_POINT_DEPTH

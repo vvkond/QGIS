@@ -42,6 +42,8 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
                 self.editLayer.dataProvider().addAttributes([QgsField("transite", QVariant.String)])
                 fieldIdx = self.editLayer.dataProvider().fieldNameIndex('transite')
 
+            self.editLayer.setSubsetString('')
+
             wellIdIdx = self.editLayer.dataProvider().fieldNameIndex('Well identifier')
             if wellIdIdx < 0:
                 wellIdIdx = self.editLayer.dataProvider().fieldNameIndex('well_id')
@@ -49,13 +51,17 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
             iter = self.editLayer.dataProvider().getFeatures()
             for feature in iter:
                 wellId = feature[wellIdIdx]
-                self.getTransiteList(wellId, sel)
+                self.editLayer.changeAttributeValue(feature.id(), fieldIdx, None)
+                transites = self.getTransiteList(wellId, sel)
+                if transites:
+                    self.editLayer.changeAttributeValue(feature.id(), fieldIdx, transites)
+
+            self.editLayer.setSubsetString('"transite" is not NULL')
 
         try:
             settings = QSettings()
             settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
             settings.setValue("/PDS/Zonations/selectedZones", selectedZones)
-            settings.setValue("/PDS/Zonations/SelectedParameter", paramId)
         except:
             return
 
@@ -63,6 +69,9 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
     def getTransiteList(self, wellId, zoneDef):
         sql = self.get_sql('ZonationTransite.sql')
         records = self.db.execute(sql, well_id=wellId, zonation_id=zoneDef[1], zone_id=zoneDef[0])
+        result = []
         if records:
             for input_row in records:
-                print wellId, input_row
+                result.append(input_row[3]);
+
+        return ','.join(result)
