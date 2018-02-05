@@ -11,10 +11,15 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_refreshSetup_base.ui'))
 
 class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
-    def __init__(self, parent=None):
+    def __init__(self, _project, parent=None):
         super(QgisPDSRefreshSetup, self).__init__(parent)
 
         self.setupUi(self)
+
+        if _project:
+            scheme = _project['project']
+            if scheme:
+                self.setWindowTitle(self.windowTitle() + ' - ' + scheme)
 
         self.restoreSettings()
 

@@ -180,6 +180,7 @@ class QgisPDSDeviation(QObject):
                                 well = f
                                 if isRefreshKoords:
                                     layer.changeGeometry(f.id(), geom)
+                                    well.setGeometry(geom)
                                 num = num + 1
                                 break
                     else:
@@ -189,9 +190,10 @@ class QgisPDSDeviation(QObject):
 
                         for f in searchRes:
                             refreshed = True
+                            well = f
                             if isRefreshKoords:
                                 layer.changeGeometry(f.id(), geom)
-                            well = f
+                                well.setGeometry(geom)
                             num = num + 1
 
                     if not well:

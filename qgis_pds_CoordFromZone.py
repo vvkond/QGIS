@@ -35,10 +35,12 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         try:
             connection = create_connection(self.project)
             scheme = self.project['project']
+            if scheme:
+                self.setWindowTitle(self.windowTitle() + ' - ' + scheme)
 
             self.db = connection.get_db(scheme)
         except Exception as e:
-            self.errorMessage(self.tr(u'Project {0}: {1}').format(scheme, str(e)))
+            self.errorMessage(self.tr(u'{0}').format(str(e)))
             return
 
         self.proj4String = 'epsg:4326'

@@ -155,6 +155,7 @@ class QgisPDSWells(QObject):
                                 well = f
                                 if isRefreshKoords:
                                     layer.changeGeometry(f.id(), geom)
+                                    well.setGeometry(geom)
                                 num = num + 1
                                 break
                     else:
@@ -163,9 +164,10 @@ class QgisPDSWells(QObject):
                         searchRes = layer.getFeatures(QgsFeatureRequest(expr))
                         for f in searchRes:
                             refreshed = True
+                            well = f
                             if isRefreshKoords:
                                 layer.changeGeometry(f.id(), geom)
-                            well = f
+                                well.setGeometry(geom)
                             num = num + 1
 
                     if not well:

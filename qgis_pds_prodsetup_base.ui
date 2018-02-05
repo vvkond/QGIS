@@ -277,32 +277,6 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBox_5">
-         <property name="title">
-          <string>Общее</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="showLineouts">
-            <property name="text">
-             <string>Сноски</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QCheckBox" name="dailyProduction">
-            <property name="text">
-             <string>Среднесуточная добыча</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="0" column="1">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
@@ -542,6 +516,32 @@
               </spacer>
              </item>
             </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox_5">
+         <property name="title">
+          <string>Общее</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="showLineouts">
+            <property name="text">
+             <string>Сноски</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="dailyProduction">
+            <property name="text">
+             <string>Среднесуточная добыча</string>
+            </property>
            </widget>
           </item>
          </layout>

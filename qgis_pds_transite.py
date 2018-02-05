@@ -20,7 +20,8 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         """Constructor."""
         super(QgisPDSTransitionsDialog, self).__init__(_project, _iface, _editLayer, parent)
 
-        self.setWindowTitle(self.tr(u'Transite wells'))
+        newTitle = self.tr(u'Transite wells') + ' - ' + self.project['project']
+        self.setWindowTitle(newTitle)
 
     def process(self):
         selectedZonations = []
@@ -36,12 +37,13 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         if sel is None:
             return
 
-        with edit(self.editLayer):
-            fieldIdx = self.editLayer.dataProvider().fieldNameIndex('transite')
-            if fieldIdx < 0:
+        fieldIdx = self.editLayer.dataProvider().fieldNameIndex('transite')
+        if fieldIdx < 0:
+            with edit(self.editLayer):
                 self.editLayer.dataProvider().addAttributes([QgsField("transite", QVariant.String)])
                 fieldIdx = self.editLayer.dataProvider().fieldNameIndex('transite')
 
+        with edit(self.editLayer):
             self.editLayer.setSubsetString('')
 
             wellIdIdx = self.editLayer.dataProvider().fieldNameIndex('Well identifier')

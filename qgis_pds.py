@@ -49,6 +49,7 @@ from QgisPDS.qgis_pds_oracleSql import QgisOracleSql
 from QgisPDS.qgis_pds_createIsolines import QgisPDSCreateIsolines
 from QgisPDS.qgis_pds_transite import QgisPDSTransitionsDialog
 import os.path
+import ast
 
 
 class QgisPDS(QObject):
@@ -706,7 +707,10 @@ class QgisPDS(QObject):
         if currentLayer is None:
             return
 
-        dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, currentLayer)
+        projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+        proj = ast.literal_eval(projStr)
+
+        dlg  = QgisPDSCoordFromZoneDialog(proj, self.iface, currentLayer)
         dlg.exec_()
         return
 
@@ -715,7 +719,10 @@ class QgisPDS(QObject):
         if currentLayer is None:
             return
 
-        dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, currentLayer)
+        projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+        proj = ast.literal_eval(projStr)
+
+        dlg = QgisPDSTransitionsDialog(proj, self.iface, currentLayer)
         dlg.exec_()
         return
 
@@ -726,19 +733,22 @@ class QgisPDS(QObject):
             return
         pr = currentLayer.dataProvider()
 
+        projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+        proj = ast.literal_eval(projStr)
+
         prop = currentLayer.customProperty("qgis_pds_type")
         if prop == "pds_wells":
-            dlg = QgisPDSRefreshSetup()
+            dlg = QgisPDSRefreshSetup(proj)
             if dlg.exec_():
-                self.loadWells(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
+                self.loadWells(currentLayer, proj, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
         elif prop == "pds_current_production":
-            self.loadProduction(currentLayer, self.currentProject, True)
+            self.loadProduction(currentLayer, proj, True)
         elif prop == "pds_cumulative_production":
-            self.loadProduction(currentLayer, self.currentProject, False)
+            self.loadProduction(currentLayer, proj, False)
         elif prop == "pds_well_deviations":
-            dlg = QgisPDSRefreshSetup()
+            dlg = QgisPDSRefreshSetup(proj)
             if dlg.exec_():
-                self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
+                self.loadWellDeviations(currentLayer, proj, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
 
        
     def addProductionLayer(self):
