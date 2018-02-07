@@ -22,11 +22,13 @@
  ***************************************************************************/
 """
 
+from PyQt4 import uic
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
 import random
+import os
 
 try:
     from PyQt4.QtCore import QString
@@ -34,7 +36,9 @@ except ImportError:
     # we are using Python3 so QString is not defined
     QString = type("")
 
-class FooSymbolLayer(QgsMarkerSymbolLayerV2):
+class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
+
+    LAYERTYPE="BubbleDiagramm"
 
     def __init__(self, radius=4.0):
         QgsMarkerSymbolLayerV2.__init__(self)
@@ -42,7 +46,7 @@ class FooSymbolLayer(QgsMarkerSymbolLayerV2):
         self.color = QColor(255,0,0)
 
     def layerType(self):
-        return "FooMarker"
+        return BubbleSymbolLayer.LAYERTYPE
 
     def properties(self):
         return { "radius" : str(self.radius) }
@@ -61,29 +65,26 @@ class FooSymbolLayer(QgsMarkerSymbolLayerV2):
         p.drawEllipse(point, self.radius, self.radius)
 
     def clone(self):
-        return FooSymbolLayer(self.radius)
+        return BubbleSymbolLayer(self.radius)
 
+FORM_CLASS, _ = uic.loadUiType(os.path.join(
+    os.path.dirname(__file__), 'qgis_pds_renderer_base.ui'))
 
-class FooSymbolLayerWidget(QgsSymbolLayerV2Widget):
+class BabbleSymbolLayerWidget(QgsSymbolLayerV2Widget, FORM_CLASS):
     def __init__(self, parent=None, vectorLayer = None):
         QgsSymbolLayerV2Widget.__init__(self, parent, vectorLayer)
 
-        self.layer = None
+        self.setupUi(self)
 
-        # создаем простой интерфейс
-        self.label = QLabel("Radius:")
-        self.spinRadius = QDoubleSpinBox()
-        self.hbox = QHBoxLayout()
-        self.hbox.addWidget(self.label)
-        self.hbox.addWidget(self.spinRadius)
-        self.setLayout(self.hbox)
-        self.connect( self.spinRadius, SIGNAL("valueChanged(double)"), self.radiusChanged)
+        self.layer = None
+        self.expressionIndex = 0
+
 
     def setSymbolLayer(self, layer):
-        if layer.layerType() != "FooMarker":
+        if layer.layerType() != BubbleSymbolLayer.LAYERTYPE:
             return
         self.layer = layer
-        self.spinRadius.setValue(layer.radius)
+        # self.spinRadius.setValue(layer.radius)
 
     def symbolLayer(self):
         return self.layer
@@ -92,18 +93,63 @@ class FooSymbolLayerWidget(QgsSymbolLayerV2Widget):
         self.layer.radius = value
         self.emit(SIGNAL("changed()"))
 
+    @pyqtSlot()
+    def on_addAttributePushButton_clicked(self):
+        if not self.layer:
+            return
 
-class FooSymbolLayerMetadata(QgsSymbolLayerV2AbstractMetadata):
+        frame = QFrame(self)
+        objectName = 'expression' + str(self.expressionIndex)
+        frame.setObjectName(objectName)
+        self.expressionIndex = self.expressionIndex + 1
+
+        lay = QHBoxLayout(frame)
+        frame.setLayout(lay)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        fieldBtn = QToolButton(frame)
+        fieldBtn.setIcon(QIcon(u':/plugins/QgisPDS/symbologyRemove.png'))
+        fieldBtn.clicked.connect(lambda: self.deleteExpressionButtonClicked(frame))
+        lay.addWidget(fieldBtn)
+
+        #Field expression
+        fieldEx = QgsFieldExpressionWidget(frame)
+        lay.addWidget(fieldEx)
+        fieldEx.setLayer(self.vectorLayer())
+
+        # field color
+        fieldColor = QgsColorButtonV2(frame)
+        lay.addWidget(fieldColor)
+
+        fieldText = QLineEdit(frame)
+        lay.addWidget(fieldText)
+
+        fieldEx.fieldChanged.connect(lambda: self.exprFieldChanged(fieldEx, fieldText))
+
+        lay.setStretch(1, 1)
+
+        self.attributesContiner.addWidget(frame)
+
+    def deleteExpressionButtonClicked(self, parentFrame):
+        if parentFrame:
+            parentFrame.deleteLater()
+
+    def exprFieldChanged(self, fieldEx, fieldText):
+        if fieldEx and fieldText and not fieldText.text():
+            fieldText.setText(fieldEx.currentText())
+
+
+class BabbleSymbolLayerMetadata(QgsSymbolLayerV2AbstractMetadata):
 
     def __init__(self):
-        QgsSymbolLayerV2AbstractMetadata.__init__(self, "FooMarker", u"Круговые диаграммы PDS", QgsSymbolV2.Marker)
+        QgsSymbolLayerV2AbstractMetadata.__init__(self, BubbleSymbolLayer.LAYERTYPE, u"Круговые диаграммы PDS", QgsSymbolV2.Marker)
 
     def createSymbolLayer(self, props):
         radius = float(props[QString("radius")]) if QString("radius") in props else 4.0
-        return FooSymbolLayer(radius)
+        return BubbleSymbolLayer(radius)
 
     def createSymbolLayerWidget(self, vectorLayer):
-        return FooSymbolLayerWidget(None, vectorLayer)
+        return BabbleSymbolLayerWidget(None, vectorLayer)
 
 
 

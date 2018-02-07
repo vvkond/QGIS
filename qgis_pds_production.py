@@ -61,13 +61,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.reservoirsListWidget.setEnabled(self.layer is None)
         
         self.attrWellId = u'well_id'
-        self.attrLatitude = u'Latitude'
-        self.attrLongitude = u'Longitude'
-        self.attrDays = u'Days'
-        self.attrSymbolId = u'SymbolID'
-        self.attrSymbol = u'SymbolCode'
-        self.attrSymbolName = u'SymbolName'
-        self.attrLiftMethod = u'LiftMethod'
+        self.attrLatitude = u'latitude'
+        self.attrLongitude = u'longitud'
+        self.attrDays = u'days'
+        self.attrSymbolId = u'symbolid'
+        self.attrSymbol = u'symbolcode'
+        self.attrSymbolName = u'symbolname'
+        self.attrLiftMethod = u'liftmethod'
 
         self.dateFormat = u'dd/MM/yyyy HH:mm:ss'
 
@@ -271,18 +271,18 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.uri += '&field={}:{}'.format(self.attrSymbol, "integer")
             self.uri += '&field={}:{}'.format(self.attrDays, "double")
             self.uri += '&field={}:{}'.format(self.attrLiftMethod, "string")
-            self.uri += '&field={}:{}'.format("LablX", "double")
-            self.uri += '&field={}:{}'.format("LablY", "double")
-            self.uri += '&field={}:{}'.format("LablOffX", "double")
-            self.uri += '&field={}:{}'.format("LablOffY", "double")
-            self.uri += '&field={}:{}'.format("LablOffset", "double")
-            self.uri += '&field={}:{}'.format("LablWidth", "double")
-            self.uri += '&field={}:{}'.format("BubbleSize", "double")
-            self.uri += '&field={}:{}'.format("BubbleFields", "string")
-            self.uri += '&field={}:{}'.format("ScaleType", "string")
-            self.uri += '&field={}:{}'.format("MovingRes", "string")
-            self.uri += '&field={}:{}'.format("ResState", "string")
-            self.uri += '&field={}:{}'.format("MultiProd", "string")
+            self.uri += '&field={}:{}'.format("lablx", "double")
+            self.uri += '&field={}:{}'.format("lably", "double")
+            self.uri += '&field={}:{}'.format("labloffx", "double")
+            self.uri += '&field={}:{}'.format("labloffy", "double")
+            self.uri += '&field={}:{}'.format("labloffset", "double")
+            self.uri += '&field={}:{}'.format("lablwidth", "double")
+            self.uri += '&field={}:{}'.format("bubblesize", "double")
+            self.uri += '&field={}:{}'.format("bubblefields", "string")
+            self.uri += '&field={}:{}'.format("scaletype", "string")
+            self.uri += '&field={}:{}'.format("movingres", "string")
+            self.uri += '&field={}:{}'.format("resstate", "string")
+            self.uri += '&field={}:{}'.format("multiprod", "string")
             for fl in bblInit.fluidCodes:
                 self.uri += '&field={}:{}'.format(QgisPDSProductionDialog.attrFluidVolume(fl.code), "double")
                 self.uri += '&field={}:{}'.format(QgisPDSProductionDialog.attrFluidMass(fl.code), "double")
@@ -338,10 +338,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             palyr.fontSizeInMapUnits = False
             palyr.textFont.setPointSizeF(7)
 
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'','LablX')
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'','LablY')
+            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'','lablx')
+            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'','lably')
             # palyr.setDataDefinedProperty(QgsPalLayerSettings.LabelDistance,True,False,'','LablOffset')
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "LablOffX" , "LablOffY")', '')
+            palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
 
 

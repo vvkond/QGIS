@@ -34,6 +34,7 @@ from qgis_pds_wells import *
 from qgis_pds_prodRenderer import *
 from qgis_pds_prod_layer_type import *
 from qgis_pds_prodSetup import *
+from qgis_pds_bubbleSetup import *
 from QgisPDS.ControlPointReader import ControlPointReader
 from QgisPDS.ContoursReader import ContoursReader
 from QgisPDS.SurfaceReader import SurfaceReader
@@ -502,6 +503,14 @@ class QgisPDS(QObject):
             enabled_flag=False,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/piechart2.png'
+        self.actionBubblesSetup = self.add_action(
+            icon_path,
+            text=self.tr(u'Bubbles setup'),
+            callback=self.bubblesSetup,
+            enabled_flag=False,
+            parent=self.iface.mainWindow())
+
         icon_path = ':/plugins/QgisPDS/CoordFromZonations.png'
         self.actionCoordsFromZone = self.add_action(
             icon_path,
@@ -560,7 +569,7 @@ class QgisPDS(QObject):
             callback=self.createIsolines,
             parent=self.iface.mainWindow())
 
-        # self._metadata = FooSymbolLayerMetadata()
+        # self._metadata = BabbleSymbolLayerMetadata()
         # QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
 
 
@@ -699,6 +708,14 @@ class QgisPDS(QObject):
             return
 
         prodSetup = QgisPDSProdSetup(self.iface, currentLayer)
+        prodSetup.exec_()
+
+    def bubblesSetup(self):
+        currentLayer = self.iface.activeLayer()
+        if currentLayer is None:
+            return
+
+        prodSetup = QgisPDSBubbleSetup(self.iface, currentLayer)
         prodSetup.exec_()
 
 

@@ -5,7 +5,7 @@ from PyQt4 import QtGui, uic, QtCore
 from PyQt4.QtGui import *
 # from PyQt4.QtCore import *
 from qgis import core, gui
-from qgis.gui import QgsColorButtonV2
+from qgis.gui import QgsColorButtonV2, QgsFieldExpressionWidget
 # from qgis.gui import *
 # from qgscolorbuttonv2 import QgsColorButtonV2
 from collections import namedtuple
@@ -15,30 +15,18 @@ import ast
 import math
 import xml.etree.cElementTree as ET
 import re
+import sip
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
+    os.path.dirname(__file__), 'qgis_pds_bubblesetup_base.ui'))
 
-class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
+class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
     def __init__(self, iface, layer, parent=None):
-        super(QgisPDSProdSetup, self).__init__(parent)
+        super(QgisPDSBubbleSetup, self).__init__(parent)
 
         self.setupUi(self)
 
-        # self.scaleEdit.setVisible(False)
-        # self.mScaleEditLabel.setVisible(False)
-
-        self.backColorEdit = QgsColorButtonV2(self)
-        self.fluidGridLayout.addWidget(self.backColorEdit, 0, 1)
-        QObject.connect(self.backColorEdit, SIGNAL("colorChanged(const QColor &)"), self.backColorChanged)
-
-        self.lineColorEdit = QgsColorButtonV2(self)
-        self.fluidGridLayout.addWidget(self.lineColorEdit, 1, 1)
-        QObject.connect(self.lineColorEdit, SIGNAL("colorChanged(const QColor &)"), self.lineColorChanged)
-
-        self.labelColorEdit = QgsColorButtonV2(self)
-        self.labelGridLayout.addWidget(self.labelColorEdit, 0, 1)
-        QObject.connect(self.labelColorEdit, SIGNAL("colorChanged(const QColor &)"), self.labelColorChanged)
+        self.expressionIndex = 0
 
         self.mIface = iface
         self.currentLayer = layer       
@@ -52,17 +40,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         self.layerDiagramms = []
 
-        self.componentsList.clear()
-        i = 1
-        for fl in bblInit.fluidCodes:
-            try:
-                item = QtGui.QListWidgetItem(str(i)+". "+ QCoreApplication.translate('bblInit', fl.name))
-            except:
-                item = QtGui.QListWidgetItem(str(i) + ". " + fl.name)
-            item.setData(Qt.UserRole, fl.code)
-            item.setCheckState(Qt.Unchecked)
-            self.componentsList.addItem(item)
-            i = i + 1
+
 
 
         self.bubbleProps = None
@@ -111,13 +89,83 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         return
 
+    def addAttributePushButton_clicked(self):
+        frame = QFrame(self)
+        objectName = 'expression' + str(self.expressionIndex)
+        frame.setObjectName(objectName)
+        self.expressionIndex = self.expressionIndex + 1
+
+        lay = QHBoxLayout(frame)
+        frame.setLayout(lay)
+        lay.setContentsMargins(0, 0, 0, 0)
+
+        fieldBtn = QToolButton(frame)
+        fieldBtn.setIcon(QIcon(u':/plugins/QgisPDS/symbologyRemove.png'))
+        fieldBtn.clicked.connect(lambda: self.deleteExpressionButtonClicked(frame))
+        lay.addWidget(fieldBtn)
+
+        #Field expression
+        fieldEx = QgsFieldExpressionWidget(frame)
+        lay.addWidget(fieldEx)
+        fieldEx.setLayer(self.currentLayer)
+
+        # field color
+        fieldColor = QgsColorButtonV2(frame)
+        lay.addWidget(fieldColor)
+
+        fieldText = QLineEdit(frame)
+        lay.addWidget(fieldText)
+
+        fieldEx.fieldChanged.connect(lambda: self.exprFieldChanged(fieldEx, fieldText))
+
+        lay.setStretch(1, 1)
+
+        self.attributesContiner.addWidget(frame)
+
+    def deleteExpressionButtonClicked(self, parentFrame):
+        if parentFrame:
+            parentFrame.deleteLater()
+
+    def exprFieldChanged(self, fieldEx, fieldText):
+        if fieldEx and fieldText and not fieldText.text():
+            fieldText.setText(fieldEx.currentText())
+
+
+    def addDiagramm(self):
+        newName = u'Диаграмма {}'.format(len(self.layerDiagramms) + 1)
+        d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=self.defaultUnitNum,
+                     attributes=[])
+        self.layerDiagramms.append(d)
+
+        item = QtGui.QListWidgetItem(newName)
+        item.setData(Qt.UserRole, d)
+        self.mDiagrammsListWidget.addItem(item)
+        self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
+
+
+
+    def mAddDiagramm_clicked(self):
+        self.addDiagramm()
+
+
+
+
+
+
+
+
+
+
+
+
+
     def updateWidgets(self):
         self.mDiagrammsListWidget.clear()
 
         if len(self.layerDiagramms) < 1:
             self.dailyProduction.setChecked(self.isCurrentProd)
             self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0,
-                                                units=self.defaultUnitNum, fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+                                                units=self.defaultUnitNum, attributes=[]))
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
         for d in self.layerDiagramms:
@@ -125,6 +173,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             item = QtGui.QListWidgetItem(name)
             item.setData(Qt.UserRole, d)
             self.mDiagrammsListWidget.addItem(item)
+
+        self.layerAttributesListWidget.clear()
+        for field in self.currentLayer.dataProvider().fields():
+            self.layerAttributesListWidget.addItem(field.name())
 
 
     # SLOT
@@ -146,20 +198,11 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         else:
             self.scaleUnitsVolume.setCurrentIndex(diagramm.units - 10)
 
-        vec = diagramm.fluids
-        for idx, v in enumerate(vec):
-            self.componentsList.item(idx).setCheckState(Qt.Checked if v else Qt.Unchecked)
+        # vec = diagramm.fluids
+        # for idx, v in enumerate(vec):
+        #     self.componentsList.item(idx).setCheckState(Qt.Checked if v else Qt.Unchecked)
 
-    def mAddDiagramm_clicked(self):
-        newName = u'Диаграмма {}'.format(len(self.layerDiagramms)+1)
-        d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=self.defaultUnitNum,
-                                            fluids=[0, 0, 0, 0, 0, 0, 0, 0])
-        self.layerDiagramms.append(d)
 
-        item = QtGui.QListWidgetItem(newName)
-        item.setData(Qt.UserRole, d)
-        self.mDiagrammsListWidget.addItem(item)
-        self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
 
     def mDeleteDiagramm_clicked(self):
         if len(self.layerDiagramms) < 2:
@@ -216,147 +259,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.setup(self.currentLayer)
 
 
-    # SLOT
-    # def setup(self, editLayer):
-    #
-    #     self.applySettings()
-    #
-    #     maxDiagrammSize = self.maxDiagrammSize.value() / 2
-    #     minDiagrammSize = self.minDiagrammSize.value() / 2
-    #     dScale = self.scaleEdit.value()
-    #
-    #     code = self.diagrammType.itemData(self.diagrammType.currentIndex())
-    #
-    #
-    #     vec = self.standardDiagramms[code].fluids
-    #     if self.scaleUnitsType.currentIndex() == 0:
-    #         scaleType = QgisPDSProductionDialog.attrFluidMass("")
-    #     else:
-    #         scaleType = QgisPDSProductionDialog.attrFluidVolume("")
-    #
-    #     prodFields = [ bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
-    #     prods = [ bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
-    #
-    #     koef = (maxDiagrammSize-minDiagrammSize) / dScale
-    #
-    #     editLayerProvider = editLayer.dataProvider()
-    #
-    #     uniqSymbols = {}
-    #
-    #     editLayer.startEditing()
-    #
-    #     idxOffX = editLayerProvider.fieldNameIndex('LablOffX')
-    #     idxOffY = editLayerProvider.fieldNameIndex('LablOffY')
-    #     if idxOffX < 0 or idxOffY < 0:
-    #         editLayerProvider.addAttributes(
-    #             [QgsField("LablOffX", QVariant.Double),
-    #              QgsField("LablOffY", QVariant.Double)])
-    #
-    #     iter = editLayerProvider.getFeatures()
-    #     for feature in iter:
-    #         geom = feature.geometry()
-    #         FeatureId = feature.id()
-    #
-    #         uniqSymbols[feature['SymbolCode']] = feature['SymbolName']
-    #
-    #         sum = 0
-    #         for attrName in prodFields:
-    #             attr = attrName+scaleType
-    #             if feature[attr] is not None:
-    #                 sum += feature[attr]
-    #
-    #         diagrammSize = minDiagrammSize + sum * koef
-    #
-    #         point = geom.asPoint()
-    #         origX = point.x()
-    #         origY = point.y()
-    #
-    #         offset = diagrammSize if diagrammSize < maxDiagrammSize else maxDiagrammSize
-    #         if feature.attribute('LablOffset') is None:
-    #             editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffX'), offset)
-    #             editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffY'), -offset)
-    #
-    #         # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffset'), offset)
-    #
-    #         editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('BubbleSize'), diagrammSize*2)
-    #         editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('BubbleFields'), ','.join(prodFields))
-    #         editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('ScaleType'), scaleType)
-    #
-    #     editLayer.commitChanges()
-    #
-    #     plugin_dir = os.path.dirname(__file__)
-    #
-    #     registry = QgsSymbolLayerV2Registry.instance()
-    #
-    #     symbol = QgsMarkerSymbolV2()
-    #     bubbleMeta = registry.symbolLayerMetadata('BubbleMarker')
-    #     if bubbleMeta is not None:
-    #         bubbleLayer = bubbleMeta.createSymbolLayer(self.bubbleProps)
-    #         bubbleLayer.setSize(0.001)
-    #         bubbleLayer.setSizeUnit(QgsSymbolV2.MapUnit)
-    #         symbol.changeSymbolLayer(0, bubbleLayer)
-    #     else:
-    #         symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
-    #
-    #     renderer = QgsRuleBasedRendererV2(symbol)
-    #     root_rule = renderer.rootRule()
-    #
-    #     args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
-    #     root_rule.children()[0].setLabel(u'{0} {1}'.format(*args))
-    #     for symId in uniqSymbols:
-    #         svg = QgsSvgMarkerSymbolLayerV2()
-    #         svg.setPath(plugin_dir+"/svg/WellSymbol"+str(symId).zfill(3)+".svg")
-    #         svg.setSize(4)
-    #         svg.setSizeUnit(QgsSymbolV2.MM)
-    #         symbol = QgsMarkerSymbolV2()
-    #         symbol.changeSymbolLayer(0, svg)
-    #
-    #         rule = QgsRuleBasedRendererV2.Rule(symbol)
-    #         rule.setLabel(uniqSymbols[symId])
-    #
-    #         args = ("SymbolCode", symId)
-    #         rule.setFilterExpression(u'\"{0}\"={1}'.format("SymbolCode", symId))
-    #         root_rule.appendChild(rule)
-    #
-    #     #add lift method
-    #     # ggMeta = registry.symbolLayerMetadata('GeometryGenerator')
-    #     # if ggMeta is not None:
-    #     #     gg = ggMeta.createSymbolLayer({})
-    #     #     gg.setGeometryExpression ("make_line(  make_point( $x, $y),  make_point( $x, $y+ \"BubbleSize\"/1.5 ))")
-    #     #     gg.setSymbolType(QgsSymbolV2.Line)
-    #     #     symbol = QgsMarkerSymbolV2()
-    #     #     symbol.changeSymbolLayer(0, gg)
-    #     #     rule = QgsRuleBasedRendererV2.Rule(symbol)
-    #     #     rule.setLabel('flowing')
-    #
-    #     #     args = ("LiftMethod", "flowing")
-    #     #     rule.setFilterExpression(u'\"{0}\"=\'{1}\''.format(*args))
-    #     #     root_rule.appendChild(rule)
-    #
-    #
-    #     for ff in prods:
-    #         m = QgsSimpleMarkerSymbolLayerV2()
-    #         m.setSize(4)
-    #         m.setSizeUnit(QgsSymbolV2.MM)
-    #         m.setColor(ff.backColor)
-    #         symbol = QgsMarkerSymbolV2()
-    #         symbol.changeSymbolLayer(0, m)
-    #
-    #         rule = QgsRuleBasedRendererV2.Rule(symbol)
-    #         rule.setLabel(ff.name)
-    #         rule.setFilterExpression(u'\"SymbolCode\"=-1')
-    #         root_rule.appendChild(rule)
-    #
-    #     renderer.setOrderByEnabled(True)
-    #     orderByClause = QgsFeatureRequest.OrderByClause('BubbleSize', False)
-    #     orderBy = QgsFeatureRequest.OrderBy([orderByClause])
-    #     renderer.setOrderBy(orderBy)
-    #     editLayer.setRendererV2(renderer)
-    #
-    #     editLayer.triggerRepaint()
-    #
-    #     return
-
     def getCoordinatesForPercent(self, percent):
         x = math.cos(2 * math.pi * percent)
         y = math.sin(2 * math.pi * percent)
@@ -384,12 +286,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         editLayer.startEditing()
 
-        idxOffX = editLayerProvider.fieldNameIndex('LablOffX')
-        idxOffY = editLayerProvider.fieldNameIndex('LablOffY')
+        idxOffX = editLayerProvider.fieldNameIndex('labloffx')
+        idxOffY = editLayerProvider.fieldNameIndex('labloffy')
         if idxOffX < 0 or idxOffY < 0:
             editLayerProvider.addAttributes(
-                [QgsField("LablOffX", QVariant.Double),
-                 QgsField("LablOffY", QVariant.Double)])
+                [QgsField("labloffx", QVariant.Double),
+                 QgsField("labloffy", QVariant.Double)])
 
         diagLabel = ''
         for d in self.layerDiagramms:
@@ -410,12 +312,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
                 prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
 
-                sum = 0.0
-                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
+                sum = 0
+                multiplier = bblInit.unit_to_mult.get(d.units, 1.0)
                 for attrName in prodFields:
                     attr = attrName + scaleType
                     if feature[attr] is not None:
-                        val = float(feature[attr] * multiplier)
+                        val = feature[attr] * multiplier
                         sum += val
 
                 if maxSum < sum:
@@ -442,39 +344,30 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
                 prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
 
-                koef = (maxDiagrammSize - minDiagrammSize) / maxSum
-                if self.useScaleGroupBox.isChecked():
-                    koef = (maxDiagrammSize - minDiagrammSize) / d.scale
-
-                sum = 0.0
-                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
+                koef = (maxDiagrammSize - minDiagrammSize) / maxSum # d.scale
+                sum = 0
+                multiplier = bblInit.unit_to_mult.get(d.units, 1.0)
                 for attrName in prodFields:
                     attr = attrName + scaleType
                     if feature[attr] is not None:
-                        val = float(feature[attr] * multiplier)
+                        val = feature[attr] * multiplier
                         sum += val
 
-                ds = minDiagrammSize + sum * koef
-                if ds < minDiagrammSize:
-                    ds = minDiagrammSize
-                if ds > maxDiagrammSize:
-                    ds = maxDiagrammSize
-
                 if sum != 0:
-                    diag = ET.SubElement(root, "diagramm", size=str(ds))
+                    diag = ET.SubElement(root, "diagramm", size=str(minDiagrammSize + sum * koef))
                     for attrName in prodFields:
                         attr = attrName + scaleType
                         fluid = self.fluidByCode(attrName)
                         prods[fluid.code] = fluid
                         if feature[attr] is not None and fluid is not None:
-                            val = float(feature[attr] * multiplier)
+                            val = feature[attr] * multiplier
                             percent = val / sum
                             ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(fluid.backColor),
                                           lineColor=QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor),
                                           fieldName=attr).text = str(percent)
 
-                if ds > diagrammSize:
-                    diagrammSize = ds#minDiagrammSize + sum * koef
+                if minDiagrammSize + sum * koef > diagrammSize:
+                    diagrammSize = minDiagrammSize + sum * koef
 
                 templateStr = self.addLabels(templateStr, sum, vec, feature, scaleType, multiplier)
 
@@ -789,29 +682,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         except:
             pass
 
-        # self.bubbleProps['diagrammType'] = self.currentDiagramm
-        # self.bubbleProps["maxDiagrammSize"] = str(self.maxDiagrammSize.value())
-        # self.bubbleProps["minDiagrammSize"] = str(self.minDiagrammSize.value())
-        #
-        # for d in self.standardDiagramms:
-        #     val = self.standardDiagramms[d]
-        #     self.bubbleProps['diagramm_name_'+d] = val.name
-        #     self.bubbleProps['diagramm_scale_'+d] = str(val.scale)
-        #     self.bubbleProps['diagramm_unitsType_'+d] = str(val.unitsType)
-        #     self.bubbleProps['diagramm_units_'+d] = str(val.units)
-        #     self.bubbleProps['diagramm_fluids_'+d] = QgsSymbolLayerV2Utils.encodeRealVector(val.fluids)
-        #
-        # self.bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
-        # self.bubbleProps['decimal'] = str(self.decimalEdit.value())
-        # self.bubbleProps['labelTemplate'] = self.templateExpression.text()
-        # self.bubbleProps['showLineout'] = str(int(self.showLineouts.isChecked()))
-        # self.bubbleProps['dailyProduction'] = str(int(self.dailyProduction.isChecked()))
-        # for fl in bblInit.fluidCodes:
-        #     self.bubbleProps['fluid_background_'+fl.code] =  QgsSymbolLayerV2Utils.encodeColor(fl.backColor)
-        #     self.bubbleProps['fluid_line_color_'+fl.code] = QgsSymbolLayerV2Utils.encodeColor(fl.lineColor)
-        #     self.bubbleProps['fluid_label_color_'+fl.code] = QgsSymbolLayerV2Utils.encodeColor(fl.labelColor)
-        #     self.bubbleProps['fluid_inPercent_'+fl.code] = str(fl.inPercent)
-
         return
 
     def readSettingsNew(self):
@@ -820,7 +690,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.minDiagrammSize.setValue(float(self.currentLayer.customProperty('minDiagrammSize', 3.0)))
         self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
         self.mSymbolSize.setValue(float(self.currentLayer.customProperty("defaultSymbolSize", 4.0)))
-        self.useScaleGroupBox.setChecked(int(self.currentLayer.customProperty("useScaleGroupBox", "0")) == 1)
 
         count = int(self.currentLayer.customProperty("diagrammCount", 0))
         if count < 1:
@@ -863,7 +732,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.currentLayer.setCustomProperty("minDiagrammSize", self.minDiagrammSize.value())
         self.currentLayer.setCustomProperty("alwaysShowZero", int(self.mShowZero.isChecked()))
         self.currentLayer.setCustomProperty("defaultSymbolSize", self.mSymbolSize.value())
-        self.currentLayer.setCustomProperty("useScaleGroupBox", int(self.useScaleGroupBox.isChecked()))
 
         num = 1
         for val in self.layerDiagramms:

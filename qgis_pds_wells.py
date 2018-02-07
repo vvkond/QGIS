@@ -33,7 +33,7 @@ class QgisPDSWells(QObject):
 
         self.attrWellId = u'well_id'
         self.attrLatitude = u'latitude'
-        self.attrLongitude = u'longitude'
+        self.attrLongitude = u'longitud'
         self.proj4String = 'epsg:4326'
         self.db = None
 
@@ -46,27 +46,27 @@ class QgisPDSWells(QObject):
         self.uri += '&field={}:{}'.format(self.attrLatitude, "double")
         self.uri += '&field={}:{}'.format(self.attrLongitude, "double")
 
-        self.uri += '&field={}:{}'.format("SLDNID", "int")
-        self.uri += '&field={}:{}'.format("API", "string")
-        self.uri += '&field={}:{}'.format("Operator", "string")
-        self.uri += '&field={}:{}'.format("Country", "string")
-        self.uri += '&field={}:{}'.format("Depth", "double")
-        self.uri += '&field={}:{}'.format("Measurement", "string")
-        self.uri += '&field={}:{}'.format("Elevation", "double")
-        self.uri += '&field={}:{}'.format("Datum", "string")
-        self.uri += '&field={}:{}'.format("On_offshore", "string")
-        self.uri += '&field={}:{}'.format("Status", "string")
-        self.uri += '&field={}:{}'.format("Symbol", "string")
-        self.uri += '&field={}:{}'.format("Spud_date", "string")
-        self.uri += '&field={}:{}'.format("Global_private", "string")
-        self.uri += '&field={}:{}'.format("Owner", "string")
-        self.uri += '&field={}:{}'.format("Created", "DateTime")
-        self.uri += '&field={}:{}'.format("Project", "string")
+        self.uri += '&field={}:{}'.format("sldnid", "int")
+        self.uri += '&field={}:{}'.format("api", "string")
+        self.uri += '&field={}:{}'.format("operator", "string")
+        self.uri += '&field={}:{}'.format("country", "string")
+        self.uri += '&field={}:{}'.format("depth", "double")
+        self.uri += '&field={}:{}'.format("measurement", "string")
+        self.uri += '&field={}:{}'.format("elevation", "double")
+        self.uri += '&field={}:{}'.format("datum", "string")
+        self.uri += '&field={}:{}'.format("on_offshore", "string")
+        self.uri += '&field={}:{}'.format("status", "string")
+        self.uri += '&field={}:{}'.format("symbol", "string")
+        self.uri += '&field={}:{}'.format("spud_date", "string")
+        self.uri += '&field={}:{}'.format("global_private", "string")
+        self.uri += '&field={}:{}'.format("owner", "string")
+        self.uri += '&field={}:{}'.format("created", "DateTime")
+        self.uri += '&field={}:{}'.format("project", "string")
 
-        self.uri += '&field={}:{}'.format("LablX", "double")
-        self.uri += '&field={}:{}'.format("LablY", "double")
-        self.uri += '&field={}:{}'.format("LablOffX", "double")
-        self.uri += '&field={}:{}'.format("LablOffY", "double")
+        self.uri += '&field={}:{}'.format("lablx", "double")
+        self.uri += '&field={}:{}'.format("lably", "double")
+        self.uri += '&field={}:{}'.format("labloffx", "double")
+        self.uri += '&field={}:{}'.format("labloffy", "double")
         layer = QgsVectorLayer(self.uri, "PDS Wells", "memory")
         if layer is None:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(
@@ -177,22 +177,22 @@ class QgisPDSWells(QObject):
                     well.setAttribute(self.attrLatitude, lat)
                     well.setAttribute(self.attrLongitude, lng)
 
-                    well.setAttribute('SLDNID', row[1])
-                    well.setAttribute('API', row[2])
-                    well.setAttribute('Operator', row[3])
-                    well.setAttribute('Country', row[4])
-                    well.setAttribute('Depth', row[7])
-                    well.setAttribute('Measurement', row[8])
-                    well.setAttribute('Elevation', row[9])
-                    well.setAttribute('Datum', row[10])
-                    well.setAttribute('On_offshore', row[11])
-                    well.setAttribute('Status', row[12])
-                    well.setAttribute('Symbol', row[13])
-                    well.setAttribute('Spud_date', row[14])
-                    well.setAttribute('Global_private', row[15])
-                    well.setAttribute('Owner', row[16])
-                    well.setAttribute('Created', QDateTime.fromString(row[17], self.dateFormat))
-                    well.setAttribute('Project', projectName)
+                    well.setAttribute('sldnid', row[1])
+                    well.setAttribute('api', row[2])
+                    well.setAttribute('operator', row[3])
+                    well.setAttribute('country', row[4])
+                    well.setAttribute('depth', row[7])
+                    well.setAttribute('measurement', row[8])
+                    well.setAttribute('elevation', row[9])
+                    well.setAttribute('datum', row[10])
+                    well.setAttribute('on_offshore', row[11])
+                    well.setAttribute('status', row[12])
+                    well.setAttribute('symbol', row[13])
+                    well.setAttribute('spud_date', row[14])
+                    well.setAttribute('global_private', row[15])
+                    well.setAttribute('owner', row[16])
+                    well.setAttribute('created', QDateTime.fromString(row[17], self.dateFormat))
+                    well.setAttribute('project', projectName)
 
                     if not num:
                         if not isSelectedOnly:
@@ -212,11 +212,11 @@ class QgisPDSWells(QObject):
         palyr.fieldName = self.attrWellId
         palyr.placement= QgsPalLayerSettings.OverPoint
         palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY , True, True, 'format(\'%1,%2\', "LablOffX" , "LablOffY")', '')
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY , True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
         palyr.labelOffsetInMapUnits = False
         palyr.setDataDefinedProperty(QgsPalLayerSettings.Size,True,True,'8','')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'','LablX')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'','LablY')
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'','lablx')
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'','lably')
         palyr.writeToLayer(layer)
 
         layer.updateExtents()
