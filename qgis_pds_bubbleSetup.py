@@ -17,6 +17,237 @@ import xml.etree.cElementTree as ET
 import re
 import sip
 
+#Table model for attribute TableView
+class AttributeTableModel(QAbstractTableModel):
+    ExpressionColumn = 0
+    ColorColumn = 1
+    DescrColumn = 2
+    FilterColumn = 3
+    def __init__(self, headerData, parent=None, *args):
+        QAbstractTableModel.__init__(self, parent, *args)
+        self.arraydata = []
+        self.headerdata = headerData
+
+    def rowCount(self, parent=QModelIndex()):
+        return len(self.arraydata)
+
+    def columnCount(self, parent=QModelIndex()):
+        return len(self.headerdata)
+
+    def insertRows(self, row, count, parent):
+        if row < 0:
+            row = 0
+
+        self.beginInsertRows(parent, row, count + row - 1)
+        for i in xrange(0, count):
+            newRow = ['', QColor(255, 0, 0), '', '']
+            self.arraydata.insert(i + row, newRow)
+
+        self.endInsertRows()
+        return True
+
+    def removeRows(self, row, count, parent):
+        self.beginRemoveRows(parent, row, row + count -1)
+        for r in xrange(0, count):
+            del self.arraydata[r + row]
+        self.endRemoveRows()
+
+        return True
+
+    def data(self, index, role):
+        if not index.isValid():
+            return None
+
+        if role == Qt.DisplayRole or role == Qt.EditRole:
+            return self.arraydata[index.row()][index.column()]
+        elif role == Qt.DecorationRole and index.column() == AttributeTableModel.ColorColumn:
+            return self.arraydata[index.row()][AttributeTableModel.ColorColumn]
+
+        return None
+
+    def setDiagramm(self, row, value):
+        if row >= 0 and row < len(self.arraydata):
+            self.arraydata[row][self.getFilterColumn()] = value
+
+
+    def diagramm(self, row):
+        if row >= 0 and row < len(self.arraydata):
+            return self.arraydata[row][self.getFilterColumn()]
+        else:
+            return 'No Diag ' + str(row)
+
+    def getFilterColumn(self):
+        return AttributeTableModel.FilterColumn
+
+    def setData(self, index, value, role):
+        if not index.isValid():
+            return False
+
+        if role == Qt.EditRole:
+            self.arraydata[index.row()][index.column()] = value
+            return True
+
+        return False
+
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self.headerdata[col]
+        return None
+
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.NoItemFlags
+
+        flags = Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsEditable
+
+        return flags
+
+#Table model for Labels TableView
+class AttributeLabelTableModel(AttributeTableModel):
+    FilterColumn = 4
+    def __init__(self, headerData, parent=None):
+        AttributeTableModel.__init__(self, headerData, parent)
+
+    def getFilterColumn(self):
+        return AttributeLabelTableModel.FilterColumn
+
+    def flags(self, index):
+        if not index.isValid():
+            return Qt.NoItemFlags
+
+        flags = Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        if index.column() > AttributeTableModel.ColorColumn:
+            flags = flags | Qt.ItemIsUserCheckable
+        else:
+            flags = flags | Qt.ItemIsEditable
+
+        return flags
+
+    def data(self, index, role):
+        if not index.isValid():
+            return None
+
+        if index.column() > AttributeTableModel.ColorColumn:
+            if role == Qt.CheckStateRole:
+                return self.arraydata[index.row()][index.column()]
+            else:
+                return None
+        else:
+            return AttributeTableModel.data(self, index, role)
+
+    def setData(self, index, value, role):
+        if not index.isValid():
+            return False
+
+        if role == Qt.CheckStateRole and index.column() > AttributeTableModel.ColorColumn:
+            self.arraydata[index.row()][index.column()] = value
+            return True
+        else:
+            return AttributeTableModel.setData(self, index, value, role)
+
+
+    def insertRows(self, row, count, parent):
+        if row < 0:
+            row = 0
+
+        self.beginInsertRows(parent, row, count + row - 1)
+        for i in xrange(0, count):
+            newRow = ['', QColor(255, 0, 0), Qt.Unchecked, Qt.Unchecked, '']
+            self.arraydata.insert(i + row, newRow)
+
+        self.endInsertRows()
+        return True
+
+
+#Filter table model
+class AttributeFilterProxy(QSortFilterProxyModel):
+    def __init__(self, parent=None):
+        QSortFilterProxyModel.__init__(self, parent)
+        self.filter = 0
+
+    def setFilter(self, f):
+        self.filter = f
+        self.invalidateFilter()
+
+    def filterAcceptsRow(self, sourceRow, sourceParent):
+        index1 = self.sourceModel().index(sourceRow, 0, sourceParent)
+
+        id = self.sourceModel().diagramm(index1.row())
+        return self.filter == id
+
+
+#Expression delegate
+class ExpressionDelegate(QStyledItemDelegate):
+    def __init__(self, layer, isDescr, parent=None):
+        QStyledItemDelegate.__init__(self, parent)
+
+        self.currentLayer = layer
+        self.isDescription = isDescr
+
+    def createEditor(self, parent, option, index):
+
+        self.initStyleOption(option, index)
+
+        fieldEx = QgsFieldExpressionWidget(parent)
+        fieldEx.setLayer(self.currentLayer)
+        fieldEx.setField(index.data())
+
+        return fieldEx
+
+    def updateEditorGeometry(self, editor, option, index):
+        if editor:
+            editor.setGeometry(option.rect)
+
+    def setModelData(self, editor, model, index):
+        text = editor.currentText()
+        model.setData(index, text, Qt.EditRole)
+
+        if self.isDescription:
+            index1 = model.index(index.row(), AttributeTableModel.DescrColumn)
+            descr = model.data(index1, Qt.DisplayRole)
+
+            if len(descr) < 2:
+                model.setData(index1, text, Qt.EditRole)
+                model.dataChanged.emit(index1, index1)
+
+#Color delegate
+class ColorDelegate(QStyledItemDelegate):
+    def __init__(self, layer, parent=None):
+        QStyledItemDelegate.__init__(self, parent)
+
+        self.currentLayer = layer
+        self.newColor = QColor()
+
+    def createEditor(self, parent, option, index):
+
+        self.initStyleOption(option, index)
+
+        self.newColor = QColor(index.data(Qt.DecorationRole))
+        colorEd = QColorDialog(self.newColor, parent)
+
+        return colorEd
+
+    def paint(self, painter, option, index):
+        self.initStyleOption(option, index)
+
+        clr = QColor(index.data(Qt.DecorationRole))
+        painter.setBrush(clr)
+        painter.drawRect(option.rect.adjusted(3, 3, -3, -3))
+
+    def updateEditorGeometry(self, editor, option, index):
+        if editor:
+            pos = editor.parent().mapToGlobal(option.rect.topLeft())
+            ww = editor.rect().width()
+            hh = editor.rect().height()
+            editor.setGeometry(pos.x() - ww/2, pos.y()-hh/2, ww, hh)
+
+
+    def setModelData(self, editor, model, index):
+        clr = editor.currentColor()
+        model.setData(index, clr, Qt.EditRole)
+        model.dataChanged.emit(index, index)
+
+
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_bubblesetup_base.ui'))
 
@@ -26,10 +257,44 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         self.setupUi(self)
 
-        self.expressionIndex = 0
+        self.mDiagrammId = 0
 
         self.mIface = iface
-        self.currentLayer = layer       
+        self.currentLayer = layer
+
+        #Setup attributes tableView
+        self.attributeModel = AttributeTableModel([self.tr(u'Attribute'), self.tr(u'Color'), self.tr(u'Legend name')], self)
+        self.filteredModel = AttributeFilterProxy(self)
+        self.filteredModel.setSourceModel(self.attributeModel)
+
+        self.attributeTableView.setModel(self.filteredModel)
+        self.attributeTableView.horizontalHeader().setResizeMode(0, QHeaderView.Stretch)
+
+        exprDelegate = ExpressionDelegate(layer, True, self)
+        self.attributeTableView.setItemDelegateForColumn(AttributeTableModel.ExpressionColumn, exprDelegate)
+
+        colorDelegate = ColorDelegate(layer, self)
+        self.attributeTableView.setItemDelegateForColumn(AttributeTableModel.ColorColumn, colorDelegate)
+
+        #Setup Labels TableView
+        self.labelAttributeModel = AttributeLabelTableModel([self.tr(u'Attribute'), self.tr(u'Color'),
+                                                            self.tr(u'Show zero'), self.tr(u'New line')], self)
+        self.labelFilteredModel = AttributeFilterProxy(self)
+        self.labelFilteredModel.setSourceModel(self.labelAttributeModel)
+
+        self.labelAttributeTableView.setModel(self.labelFilteredModel)
+        self.labelAttributeTableView.horizontalHeader().setResizeMode(0, QHeaderView.Stretch)
+
+        labelExprDelegate = ExpressionDelegate(layer, False, self)
+        self.labelAttributeTableView.setItemDelegateForColumn(AttributeTableModel.ExpressionColumn, labelExprDelegate)
+
+        labelColorDelegate = ColorDelegate(layer, self)
+        self.labelAttributeTableView.setItemDelegateForColumn(AttributeTableModel.ColorColumn, labelColorDelegate)
+
+        #Add FieldExpression for maximum value calculate
+        self.maxValueAttribute = QgsFieldExpressionWidget(self)
+        self.maxValueAttribute.setLayer(self.currentLayer)
+        self.scaledSizeGridLayout.addWidget(self.maxValueAttribute, 0, 1, 1, 2)
 
         self.standardDiagramms = {
                     "1_liquidproduction": MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0]),
@@ -67,74 +332,67 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         #Read saved layer settings
         self.readSettings()
-    
-        self.scaleUnitsMass.setVisible(False)
-        self.scaleUnitsVolume.setVisible(False)
+
 
         self.isCurrentProd = True if self.currentLayer.customProperty("qgis_pds_type") == 'pds_current_production' else False
         self.defaultUnitNum = 2 if self.isCurrentProd else 3
 
         self.updateWidgets()
-        # if len(self.layerDiagramms) < 1:
-        #     self.dailyProduction.setChecked(self.isCurrentProd)
-        #     self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0,
-        #                                         units=self.defaultUnitNum, fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
-        #
-        # self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
-        # for d in self.layerDiagramms:
-        #     name = d.name
-        #     item = QtGui.QListWidgetItem(name)
-        #     item.setData(Qt.UserRole, d)
-        #     self.mDiagrammsListWidget.addItem(item)
+
+        self.filteredModel.setFilter(self.currentDiagrammId)
 
         return
 
+    @property
+    def currentDiagrammId(self):
+        id = 0
+        try:
+            data = self.mDiagrammsListWidget.currentItem().data(Qt.UserRole)
+            id = data.diagrammId
+        except:
+            pass
+
+        return id
+
+    @property
+    def diagrammId(self):
+        self.mDiagrammId = self.mDiagrammId + 1
+        return self.mDiagrammId
+
+
     def addAttributePushButton_clicked(self):
-        frame = QFrame(self)
-        objectName = 'expression' + str(self.expressionIndex)
-        frame.setObjectName(objectName)
-        self.expressionIndex = self.expressionIndex + 1
+        curRow = self.attributeModel.rowCount()
+        self.attributeModel.insertRow(curRow)
 
-        lay = QHBoxLayout(frame)
-        frame.setLayout(lay)
-        lay.setContentsMargins(0, 0, 0, 0)
+        self.attributeModel.setDiagramm(curRow, self.currentDiagrammId)
+        self.filteredModel.setFilter(self.currentDiagrammId)
 
-        fieldBtn = QToolButton(frame)
-        fieldBtn.setIcon(QIcon(u':/plugins/QgisPDS/symbologyRemove.png'))
-        fieldBtn.clicked.connect(lambda: self.deleteExpressionButtonClicked(frame))
-        lay.addWidget(fieldBtn)
+    @pyqtSlot()
+    def on_deleteAttributePushButton_clicked(self):
+        rows = [r.row() for r in self.attributeTableView.selectionModel().selectedIndexes()]
+        rows.sort(reverse=True)
+        for row in rows:
+            self.attributeTableView.model().removeRow(row)
 
-        #Field expression
-        fieldEx = QgsFieldExpressionWidget(frame)
-        lay.addWidget(fieldEx)
-        fieldEx.setLayer(self.currentLayer)
+    @pyqtSlot()
+    def on_addLabelAttributePushButton_clicked(self):
+        curRow = self.labelAttributeModel.rowCount()
+        self.labelAttributeModel.insertRow(curRow)
 
-        # field color
-        fieldColor = QgsColorButtonV2(frame)
-        lay.addWidget(fieldColor)
+        self.labelAttributeModel.setDiagramm(curRow, self.currentDiagrammId)
+        self.labelFilteredModel.setFilter(self.currentDiagrammId)
 
-        fieldText = QLineEdit(frame)
-        lay.addWidget(fieldText)
-
-        fieldEx.fieldChanged.connect(lambda: self.exprFieldChanged(fieldEx, fieldText))
-
-        lay.setStretch(1, 1)
-
-        self.attributesContiner.addWidget(frame)
-
-    def deleteExpressionButtonClicked(self, parentFrame):
-        if parentFrame:
-            parentFrame.deleteLater()
-
-    def exprFieldChanged(self, fieldEx, fieldText):
-        if fieldEx and fieldText and not fieldText.text():
-            fieldText.setText(fieldEx.currentText())
-
+    @pyqtSlot()
+    def on_deleteLabelAttributePushButton_clicked(self):
+        rows = [r.row() for r in self.labelAttributeTableView.selectionModel().selectedIndexes()]
+        rows.sort(reverse=True)
+        for row in rows:
+            self.labelAttributeTableView.model().removeRow(row)
 
     def addDiagramm(self):
         newName = u'Диаграмма {}'.format(len(self.layerDiagramms) + 1)
         d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=self.defaultUnitNum,
-                     attributes=[])
+                     attributes=[], diagrammId=self.diagrammId)
         self.layerDiagramms.append(d)
 
         item = QtGui.QListWidgetItem(newName)
@@ -148,24 +406,12 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.addDiagramm()
 
 
-
-
-
-
-
-
-
-
-
-
-
     def updateWidgets(self):
         self.mDiagrammsListWidget.clear()
 
         if len(self.layerDiagramms) < 1:
-            self.dailyProduction.setChecked(self.isCurrentProd)
             self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0,
-                                                units=self.defaultUnitNum, attributes=[]))
+                                                units=self.defaultUnitNum, attributes=[], diagrammId=self.diagrammId))
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
         for d in self.layerDiagramms:
@@ -174,36 +420,65 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             item.setData(Qt.UserRole, d)
             self.mDiagrammsListWidget.addItem(item)
 
-        self.layerAttributesListWidget.clear()
-        for field in self.currentLayer.dataProvider().fields():
-            self.layerAttributesListWidget.addItem(field.name())
+        self.mDiagrammsListWidget.setCurrentRow(0)
 
+    def createExpressionContext(self):
+        context = QgsExpressionContext()
+        context.appendScope(QgsExpressionContextUtils.globalScope())
+        context.appendScope(QgsExpressionContextUtils.projectScope())
+        context.appendScope(QgsExpressionContextUtils.mapSettingsScope(self.mIface.mapCanvas().mapSettings()))
+        context.appendScope(QgsExpressionContextUtils.layerScope(self.currentLayer))
 
-    # SLOT
+        return context
+
+    # SLOTS
+    #Toggle diagramm size type (Fixed/Scaled)
+    def on_fixedSizeRadioButton_toggled(self, isOn):
+        self.fixedDiagrammSize.setEnabled(isOn)
+        self.scaledSizeFrame.setEnabled(not isOn)
+
+    @pyqtSlot()
+    def on_scalePushButton_clicked(self):
+        if not self.currentLayer:
+            return;
+
+        maxValue = 0.0;
+
+        isExpression = self.maxValueAttribute.isExpression()
+        sizeFieldNameOrExp = self.maxValueAttribute.currentText()
+        if isExpression:
+            exp = QgsExpression(sizeFieldNameOrExp)
+            context = self.createExpressionContext()
+            exp.prepare( context )
+            if not exp.hasEvalError():
+                features = self.currentLayer.getFeatures()
+                for feature in features:
+                    context.setFeature(feature)
+                    val = exp.evaluate(context)
+                    if val:
+                        maxValue = max(maxValue, float(val))
+        else:
+            attributeNumber = self.currentLayer.fieldNameIndex(sizeFieldNameOrExp)
+            maxValue = float(self.currentLayer.maximumValue(attributeNumber))
+
+        self.scaleEdit.setValue(maxValue);
+
+    #Change current diagramm
     def on_mDiagrammsListWidget_currentRowChanged(self, row):
         if row < 0:
             return
 
         item = self.mDiagrammsListWidget.item(row)
         diagramm = item.data(Qt.UserRole)
-        self.scaleUnitsType.setCurrentIndex(diagramm.unitsType)
+
         self.scaleEdit.setValue(diagramm.scale)
         self.titleEdit.setText(diagramm.name)
 
-        self.scaleUnitsMass.setVisible(diagramm.unitsType == 0)
-        self.scaleUnitsVolume.setVisible(diagramm.unitsType == 1)
 
-        if diagramm.unitsType == 0:
-            self.scaleUnitsMass.setCurrentIndex(diagramm.units)
-        else:
-            self.scaleUnitsVolume.setCurrentIndex(diagramm.units - 10)
+        self.filteredModel.setFilter(self.currentDiagrammId)
+        self.labelFilteredModel.setFilter(self.currentDiagrammId)
 
-        # vec = diagramm.fluids
-        # for idx, v in enumerate(vec):
-        #     self.componentsList.item(idx).setCheckState(Qt.Checked if v else Qt.Unchecked)
-
-
-
+    #Delete current diagramm
     def mDeleteDiagramm_clicked(self):
         if len(self.layerDiagramms) < 2:
             return
@@ -215,6 +490,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
 
+    #Import diagramm from other layer
     def mImportFromLayer_clicked(self):
         layers = self.mIface.legendInterface().layers()
 
@@ -241,7 +517,6 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             self.currentLayer = saveLayer
 
 
-    # SLOT
     def on_titleEdit_editingFinished(self):
         idx = self.mDiagrammsListWidget.currentRow()
         if idx >= 0:
@@ -512,16 +787,6 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             # self.standardDiagramms[code].scale = self.scaleEdit.value()
 
 
-    def scaleUnitsChanged(self, index):
-        idx = self.mDiagrammsListWidget.currentRow()
-        if idx >= 0:
-            self.layerDiagramms[idx].unitsType = index
-        # self.standardDiagramms[self.currentDiagramm].unitsType = index
-
-        self.scaleUnitsMass.setVisible(index == 0)
-        self.scaleUnitsVolume.setVisible(index == 1)
-
-
     def unitsChanged(self, index):
         idx = self.mDiagrammsListWidget.currentRow()
         if idx >= 0:
@@ -661,7 +926,6 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.decimalEdit.setValue(int(self.bubbleProps['decimal']) if 'decimal' in self.bubbleProps else self.decimalEdit.value())
         self.templateExpression.setText(self.bubbleProps['labelTemplate'] if 'labelTemplate' in self.bubbleProps else self.templateExpression.text())
         self.showLineouts.setChecked(int(self.bubbleProps['showLineout']) if 'showLineout' in self.bubbleProps else 1)
-        self.dailyProduction.setChecked(int(self.bubbleProps['dailyProduction']) if 'dailyProduction' in self.bubbleProps else 0)
 
         for fl in bblInit.fluidCodes:
             if 'fluid_background_'+fl.code in self.bubbleProps:
@@ -710,7 +974,6 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.decimalEdit.setValue(int(self.currentLayer.customProperty('decimal', self.decimalEdit.value())))
         self.templateExpression.setText(self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()))
         self.showLineouts.setChecked(int(self.currentLayer.customProperty('showLineout')))
-        self.dailyProduction.setChecked(int(self.currentLayer.customProperty('dailyProduction')))
         for fl in bblInit.fluidCodes:
             backColor = self.currentLayer.customProperty('fluid_background_' + fl.code,
                                                             QgsSymbolLayerV2Utils.encodeColor(fl.backColor))
@@ -748,7 +1011,6 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.currentLayer.setCustomProperty('decimal', self.decimalEdit.value())
         self.currentLayer.setCustomProperty('labelTemplate', self.templateExpression.text())
         self.currentLayer.setCustomProperty('showLineout', str(int(self.showLineouts.isChecked())))
-        self.currentLayer.setCustomProperty('dailyProduction', str(int(self.dailyProduction.isChecked())))
         for fl in bblInit.fluidCodes:
             self.currentLayer.setCustomProperty('fluid_background_' + fl.code,
                                                 QgsSymbolLayerV2Utils.encodeColor(fl.backColor))

@@ -14,12 +14,12 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6617873"/>
+        <location line="+6617471"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6617873"/>
+        <location line="-6617471"/>
         <source>Coordinates length unmatched</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
@@ -52,12 +52,12 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6618111"/>
+        <location line="+6617763"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6618111"/>
+        <location line="-6617763"/>
         <source>Coordinate count missmatch</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
@@ -461,7 +461,7 @@
         <translation>Статистика</translation>
     </message>
     <message>
-        <location line="+268"/>
+        <location line="+269"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -471,7 +471,7 @@
         <translation>Пожалуйста, сначала сохраните проект</translation>
     </message>
     <message>
-        <location line="-261"/>
+        <location line="-262"/>
         <source>Save to PDS</source>
         <translation>Сохранить в PDS</translation>
     </message>
@@ -494,6 +494,49 @@
         <location line="-16"/>
         <source>Bubbles setup</source>
         <translation>Настроить круговые диаграммы</translation>
+    </message>
+    <message>
+        <location line="+167"/>
+        <source>Save project before load wells</source>
+        <translation>Сохраните проект перед загрузкой скважин</translation>
+    </message>
+</context>
+<context>
+    <name>QgisPDSBubbleSetup</name>
+    <message>
+        <location filename="../qgis_pds_bubbleSetup.py" line="+280"/>
+        <source>Attribute</source>
+        <translation>Атрибут</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Color</source>
+        <translation>Цвет</translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <source>Legend name</source>
+        <translation>Имя в легенде</translation>
+    </message>
+    <message>
+        <location line="+231"/>
+        <source>Layers</source>
+        <translation>Слои</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Select layer</source>
+        <translation>Выберите слой</translation>
+    </message>
+    <message>
+        <location line="-217"/>
+        <source>Show zero</source>
+        <translation>Показывать 0.0</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>New line</source>
+        <translation>Новая строка</translation>
     </message>
 </context>
 <context>
@@ -868,35 +911,41 @@
         <source>Transite wells</source>
         <translation>Транзитные скважины</translation>
     </message>
+    <message>
+        <location line="+62"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
 </context>
 <context>
     <name>QgisPDSWells</name>
     <message>
-        <location filename="../qgis_pds_wells.py" line="+236"/>
+        <location filename="../qgis_pds_wells.py" line="+294"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-164"/>
+        <location line="-220"/>
         <source>Error create wells layer</source>
         <translation>Ошибка создания слоя скважин</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+67"/>
         <source>No current PDS project</source>
         <translation>Не выбран проект</translation>
     </message>
     <message>
-        <location line="+114"/>
+        <location line="+123"/>
         <source>Layer: {0} refreshed</source>
         <translation>Слой {0} обновлен</translation>
     </message>
     <message>
+        <location line="-141"/>
         <source>Read wells from project {0}: {1}</source>
         <translation type="obsolete">Чтение скважин из проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="-96"/>
+        <location line="+36"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>

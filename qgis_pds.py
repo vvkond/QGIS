@@ -508,7 +508,7 @@ class QgisPDS(QObject):
             icon_path,
             text=self.tr(u'Bubbles setup'),
             callback=self.bubblesSetup,
-            enabled_flag=False,
+            enabled_flag=True,
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/CoordFromZonations.png'
@@ -670,10 +670,11 @@ class QgisPDS(QObject):
       
 
     def createWellLayer(self):
-        # if not QgsProject.instance().homePath():
-            # self.iface.messageBar().pushMessage(self.tr("Error"),
-                        # self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
-            # return
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load wells'), level=QgsMessageBar.CRITICAL)
+            return
+
         wells = QgisPDSWells(self.iface, self.currentProject)
         layer = wells.createWellLayer()
         if layer is not None:

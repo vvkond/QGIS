@@ -87,8 +87,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         for si in self.zonationListWidget.selectedItems():
             selectedZonations.append(int(si.data(Qt.UserRole)))
 
-        self.editLayer.startEditing()
-        iter = self.editLayer.dataProvider().getFeatures()
+        dataProvider = self.editLayer.dataProvider()
 
         sel = None
         for zones in self.zoneListWidget.selectedItems():
@@ -98,26 +97,28 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         if sel is None:
             return
 
-        idxMd = self.editLayer.dataProvider().fieldNameIndex('MD')
-        idxTvd = self.editLayer.dataProvider().fieldNameIndex('TVD')
+        idxMd = dataProvider.fieldNameIndex('MD')
+        idxTvd = dataProvider.fieldNameIndex('TVD')
         if idxMd < 0:
-            self.editLayer.dataProvider().addAttributes([QgsField("MD", QVariant.Double)])
+            dataProvider.addAttributes([QgsField("MD", QVariant.Double)])
         if idxTvd < 0:
-            self.editLayer.dataProvider().addAttributes([QgsField("TVD", QVariant.Double)])
+            dataProvider.addAttributes([QgsField("TVD", QVariant.Double)])
 
-        idx1 = self.editLayer.dataProvider().fieldNameIndex('Well identifier')
-        for feature in iter:
-            if idx1 >= 0:
-                wellId = feature[u'Well identifier']
-            else:
-                wellId = feature['well_id']
+        idx1 = dataProvider.fieldNameIndex('Well identifier')
 
-            coords = self._getCoords(sel, wellId)
-            if coords is not None:
-                geom = QgsGeometry.fromPoint(coords)
-                self.editLayer.changeGeometry(feature.id(), geom)
+        iter = self.editLayer.getFeatures()
+        with edit(self.editLayer):
+            for feature in iter:
+                if idx1 >= 0:
+                    wellId = feature[u'Well identifier']
+                else:
+                    wellId = feature['well_id']
 
-        self.editLayer.commitChanges()
+                coords = self._getCoords(sel, wellId)
+                if coords is not None:
+                    geom = QgsGeometry.fromPoint(coords)
+                    self.editLayer.changeGeometry(feature.id(), geom)
+
 
         settings = QSettings()
         settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
