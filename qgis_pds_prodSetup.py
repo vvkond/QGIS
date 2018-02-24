@@ -92,10 +92,120 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     
         self.scaleUnitsMass.setVisible(False)
         self.scaleUnitsVolume.setVisible(False)
-
-        self.isCurrentProd = True if self.currentLayer.customProperty("qgis_pds_type") == 'pds_current_production' else False
-        self.defaultUnitNum = 2 if self.isCurrentProd else 3
-
+        
+        ##--------------------------KARASU CONFIG
+        def karasu():
+            if len(self.layerDiagramms) < 1:
+                if self.currentLayer.customProperty("qgis_pds_type") == "pds_current_production":
+                    #----CURENT PRODUCTION
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,   testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,   testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 0, 1, 0, 0]))
+                    bblInit.fluidCodes[2].inPercent=1
+                    self.bubbleProps['dailyProduction']=1
+                    self.dailyProduction.setChecked(1)
+    #                 cOil=QColor()
+    #                 cOil.setNamedColor('#aaaaaa')
+    #                 bblInit.fluidCodes[0].backColor=cOil
+    #                 bblInit.fluidCodes[0].lineColor=QColor().setNamedColor('#aaaaaa')
+    #                 bblInit.fluidCodes[0].labelColor=QColor().setNamedColor('#aaaaaa')
+                    
+                elif self.currentLayer.customProperty("qgis_pds_type") == "pds_cumulative_production":
+                    #----CUMMULATIV PRODUCTION
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=50,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=50,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 0, 1, 0, 0]))
+                #oil
+                bblInit.fluidCodes[0].backColor.setNamedColor('#daa520')
+                bblInit.fluidCodes[0].lineColor.setNamedColor('#daa520')
+                bblInit.fluidCodes[0].labelColor.setNamedColor('#6b4f0e')
+                #gas
+                bblInit.fluidCodes[1].backColor.setNamedColor('#e4e476')
+                bblInit.fluidCodes[1].lineColor.setNamedColor('#e4e476')
+                bblInit.fluidCodes[1].labelColor.setNamedColor('#8f8f4a')
+                #water
+                bblInit.fluidCodes[2].backColor.setNamedColor('#a6cee3')
+                bblInit.fluidCodes[2].lineColor.setNamedColor('#1f78b4')
+                bblInit.fluidCodes[2].labelColor.setNamedColor('#1f78b4')
+                #cond
+                bblInit.fluidCodes[3].backColor.setNamedColor('#aede90')
+                bblInit.fluidCodes[3].lineColor.setNamedColor('#aede90')
+                bblInit.fluidCodes[3].labelColor.setNamedColor('#7cde3f')
+                #gas inj
+                bblInit.fluidCodes[4].backColor.setNamedColor('#000000')
+                bblInit.fluidCodes[4].lineColor.setNamedColor('#000000')
+                bblInit.fluidCodes[4].labelColor.setNamedColor('#000000')
+                #wat inj
+                bblInit.fluidCodes[5].backColor.setNamedColor('#00ffff')
+                bblInit.fluidCodes[5].lineColor.setNamedColor('#1f78b4')
+                bblInit.fluidCodes[5].labelColor.setNamedColor('#00adad')
+                #gaslift
+                bblInit.fluidCodes[6].backColor.setNamedColor('#0000aa')
+                bblInit.fluidCodes[6].lineColor.setNamedColor('#0000aa')
+                bblInit.fluidCodes[6].labelColor.setNamedColor('#0000aa')
+                #free gas
+                bblInit.fluidCodes[7].backColor.setNamedColor('#00a0a0')
+                bblInit.fluidCodes[7].lineColor.setNamedColor('#00a0a0')
+                bblInit.fluidCodes[7].labelColor.setNamedColor('#00a0a0')
+                self.maxDiagrammSize.setValue(float(30))
+                self.minDiagrammSize.setValue(float(3))
+                self.templateExpression.setText("%1-%3/%6")
+        ##--------------------------SHIRVAN CONFIG                
+        def shirvan():
+            # diagramms =  self.currentDiagramm.split(';')
+            if len(self.layerDiagramms) < 1:
+                if self.currentLayer.customProperty("qgis_pds_type") == "pds_current_production":
+                    #----CURENT PRODUCTION
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,   testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,   testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 1, 1, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,   testval=1, unitsType=1, units=14, fluids=[0, 1, 0, 0, 0, 0, 0, 0]))
+                    bblInit.fluidCodes[2].inPercent=1
+    #                 cOil=QColor()
+    #                 cOil.setNamedColor('#aaaaaa')
+    #                 bblInit.fluidCodes[0].backColor=cOil
+    #                 bblInit.fluidCodes[0].lineColor=QColor().setNamedColor('#aaaaaa')
+    #                 bblInit.fluidCodes[0].labelColor=QColor().setNamedColor('#aaaaaa')
+                    
+                elif self.currentLayer.customProperty("qgis_pds_type") == "pds_cumulative_production":
+                    #----CUMMULATIV PRODUCTION
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 1, 1, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=15, fluids=[0, 1, 0, 0, 0, 0, 0, 0]))
+                #oil
+                bblInit.fluidCodes[0].backColor.setNamedColor('#daa520')
+                bblInit.fluidCodes[0].lineColor.setNamedColor('#daa520')
+                bblInit.fluidCodes[0].labelColor.setNamedColor('#6b4f0e')
+                #gas
+                bblInit.fluidCodes[1].backColor.setNamedColor('#e4e476')
+                bblInit.fluidCodes[1].lineColor.setNamedColor('#e4e476')
+                bblInit.fluidCodes[1].labelColor.setNamedColor('#8f8f4a')
+                #water
+                bblInit.fluidCodes[2].backColor.setNamedColor('#9acd32')
+                bblInit.fluidCodes[2].lineColor.setNamedColor('#9acd32')
+                bblInit.fluidCodes[2].labelColor.setNamedColor('#425614')
+                #cond
+                bblInit.fluidCodes[3].backColor.setNamedColor('#aede90')
+                bblInit.fluidCodes[3].lineColor.setNamedColor('#aede90')
+                bblInit.fluidCodes[3].labelColor.setNamedColor('#7cde3f')
+                #gas inj
+                bblInit.fluidCodes[4].backColor.setNamedColor('#000000')
+                bblInit.fluidCodes[4].lineColor.setNamedColor('#000000')
+                bblInit.fluidCodes[4].labelColor.setNamedColor('#000000')
+                #wat inj
+                bblInit.fluidCodes[5].backColor.setNamedColor('#00ffff')
+                bblInit.fluidCodes[5].lineColor.setNamedColor('#00ffff')
+                bblInit.fluidCodes[5].labelColor.setNamedColor('#00adad')
+                #gaslift
+                bblInit.fluidCodes[6].backColor.setNamedColor('#0000aa')
+                bblInit.fluidCodes[6].lineColor.setNamedColor('#0000aa')
+                bblInit.fluidCodes[6].labelColor.setNamedColor('#0000aa')
+                #free gas
+                bblInit.fluidCodes[7].backColor.setNamedColor('#00a0a0')
+                bblInit.fluidCodes[7].lineColor.setNamedColor('#00a0a0')
+                bblInit.fluidCodes[7].labelColor.setNamedColor('#00a0a0')
+                self.maxDiagrammSize.setValue(float(20))
+                self.minDiagrammSize.setValue(float(1))
+                self.templateExpression.setText("%1-%3-%2/%6")            
+        shirvan()
+        
         self.updateWidgets()
         # if len(self.layerDiagramms) < 1:
         #     self.dailyProduction.setChecked(self.isCurrentProd)

@@ -251,6 +251,16 @@
                 <string>км3</string>
                </property>
               </item>
+            <item>
+             <property name="text">
+              <string>1000м3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1000000м3</string>
+             </property>
+            </item>
              </widget>
             </item>
             <item>

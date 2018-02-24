@@ -423,9 +423,29 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         #Refresh or add feature
         refreshed = False
         with edit(self.layer):
-            for feature in self.mWells.values():
+            
+            ############################
+            ####### TEST BLOCK
+            ############################
+            cDays      =self.layer.fieldNameIndex(self.attrDays       )
+            cSymbol    =self.layer.fieldNameIndex(self.attrSymbol     )
+            cSymbolId  =self.layer.fieldNameIndex(self.attrSymbolId   )
+            cSymbolName=self.layer.fieldNameIndex(self.attrSymbolName )
+            cResState  =self.layer.fieldNameIndex('ResState'          )
+            cMovingRes =self.layer.fieldNameIndex('MovingRes'         )
+            cMultiProd =self.layer.fieldNameIndex('MultiProd'         )
+            attr_2_upd=[  ###old column       old_col_id       new_col    
+                         [self.attrDays      ,cDays         ,  self.attrDays]
+                        ,[self.attrSymbol    ,cSymbol       ,  self.attrSymbol]
+                        ,[self.attrSymbolId  ,cSymbolId     ,  self.attrSymbolId]
+                        ,[self.attrSymbolName,cSymbolName   ,  self.attrSymbolName]
+                        ,['ResState'         ,cResState     ,   'ResState']
+                        ,['MovingRes'        ,cMovingRes    ,  'MovingRes']
+                        ,['MultiProd'        ,cMultiProd    ,  'MultiProd']
+                        ]
+            for feature in self.mWells.values():                                 #--- iterate over each record in result
                 args = (self.attrWellId, feature.attribute(self.attrWellId))
-                expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))
+                expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in layer record with that WELL_ID
                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
 
                 num = 0
@@ -433,27 +453,62 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     refreshed = True
                     if self.mUpdateWellLocation.isChecked():
                         self.layer.changeGeometry(f.id(), feature.geometry())
+                        
+                    for (c_old_name,c_old_idx,c_new_name) in attr_2_upd:
+                        if f.attribute(c_old_name)!=feature.attribute(c_new_name):
+                            #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
+                            self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))
 
-                    self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrDays), feature.attribute(self.attrDays))
-                    self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbol), feature.attribute(self.attrSymbol))
-                    self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbolId), feature.attribute(self.attrSymbolId))
-                    self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbolName), feature.attribute(self.attrSymbolName))
-                    self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex('ResState'), feature.attribute('ResState'))
-                    self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex('MovingRes'), feature.attribute('MovingRes'))
-                    self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex('MultiProd'), feature.attribute('MultiProd'))
                     if liftMethodIdx >= 0:
                         self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(self.attrLiftMethod))
 
                     for fl in bblInit.fluidCodes:
                         attrMass = QgisPDSProductionDialog.attrFluidMass(fl.code)
-                        attrVol = QgisPDSProductionDialog.attrFluidVolume(fl.code)
+                        attrVol =  QgisPDSProductionDialog.attrFluidVolume(fl.code)
 
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass), feature.attribute(attrMass))
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol), feature.attribute(attrVol))
                     num = num + 1
-
                 if not num:
                     self.layer.addFeatures([feature])
+                self.layer.commitChanges()  # -commit each row
+                self.layer.startEditing()   # -and start edit again
+                    
+
+            ############################
+            ####### RESTORE BLOCK
+            ############################
+#             for feature in self.mWells.values():                                 #--- iterate over each record in result
+#                 args = (self.attrWellId, feature.attribute(self.attrWellId))
+#                 expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in layer record with that WELL_ID
+#                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
+# 
+#                 num = 0
+#                 for f in searchRes:
+#                     refreshed = True
+#                     if self.mUpdateWellLocation.isChecked():
+#                         self.layer.changeGeometry(f.id(), feature.geometry())
+# 
+#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrDays)      , feature.attribute(self.attrDays))
+#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbol)    , feature.attribute(self.attrSymbol))
+#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbolId)  , feature.attribute(self.attrSymbolId))
+#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbolName), feature.attribute(self.attrSymbolName))
+#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex('ResState')         , feature.attribute('ResState'))
+#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex('MovingRes')        , feature.attribute('MovingRes'))
+#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex('MultiProd')        , feature.attribute('MultiProd'))
+#                     if liftMethodIdx >= 0:
+#                         self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(self.attrLiftMethod))
+# 
+#                     for fl in bblInit.fluidCodes:
+#                         attrMass = QgisPDSProductionDialog.attrFluidMass(fl.code)
+#                         attrVol = QgisPDSProductionDialog.attrFluidVolume(fl.code)
+# 
+#                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass), feature.attribute(attrMass))
+#                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol), feature.attribute(attrVol))
+#                     num = num + 1
+#                 if not num:
+#                     self.layer.addFeatures([feature])
+
                     
                         
         if refreshed:
