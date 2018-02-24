@@ -324,34 +324,38 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             #Create Group/Set
             self.createGroupSet(groupNameToSave, setNameToSave)
 
-            isPointsGeom = True
+            isPointsGeom = 0
             features = self.currentLayer.getFeatures()
             for f in features:
                 geom = f.geometry()
-                t = geom.wkbType()
+                if geom:
+                    t = geom.wkbType()
 
-                if t == QGis.WKBPoint:
-                    isPointsGeom = True
-                    break
-                elif t == QGis.WKBMultiPoint:
-                    mpt = geom.asMultiPoint()
-                    ll = len(mpt)
-                    if ll > 1:
-                        isPointsGeom = False
-                    else:
-                        isPointsGeom = True
-                    break
-                elif t == QGis.WKBLineString:
-                    isPointsGeom = False
-                    break
-                elif t == QGis.WKBPolygon:
-                    isPointsGeom = False
-                    break
+                    if t == QGis.WKBPoint:
+                        isPointsGeom = 1
+                        break
+                    elif t == QGis.WKBMultiPoint:
+                        mpt = geom.asMultiPoint()
+                        ll = len(mpt)
+                        if ll > 1:
+                            isPointsGeom = 2
+                        else:
+                            isPointsGeom = 1
+                        break
+                    elif t == QGis.WKBLineString:
+                        isPointsGeom = 2
+                        break
+                    elif t == QGis.WKBPolygon:
+                        isPointsGeom = 2
+                        break
 
-            if isPointsGeom:
+            if isPointsGeom == 1:
                 self.processAsPoints()
-            else:
+            elif isPointsGeom == 2:
                 self.processAsMultiPoints()
+            else:
+                QtGui.QMessageBox.critical(self, self.tr('Error'), self.tr('Unknown geometry type'))
+                return
 
         self.iface.messageBar().pushMessage(self.tr('{0}/{1} is saved.')
                                                     .format(groupNameToSave, setNameToSave), duration=20)
@@ -401,21 +405,22 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                     parameter = float(par)
 
             geom = f.geometry()
-            t = geom.wkbType()
-            pt = None
-            if t == QGis.WKBPoint:
-                pt = self.xform.transform(geom.asPoint())
-            elif t == QGis.WKBMultiPoint:
-                mpt = geom.asMultiPoint()
-                if len(mpt):
-                    pt = self.xform.transform(mpt[0])
+            if geom:
+                t = geom.wkbType()
+                pt = None
+                if t == QGis.WKBPoint:
+                    pt = self.xform.transform(geom.asPoint())
+                elif t == QGis.WKBMultiPoint:
+                    mpt = geom.asMultiPoint()
+                    if len(mpt):
+                        pt = self.xform.transform(mpt[0])
 
-            if pt:
-                pointsX.append(pt.x())
-                pointsY.append(pt.y())
-                if parameter == self.noDataValue:
-                    parameter = 1E+20
-                params.append(parameter)
+                if pt:
+                    pointsX.append(pt.x())
+                    pointsY.append(pt.y())
+                    if parameter == self.noDataValue:
+                        parameter = 1E+20
+                    params.append(parameter)
 
             prevKey = key
 
@@ -468,35 +473,36 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                     parameter = float(par)
 
             geom = f.geometry()
-            pointsX = []
-            pointsY = []
-            params = []
-            t = geom.wkbType()
-            if t == QGis.WKBMultiPoint:
-                mpt = geom.asMultiPoint()
-                for pt in mpt:
-                    newPt = self.xform.transform(pt)
-                    pointsX.append(newPt.x())
-                    pointsY.append(newPt.y())
-                    params.append(parameter)
-                self.writePoints(pointsX, pointsY, params, paramName)
-            elif t == QGis.WKBLineString:
-                mpt = geom.asPolyline()
-                for pt in mpt:
-                    newPt = self.xform.transform(pt)
-                    pointsX.append(newPt.x())
-                    pointsY.append(newPt.y())
-                    params.append(parameter)
-                self.writePoints(pointsX, pointsY, params, paramName)
-            elif t == QGis.WKBPolygon:
-                mpt = geom.asPolygon()
-                for polyline in mpt:
-                    for pt in polyline:
+            if geom:
+                pointsX = []
+                pointsY = []
+                params = []
+                t = geom.wkbType()
+                if t == QGis.WKBMultiPoint:
+                    mpt = geom.asMultiPoint()
+                    for pt in mpt:
                         newPt = self.xform.transform(pt)
                         pointsX.append(newPt.x())
                         pointsY.append(newPt.y())
                         params.append(parameter)
                     self.writePoints(pointsX, pointsY, params, paramName)
+                elif t == QGis.WKBLineString:
+                    mpt = geom.asPolyline()
+                    for pt in mpt:
+                        newPt = self.xform.transform(pt)
+                        pointsX.append(newPt.x())
+                        pointsY.append(newPt.y())
+                        params.append(parameter)
+                    self.writePoints(pointsX, pointsY, params, paramName)
+                elif t == QGis.WKBPolygon:
+                    mpt = geom.asPolygon()
+                    for polyline in mpt:
+                        for pt in polyline:
+                            newPt = self.xform.transform(pt)
+                            pointsX.append(newPt.x())
+                            pointsY.append(newPt.y())
+                            params.append(parameter)
+                        self.writePoints(pointsX, pointsY, params, paramName)
 
 
     def writeSurface(self):
