@@ -437,6 +437,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.fixedDiagrammSize.setEnabled(isOn)
         self.scaledSizeFrame.setEnabled(not isOn)
 
+    #Calculate max value for diagramm size attribute
     @pyqtSlot()
     def on_scalePushButton_clicked(self):
         if not self.currentLayer:
@@ -516,7 +517,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 pass
             self.currentLayer = saveLayer
 
-
+    #Edit diagramm title finished
     def on_titleEdit_editingFinished(self):
         idx = self.mDiagrammsListWidget.currentRow()
         if idx >= 0:
@@ -525,10 +526,11 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             item.setText(self.titleEdit.text())
 
 
+    #OK button pressed
     def on_buttonBox_accepted(self):
         self.setup(self.currentLayer)
 
-    # SLOT
+    # OK or APPLY button pressed
     def on_buttonBox_clicked(self, btn):
         if self.buttonBox.buttonRole(btn) == QDialogButtonBox.ApplyRole:
             self.setup(self.currentLayer)
@@ -993,7 +995,6 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         self.currentLayer.setCustomProperty("maxDiagrammSize", self.maxDiagrammSize.value())
         self.currentLayer.setCustomProperty("minDiagrammSize", self.minDiagrammSize.value())
-        self.currentLayer.setCustomProperty("alwaysShowZero", int(self.mShowZero.isChecked()))
         self.currentLayer.setCustomProperty("defaultSymbolSize", self.mSymbolSize.value())
 
         num = 1
