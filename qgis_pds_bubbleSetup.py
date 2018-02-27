@@ -783,7 +783,8 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             expression = self.labelAttributeModel.data(index, Qt.DisplayRole)
 
             index = self.labelAttributeModel.index(row, AttributeTableModel.ColorColumn)
-            colorStr = self.labelAttributeModel.data(index, Qt.DisplayRole)
+            color =  QColor(self.labelAttributeModel.data(index, Qt.DisplayRole))
+            colorStr = color.name()
 
             index = self.labelAttributeModel.index(row, AttributeLabelTableModel.ShowZeroColumn)
             showZero = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
@@ -860,7 +861,10 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 index = self.labelAttributeModel.index(row, col)
                 idxStr = '{0}_{1}'.format(row, col)
                 data = self.currentLayer.customProperty('PDS/diagramm_labelAttribute_' + idxStr)
-                self.labelAttributeModel.setData(index, data, Qt.EditRole)
+                if col > AttributeTableModel.ColorColumn:
+                    self.labelAttributeModel.setData(index, int(data), Qt.CheckStateRole)
+                else:
+                    self.labelAttributeModel.setData(index, data, Qt.EditRole)
 
         return True
 
