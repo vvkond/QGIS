@@ -34,7 +34,7 @@ class AttributeTableModel(QAbstractTableModel):
     def columnCount(self, parent=QModelIndex()):
         return len(self.headerdata)
 
-    def insertRows(self, row, count, parent):
+    def insertRows(self, row, count, parent = QModelIndex()):
         if row < 0:
             row = 0
 
@@ -46,7 +46,7 @@ class AttributeTableModel(QAbstractTableModel):
         self.endInsertRows()
         return True
 
-    def removeRows(self, row, count, parent):
+    def removeRows(self, row, count, parent = QModelIndex()):
         self.beginRemoveRows(parent, row, row + count -1)
         for r in xrange(0, count):
             del self.arraydata[r + row]
@@ -104,6 +104,8 @@ class AttributeTableModel(QAbstractTableModel):
 
 #Table model for Labels TableView
 class AttributeLabelTableModel(AttributeTableModel):
+    ShowZeroColumn = 2
+    NewLineColumn = 3
     FilterColumn = 4
     def __init__(self, headerData, parent=None):
         AttributeTableModel.__init__(self, headerData, parent)
@@ -146,13 +148,13 @@ class AttributeLabelTableModel(AttributeTableModel):
             return AttributeTableModel.setData(self, index, value, role)
 
 
-    def insertRows(self, row, count, parent):
+    def insertRows(self, row, count, parent = QModelIndex()):
         if row < 0:
             row = 0
 
         self.beginInsertRows(parent, row, count + row - 1)
         for i in xrange(0, count):
-            newRow = ['', QColor(255, 0, 0), Qt.Unchecked, Qt.Unchecked, '']
+            newRow = ['', QColor(0, 0, 0), Qt.Unchecked, Qt.Unchecked, '']
             self.arraydata.insert(i + row, newRow)
 
         self.endInsertRows()
@@ -206,7 +208,7 @@ class ExpressionDelegate(QStyledItemDelegate):
             index1 = model.index(index.row(), AttributeTableModel.DescrColumn)
             descr = model.data(index1, Qt.DisplayRole)
 
-            if len(descr) < 2:
+            if not descr or len(descr) < 2:
                 model.setData(index1, text, Qt.EditRole)
                 model.dataChanged.emit(index1, index1)
 
@@ -279,10 +281,10 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         #Setup Labels TableView
         self.labelAttributeModel = AttributeLabelTableModel([self.tr(u'Attribute'), self.tr(u'Color'),
                                                             self.tr(u'Show zero'), self.tr(u'New line')], self)
-        self.labelFilteredModel = AttributeFilterProxy(self)
-        self.labelFilteredModel.setSourceModel(self.labelAttributeModel)
+        # self.labelFilteredModel = AttributeFilterProxy(self)
+        # self.labelFilteredModel.setSourceModel(self.labelAttributeModel)
 
-        self.labelAttributeTableView.setModel(self.labelFilteredModel)
+        self.labelAttributeTableView.setModel(self.labelAttributeModel)
         self.labelAttributeTableView.horizontalHeader().setResizeMode(0, QHeaderView.Stretch)
 
         labelExprDelegate = ExpressionDelegate(layer, False, self)
@@ -294,18 +296,11 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         #Add FieldExpression for maximum value calculate
         self.maxValueAttribute = QgsFieldExpressionWidget(self)
         self.maxValueAttribute.setLayer(self.currentLayer)
+        self.maxValueAttribute.fieldChanged.connect(self.maxValueAttribute_fieldChanged)
         self.scaledSizeGridLayout.addWidget(self.maxValueAttribute, 0, 1, 1, 2)
 
-        self.standardDiagramms = {
-                    "1_liquidproduction": MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0]),
-                    "2_liquidinjection": MyStruct(name=u'Диаграмма закачки', scale=300000, testval=1,unitsType=0, units=0, fluids=[0, 0, 0, 0, 1, 1, 0, 0]),
-                    "3_gasproduction": MyStruct(name=u"Диаграмма газа", scale=300000, testval=1,unitsType=1, units=0, fluids=[0, 1, 0, 0, 0, 0, 0, 0]),
-                    "4_condensatproduction": MyStruct(name=u"Диаграмма конденсата", scale=3000000, testval=1,unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0])
-                }
 
         self.layerDiagramms = []
-
-
 
 
         self.bubbleProps = None
@@ -380,7 +375,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.labelAttributeModel.insertRow(curRow)
 
         self.labelAttributeModel.setDiagramm(curRow, self.currentDiagrammId)
-        self.labelFilteredModel.setFilter(self.currentDiagrammId)
+        # self.labelFilteredModel.setFilter(self.currentDiagrammId)
 
     @pyqtSlot()
     def on_deleteLabelAttributePushButton_clicked(self):
@@ -389,13 +384,17 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         for row in rows:
             self.labelAttributeTableView.model().removeRow(row)
 
-    def addDiagramm(self):
+    def createMyStruct(self):
         newName = u'Диаграмма {}'.format(len(self.layerDiagramms) + 1)
-        d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=self.defaultUnitNum,
-                     attributes=[], diagrammId=self.diagrammId)
+        return MyStruct(name=newName, scale=300000, scaleType=0, scaleAttribute='',
+                        scaleMinRadius = 3, scaleMaxRadius = 15,
+                        fixedSize = 15, diagrammId=self.diagrammId)
+
+    def addDiagramm(self):
+        d = self.createMyStruct()
         self.layerDiagramms.append(d)
 
-        item = QtGui.QListWidgetItem(newName)
+        item = QtGui.QListWidgetItem(d.name)
         item.setData(Qt.UserRole, d)
         self.mDiagrammsListWidget.addItem(item)
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
@@ -410,8 +409,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.mDiagrammsListWidget.clear()
 
         if len(self.layerDiagramms) < 1:
-            self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0,
-                                                units=self.defaultUnitNum, attributes=[], diagrammId=self.diagrammId))
+            self.layerDiagramms.append(self.createMyStruct())
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
         for d in self.layerDiagramms:
@@ -437,10 +435,27 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.fixedDiagrammSize.setEnabled(isOn)
         self.scaledSizeFrame.setEnabled(not isOn)
 
+        idx = self.mDiagrammsListWidget.currentRow()
+        if idx >= 0:
+            self.layerDiagramms[idx].scaleType = 0 if isOn else 1
+
+    @pyqtSlot(float)
+    def on_fixedDiagrammSize_valueChanged(self, value):
+        idx = self.mDiagrammsListWidget.currentRow()
+        if idx >= 0:
+            self.layerDiagramms[idx].fixedSize = value
+
+    @pyqtSlot(str)
+    def maxValueAttribute_fieldChanged(self, fieldName):
+        idx = self.mDiagrammsListWidget.currentRow()
+        if idx >= 0:
+            self.layerDiagramms[idx].scaleAttribute = fieldName
+
     #Calculate max value for diagramm size attribute
     @pyqtSlot()
     def on_scalePushButton_clicked(self):
-        if not self.currentLayer:
+        idx = self.mDiagrammsListWidget.currentRow()
+        if not self.currentLayer or idx < 0:
             return;
 
         maxValue = 0.0;
@@ -463,21 +478,26 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             maxValue = float(self.currentLayer.maximumValue(attributeNumber))
 
         self.scaleEdit.setValue(maxValue);
+        self.layerDiagramms[idx].scale = maxValue
 
     #Change current diagramm
     def on_mDiagrammsListWidget_currentRowChanged(self, row):
         if row < 0:
             return
 
-        item = self.mDiagrammsListWidget.item(row)
-        diagramm = item.data(Qt.UserRole)
+        diagramm = self.layerDiagramms[row]
 
         self.scaleEdit.setValue(diagramm.scale)
         self.titleEdit.setText(diagramm.name)
-
+        self.maxValueAttribute.setField(diagramm.scaleAttribute)
+        self.minDiagrammSize.setValue(diagramm.scaleMinRadius)
+        self.maxDiagrammSize.setValue(diagramm.scaleMaxRadius)
+        self.fixedDiagrammSize.setValue(diagramm.fixedSize)
+        self.fixedSizeRadioButton.setChecked(diagramm.scaleType == 0)
+        self.scaledSizeRadioButton.setChecked(diagramm.scaleType == 1)
 
         self.filteredModel.setFilter(self.currentDiagrammId)
-        self.labelFilteredModel.setFilter(self.currentDiagrammId)
+        # self.labelFilteredModel.setFilter(self.currentDiagrammId)
 
     #Delete current diagramm
     def mDeleteDiagramm_clicked(self):
@@ -486,6 +506,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         idx = self.mDiagrammsListWidget.currentRow()
         if idx >= 0:
+            for row in xrange(self.filteredModel.rowCount()):
+                self.filteredModel.removeRow(row)
+
             self.mDiagrammsListWidget.takeItem(idx)
             del self.layerDiagramms[idx]
 
@@ -511,7 +534,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             saveLayer = self.currentLayer
             self.currentLayer = lay
             try:
-                if self.readSettingsNew():
+                if self.readSettings():
                     self.updateWidgets()
             except:
                 pass
@@ -524,6 +547,26 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             self.layerDiagramms[idx].name = self.titleEdit.text()
             item = self.mDiagrammsListWidget.item(idx)
             item.setText(self.titleEdit.text())
+
+    def scaleValueEditingFinished(self):
+        idx = self.mDiagrammsListWidget.currentRow()
+        if idx >= 0:
+            self.layerDiagramms[idx].scale = self.scaleEdit.value()
+
+    @pyqtSlot(float)
+    def on_maxDiagrammSize_valueChanged(self, val):
+        self.minDiagrammSize.blockSignals(True)
+        self.minDiagrammSize.setMaximum(val)
+        self.minDiagrammSize.blockSignals(False)
+        idx = self.mDiagrammsListWidget.currentRow()
+        if idx >= 0:
+            self.layerDiagramms[idx].scaleMaxRadius = val
+
+    @pyqtSlot(float)
+    def on_minDiagrammSize_valueChanged(self, val):
+        idx = self.mDiagrammsListWidget.currentRow()
+        if idx >= 0:
+            self.layerDiagramms[idx].scaleMinRadius = val
 
 
     #OK button pressed
@@ -549,12 +592,10 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
     def setup(self, editLayer):
 
-        self.applySettings()
+        self.saveSettings()
 
-        maxDiagrammSize = self.maxDiagrammSize.value()
-        minDiagrammSize = self.minDiagrammSize.value()
-        if maxDiagrammSize < minDiagrammSize:
-            maxDiagrammSize = minDiagrammSize
+        context = self.createExpressionContext()
+
 
         editLayerProvider = editLayer.dataProvider()
 
@@ -576,82 +617,81 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 diagLabel += '\n'
             diagLabel += u'{0} {1}'.format(d.name, d.scale)
 
-        iter = editLayerProvider.getFeatures()
-
-        maxSum = 0.0
-        for feature in iter:
-            for d in self.layerDiagramms:
-                vec = d.fluids
-                if d.unitsType == 0:
-                    scaleType = QgisPDSProductionDialog.attrFluidMass("")
-                else:
-                    scaleType = QgisPDSProductionDialog.attrFluidVolume("")
-
-                prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
-
-                sum = 0
-                multiplier = bblInit.unit_to_mult.get(d.units, 1.0)
-                for attrName in prodFields:
-                    attr = attrName + scaleType
-                    if feature[attr] is not None:
-                        val = feature[attr] * multiplier
-                        sum += val
-
-                if maxSum < sum:
-                    maxSum = sum
-
-        if maxSum == 0.0:
-            maxSum = maxSum + 1
 
         iter = editLayerProvider.getFeatures()
         for feature in iter:
             FeatureId = feature.id()
 
-            uniqSymbols[feature['SymbolCode']] = feature['SymbolName']
-
             diagrammSize = 0
             root = ET.Element("root")
-            templateStr = self.templateExpression.text()
             for d in self.layerDiagramms:
-                vec = d.fluids
-                if d.unitsType == 0:
-                    scaleType = QgisPDSProductionDialog.attrFluidMass("")
-                else:
-                    scaleType = QgisPDSProductionDialog.attrFluidVolume("")
+                rows = [r for r in xrange(self.attributeModel.rowCount()) if
+                        self.attributeModel.diagramm(r) == d.diagrammId]
 
-                prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
-
-                koef = (maxDiagrammSize - minDiagrammSize) / maxSum # d.scale
+                koef = (d.scaleMaxRadius - d.scaleMinRadius) / d.scale
                 sum = 0
-                multiplier = bblInit.unit_to_mult.get(d.units, 1.0)
-                for attrName in prodFields:
-                    attr = attrName + scaleType
-                    if feature[attr] is not None:
-                        val = feature[attr] * multiplier
-                        sum += val
+                for row in rows:
+                    index = self.attributeModel.index(row, AttributeTableModel.ExpressionColumn)
+                    expression = self.attributeModel.data(index, Qt.DisplayRole)
+
+                    exp = QgsExpression(expression)
+                    exp.prepare(context)
+                    val = 0.0
+                    if not exp.hasEvalError():
+                        context.setFeature(feature)
+                        val = exp.evaluate(context)
+                    else:
+                        try:
+                            val = feature[expression]
+                        except:
+                            pass
+
+                    if val:
+                        sum += float(val)
 
                 if sum != 0:
-                    diag = ET.SubElement(root, "diagramm", size=str(minDiagrammSize + sum * koef))
-                    for attrName in prodFields:
-                        attr = attrName + scaleType
-                        fluid = self.fluidByCode(attrName)
-                        prods[fluid.code] = fluid
-                        if feature[attr] is not None and fluid is not None:
-                            val = feature[attr] * multiplier
-                            percent = val / sum
-                            ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(fluid.backColor),
-                                          lineColor=QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor),
-                                          fieldName=attr).text = str(percent)
+                    if d.scaleType == 0:
+                        diag = ET.SubElement(root, "diagramm", size=str(d.fixedSize))
+                        diagrammSize = d.fixedSize
+                    else:
+                        ds = d.scaleMinRadius + sum * koef
+                        if ds > d.scaleMaxRadius:
+                            ds = d.scaleMaxRadius
+                        if ds < d.scaleMinRadius:
+                            ds = d.scaleMinRadius
+                        diag = ET.SubElement(root, "diagramm", size=str(ds))
+                        if ds > diagrammSize:
+                            diagrammSize = ds
 
-                if minDiagrammSize + sum * koef > diagrammSize:
-                    diagrammSize = minDiagrammSize + sum * koef
+                    for row in rows:
+                        index = self.attributeModel.index(row, AttributeTableModel.ExpressionColumn)
+                        expression = self.attributeModel.data(index, Qt.DisplayRole)
 
-                templateStr = self.addLabels(templateStr, sum, vec, feature, scaleType, multiplier)
+                        exp = QgsExpression(expression)
+                        exp.prepare(context)
+                        val = 0.0
+                        if not exp.hasEvalError():
+                            context.setFeature(feature)
+                            val = exp.evaluate(context)
+                        else:
+                            try:
+                                val = feature[expression]
+                            except:
+                                pass
 
-            if diagrammSize >= minDiagrammSize:
+                        percent = float(val) / sum
+                        index = self.attributeModel.index(row, AttributeTableModel.ColorColumn)
+                        backColor = QColor(self.attributeModel.data(index, Qt.DisplayRole))
+                        ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(backColor),
+                                      lineColor=QgsSymbolLayerV2Utils.encodeColor(Qt.black),
+                                      fieldName=expression).text = str(percent)
+
+            #Add labels
+            templateStr = self.addLabels(context, feature)
+            if diagrammSize >= d.scaleMinRadius and templateStr:
                 ET.SubElement(root, "label", labelText=templateStr)
 
-            offset = diagrammSize if diagrammSize < maxDiagrammSize else maxDiagrammSize
+            offset = diagrammSize if diagrammSize < d.scaleMaxRadius else d.scaleMaxRadius
             if feature.attribute('LablOffset') is None:
                 editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffX'), offset/3)
                 editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffY'), -offset/3)
@@ -659,7 +699,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('BubbleSize'), diagrammSize)
             editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('BubbleFields'),
                                            ET.tostring(root))
-            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('ScaleType'), scaleType)
+            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('ScaleType'), None)
 
         editLayer.commitChanges()
 
@@ -684,6 +724,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         renderer = QgsRuleBasedRendererV2(symbol)
         root_rule = renderer.rootRule()
+        root_rule.children()[0].setLabel(u'Круговые диаграммы')
 
         if bubbleMeta:
             bubbleProps = {}
@@ -697,41 +738,33 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             symbol1 = QgsMarkerSymbolV2()
             symbol1.changeSymbolLayer(0, bubbleLayer)
             rule = QgsRuleBasedRendererV2.Rule(symbol1)
-            rule.setLabel(u'Скважины')
+            rule.setLabel(u'Сноски')
             root_rule.appendChild(rule)
 
-        # args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
-        sSize = self.mSymbolSize.value()
-        root_rule.children()[0].setLabel(diagLabel)
-        for symId in uniqSymbols:
-            svg = QgsSvgMarkerSymbolLayerV2()
-            svg.setPath(plugin_dir + "/svg/WellSymbol" + str(symId).zfill(3) + ".svg")
-            svg.setSize(sSize)
-            svg.setSizeUnit(QgsSymbolV2.MM)
-            symbol = QgsMarkerSymbolV2()
-            symbol.changeSymbolLayer(0, svg)
+        for d in self.layerDiagramms:
+            rows = [r for r in xrange(self.attributeModel.rowCount()) if
+                    self.attributeModel.diagramm(r) == d.diagrammId]
 
-            rule = QgsRuleBasedRendererV2.Rule(symbol)
-            rule.setLabel(uniqSymbols[symId])
+            koef = (d.scaleMaxRadius - d.scaleMinRadius) / d.scale
+            sum = 0
+            for row in rows:
+                index = self.attributeModel.index(row, AttributeTableModel.ColorColumn)
+                backColor = QColor(self.attributeModel.data(index, Qt.DisplayRole))
 
-            rule.setFilterExpression(u'\"{0}\"={1}'.format("SymbolCode", symId))
-            root_rule.appendChild(rule)
+                index = self.attributeModel.index(row, AttributeTableModel.DescrColumn)
+                name = self.attributeModel.data(index, Qt.DisplayRole)
 
-        for key,ff in prods.iteritems():
-            m = QgsSimpleMarkerSymbolLayerV2()
-            m.setSize(4)
-            m.setSizeUnit(QgsSymbolV2.MM)
-            m.setColor(ff.backColor)
-            symbol = QgsMarkerSymbolV2()
-            symbol.changeSymbolLayer(0, m)
+                m = QgsSimpleMarkerSymbolLayerV2()
+                m.setSize(4)
+                m.setSizeUnit(QgsSymbolV2.MM)
+                m.setColor(backColor)
+                symbol = QgsMarkerSymbolV2()
+                symbol.changeSymbolLayer(0, m)
 
-            rule = QgsRuleBasedRendererV2.Rule(symbol)
-            try:
-                rule.setLabel(QCoreApplication.translate('bblInit', ff.name))
-            except:
-                rule.setLabel(ff.name)
-            rule.setFilterExpression(u'\"SymbolCode\"=-1')
-            root_rule.appendChild(rule)
+                rule = QgsRuleBasedRendererV2.Rule(symbol)
+                rule.setLabel(name)
+                rule.setFilterExpression(u'\"SymbolCode\"=-1')
+                root_rule.appendChild(rule)
 
         renderer.setOrderByEnabled(True)
         orderByClause = QgsFeatureRequest.OrderByClause('BubbleSize', False)
@@ -743,280 +776,137 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         return
 
-    def addLabels(self, templateStr, sum, fluids, feature, scaleType, multiplier):
-        showZero = int(self.mShowZero.isChecked())
-        formatString = "{:."+str(self.decimalEdit.value())+"f}"
-        days = feature["Days"]
-        if days:
-            days = 1.0 / days
-        for idx, v in enumerate(fluids):
-            if v:
-                fluid = bblInit.fluidCodes[idx]
-                code = '%'+str(idx+1)
-                strVal = '0'
-                val = 0.0
-                percentStr = ''
-                if code in templateStr:
-                    attr = fluid.code + scaleType
-                    val = feature[attr]
-                    if val is not None:
-                        val *= multiplier
-                    else:
-                        val = 0
-                    if fluid.inPercent and sum != 0:
-                        val = val / sum * 100
-                        percentStr = '%'
-                    elif self.dailyProduction.isChecked() and days:
-                        val *= days
-                    strVal = formatString.format(val) + percentStr
+    def addLabels(self, context, feature):
+        templateStr = u''
+        for row in xrange(self.labelAttributeModel.rowCount()):
+            index = self.labelAttributeModel.index(row, AttributeTableModel.ExpressionColumn)
+            expression = self.labelAttributeModel.data(index, Qt.DisplayRole)
 
-                colorStr = fluid.labelColor.name()
-                if float(formatString.format(val)) > float(0) or showZero == 1:
-                    templateStr = templateStr.replace(code, '<span><font color="{0}">{1}</font></span>'.format(colorStr,
-                                                                                                               strVal))
+            index = self.labelAttributeModel.index(row, AttributeTableModel.ColorColumn)
+            colorStr = self.labelAttributeModel.data(index, Qt.DisplayRole)
+
+            index = self.labelAttributeModel.index(row, AttributeLabelTableModel.ShowZeroColumn)
+            showZero = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
+
+            index = self.labelAttributeModel.index(row, AttributeLabelTableModel.NewLineColumn)
+            isNewLine = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
+
+            exp = QgsExpression(expression)
+            exp.prepare(context)
+            val = 0.0
+            if not exp.hasEvalError():
+                context.setFeature(feature)
+                val = exp.evaluate(context)
+            else:
+                try:
+                    val = feature[expression]
+                except:
+                    print exp.evalErrorString()
+                    pass
+
+            if val or (not val and showZero):
+                if isNewLine:
+                    templateStr += '<div><span><font color="{0}">{1}</font></span></div>'.format(colorStr, str(val))
                 else:
-                    templateStr = templateStr.replace(code, '')
+                    templateStr += '<span><font color="{0}">{1}</font></span>'.format(colorStr, str(val))
 
-        templateStr = re.sub('^[\,\:\;\.\-/\\_ ]+|[\,\:\;\.\-/\\_ ]+$', '', templateStr)
         return templateStr
 
 
-    def scaleValueEditingFinished(self):
-        idx = self.mDiagrammsListWidget.currentRow()
-        if idx >= 0:
-            self.layerDiagramms[idx].scale = self.scaleEdit.value()
-            # code = self.diagrammType.itemData(idx)
-            # self.standardDiagramms[code].scale = self.scaleEdit.value()
-
-
-    def unitsChanged(self, index):
-        idx = self.mDiagrammsListWidget.currentRow()
-        if idx >= 0:
-            self.layerDiagramms[idx].units = index
-        # self.standardDiagramms[self.currentDiagramm].units = index
-
-
-    def unitsChangedVol(self, index):
-        idx = self.mDiagrammsListWidget.currentRow()
-        if idx >= 0:
-            self.layerDiagramms[idx].units = index+10
-        # self.standardDiagramms[self.currentDiagramm].units = index+10
-
-
-    def componentsItemClicked(self, item):
-        # idx = self.diagrammType.currentIndex()
-        # if idx >= 0:
-        #     code = self.diagrammType.itemData(idx)
-        idx = self.mDiagrammsListWidget.currentRow()
-        if idx >= 0:
-            val = self.layerDiagramms[idx]
-            # val = self.standardDiagramms[code]
-            row = self.componentsList.row(item)
-            val.fluids[row] = 1 if item.checkState() == Qt.Checked else 0
-
-#            self.backColorEdit.setColor(val.backColor
-
-    def on_componentsList_currentRowChanged(self, row):
-        if row < 0:
-            return
-
-        self.backColorEdit.blockSignals(True)
-        self.lineColorEdit.blockSignals(True)
-        self.labelColorEdit.blockSignals(True)
-        self.showInPercent.blockSignals(True)
-
-        self.backColorEdit.setColor(bblInit.fluidCodes[row].backColor)
-        self.lineColorEdit.setColor(bblInit.fluidCodes[row].lineColor)
-        self.labelColorEdit.setColor(bblInit.fluidCodes[row].labelColor)
-        self.showInPercent.setChecked(bblInit.fluidCodes[row].inPercent);
-
-        self.backColorEdit.blockSignals(False)
-        self.lineColorEdit.blockSignals(False)
-        self.labelColorEdit.blockSignals(False)
-        self.showInPercent.blockSignals(False)
-        return
-
-
-    def on_showInPercent_clicked(self):
-        row = self.componentsList.currentRow()
-        if row < 0:
-            return
-
-        bblInit.fluidCodes[row].inPercent = 1 if self.showInPercent.isChecked() else 0
-        return
-
-    #SLOT
-    def backColorChanged(self, color):
-        row = self.componentsList.currentRow()
-        if row < 0:
-            return
-
-        bblInit.fluidCodes[row].backColor = color
-        return
-
-
-    def lineColorChanged(self, color):
-        row = self.componentsList.currentRow()
-        if row < 0:
-            return
-
-        bblInit.fluidCodes[row].lineColor = color
-        return
-
-
-    def labelColorChanged(self, color):
-        row = self.componentsList.currentRow()
-        if row < 0:
-            return
-
-        bblInit.fluidCodes[row].labelColor = color
-        return
-
-
-    # def on_diagrammType_editTextChanged(self, text):
-    #     idx = self.diagrammType.currentIndex()
-    #     if idx >= 0:
-    #         self.diagrammType.setItemText(idx, text);
-    #         code = self.diagrammType.itemData(idx)
-    #         self.standardDiagramms[code].name = text
-
-    def on_addToTemplate_pressed(self):
-        row = self.componentsList.currentRow()
-        if row < 0:
-            return
-
-        tmpStr = self.templateExpression.text()
-        if self.mNewLineCheckBox.isChecked():
-            self.templateExpression.setText(tmpStr + '<div>%' + str(row + 1) + '</div>')
-        else:
-            self.templateExpression.setText(tmpStr + '-%' + str(row+1))
-
-    def on_maxDiagrammSize_valueChanged(self, val):
-        if type(val) is float:
-            self.minDiagrammSize.blockSignals(True)
-            self.minDiagrammSize.setMaximum(val)
-            self.minDiagrammSize.blockSignals(False)
-
-
-    #Read layer settings
     def readSettings(self):
-        try:
-            if self.readSettingsNew():
-                return
-        except:
-            return
-
-        self.currentDiagramm = self.bubbleProps['diagrammType'] if 'diagrammType' in self.bubbleProps else '1_liquidproduction'
-        # self.maxDiagrammSize.setValue(float(self.bubbleProps["maxDiagrammSize"]) if 'maxDiagrammSize' in self.bubbleProps else 0.01)
-        # self.minDiagrammSize.setValue(float(self.bubbleProps["minDiagrammSize"]) if 'minDiagrammSize' in self.bubbleProps else 0.0)
-
-        for d in self.standardDiagramms:
-            val = self.standardDiagramms[d]
-            name = self.bubbleProps['diagramm_name_'+d] if 'diagramm_name_'+d in self.bubbleProps else ''
-            if name :
-                val.name = name
-            val.scale = float(self.bubbleProps['diagramm_scale_'+d]) if 'diagramm_scale_'+d in self.bubbleProps else val.scale
-            val.unitsType =  int(self.bubbleProps['diagramm_unitsType_'+d]) if 'diagramm_unitsType_'+d in self.bubbleProps else val.unitsType
-            val.units = int(self.bubbleProps['diagramm_units_'+d]) if 'diagramm_units_'+d in self.bubbleProps else val.units
-            if 'diagramm_fluids_'+d in self.bubbleProps :
-                val.fluids = QgsSymbolLayerV2Utils.decodeRealVector(self.bubbleProps['diagramm_fluids_'+d])
-            self.standardDiagramms[d] = val
-
-        scope = QgsExpressionContextUtils.layerScope(self.currentLayer)
-
-        self.labelSizeEdit.setValue(float(self.bubbleProps['labelSize']) if 'labelSize' in self.bubbleProps else self.labelSizeEdit.value() )
-        self.decimalEdit.setValue(int(self.bubbleProps['decimal']) if 'decimal' in self.bubbleProps else self.decimalEdit.value())
-        self.templateExpression.setText(self.bubbleProps['labelTemplate'] if 'labelTemplate' in self.bubbleProps else self.templateExpression.text())
-        self.showLineouts.setChecked(int(self.bubbleProps['showLineout']) if 'showLineout' in self.bubbleProps else 1)
-
-        for fl in bblInit.fluidCodes:
-            if 'fluid_background_'+fl.code in self.bubbleProps:
-                fl.backColor = QgsSymbolLayerV2Utils.decodeColor(self.bubbleProps['fluid_background_'+fl.code])
-            if 'fluid_line_color_'+fl.code in self.bubbleProps:
-                fl.lineColor = QgsSymbolLayerV2Utils.decodeColor(self.bubbleProps['fluid_line_color_'+fl.code])
-            if 'fluid_label_color_'+fl.code in self.bubbleProps:
-                fl.labelColor = QgsSymbolLayerV2Utils.decodeColor(self.bubbleProps['fluid_label_color_'+fl.code])
-            if 'fluid_inPercent_'+fl.code in self.bubbleProps:
-                fl.inPercent = int(self.bubbleProps['fluid_inPercent_'+fl.code])
-
-        return
-
-    #Write layer settings
-    def applySettings(self):
-        try:
-            self.saveSettings()
-        except:
-            pass
-
-        return
-
-    def readSettingsNew(self):
-        self.currentDiagramm = '1_liquidproduction'
-        self.maxDiagrammSize.setValue(float(self.currentLayer.customProperty('maxDiagrammSize', 15)))
-        self.minDiagrammSize.setValue(float(self.currentLayer.customProperty('minDiagrammSize', 3.0)))
-        self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
-        self.mSymbolSize.setValue(float(self.currentLayer.customProperty("defaultSymbolSize", 4.0)))
-
-        count = int(self.currentLayer.customProperty("diagrammCount", 0))
+        count = int(self.currentLayer.customProperty("PDS/diagrammCount", 0))
         if count < 1:
             return False
+
+        # self.mSymbolSize.setValue(float(self.currentLayer.customProperty("PDS/symbolSize", 4)))
+        self.labelSizeEdit.setValue(float(self.currentLayer.customProperty("PDS/labelSize", 7)))
+        self.showLineouts.setChecked(True if self.currentLayer.customProperty("PDS/showLineouts", 'true') == 'true' else False)
 
         self.layerDiagramms = []
         for num in xrange(count):
             d = str(num+1)
-            val = MyStruct()
-            val.name = self.currentLayer.customProperty('diagramm_name_' + d, "--")
-            val.scale = float(self.currentLayer.customProperty('diagramm_scale_' + d, 300000))
-            val.unitsType = int(self.currentLayer.customProperty('diagramm_unitsType_' + d, 0))
-            val.units = int(self.currentLayer.customProperty('diagramm_units_' + d, 0))
-            val.fluids = QgsSymbolLayerV2Utils.decodeRealVector(self.currentLayer.customProperty('diagramm_fluids_' + d))
-            self.layerDiagramms.append(val)
+            val = self.createMyStruct()
+            try:
+                val.name = self.currentLayer.customProperty('PDS/diagramm_name_' + d, "--")
+                val.scale = float(self.currentLayer.customProperty('PDS/diagramm_scale_' + d, 300000))
+                val.scaleType = int(self.currentLayer.customProperty('PDS/diagramm_scaleType_' + d, 0))
+                val.scaleAttribute = self.currentLayer.customProperty('PDS/diagramm_scaleAttribute_' + d, '')
+                val.fixedSize = float(self.currentLayer.customProperty('PDS/diagramm_fixedSize_' + d, 15))
+                val.scaleMinRadius = float(self.currentLayer.customProperty('PDS/diagramm_scaleMinRadius_' + d, 3))
+                val.scaleMaxRadius = float(self.currentLayer.customProperty('PDS/diagramm_scaleMaxRadius_' + d, 15))
+                val.diagrammId = int(self.currentLayer.customProperty('PDS/diagramm_diagrammId_' + d, 0))
+                self.layerDiagramms.append(val)
+            except:
+                pass
 
-        self.labelSizeEdit.setValue(float(self.currentLayer.customProperty('labelSize', self.labelSizeEdit.value())))
-        self.decimalEdit.setValue(int(self.currentLayer.customProperty('decimal', self.decimalEdit.value())))
-        self.templateExpression.setText(self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()))
-        self.showLineouts.setChecked(int(self.currentLayer.customProperty('showLineout')))
-        for fl in bblInit.fluidCodes:
-            backColor = self.currentLayer.customProperty('fluid_background_' + fl.code,
-                                                            QgsSymbolLayerV2Utils.encodeColor(fl.backColor))
-            fl.backColor = QgsSymbolLayerV2Utils.decodeColor(backColor)
-            lineColor = self.currentLayer.customProperty('fluid_line_color_' + fl.code,
-                                                            QgsSymbolLayerV2Utils.encodeColor(fl.lineColor))
-            fl.lineColor = QgsSymbolLayerV2Utils.decodeColor(lineColor)
-            labelColor = self.currentLayer.customProperty('fluid_label_color_' + fl.code,
-                                                             QgsSymbolLayerV2Utils.encodeColor(fl.labelColor))
-            fl.labelColor = QgsSymbolLayerV2Utils.decodeColor(labelColor)
-            fl.inPercent = int(self.currentLayer.customProperty('fluid_inPercent_' + fl.code))
+        count = int(self.currentLayer.customProperty('PDS/diagramm_attributeCount', 0))
+        self.attributeModel.insertRows(0, count)
+        for row in xrange(count):
+            self.attributeModel.setDiagramm(row, int(self.currentLayer.customProperty('PDS/diagramm_filter_' + str(row))))
+            for col in xrange(self.attributeModel.columnCount()):
+                try:
+                    idxStr = '{0}_{1}'.format(row, col)
+                    data = self.currentLayer.customProperty('PDS/diagramm_attribute_' + idxStr)
+                    index = self.attributeModel.index(row, col)
+                    self.attributeModel.setData(index, data, Qt.EditRole)
+                except:
+                    pass
+
+        count = int(self.currentLayer.customProperty('PDS/diagramm_labelCount', 0))
+        self.labelAttributeModel.insertRows(0, count)
+        for row in xrange(count):
+            self.labelAttributeModel.setDiagramm(row, int(self.currentLayer.customProperty('PDS/diagramm_labelfilter_' + str(row))))
+            for col in xrange(self.labelAttributeModel.columnCount()):
+                index = self.labelAttributeModel.index(row, col)
+                idxStr = '{0}_{1}'.format(row, col)
+                data = self.currentLayer.customProperty('PDS/diagramm_labelAttribute_' + idxStr)
+                self.labelAttributeModel.setData(index, data, Qt.EditRole)
 
         return True
 
+
     def saveSettings(self):
-        self.currentLayer.setCustomProperty("diagrammCount", len(self.layerDiagramms))
+        self.currentLayer.setCustomProperty("PDS/diagrammCount", len(self.layerDiagramms))
+        # self.currentLayer.setCustomProperty("PDS/symbolSize", self.mSymbolSize.value())
+        self.currentLayer.setCustomProperty("PDS/labelSize", self.labelSizeEdit.value())
+        self.currentLayer.setCustomProperty("PDS/showLineouts", 'true' if self.showLineouts.isChecked() else 'false')
 
-        self.currentLayer.setCustomProperty("maxDiagrammSize", self.maxDiagrammSize.value())
-        self.currentLayer.setCustomProperty("minDiagrammSize", self.minDiagrammSize.value())
-        self.currentLayer.setCustomProperty("defaultSymbolSize", self.mSymbolSize.value())
-
+        #Write common diagramm properties
         num = 1
         for val in self.layerDiagramms:
             d = str(num)
-            self.currentLayer.setCustomProperty('diagramm_name_' + d, val.name)
-            self.currentLayer.setCustomProperty('diagramm_scale_' + d, val.scale)
-            self.currentLayer.setCustomProperty('diagramm_unitsType_' + d, val.unitsType)
-            self.currentLayer.setCustomProperty('diagramm_units_' + d, val.units)
-            self.currentLayer.setCustomProperty('diagramm_fluids_' + d,
-                                                QgsSymbolLayerV2Utils.encodeRealVector(val.fluids))
+            self.currentLayer.setCustomProperty('PDS/diagramm_name_' + d, val.name)
+            self.currentLayer.setCustomProperty('PDS/diagramm_scale_' + d, val.scale)
+            self.currentLayer.setCustomProperty('PDS/diagramm_scaleType_' + d, val.scaleType)
+            self.currentLayer.setCustomProperty('PDS/diagramm_scaleAttribute_' + d, val.scaleAttribute)
+            self.currentLayer.setCustomProperty('PDS/diagramm_fixedSize_' + d, val.fixedSize)
+            self.currentLayer.setCustomProperty('PDS/diagramm_scaleMinRadius_' + d, val.scaleMinRadius)
+            self.currentLayer.setCustomProperty('PDS/diagramm_scaleMaxRadius_' + d, val.scaleMaxRadius)
+            self.currentLayer.setCustomProperty('PDS/diagramm_diagrammId_' + d, val.diagrammId)
             num = num + 1
 
-        self.currentLayer.setCustomProperty('labelSize', self.labelSizeEdit.value())
-        self.currentLayer.setCustomProperty('decimal', self.decimalEdit.value())
-        self.currentLayer.setCustomProperty('labelTemplate', self.templateExpression.text())
-        self.currentLayer.setCustomProperty('showLineout', str(int(self.showLineouts.isChecked())))
-        for fl in bblInit.fluidCodes:
-            self.currentLayer.setCustomProperty('fluid_background_' + fl.code,
-                                                QgsSymbolLayerV2Utils.encodeColor(fl.backColor))
-            self.currentLayer.setCustomProperty('fluid_line_color_' + fl.code,
-                                                QgsSymbolLayerV2Utils.encodeColor(fl.lineColor))
-            self.currentLayer.setCustomProperty('fluid_label_color_' + fl.code,
-                                                QgsSymbolLayerV2Utils.encodeColor(fl.labelColor))
-            self.currentLayer.setCustomProperty('fluid_inPercent_' + fl.code, str(fl.inPercent))
+        #Write attributes
+        self.currentLayer.setCustomProperty('PDS/diagramm_attributeCount', self.attributeModel.rowCount())
+        for row in xrange(self.attributeModel.rowCount()):
+            self.currentLayer.setCustomProperty('PDS/diagramm_filter_' + str(row), self.attributeModel.diagramm(row))
+            for col in xrange(self.attributeModel.columnCount()):
+                index = self.attributeModel.index(row, col)
+                data = self.attributeModel.data(index, Qt.DisplayRole)
+                idxStr = '{0}_{1}'.format(row, col)
+                self.currentLayer.setCustomProperty('PDS/diagramm_attribute_' + idxStr, data)
+
+        #Write label settings
+        self.currentLayer.setCustomProperty('PDS/diagramm_labelCount', self.labelAttributeModel.rowCount())
+        for row in xrange(self.labelAttributeModel.rowCount()):
+            self.currentLayer.setCustomProperty('PDS/diagramm_labelfilter_' + str(row), self.labelAttributeModel.diagramm(row))
+            for col in xrange(self.labelAttributeModel.columnCount()):
+                index = self.labelAttributeModel.index(row, col)
+                if col > AttributeTableModel.ColorColumn:
+                    data = self.labelAttributeModel.data(index, Qt.CheckStateRole)
+                else:
+                    data = self.labelAttributeModel.data(index, Qt.DisplayRole)
+                idxStr = '{0}_{1}'.format(row, col)
+                self.currentLayer.setCustomProperty('PDS/diagramm_labelAttribute_' + idxStr, data)
+
+
+
