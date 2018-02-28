@@ -756,17 +756,17 @@ class QgisPDS(QObject):
 
         prop = currentLayer.customProperty("qgis_pds_type")
         if prop == "pds_wells":
-            dlg = QgisPDSRefreshSetup(proj)
+            dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():
-                self.loadWells(currentLayer, proj, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
+                self.loadWells(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
         elif prop == "pds_current_production":
-            self.loadProduction(currentLayer, proj, True)
+            self.loadProduction(currentLayer, self.currentProject, True)
         elif prop == "pds_cumulative_production":
-            self.loadProduction(currentLayer, proj, False)
+            self.loadProduction(currentLayer, self.currentProject, False)
         elif prop == "pds_well_deviations":
-            dlg = QgisPDSRefreshSetup(proj)
+            dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():
-                self.loadWellDeviations(currentLayer, proj, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
+                self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
 
        
     def addProductionLayer(self):

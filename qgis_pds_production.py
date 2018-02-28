@@ -62,7 +62,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         
         self.attrWellId = u'well_id'
         self.attrLatitude = u'latitude'
-        self.attrLongitude = u'longitud'
+        self.attrLongitude = u'longitude'
         self.attrDays = u'days'
         self.attrSymbolId = u'symbolid'
         self.attrSymbol = u'symbolcode'
@@ -357,8 +357,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     def loadProductionLayer(self, layer):
         self.layer = layer
 
-        prjStr = layer.customProperty("pds_project")
-        self.project = ast.literal_eval(prjStr)
+        # prjStr = layer.customProperty("pds_project")
+        # self.project = ast.literal_eval(prjStr)
 
         if self.project is None:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'No current PDS project'), QtGui.QMessageBox.Ok)
