@@ -122,7 +122,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                         l = QgsGeometry.fromPoint(pt)
                         feat = QgsFeature(self.layer.fields())
                         feat.setGeometry(l)
-                        feat.setAttributes([wellId, value])
+                        feat.setAttributes([wellId, float(value)])
                         self.layer.addFeatures([feat])
 
 
