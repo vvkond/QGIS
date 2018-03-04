@@ -569,8 +569,8 @@ class QgisPDS(QObject):
             callback=self.createIsolines,
             parent=self.iface.mainWindow())
 
-        # self._metadata = BabbleSymbolLayerMetadata()
-        # QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
+        self._metadata = BabbleSymbolLayerMetadata()
+        QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
 
 
     def unload(self):
