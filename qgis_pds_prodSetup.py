@@ -71,7 +71,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             root_rule = renderer.rootRule()
             for r in root_rule.children():
                 for l in r.symbol().symbolLayers():
-                    if l.layerType() == 'BubbleMarker':
+                    if l.layerType() == 'BubbleDiagramm':
                         self.bubbleProps = l.properties()
                         break
                 if self.bubbleProps is not None:
@@ -79,7 +79,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         if self.bubbleProps is None:
             registry = QgsSymbolLayerV2Registry.instance()
-            bubbleMeta = registry.symbolLayerMetadata('BubbleMarker')
+            bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
             if bubbleMeta is not None:
                 bubbleLayer = bubbleMeta.createSymbolLayer({})
                 self.bubbleProps = bubbleLayer.properties()
@@ -608,12 +608,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         registry = QgsSymbolLayerV2Registry.instance()
 
         symbol = QgsMarkerSymbolV2()
-        bubbleMeta = registry.symbolLayerMetadata('BubbleMarker')
+        bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
         if bubbleMeta is not None:
             bubbleProps = {}
-            bubbleProps['showLineout'] = str(int(not self.showLineouts.isChecked()))
-            bubbleProps['showLabels'] = '1'
-            bubbleProps['showDiagramms'] = '1'
+            bubbleProps['showLineouts'] = 'False' if self.showLineouts.isChecked() else 'True'
+            bubbleProps['showLabels'] = 'True'
+            bubbleProps['showDiagramms'] = 'True'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             bubbleLayer.setSize(3)
@@ -627,9 +627,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         if bubbleMeta:
             bubbleProps = {}
-            bubbleProps['showLineout'] = str(int(self.showLineouts.isChecked()))
-            bubbleProps['showLabels'] = '0'
-            bubbleProps['showDiagramms'] = '0'
+            bubbleProps['showLineouts'] = 'True' if self.showLineouts.isChecked() else 'False'
+            bubbleProps['showLabels'] = 'False'
+            bubbleProps['showDiagramms'] = 'False'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             bubbleLayer.setSize(3)

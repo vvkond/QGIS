@@ -177,19 +177,27 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         if self.db is None:
             return mapSetNo
 
+        sql = "SELECT ms.TIG_MAP_SET_NO,ms.TIG_MAP_SET_NAME FROM TIG_MAP_SET ms " \
+              "WHERE ms.TIG_MAP_SET_TYPE = {0} AND ms.TIG_MAP_SET_NAME = '{1}' " \
+              "ORDER BY ms.TIG_MAP_SET_NAME, ms.TIG_MAP_SET_NO".format(self.mapSetType, mapSetName)
         try:
-            sqlFile = os.path.join(self.plugin_dir, 'db', self.groupFile)
-            if os.path.exists(sqlFile):
-                f = open(sqlFile, 'r')
-                sql = f.read()
-                f.close()
+            records = self.db.execute(sql)
+            for rec in records:
+                mapSetNo = rec[0]
+                break
 
-                records = self.db.execute(sql)
-
-                for rec in records:
-                    if rec[1] == mapSetName:
-                        mapSetNo = rec[0]
-                        break
+            # sqlFile = os.path.join(self.plugin_dir, 'db', self.groupFile)
+            # if os.path.exists(sqlFile):
+            #     f = open(sqlFile, 'r')
+            #     sql = f.read()
+            #     f.close()
+            #
+            #     records = self.db.execute(sql)
+            #
+            #     for rec in records:
+            #         if rec[1] == mapSetName:
+            #             mapSetNo = rec[0]
+            #             break
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"), str(e), level=QgsMessageBar.CRITICAL)
 
@@ -277,10 +285,10 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             QtGui.QMessageBox.critical(self, self.tr(u'Save to PDS'), self.tr(u'Group or Set name is empty'))
             return
 
-        self.groupNo = self.getGroupNo(groupNameToSave)
-
         # Set MAP_SET_TYPE
         self.resetMapSetType()
+
+        self.groupNo = self.getGroupNo(groupNameToSave)
 
         if self.groupNo >= 0:
             setNo = self.getSetNo(self.groupNo, groupNameToSave+'/'+setNameToSave)

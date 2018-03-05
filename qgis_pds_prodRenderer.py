@@ -44,9 +44,13 @@ class DiagrammSlice(MyStruct):
     fieldName = ''
     percent = 0.0
 
-class DiagrammDesc(MyStruct):
-    mDiagrammSize = 0.0
-    mSlices = []
+class DiagrammDesc:
+    def __init__(self, diagrammSize, slices):
+        self.mDiagrammSize = diagrammSize
+        self.mSlices = slices
+
+    def __repr__(self):
+        return repr((self.mDiagrammSize, self.mSlices))
 
 class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
@@ -57,10 +61,18 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         self.radius = 4.0
         self.color = QColor(255,0,0)
 
-        self.showLineouts = props[QString("showLineouts")] == "True" if QString("showLineouts") in props else True
-        self.showLabels = props[QString("showLabels")] == "True" if QString("showLabels") in props else True
-        self.showDiagramms = props[QString("showDiagramms")] == "True" if QString("showDiagramms") in props else True
-        self.labelSize = float(props[QString("labelSize")]) if QString("labelSize") in props else 7.0
+        self.showLineouts = True
+        self.showLabels = True
+        self.showDiagramms = True
+        self.labelSize = 7.0
+
+        try:
+            self.showLineouts = props[QString("showLineouts")] == "True" if QString("showLineouts") in props else True
+            self.showLabels = props[QString("showLabels")] == "True" if QString("showLabels") in props else True
+            self.showDiagramms = props[QString("showDiagramms")] == "True" if QString("showDiagramms") in props else True
+            self.labelSize = float(props[QString("labelSize")]) if QString("labelSize") in props else 7.0
+        except:
+            pass
 
         self.mXIndex = -1
         self.mYIndex = -1
@@ -147,18 +159,18 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                     slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc, fieldName=fn)
                     slices.append(slice)
 
-                diagramm = DiagrammDesc(mDiagrammSize = diagrammSize, mSlices = slices)
+                diagramm = DiagrammDesc(diagrammSize, slices)
                 diagramms.append(diagramm)
 
         for label in root.findall('label'):
             labelTemplate = label.attrib['labelText']
 
-        sorted(diagramms, key=lambda diagramm: diagramm.mDiagrammSize)
+        diagramms = sorted(diagramms, key=lambda diagramm: diagramm.mDiagrammSize, reverse=True)
 
         if self.showDiagramms:
             for desc in diagramms:
                 rect = QRectF(point, QSizeF(desc.mDiagrammSize, desc.mDiagrammSize))
-                rect.translate(-diagrammSize / 2, -diagrammSize / 2)
+                rect.translate(-desc.mDiagrammSize / 2, -desc.mDiagrammSize / 2)
                 startAngle = 90.0
                 count = len(desc.mSlices)
                 for slice in desc.mSlices:
