@@ -110,7 +110,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                     l = QgsGeometry.fromPoint(pt)
                     feat = QgsFeature(self.layer.fields())
                     feat.setGeometry(l)
-                    feat.setAttributes([wellId, value])
+                    feat.setAttributes([wellId, float(value)])
                     self.layer.addFeatures([feat])
 
 
@@ -246,6 +246,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         _name = input_row[self.parameter_name_column_index]
         for t in self.read_zonation_params(zonation_params):
             zonation_id, well_id, zone_id, name, type, value = t
+            a=value
             if (
                 zonation_id == _zonation_id and
                 well_id == _well_id and
