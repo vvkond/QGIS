@@ -308,10 +308,11 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         if renderer is not None and renderer.type() == 'RuleRenderer':
             root_rule = renderer.rootRule()
             for r in root_rule.children():
-                for l in r.symbol().symbolLayers():
-                    if l.layerType() == 'BubbleDiagramm':
-                        self.bubbleProps = l.properties()
-                        break
+                if r.symbol():
+                    for l in r.symbol().symbolLayers():
+                        if l.layerType() == 'BubbleDiagramm':
+                            self.bubbleProps = l.properties()
+                            break
                 if self.bubbleProps is not None:
                     break
 
