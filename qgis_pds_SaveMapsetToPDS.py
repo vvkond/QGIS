@@ -257,13 +257,24 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             self.mapSetType = 4
 
 
-    def getMaxSetNumber(self, sql):
+    def getMaxSetNumber(self, name):
+        sql = "select tig_counter_value from tig_system_counter where tig_counter_name='{0}'".format(name)
         records = self.db.execute(sql)
         num = 0
         if records:
             for rec in records:
                 num = num + rec[0]
         return num
+
+    def updateSystemCounter(self, name, value):
+        sql = "update tig_system_counter set tig_counter_value={0} where tig_counter_name='{1}'".format(value, name)
+        try:
+            self.db.execute(sql)
+            self.db.commit()
+            return True
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr("Error"), str(e), level=QgsMessageBar.CRITICAL, duration=30)
+            return False
 
     def executeInsert(self, sql):
         try:
@@ -297,10 +308,10 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                 return
 
         #Get _NO numbers
-        self.maxMapSetNo = self.getMaxSetNumber('select max(tig_map_set_no) from tig_map_set')
-        self.maxMapSubsetNo = self.getMaxSetNumber('select max(tig_map_subset_no) from tig_map_subset')
-        self.maxMapSetParameterNo = self.getMaxSetNumber('select max(tig_map_set_parameter_no) from TIG_MAP_SET_PARAM')
-        self.maxMethodAppNo = self.getMaxSetNumber('select max(TIG_MS_METHOD_APPL_NO) from tig_ms_method_applicaton')
+        self.maxMapSetNo = self.getMaxSetNumber('tig_map_set_no')
+        self.maxMapSubsetNo = self.getMaxSetNumber('tig_map_subset_no')
+        self.maxMapSetParameterNo = self.getMaxSetNumber('tig_map_set_parameter_no')
+        self.maxMethodAppNo = self.getMaxSetNumber('tig_ms_method_appl_no')
 
         if self.currentLayer.type() == QgsMapLayer.RasterLayer:
             self.createGroupSet(groupNameToSave, setNameToSave)
@@ -378,6 +389,9 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                                .format(groupNameToSave, self.groupNo, self.mapSetType, self.interpreter)):
                 return
 
+            if not self.updateSystemCounter('tig_map_set_no', self.groupNo):
+                return
+
         # Create new param set
         self.paramNo = self.maxMapSetParameterNo + 1
         sql1 = ("insert into tig_map_set_param (db_sldnid, tig_param_short_name, TIG_PARAM_LONG_NAME, "
@@ -385,6 +399,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                 "values (TIG_MAP_SET_PARAM_SEQ.nextval, '19', '{0}', {1}, {2}, {3}, {4})"
                 .format(setNameToSave, self.groupNo, self.paramNo, self.mapSetCpSource, self.interpreter))
         self.db.execute(sql1)
+        self.updateSystemCounter('tig_map_set_parameter_no', self.paramNo)
 
     def processAsPoints(self):
         features = self.currentLayer.getFeatures()
@@ -464,6 +479,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.db.execute(sql, blobX=blobvarX, blobY=blobvarY)
         self.db.execute(sql2, paramZ=blobvarZ)
         self.db.commit()
+        self.updateSystemCounter('tig_map_subset_no', subsetNo)
 
         self.maxMapSubsetNo = self.maxMapSubsetNo + 1
 
@@ -594,3 +610,5 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.db.execute(sql3)
         self.db.execute(sql4)
         self.db.commit()
+        self.updateSystemCounter('tig_map_subset_no', subsetNo)
+        self.updateSystemCounter('tig_ms_method_appl_no', methodApplNo)
