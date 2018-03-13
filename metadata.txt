@@ -8,7 +8,7 @@
 
 [general]
 name=PDS
-qgisMinimumVersion=2.0
+qgisMinimumVersion=2.14
 description=PDS link
 version=1.0
 author=Viktor Kondrashov
@@ -17,7 +17,7 @@ email=viktor@gmail.com
 about=Link for PDS
 
 tracker=github.com
-repository=github.com/qgispds
+repository=https://github.com/vvkond/QGIS
 # End of mandatory metadata
 
 # Recommended items:
@@ -28,7 +28,7 @@ repository=github.com/qgispds
 # Tags are comma separated with spaces allowed
 tags=PDS
 
-homepage=tigress.ru
+homepage=https://github.com/vvkond/QGIS
 category=Database
 icon=splash_logo.png
 # experimental flag
