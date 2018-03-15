@@ -150,7 +150,10 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
 
         try:
             if self.mSubsetFields.count() > 0:
-                self.mSubsetFields.setCurrentIndex(self.mSubsetFields.findText('subset_name'))
+                idx = self.mSubsetFields.findText('subset_name')
+                if idx < 0:
+                    idx = self.mSubsetFields.findText('subsetname')
+                self.mSubsetFields.setCurrentIndex(idx)
                 self.mParameterFields.setCurrentIndex(self.mParameterFields.findText('parameter'))
                 self.mKeyFields.setCurrentIndex(self.mKeyFields.findText('subset_no'))
         except:

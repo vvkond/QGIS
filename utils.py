@@ -2,6 +2,7 @@
 
 from qgis.core import *
 import numpy
+import time
 
 class StrictInit(object):
     def __init__(self, **kw):
@@ -55,3 +56,9 @@ def lonlat_add_list(lon, lat, x, y):
     geoPt = toGeo.transform(QgsPoint(x, y))
 
     return geoPt.x(), geoPt.y()
+
+def createLayerName(layerName):
+    layerList = QgsMapLayerRegistry.instance().mapLayersByName(layerName)
+    if len(layerList):
+        layerName = layerName + '  ' + time.strftime('%d-%m-%Y %H:%M:%S', time.localtime())
+    return layerName

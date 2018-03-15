@@ -83,7 +83,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
             if bubbleMeta is not None:
                 bubbleLayer = bubbleMeta.createSymbolLayer({})
-                self.bubbleProps = bubbleLayer.properties()
+                if bubbleLayer:
+                    self.bubbleProps = bubbleLayer.properties()
 
         if self.bubbleProps is None:
             self.bubbleProps = {}

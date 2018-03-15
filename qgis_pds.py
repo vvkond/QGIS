@@ -640,31 +640,46 @@ class QgisPDS(QObject):
 
 
     def createCPointsLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ControlPointReader())
         dlg.exec_()
 
 
     def createContoursLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(0))
         dlg.exec_()
 
 
     def createPolygonsLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(1))
         dlg.exec_()
 
     def createSurfaceLayer(self):
         if not QgsProject.instance().homePath():
             self.iface.messageBar().pushMessage(self.tr('Error'),
-                        self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, SurfaceReader())
         dlg.exec_()
         del dlg
 
 
     def createFaultsLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(2))
         dlg.exec_()
       

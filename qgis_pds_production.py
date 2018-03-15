@@ -68,6 +68,18 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.attrSymbol = u'symbolcode'
         self.attrSymbolName = u'symbolname'
         self.attrLiftMethod = u'liftmethod'
+        self.attr_lablx = "lablx"
+        self.attr_lably = "lably"
+        self.attr_labloffx = "labloffx"
+        self.attr_labloffy = "labloffy"
+        self.attr_labloffset = "labloffset"
+        self.attr_lablwidth = "lablwidth"
+        self.attr_bubblesize = "bubblesize"
+        self.attr_bubblefields = "bubblefields"
+        self.attr_scaletype = "scaletype"
+        self.attr_movingres = "movingres"
+        self.attr_resstate = "resstate"
+        self.attr_multiprod = "multiprod"
 
         self.dateFormat = u'dd/MM/yyyy HH:mm:ss'
 
@@ -271,18 +283,18 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.uri += '&field={}:{}'.format(self.attrSymbol, "integer")
             self.uri += '&field={}:{}'.format(self.attrDays, "double")
             self.uri += '&field={}:{}'.format(self.attrLiftMethod, "string")
-            self.uri += '&field={}:{}'.format("lablx", "double")
-            self.uri += '&field={}:{}'.format("lably", "double")
-            self.uri += '&field={}:{}'.format("labloffx", "double")
-            self.uri += '&field={}:{}'.format("labloffy", "double")
-            self.uri += '&field={}:{}'.format("labloffset", "double")
-            self.uri += '&field={}:{}'.format("lablwidth", "double")
-            self.uri += '&field={}:{}'.format("bubblesize", "double")
-            self.uri += '&field={}:{}'.format("bubblefields", "string")
-            self.uri += '&field={}:{}'.format("scaletype", "string")
-            self.uri += '&field={}:{}'.format("movingres", "string")
-            self.uri += '&field={}:{}'.format("resstate", "string")
-            self.uri += '&field={}:{}'.format("multiprod", "string")
+            self.uri += '&field={}:{}'.format(self.attr_lablx, "double")
+            self.uri += '&field={}:{}'.format(self.attr_lably, "double")
+            self.uri += '&field={}:{}'.format(self.attr_labloffx, "double")
+            self.uri += '&field={}:{}'.format(self.attr_labloffy, "double")
+            self.uri += '&field={}:{}'.format(self.attr_labloffset, "double")
+            self.uri += '&field={}:{}'.format(self.attr_lablwidth, "double")
+            self.uri += '&field={}:{}'.format(self.attr_bubblesize, "double")
+            self.uri += '&field={}:{}'.format(self.attr_bubblefields, "string")
+            self.uri += '&field={}:{}'.format(self.attr_scaletype, "string")
+            self.uri += '&field={}:{}'.format(self.attr_movingres, "string")
+            self.uri += '&field={}:{}'.format(self.attr_resstate, "string")
+            self.uri += '&field={}:{}'.format(self.attr_multiprod, "string")
             for fl in bblInit.fluidCodes:
                 self.uri += '&field={}:{}'.format(QgisPDSProductionDialog.attrFluidVolume(fl.code), "double")
                 self.uri += '&field={}:{}'.format(QgisPDSProductionDialog.attrFluidMass(fl.code), "double")
@@ -338,9 +350,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             palyr.fontSizeInMapUnits = False
             palyr.textFont.setPointSizeF(7)
 
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'','lablx')
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'','lably')
-            # palyr.setDataDefinedProperty(QgsPalLayerSettings.LabelDistance,True,False,'','LablOffset')
+            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'', self.attr_lablx)
+            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'', self.attr_lably)
             palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
 
@@ -431,17 +442,17 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             cSymbol    =self.layer.fieldNameIndex(self.attrSymbol     )
             cSymbolId  =self.layer.fieldNameIndex(self.attrSymbolId   )
             cSymbolName=self.layer.fieldNameIndex(self.attrSymbolName )
-            cResState  =self.layer.fieldNameIndex('ResState'          )
-            cMovingRes =self.layer.fieldNameIndex('MovingRes'         )
-            cMultiProd =self.layer.fieldNameIndex('MultiProd'         )
+            cResState  =self.layer.fieldNameIndex(self.attr_resstate  )
+            cMovingRes =self.layer.fieldNameIndex(self.attr_movingres )
+            cMultiProd =self.layer.fieldNameIndex(self.attr_multiprod )
             attr_2_upd=[  ###old column       old_col_id       new_col    
                          [self.attrDays      ,cDays         ,  self.attrDays]
                         ,[self.attrSymbol    ,cSymbol       ,  self.attrSymbol]
                         ,[self.attrSymbolId  ,cSymbolId     ,  self.attrSymbolId]
                         ,[self.attrSymbolName,cSymbolName   ,  self.attrSymbolName]
-                        ,['ResState'         ,cResState     ,   'ResState']
-                        ,['MovingRes'        ,cMovingRes    ,  'MovingRes']
-                        ,['MultiProd'        ,cMultiProd    ,  'MultiProd']
+                        ,[self.attr_resstate ,cResState     ,  self.attr_resstate]
+                        ,[self.attr_movingres,cMovingRes    ,  self.attr_movingres]
+                        ,[self.attr_multiprod,cMultiProd    ,  self.attr_multiprod]
                         ]
             for feature in self.mWells.values():                                 #--- iterate over each record in result
                 args = (self.attrWellId, feature.attribute(self.attrWellId))
@@ -555,9 +566,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             sumDays = sumDays + self.calcProds(prod, prodWell.name, sumMass, sumVols)
 
         self.setWellAttribute(prodWell.name, self.attrDays, sumDays)
-        self.setWellAttribute(prodWell.name, 'ResState', prodWell.reservoirState)
-        self.setWellAttribute(prodWell.name, 'MovingRes', prodWell.movingReservoir)
-        self.setWellAttribute(prodWell.name, 'MultiProd', prodWell.lastReservoirs)
+        self.setWellAttribute(prodWell.name, self.attr_resstate, prodWell.reservoirState)
+        self.setWellAttribute(prodWell.name, self.attr_movingres, prodWell.movingReservoir)
+        self.setWellAttribute(prodWell.name, self.attr_multiprod, prodWell.lastReservoirs)
         if len(prodWell.liftMethod):
             self.setWellAttribute(prodWell.name, self.attrLiftMethod, prodWell.liftMethod)
         for i, fl in enumerate(bblInit.fluidCodes):

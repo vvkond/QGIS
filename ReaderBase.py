@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4.QtCore import *
+from QgisPDS.utils import *
+from qgis.core import *
+from processing.tools.vector import VectorWriter
+import time
 import os
 
 
@@ -60,3 +64,38 @@ class ReaderBase(QObject):
                 sets.append( rec )
 
         return sets
+
+    def memoryToShp(self, layer, scheme, layerName):
+        settings = QSettings()
+        systemEncoding = settings.value('/UI/encoding', 'System')
+
+        ln = layerName.replace('/', '-').replace('\\', '-')
+        layerFile = '/{0}_{1}_{2}.shp'.format(scheme, ln, time.strftime('%d_%m_%Y_%H_%M_%S', time.localtime()))
+
+        (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
+        if not os.path.exists(prjPath):
+            os.mkdir(prjPath)
+
+        layerFileName = prjPath + layerFile
+
+        provider = layer.dataProvider()
+        fields = provider.fields()
+        writer = VectorWriter(layerFileName, systemEncoding,
+                              fields,
+                              provider.geometryType(), provider.crs())
+        features = layer.getFeatures()
+        for f in features:
+            try:
+                l = f.geometry()
+                feat = QgsFeature(f)
+                feat.setGeometry(l)
+                writer.addFeature(feat)
+            except:
+                pass
+
+        del writer
+
+        layerName = createLayerName(layerName)
+
+        return QgsVectorLayer(layerFileName, layerName, 'ogr')
+

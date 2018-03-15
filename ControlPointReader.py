@@ -22,11 +22,11 @@ class ControlPointReader(ReaderBase):
         self.plugin_dir = os.path.dirname(__file__)
 
         self.setNoAttr = u'set_no'
-        self.parameterNoAttr = u'parameter_no'
+        self.parameterNoAttr = u'param_no'
         self.subsetNoAttr = u'subset_no'
         self.setNameAttr = u'set_name'
         self.paramNameAttr = u'param_name'
-        self.subsetNameAttr = u'subset_name'
+        self.subsetNameAttr = u'subsetname'
         self.parameterAttr = u'parameter'
 
     @cached_property
@@ -61,11 +61,12 @@ class ControlPointReader(ReaderBase):
         self.uri += '&field={}:{}'.format("LablY", "double")
         layer = QgsVectorLayer(self.uri, layerName, "memory")
 
-        layer.startEditing()
+        self.readData(layer, groupSetId)
+
+        layer = self.memoryToShp(layer, pdsProject['project'], layerName)
+
         layer.setCustomProperty("pds_project", str(pdsProject))
         layer.setCustomProperty("qgis_pds_type", "pds_controlpoints")
-
-        self.readData(layer, groupSetId)
 
         palyr = QgsPalLayerSettings()
         palyr.readFromLayer(layer)

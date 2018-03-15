@@ -179,5 +179,8 @@ class bblInit:
 
     @staticmethod
     def isWellLayer(layer):
-        return (layer.customProperty("qgis_pds_type") == "pds_wells")
+        return (layer.customProperty("qgis_pds_type") == "pds_wells" or
+                layer.customProperty("qgis_pds_type") == "pds_well_deviations")
+
+
 
