@@ -175,14 +175,17 @@ class QgisPDS(QObject):
             originY = editGeom.asPoint().y()
             pixelOrig = tr.transform(QgsPoint(originX, originY))
 
-            idxOffX = editLayerProvider.fieldNameIndex('LablOffX')
-            idxOffY = editLayerProvider.fieldNameIndex('LablOffY')
+            idxOffX = editLayerProvider.fieldNameIndex('labloffx')
+            idxOffY = editLayerProvider.fieldNameIndex('labloffy')
             if idxOffX < 0 or idxOffY < 0:
                 editLayerProvider.addAttributes(
-                    [QgsField("LablOffX", QVariant.Double),
-                     QgsField("LablOffY", QVariant.Double)])
-                idxOffX = editLayerProvider.fieldNameIndex('LablOffX')
-                idxOffY = editLayerProvider.fieldNameIndex('LablOffY')
+                    [QgsField("labloffx", QVariant.Double),
+                     QgsField("labloffy", QVariant.Double)])
+                idxOffX = editLayerProvider.fieldNameIndex('labloffx')
+                idxOffY = editLayerProvider.fieldNameIndex('labloffy')
+
+            if editLayerProvider.fieldNameIndex('labloffset') < 0:
+                editLayerProvider.addAttributes([QgsField("labloffset", QVariant.Double)])
 
             if idxOffX < 0 or idxOffY < 0:
                 return
@@ -200,7 +203,7 @@ class QgisPDS(QObject):
 
                 editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablX'), None)
                 editedLayer.changeAttributeValue(FeatureId, idxOffX, mmOffset)
-                editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffset'), 1)
+                editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffset'), 1)
 
             if fieldname == 'LablY':
                 if variant == NULL:  # case when user unpins the label > sets arrow back to arrow based on point location
@@ -214,7 +217,7 @@ class QgisPDS(QObject):
 
                 editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablY'), None)
                 editedLayer.changeAttributeValue(FeatureId, idxOffY, mmOffset)
-                editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffset'), 1)
+                editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffset'), 1)
 
 
 
@@ -410,10 +413,13 @@ class QgisPDS(QObject):
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
+        toolTipText = self.tr(u'Select PDS project')
+        if self.currentProject:
+            toolTipText += ' ({0})'.format(self.currentProject['project'])
         icon_path = ':/plugins/QgisPDS/splash_logo.png'
-        self.add_action(
+        self.selectProjectAction = self.add_action(
             icon_path,
-            text=self.tr(u'Select PDS project'),
+            text=toolTipText,
             callback=self.selectProject,
             status_tip=self.tr(u'Select project'),
             parent=self.iface.mainWindow())
@@ -600,6 +606,10 @@ class QgisPDS(QObject):
         if result:
             self.currentProject = dlg.selectedProject()           
             self.saveSettings()
+            toolTipText = self.tr(u'Select PDS project')
+            if self.currentProject:
+                toolTipText += ' ({0})'.format(self.currentProject['project'])
+            self.selectProjectAction.setToolTip(toolTipText)
       
             
     def createProductionlayer(self):

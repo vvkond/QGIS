@@ -14,6 +14,7 @@ BBL_CONVERTED_SYMBOL = namedtuple('BBL_CONVERTED_SYMBOL', ['initialWellRole', 'c
 BBL_SYMBOL = namedtuple('BBL_SYMBOL', ['wellRole', 'wellStatus', 'symbol'])
 SYMBOL = namedtuple('SYMBOL', ['wellRole', 'symbol'])
 StandardDiagram = namedtuple('StandardDiagram', ['name', 'scale', 'unitsType', 'units', 'fluids'])
+OLD_NEW_FIELDNAMES = [u'BubbleFields', u'bubbleflds']
 
 class MyStruct(object):
     def __init__(self,**kwargs):
@@ -34,30 +35,38 @@ class ProductionWell(MyStruct):
 
 class bblInit:
 
-    fluidCodes = [  MyStruct(name= QCoreApplication.translate('bblInit', u'Crude oil'), code="crude oil",
-                        backColor=QColor(Qt.darkRed),   lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                        inPercent=0),
-                    MyStruct(name=QCoreApplication.translate('bblInit', u'Natural gas'), code="natural gas",
-                        backColor=QColor(Qt.darkYellow), lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                        inPercent=0),
-                    MyStruct(name=QCoreApplication.translate('bblInit', u'Produced water'), code="produced water",
-                        backColor=QColor(Qt.blue),      lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                        inPercent=0),
-                    MyStruct(name=QCoreApplication.translate('bblInit', u'Condensate'), code="condensate",
-                        backColor=QColor(Qt.gray),      lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                        inPercent=0),
-                    MyStruct(name=QCoreApplication.translate('bblInit', u'Injected gas'), code="injected gas",
-                        backColor=QColor(Qt.yellow),    lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                        inPercent=0),
-                    MyStruct(name=QCoreApplication.translate('bblInit', u'Injected water'), code="injected water",
-                        backColor=QColor(0, 160, 230),  lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                        inPercent=0),
-                    MyStruct(name=QCoreApplication.translate('bblInit', u'Lift gas'), code="lift gas",
-                        backColor=QColor(Qt.yellow),    lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                        inPercent=0),
-                    MyStruct(name=QCoreApplication.translate('bblInit', u'Free gas'), code="free gas",
-                        backColor=QColor(Qt.darkYellow), lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                        inPercent=0)]
+    fluidCodes = [  MyStruct(name= QCoreApplication.translate('bblInit', u'Crude oil'),
+                                 code="oil", componentId="crude oil",
+                                 backColor=QColor(Qt.darkRed),   lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
+                                 inPercent=0),
+                    MyStruct(name=QCoreApplication.translate('bblInit', u'Natural gas'),
+                                 code="ngas", componentId="natural gas",
+                                 backColor=QColor(Qt.darkYellow), lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
+                                 inPercent=0),
+                    MyStruct(name=QCoreApplication.translate('bblInit', u'Produced water'),
+                                code="pw", componentId="produced water",
+                                backColor=QColor(Qt.blue),      lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
+                                inPercent=0),
+                    MyStruct(name=QCoreApplication.translate('bblInit', u'Condensate'),
+                                code="cond", componentId="condensate",
+                                backColor=QColor(Qt.gray),      lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
+                                inPercent=0),
+                    MyStruct(name=QCoreApplication.translate('bblInit', u'Injected gas'),
+                                code="igas", componentId="injected gas",
+                                backColor=QColor(Qt.yellow),    lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
+                                inPercent=0),
+                    MyStruct(name=QCoreApplication.translate('bblInit', u'Injected water'),
+                                code="iw", componentId="injected water",
+                                backColor=QColor(0, 160, 230),  lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
+                                inPercent=0),
+                    MyStruct(name=QCoreApplication.translate('bblInit', u'Lift gas'),
+                                code="lgas", componentId="lift gas",
+                                backColor=QColor(Qt.yellow),    lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
+                                inPercent=0),
+                    MyStruct(name=QCoreApplication.translate('bblInit', u'Free gas'),
+                                code="fgas", componentId="free gas",
+                                backColor=QColor(Qt.darkYellow), lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
+                                inPercent=0)]
 
     bblLiftMethods =  {u"flowing": LiftMethod(True, False),
                             u"centrifugal pump": LiftMethod( False, True),

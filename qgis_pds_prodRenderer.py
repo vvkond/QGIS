@@ -27,7 +27,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import *
-from bblInit import MyStruct
+from bblInit import *
 import random
 import os
 import xml.etree.cElementTree as ET
@@ -55,6 +55,9 @@ class DiagrammDesc:
 class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
     LAYERTYPE="BubbleDiagramm"
+    DIAGRAMM_FIELDS = 'DIAGRAMM_FIELDS'
+    LABEL_OFFSETX = 'labloffx'
+    LABEL_OFFSETY = 'labloffy'
 
     def __init__(self, props):
         QgsMarkerSymbolLayerV2.__init__(self)
@@ -66,6 +69,10 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         self.showDiagramms = True
         self.labelSize = 7.0
 
+        self.setDataDefinedProperty(BubbleSymbolLayer.DIAGRAMM_FIELDS, QgsDataDefined(OLD_NEW_FIELDNAMES[1]))
+        self.setDataDefinedProperty(BubbleSymbolLayer.LABEL_OFFSETX, QgsDataDefined(BubbleSymbolLayer.LABEL_OFFSETX))
+        self.setDataDefinedProperty(BubbleSymbolLayer.LABEL_OFFSETY, QgsDataDefined(BubbleSymbolLayer.LABEL_OFFSETY))
+
         try:
             self.showLineouts = props[QString("showLineouts")] == "True" if QString("showLineouts") in props else True
             self.showLabels = props[QString("showLabels")] == "True" if QString("showLabels") in props else True
@@ -76,7 +83,9 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
         self.mXIndex = -1
         self.mYIndex = -1
-        self.mWIndex = -1
+        self.mDiagrammIndex = -1
+
+        self.fields = None
 
     def layerType(self):
         return BubbleSymbolLayer.LAYERTYPE
@@ -87,9 +96,6 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                  "showDiagramms" : 'True' if self.showDiagramms else 'False',
                  "labelSize" : str(self.labelSize)}
 
-
-    def startRender(self, context):
-        pass
 
     def stopRender(self, context):
         pass
@@ -136,8 +142,14 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
             self.drawPreview(p, QPointF(point.x() - labelSize / 2, point.y() - labelSize / 2), QSizeF(labelSize, labelSize))
             return
 
-        xmlString = feature['BubbleFields']
+        if self.mDiagrammIndex < 0:
+            return
+
+        attrs = feature.attributes()
+
+        xmlString = attrs[self.mDiagrammIndex]
         if not xmlString:
+            QgsMessageLog.logMessage('No diagramm ' + ','.join([str(attr) for attr in attrs]), 'BubbleSymbolLayer')
             return
 
         ctx = context.renderContext()
@@ -195,8 +207,12 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         p.setFont(font)
 
         if self.mXIndex >= 0 and self.mYIndex >= 0:
-            xVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(feature['LablOffX']), QgsSymbolV2.MM)
-            yVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(feature['LablOffY']), QgsSymbolV2.MM)
+            xVal = 0.0
+            yVal = 0.0
+            if attrs[self.mXIndex]:
+                xVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(attrs[self.mXIndex]), QgsSymbolV2.MM)
+            if attrs[self.mYIndex]:
+                yVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(attrs[self.mYIndex]), QgsSymbolV2.MM)
             widthVal = 10
 
             if xVal != 0 or yVal != 0:
@@ -228,15 +244,19 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
 
     def startRender(self, context):
-        fields = context.fields()
-        if fields:
-            self.mXIndex = fields.fieldNameIndex("LablOffX")
-            self.mYIndex = fields.fieldNameIndex("LablOffY")
-            self.mWIndex = fields.fieldNameIndex("LablWidth")
+        self.fields = context.fields()
+        if self.fields:
+            self.mXIndex = self.fields.fieldNameIndex("labloffx")    #LablOffX
+            self.mYIndex = self.fields.fieldNameIndex("labloffy")    #LablOffY
+            self.mDiagrammIndex = self.fields.fieldNameIndex(OLD_NEW_FIELDNAMES[0])
+            if self.mDiagrammIndex < 0:
+                self.mDiagrammIndex = self.fields.fieldNameIndex(OLD_NEW_FIELDNAMES[1])
         else:
             self.mXIndex = -1
             self.mYIndex = -1
-            self.mWIndex = -1
+            self.mDiagrammIndex= -1
+
+        QgsMarkerSymbolLayerV2.startRender(self, context)
 
     def clone(self):
         return BubbleSymbolLayer(self.properties())

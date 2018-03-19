@@ -496,12 +496,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         editLayer.startEditing()
 
-        idxOffX = editLayerProvider.fieldNameIndex('LablOffX')
-        idxOffY = editLayerProvider.fieldNameIndex('LablOffY')
+        idxOffX = editLayerProvider.fieldNameIndex('labloffx')
+        idxOffY = editLayerProvider.fieldNameIndex('labloffy')
         if idxOffX < 0 or idxOffY < 0:
             editLayerProvider.addAttributes(
-                [QgsField("LablOffX", QVariant.Double),
-                 QgsField("LablOffY", QVariant.Double)])
+                [QgsField("labloffx", QVariant.Double),
+                 QgsField("labloffy", QVariant.Double)])
 
         diagLabel = ''
         for d in self.layerDiagramms:
@@ -540,7 +540,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         for feature in iter:
             FeatureId = feature.id()
 
-            uniqSymbols[feature['SymbolCode']] = feature['SymbolName']
+            uniqSymbols[feature['symbolcode']] = feature['symbolname']
 
             diagrammSize = 0
             root = ET.Element("root")
@@ -594,14 +594,17 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 ET.SubElement(root, "label", labelText=templateStr)
 
             offset = diagrammSize if diagrammSize < maxDiagrammSize else maxDiagrammSize
-            if feature.attribute('LablOffset') is None:
-                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffX'), offset/3)
-                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffY'), -offset/3)
+            LablOffset = feature.attribute('labloffset')
+            if LablOffset is None or LablOffset == NULL:
+                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffx'), offset/3)
+                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffy'), -offset/3)
 
-            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('BubbleSize'), diagrammSize)
-            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('BubbleFields'),
-                                           ET.tostring(root))
-            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('ScaleType'), scaleType)
+            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bubblesize'), diagrammSize)
+            if not editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[0]),
+                                           ET.tostring(root)):
+                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]),
+                                               ET.tostring(root))
+            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('scaletype'), scaleType)
 
         editLayer.commitChanges()
 
@@ -618,9 +621,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showDiagramms'] = 'True'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
-            bubbleLayer.setSize(3)
-            bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
-            symbol.changeSymbolLayer(0, bubbleLayer)
+            if bubbleLayer:
+                bubbleLayer.setSize(3)
+                bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                symbol.changeSymbolLayer(0, bubbleLayer)
         else:
             symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
 
@@ -634,13 +638,14 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showDiagramms'] = 'False'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
-            bubbleLayer.setSize(3)
-            bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
-            symbol1 = QgsMarkerSymbolV2()
-            symbol1.changeSymbolLayer(0, bubbleLayer)
-            rule = QgsRuleBasedRendererV2.Rule(symbol1)
-            rule.setLabel(u'Скважины')
-            root_rule.appendChild(rule)
+            if bubbleLayer:
+                bubbleLayer.setSize(3)
+                bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                symbol1 = QgsMarkerSymbolV2()
+                symbol1.changeSymbolLayer(0, bubbleLayer)
+                rule = QgsRuleBasedRendererV2.Rule(symbol1)
+                rule.setLabel(u'Скважины')
+                root_rule.appendChild(rule)
 
         # args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
         sSize = self.mSymbolSize.value()

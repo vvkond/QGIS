@@ -15,7 +15,7 @@ import ast
 
 from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
-from QgisPDS.utils import to_unicode
+from utils import *
 from bblInit import *
 from tig_projection import *
 
@@ -75,7 +75,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.attr_labloffset = "labloffset"
         self.attr_lablwidth = "lablwidth"
         self.attr_bubblesize = "bubblesize"
-        self.attr_bubblefields = "bubblefields"
+        self.attr_bubblefields = OLD_NEW_FIELDNAMES[1] #"bubblefields"
         self.attr_scaletype = "scaletype"
         self.attr_movingres = "movingres"
         self.attr_resstate = "resstate"
@@ -274,7 +274,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.mSelectedReservoirs = self.getSelectedReservoirs()
             self.mPhaseFilter = self.getSelectedFluids()
 
-            self.uri = "MultiPoint?crs={}".format(self.proj4String)
+            self.uri = "Point?crs={}".format(self.proj4String)
             self.uri += '&field={}:{}'.format(self.attrWellId, "string")
             self.uri += '&field={}:{}'.format(self.attrLatitude, "double")
             self.uri += '&field={}:{}'.format(self.attrLongitude, "double")
@@ -309,7 +309,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'Layer create error'), QtGui.QMessageBox.Ok)
                 return
 
-            self.layer.startEditing()
+            self.layer = memoryToShp(self.layer, self.project['project'], layerName)
 
             if self.isCurrentProd:
                 self.layer.setCustomProperty("qgis_pds_type", "pds_current_production")
@@ -320,7 +320,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.layer.setCustomProperty("pds_prod_SelectedReservoirs", str(self.mSelectedReservoirs))
             self.layer.setCustomProperty("pds_prod_PhaseFilter", str(self.mPhaseFilter))
 
-            self.layer.commitChanges()  
 
             symbolList = self.layer.rendererV2().symbols()
             symbol = QgsSymbolV2.defaultSymbol(self.layer.geometryType())
@@ -637,7 +636,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         if result is None: 
             return
 
-        fluids = [f.code for f in bblInit.fluidCodes]
+        fluids = [f.componentId for f in bblInit.fluidCodes]
         product = None
         useLiftMethod = False
         for prod, s1, e1, start_time, end_time, componentId, unitSet, time in result:
@@ -1108,11 +1107,19 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         
     @staticmethod
     def attrFluidVolume(fluidCode):
+        return fluidCode + u"(vol)"
+
+    @staticmethod
+    def attrFluidVolumeOld(fluidCode):
         return fluidCode + u" (volume)"
 
 
     @staticmethod
     def attrFluidMass(fluidCode):
+        return fluidCode + u"(ms)"
+
+    @staticmethod
+    def attrFluidMassOld(fluidCode):
         return fluidCode + u" (mass)"
 
 
