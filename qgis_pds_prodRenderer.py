@@ -31,6 +31,7 @@ from bblInit import *
 import random
 import os
 import xml.etree.cElementTree as ET
+import ast
 
 try:
     from PyQt4.QtCore import QString
@@ -58,6 +59,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
     DIAGRAMM_FIELDS = 'DIAGRAMM_FIELDS'
     LABEL_OFFSETX = 'labloffx'
     LABEL_OFFSETY = 'labloffy'
+    BUBBLE_SIZE = 'bubblesize'
 
     def __init__(self, props):
         QgsMarkerSymbolLayerV2.__init__(self)
@@ -68,16 +70,19 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         self.showLabels = True
         self.showDiagramms = True
         self.labelSize = 7.0
+        self.diagrammStr = u''
 
         self.setDataDefinedProperty(BubbleSymbolLayer.DIAGRAMM_FIELDS, QgsDataDefined(OLD_NEW_FIELDNAMES[1]))
         self.setDataDefinedProperty(BubbleSymbolLayer.LABEL_OFFSETX, QgsDataDefined(BubbleSymbolLayer.LABEL_OFFSETX))
         self.setDataDefinedProperty(BubbleSymbolLayer.LABEL_OFFSETY, QgsDataDefined(BubbleSymbolLayer.LABEL_OFFSETY))
+        self.setDataDefinedProperty(BubbleSymbolLayer.BUBBLE_SIZE, QgsDataDefined(BubbleSymbolLayer.BUBBLE_SIZE))
 
         try:
             self.showLineouts = props[QString("showLineouts")] == "True" if QString("showLineouts") in props else True
             self.showLabels = props[QString("showLabels")] == "True" if QString("showLabels") in props else True
             self.showDiagramms = props[QString("showDiagramms")] == "True" if QString("showDiagramms") in props else True
             self.labelSize = float(props[QString("labelSize")]) if QString("labelSize") in props else 7.0
+            self.diagrammStr = props[QString("diagrammStr")] if QString("diagrammStr") in props else u'';
         except:
             pass
 
@@ -94,7 +99,8 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         return { "showLineouts" : 'True' if self.showLineouts else 'False',
                  "showLabels" : 'True' if self.showLabels else 'False',
                  "showDiagramms" : 'True' if self.showDiagramms else 'False',
-                 "labelSize" : str(self.labelSize)}
+                 "labelSize" : str(self.labelSize),
+                 "diagrammStr" : str(self.diagrammStr)}
 
 
     def stopRender(self, context):
@@ -156,26 +162,63 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
         labelTemplate = ''
         diagramms = []
-        root = ET.fromstring(xmlString)
-        for diag in root.findall('diagramm'):
-            size = str(diag.attrib['size'])
-            diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(size), QgsSymbolV2.MM)
 
-            if diagrammSize > 0:
-                slices = []
-                for values in diag.findall('value'):
-                    bc = QgsSymbolLayerV2Utils.decodeColor(values.attrib['backColor'])
-                    lc = QgsSymbolLayerV2Utils.decodeColor(values.attrib["lineColor"])
-                    prnc = float(values.text)
-                    fn = values.attrib["fieldName"]
-                    slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc, fieldName=fn)
-                    slices.append(slice)
+        diagrammDescs = []
+        if len(self.diagrammStr) > 0:
+            try:
+                diagrammDescs = ast.literal_eval(self.diagrammStr)
+                tmpDiagramms = ast.literal_eval(xmlString)
 
-                diagramm = DiagrammDesc(diagrammSize, slices)
-                diagramms.append(diagramm)
+                size = float(feature.attribute(BubbleSymbolLayer.BUBBLE_SIZE))
+                diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(size), QgsSymbolV2.MM)
 
-        for label in root.findall('label'):
-            labelTemplate = label.attrib['labelText']
+                if diagrammSize > 0:
+                    for diags in tmpDiagramms:
+                        slices = []
+                        for sl in diags:
+                            QgsMessageLog.logMessage(str(sl), 'BubbleSymbolLayer')
+                    #
+                    #     bc = QgsSymbolLayerV2Utils.decodeColor(values.attrib['backColor'])
+                    #     lc = QgsSymbolLayerV2Utils.decodeColor(values.attrib["lineColor"])
+                    #     prnc = float(values.text)
+                    #     # fn = values.attrib["fieldName"]
+                    #     # slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc, fieldName=fn)
+                    #     slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc)
+                    #     slices.append(slice)
+                    #
+                    # diagramm = DiagrammDesc(diagrammSize, slices)
+                    # diagramms.append(diagramm)
+
+            except Exception as e:
+                QgsMessageLog.logMessage(str(e), 'BubbleSymbolLayer')
+                return
+        else:
+            try:
+                root = ET.fromstring(xmlString)
+            except Exception as e:
+                QgsMessageLog.logMessage(str(e), 'BubbleSymbolLayer')
+                return
+
+            for diag in root.findall('diagramm'):
+                size = str(diag.attrib['size'])
+                diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(size), QgsSymbolV2.MM)
+
+                if diagrammSize > 0:
+                    slices = []
+                    for values in diag.findall('value'):
+                        bc = QgsSymbolLayerV2Utils.decodeColor(values.attrib['backColor'])
+                        lc = QgsSymbolLayerV2Utils.decodeColor(values.attrib["lineColor"])
+                        prnc = float(values.text)
+                        # fn = values.attrib["fieldName"]
+                        # slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc, fieldName=fn)
+                        slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc)
+                        slices.append(slice)
+
+                    diagramm = DiagrammDesc(diagrammSize, slices)
+                    diagramms.append(diagramm)
+
+            for label in root.findall('label'):
+                labelTemplate = label.attrib['labelText']
 
         diagramms = sorted(diagramms, key=lambda diagramm: diagramm.mDiagrammSize, reverse=True)
 

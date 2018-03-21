@@ -99,3 +99,4 @@ def memoryToShp(layer, scheme, layerName):
     layerName = createLayerName(layerName)
 
     return QgsVectorLayer(layerFileName, layerName, 'ogr')
+

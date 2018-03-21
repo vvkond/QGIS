@@ -296,8 +296,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.uri += '&field={}:{}'.format(self.attr_resstate, "string")
             self.uri += '&field={}:{}'.format(self.attr_multiprod, "string")
             for fl in bblInit.fluidCodes:
-                self.uri += '&field={}:{}'.format(QgisPDSProductionDialog.attrFluidVolume(fl.code), "double")
-                self.uri += '&field={}:{}'.format(QgisPDSProductionDialog.attrFluidMass(fl.code), "double")
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidVolume(fl.code), "double")
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidMass(fl.code), "double")
                 
 
             layerName = "Current production - " + ",".join(self.mSelectedReservoirs)
@@ -353,6 +353,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'', self.attr_lably)
             palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
+        else:
+            self.updateOldProductionStructure(self.layer)
 
 
         self.loadProductionLayer(self.layer)
@@ -473,8 +475,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(self.attrLiftMethod))
 
                     for fl in bblInit.fluidCodes:
-                        attrMass = QgisPDSProductionDialog.attrFluidMass(fl.code)
-                        attrVol =  QgisPDSProductionDialog.attrFluidVolume(fl.code)
+                        attrMass = bblInit.attrFluidMass(fl.code)
+                        attrVol =  bblInit.attrFluidVolume(fl.code)
 
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass), feature.attribute(attrMass))
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol), feature.attribute(attrVol))
@@ -571,8 +573,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         if len(prodWell.liftMethod):
             self.setWellAttribute(prodWell.name, self.attrLiftMethod, prodWell.liftMethod)
         for i, fl in enumerate(bblInit.fluidCodes):
-            self.setWellAttribute(prodWell.name, QgisPDSProductionDialog.attrFluidMass(fl.code), sumMass[i])
-            self.setWellAttribute(prodWell.name, QgisPDSProductionDialog.attrFluidVolume(fl.code), sumVols[i])
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMass(fl.code), sumMass[i])
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidVolume(fl.code), sumVols[i])
 
      
     def readWellProduction(self, prodWell):
@@ -1105,22 +1107,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         return selectedFluids
         
         
-    @staticmethod
-    def attrFluidVolume(fluidCode):
-        return fluidCode + u"(vol)"
 
-    @staticmethod
-    def attrFluidVolumeOld(fluidCode):
-        return fluidCode + u" (volume)"
-
-
-    @staticmethod
-    def attrFluidMass(fluidCode):
-        return fluidCode + u"(ms)"
-
-    @staticmethod
-    def attrFluidMassOld(fluidCode):
-        return fluidCode + u" (mass)"
 
 
     def lastDateClicked(self, checked):
@@ -1170,5 +1157,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             settings.setValue("/PDS/production/UpdateWellLocation", 'True')
         else:
             settings.setValue("/PDS/production/UpdateWellLocation", 'False')
+
+
 
 

@@ -191,5 +191,45 @@ class bblInit:
         return (layer.customProperty("qgis_pds_type") == "pds_wells" or
                 layer.customProperty("qgis_pds_type") == "pds_well_deviations")
 
+    @staticmethod
+    def attrFluidVolume(fluidCode):
+        return fluidCode + u"(vol)"
+
+    @staticmethod
+    def attrFluidVolumeOld(fluidCode):
+        return fluidCode + u" (volume)"
+
+    @staticmethod
+    def attrFluidMass(fluidCode):
+        return fluidCode + u"(ms)"
+
+    @staticmethod
+    def attrFluidMassOld(fluidCode):
+        return fluidCode + u" (mass)"
+
+    @staticmethod
+    def updateOldProductionStructure(layer):
+        needCopyData = False
+        with edit(layer):
+            for fl in bblInit.fluidCodes:
+                newName = bblInit.attrFluidMass(fl.code)
+                oldName = bblInit.attrFluidMassOld(fl.componentId)
+                newIdx = layer.fieldNameIndex(newName)
+                if newIdx < 0:
+                    layer.addAttributes([QgsField(newName, QVariant.Double)])
+                    needCopyData = True
+
+        if needCopyData:
+            with edit(layer):
+                features = layer.getFeatures()
+                for feature in features:
+                    for fl in bblInit.fluidCodes:
+                        newName = bblInit.attrFluidMass(fl.code)
+                        oldName = bblInit.attrFluidMassOld(fl.componentId)
+                        feature.setAttrubute(newName, feature.attribute(oldName))
+
+
+
+
 
 

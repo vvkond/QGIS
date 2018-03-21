@@ -15,6 +15,8 @@ import ast
 import math
 import xml.etree.cElementTree as ET
 import re
+import zlib
+import base64
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
@@ -94,6 +96,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     
         self.scaleUnitsMass.setVisible(False)
         self.scaleUnitsVolume.setVisible(False)
+
+        self.isCurrentProd = True if self.currentLayer.customProperty("qgis_pds_type") == 'pds_current_production' else False
+        self.defaultUnitNum = 2 if self.isCurrentProd else 3
         
         ##--------------------------KARASU CONFIG
         def karasu():
@@ -482,6 +487,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
     def setup(self, editLayer):
 
+        bblInit.updateOldProductionStructure(editLayer)
+
         self.applySettings()
 
         maxDiagrammSize = self.maxDiagrammSize.value()
@@ -516,9 +523,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             for d in self.layerDiagramms:
                 vec = d.fluids
                 if d.unitsType == 0:
-                    scaleType = QgisPDSProductionDialog.attrFluidMass("")
+                    scaleType = bblInit.attrFluidMass("")
                 else:
-                    scaleType = QgisPDSProductionDialog.attrFluidVolume("")
+                    scaleType = bblInit.attrFluidVolume("")
 
                 prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
 
@@ -526,8 +533,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
                 for attrName in prodFields:
                     attr = attrName + scaleType
-                    if feature[attr] is not None:
-                        val = float(feature[attr] * multiplier)
+                    if feature.attribute(attr) is not None:
+                        val = float(feature.attribute(attr) * multiplier)
                         sum += val
 
                 if maxSum < sum:
@@ -545,14 +552,15 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             diagrammSize = 0
             root = ET.Element("root")
             templateStr = self.templateExpression.text()
+            diagramms = []
             for d in self.layerDiagramms:
                 vec = d.fluids
                 if d.unitsType == 0:
-                    scaleType = QgisPDSProductionDialog.attrFluidMass("")
+                    scaleType = bblInit.attrFluidMass("")
                 else:
-                    scaleType = QgisPDSProductionDialog.attrFluidVolume("")
+                    scaleType = bblInit.attrFluidVolume("")
 
-                prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
+                selectedFluids = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
 
                 koef = (maxDiagrammSize - minDiagrammSize) / maxSum
                 if self.useScaleGroupBox.isChecked():
@@ -560,8 +568,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
                 sum = 0.0
                 multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
-                for attrName in prodFields:
-                    attr = attrName + scaleType
+                for fluid in selectedFluids:
+                    attr = fluid.code + scaleType
                     if feature[attr] is not None:
                         val = float(feature[attr] * multiplier)
                         sum += val
@@ -572,21 +580,25 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 if ds > maxDiagrammSize:
                     ds = maxDiagrammSize
 
+                diagramm = []
                 if sum != 0:
                     diag = ET.SubElement(root, "diagramm", size=str(ds))
-                    for attrName in prodFields:
-                        attr = attrName + scaleType
-                        fluid = self.fluidByCode(attrName)
+                    for fluid in selectedFluids:
+                        attr = fluid.code + scaleType
+                        # fluid = self.fluidByCode(attrName)
                         prods[fluid.code] = fluid
                         if feature[attr] is not None and fluid is not None:
                             val = float(feature[attr] * multiplier)
                             percent = val / sum
                             ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(fluid.backColor),
-                                          lineColor=QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor),
-                                          fieldName=attr).text = str(percent)
+                                          lineColor=QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)).text = str(percent)
+                            slice = {}
+                            slice[fluid.code] = percent
+                            diagramm.append(slice)
+                diagramms.append(diagramm)
 
                 if ds > diagrammSize:
-                    diagrammSize = ds#minDiagrammSize + sum * koef
+                    diagrammSize = ds
 
                 templateStr = self.addLabels(templateStr, sum, vec, feature, scaleType, multiplier)
 
@@ -600,10 +612,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffy'), -offset/3)
 
             editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bubblesize'), diagrammSize)
-            if not editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[0]),
-                                           ET.tostring(root)):
-                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]),
-                                               ET.tostring(root))
+
+            compressedStr = str(diagramms) #ET.tostring(root)
+
+            if not editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[0]), compressedStr):
+                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]), compressedStr)
+
             editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('scaletype'), scaleType)
 
         editLayer.commitChanges()
@@ -611,6 +625,23 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         plugin_dir = os.path.dirname(__file__)
 
         registry = QgsSymbolLayerV2Registry.instance()
+
+        #Save diagramm colors to Renderer`s property
+        diagramms = []
+        for d in self.layerDiagramms:
+            vec = d.fluids
+            selectedFluids = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
+
+            diagramm = []
+            for fluid in selectedFluids:
+                slice = {}
+                slice['code'] = fluid.code
+                slice['backColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.backColor)
+                slice['lineColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)
+                diagramm.append(slice)
+            diagramms.append(diagramm)
+
+        diagrammStr = str(diagramms)
 
         symbol = QgsMarkerSymbolV2()
         bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
@@ -620,6 +651,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showLabels'] = 'True'
             bubbleProps['showDiagramms'] = 'True'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+            bubbleProps['diagrammStr'] = diagrammStr
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             if bubbleLayer:
                 bubbleLayer.setSize(3)
@@ -637,6 +669,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showLabels'] = 'False'
             bubbleProps['showDiagramms'] = 'False'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+            bubbleProps['diagrammStr'] = diagrammStr
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             if bubbleLayer:
                 bubbleLayer.setSize(3)
