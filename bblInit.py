@@ -193,7 +193,7 @@ class bblInit:
 
     @staticmethod
     def attrFluidVolume(fluidCode):
-        return fluidCode + u"(vol)"
+        return fluidCode + u"vol"
 
     @staticmethod
     def attrFluidVolumeOld(fluidCode):
@@ -201,7 +201,7 @@ class bblInit:
 
     @staticmethod
     def attrFluidMass(fluidCode):
-        return fluidCode + u"(ms)"
+        return fluidCode + u"mas"
 
     @staticmethod
     def attrFluidMassOld(fluidCode):

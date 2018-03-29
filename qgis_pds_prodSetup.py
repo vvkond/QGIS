@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4 import QtGui, uic, QtCore
-# from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
-# from PyQt4.QtCore import *
 from qgis import core, gui
 from qgis.gui import QgsColorButtonV2
-# from qgis.gui import *
-# from qgscolorbuttonv2 import QgsColorButtonV2
 from collections import namedtuple
 from qgis_pds_production import *
 from bblInit import *
@@ -15,8 +11,7 @@ import ast
 import math
 import xml.etree.cElementTree as ET
 import re
-import zlib
-import base64
+
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
@@ -510,6 +505,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 [QgsField("labloffx", QVariant.Double),
                  QgsField("labloffy", QVariant.Double)])
 
+        # if editLayerProvider.fieldNameIndex('bbllabels') < 0:
+        #     editLayerProvider.addAttributes([QgsField('bbllabels', QVariant.String)])
+
         diagLabel = ''
         for d in self.layerDiagramms:
             if len(diagLabel) > 0:
@@ -530,7 +528,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
 
                 sum = 0.0
-                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
+                multiplier = 1.0 #float(bblInit.unit_to_mult.get(d.units, 1.0))
                 for attrName in prodFields:
                     attr = attrName + scaleType
                     if feature.attribute(attr) is not None:
@@ -562,12 +560,13 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
                 selectedFluids = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
 
+                multiplier = 1.0
                 koef = (maxDiagrammSize - minDiagrammSize) / maxSum
                 if self.useScaleGroupBox.isChecked():
                     koef = (maxDiagrammSize - minDiagrammSize) / d.scale
+                    multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
 
                 sum = 0.0
-                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
                 for fluid in selectedFluids:
                     attr = fluid.code + scaleType
                     if feature[attr] is not None:
@@ -580,22 +579,20 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 if ds > maxDiagrammSize:
                     ds = maxDiagrammSize
 
-                diagramm = []
-                if sum != 0:
-                    diag = ET.SubElement(root, "diagramm", size=str(ds))
-                    for fluid in selectedFluids:
-                        attr = fluid.code + scaleType
-                        # fluid = self.fluidByCode(attrName)
-                        prods[fluid.code] = fluid
-                        if feature[attr] is not None and fluid is not None:
-                            val = float(feature[attr] * multiplier)
-                            percent = val / sum
-                            ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(fluid.backColor),
-                                          lineColor=QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)).text = str(percent)
-                            slice = {}
-                            slice[fluid.code] = percent
-                            diagramm.append(slice)
-                diagramms.append(diagramm)
+                # diagramm = {}
+                # if sum != 0:
+                #     diag = ET.SubElement(root, "diagramm", size=str(ds))
+                #     diagramm['size'] = ds
+                #     for fluid in selectedFluids:
+                #         attr = fluid.code + scaleType
+                #         prods[fluid.code] = fluid
+                #         if feature[attr] is not None and fluid is not None:
+                #             val = float(feature[attr] * multiplier)
+                #             percent = val / sum
+                #             ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(fluid.backColor),
+                #                           lineColor=QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)).text = str(percent)
+                #             diagramm[fluid.code] = percent
+                # diagramms.append(diagramm)
 
                 if ds > diagrammSize:
                     diagrammSize = ds
@@ -604,6 +601,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
             if diagrammSize >= minDiagrammSize:
                 ET.SubElement(root, "label", labelText=templateStr)
+                # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bbllabels'), templateStr)
 
             offset = diagrammSize if diagrammSize < maxDiagrammSize else maxDiagrammSize
             LablOffset = feature.attribute('labloffset')
@@ -613,12 +611,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
             editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bubblesize'), diagrammSize)
 
-            compressedStr = str(diagramms) #ET.tostring(root)
+            # compressedStr = str(diagramms) #ET.tostring(root)
 
-            if not editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[0]), compressedStr):
-                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]), compressedStr)
-
-            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('scaletype'), scaleType)
+            # if not editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[0]), compressedStr):
+            #     editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]), compressedStr)
+            #
+            # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('scaletype'), scaleType)
 
         editLayer.commitChanges()
 
@@ -627,21 +625,46 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         registry = QgsSymbolLayerV2Registry.instance()
 
         #Save diagramm colors to Renderer`s property
-        diagramms = []
+        # diagramms = {}
+        # for fluid in bblInit.fluidCodes:
+        #     slice = {}
+        #     slice['backColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.backColor)
+        #     slice['lineColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)
+        #     diagramms[fluid.code] = slice
+        #
+        # diagrammStr = str(diagramms)
+
+        #Collect fields for Data Defined props
+        allDiagramms = []
         for d in self.layerDiagramms:
             vec = d.fluids
+            if d.unitsType == 0:
+                scaleType = bblInit.attrFluidMass("")
+            else:
+                scaleType = bblInit.attrFluidVolume("")
+
             selectedFluids = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
 
-            diagramm = []
+            multiplier = 1.0 / float(bblInit.unit_to_mult.get(d.units, 1.0))
+
+            diagramm = {}
+            diagramm['scaleMaxRadius'] = maxDiagrammSize
+            diagramm['scaleMinRadius'] = minDiagrammSize
+            diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else maxSum
+            diagramm['scaleType'] = 1
+            diagramm['fixedSize'] = maxDiagrammSize
+            slices = []
             for fluid in selectedFluids:
+                attr = fluid.code + scaleType
                 slice = {}
-                slice['code'] = fluid.code
                 slice['backColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.backColor)
                 slice['lineColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)
-                diagramm.append(slice)
-            diagramms.append(diagramm)
+                slice['expression'] = attr
+                slices.append(slice)
+            diagramm['slices'] = slices
+            allDiagramms.append(diagramm)
 
-        diagrammStr = str(diagramms)
+        diagrammStr = str(allDiagramms)
 
         symbol = QgsMarkerSymbolV2()
         bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')

@@ -80,6 +80,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.attr_movingres = "movingres"
         self.attr_resstate = "resstate"
         self.attr_multiprod = "multiprod"
+        self.attr_labels = 'bbllabels'
 
         self.dateFormat = u'dd/MM/yyyy HH:mm:ss'
 
@@ -295,6 +296,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.uri += '&field={}:{}'.format(self.attr_movingres, "string")
             self.uri += '&field={}:{}'.format(self.attr_resstate, "string")
             self.uri += '&field={}:{}'.format(self.attr_multiprod, "string")
+            self.uri += '&field={}:{}'.format(self.attr_labels, "string")
             for fl in bblInit.fluidCodes:
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidVolume(fl.code), "double")
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMass(fl.code), "double")
@@ -321,19 +323,19 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.layer.setCustomProperty("pds_prod_PhaseFilter", str(self.mPhaseFilter))
 
 
-            symbolList = self.layer.rendererV2().symbols()
-            symbol = QgsSymbolV2.defaultSymbol(self.layer.geometryType())
+            # symbolList = self.layer.rendererV2().symbols()
+            # symbol = QgsSymbolV2.defaultSymbol(self.layer.geometryType())
 
             registry = QgsSymbolLayerV2Registry.instance()
             
-            marker = QgsMarkerSymbolV2()
-
-            bubbleMeta = registry.symbolLayerMetadata('BubbleMarker')
-            if bubbleMeta is not None:
-                bubbleLayer = bubbleMeta.createSymbolLayer({})
-                marker.changeSymbolLayer(0, bubbleLayer)
-                renderer = QgsSingleSymbolRendererV2(marker)
-                self.layer.setRendererV2(renderer)
+            # marker = QgsMarkerSymbolV2()
+            #
+            # bubbleMeta = registry.symbolLayerMetadata('BubbleMarker')
+            # if bubbleMeta is not None:
+            #     bubbleLayer = bubbleMeta.createSymbolLayer({})
+            #     marker.changeSymbolLayer(0, bubbleLayer)
+            #     renderer = QgsSingleSymbolRendererV2(marker)
+            #     self.layer.setRendererV2(renderer)
 
             
             palyr = QgsPalLayerSettings()

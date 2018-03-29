@@ -616,14 +616,14 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         if editLayerProvider.fieldNameIndex('LablOffset') < 0:
             editLayerProvider.addAttributes([QgsField('LablOffset', QVariant.String)])
 
-        if editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]) < 0:
-            editLayerProvider.addAttributes([QgsField(OLD_NEW_FIELDNAMES[1], QVariant.String)])
+        # if editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]) < 0:
+        #     editLayerProvider.addAttributes([QgsField(OLD_NEW_FIELDNAMES[1], QVariant.String)])
+
+        # if editLayerProvider.fieldNameIndex('bbllabels') < 0:
+        #     editLayerProvider.addAttributes([QgsField('bbllabels', QVariant.String)])
 
         if editLayerProvider.fieldNameIndex('bubblesize') < 0:
             editLayerProvider.addAttributes([QgsField('bubblesize', QVariant.Double)])
-
-        # if editLayerProvider.fieldNameIndex('scaletype') < 0:
-        #     editLayerProvider.addAttributes([QgsField('scaletype', QVariant.String)])
 
 
         diagLabel = ''
@@ -639,6 +639,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
             diagrammSize = 0
             root = ET.Element("root")
+            diagramms = []
             for d in self.layerDiagramms:
                 rows = [r for r in xrange(self.attributeModel.rowCount()) if
                         self.attributeModel.diagramm(r) == d.diagrammId]
@@ -664,19 +665,22 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                     if val:
                         sum += float(val)
 
+                diagramm = []
                 if sum != 0:
+                    ds = 0.0
                     if d.scaleType == 0:
-                        diag = ET.SubElement(root, "diagramm", size=str(d.fixedSize))
-                        diagrammSize = d.fixedSize
+                        ds = d.fixedSize
+                        diagrammSize = ds
                     else:
                         ds = d.scaleMinRadius + sum * koef
                         if ds > d.scaleMaxRadius:
                             ds = d.scaleMaxRadius
                         if ds < d.scaleMinRadius:
                             ds = d.scaleMinRadius
-                        diag = ET.SubElement(root, "diagramm", size=str(ds))
                         if ds > diagrammSize:
                             diagrammSize = ds
+
+                    diag = ET.SubElement(root, "diagramm", size=str(ds))
 
                     for row in rows:
                         index = self.attributeModel.index(row, AttributeTableModel.ExpressionColumn)
@@ -698,13 +702,22 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                         index = self.attributeModel.index(row, AttributeTableModel.ColorColumn)
                         backColor = QColor(self.attributeModel.data(index, Qt.DisplayRole))
                         ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(backColor),
-                                      lineColor=QgsSymbolLayerV2Utils.encodeColor(Qt.black),
+                                      lineColor=QgsSymbolLayerV2Utils.encodeColor(backColor),
                                       fieldName=expression).text = str(percent)
+
+                        key = '{0}_{1}'.format(d.diagrammId, row)
+                        slice = {}
+                        slice['size'] = ds
+                        slice['attr'] = key
+                        slice['value'] = percent
+                        diagramm.append(slice)
+                diagramms.append(diagramm)
 
             #Add labels
             templateStr = self.addLabels(context, feature)
             if diagrammSize >= d.scaleMinRadius and templateStr:
                 ET.SubElement(root, "label", labelText=templateStr)
+                # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bbllabels'), templateStr)
 
             offset = diagrammSize if diagrammSize < d.scaleMaxRadius else d.scaleMaxRadius
             LablOffset = feature.attribute('labloffset')
@@ -713,13 +726,43 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffy'), -offset/3)
 
             editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bubblesize'), diagrammSize)
-            if not editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[0]),
-                                           ET.tostring(root)):
-                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]),
-                                               ET.tostring(root))
-            # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('scaletype'), None)
+
+            # compressedStr = str(diagramms)  # ET.tostring(root)
+            # if not editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[0]),
+            #                                       compressedStr):
+            #     editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]),
+            #                                    compressedStr)
 
         editLayer.commitChanges()
+
+        diagramms = []
+        for d in self.layerDiagramms:
+            rows = [r for r in xrange(self.attributeModel.rowCount()) if
+                    self.attributeModel.diagramm(r) == d.diagrammId]
+
+            diagramm = {}
+            diagramm['scaleMaxRadius'] = d.scaleMaxRadius
+            diagramm['scaleMinRadius'] = d.scaleMinRadius
+            diagramm['scale'] = d.scale
+            diagramm['scaleType'] = d.scaleType
+            diagramm['fixedSize'] = d.fixedSize
+            slices = []
+            for row in rows:
+                index = self.attributeModel.index(row, AttributeTableModel.ExpressionColumn)
+                expression = self.attributeModel.data(index, Qt.DisplayRole)
+                index = self.attributeModel.index(row, AttributeTableModel.ColorColumn)
+                backColor = QColor(self.attributeModel.data(index, Qt.DisplayRole))
+
+                slice = {}
+                slice['backColor'] = QgsSymbolLayerV2Utils.encodeColor(backColor)
+                slice['lineColor'] = QgsSymbolLayerV2Utils.encodeColor(backColor)
+                slice['expression'] = expression
+                # key = '{0}_{1}'.format(d.diagrammId, row)
+                slices.append(slice)
+            diagramm['slices'] = slices
+            diagramms.append(diagramm)
+
+        diagrammStr = str(diagramms)
 
         plugin_dir = os.path.dirname(__file__)
 
@@ -733,6 +776,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showLabels'] = 'True'
             bubbleProps['showDiagramms'] = 'True'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+            bubbleProps['diagrammStr'] = diagrammStr
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             if bubbleLayer:
                 bubbleLayer.setSize(3)
@@ -751,6 +795,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showLabels'] = 'False'
             bubbleProps['showDiagramms'] = 'False'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+            bubbleProps['diagrammStr'] = diagrammStr
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             if bubbleLayer:
                 bubbleLayer.setSize(3)
