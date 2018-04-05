@@ -106,7 +106,8 @@ class AttributeTableModel(QAbstractTableModel):
 class AttributeLabelTableModel(AttributeTableModel):
     ShowZeroColumn = 2
     NewLineColumn = 3
-    FilterColumn = 4
+    IsPercentColumn = 4
+    FilterColumn = 5
     def __init__(self, headerData, parent=None):
         AttributeTableModel.__init__(self, headerData, parent)
 
@@ -154,7 +155,7 @@ class AttributeLabelTableModel(AttributeTableModel):
 
         self.beginInsertRows(parent, row, count + row - 1)
         for i in xrange(0, count):
-            newRow = ['', QColor(0, 0, 0), Qt.Unchecked, Qt.Unchecked, '']
+            newRow = ['', QColor(0, 0, 0), Qt.Unchecked, Qt.Unchecked, Qt.Unchecked, '']
             self.arraydata.insert(i + row, newRow)
 
         self.endInsertRows()
@@ -280,11 +281,12 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         #Setup Labels TableView
         self.labelAttributeModel = AttributeLabelTableModel([self.tr(u'Attribute'), self.tr(u'Color'),
-                                                            self.tr(u'Show zero'), self.tr(u'New line')], self)
-        # self.labelFilteredModel = AttributeFilterProxy(self)
-        # self.labelFilteredModel.setSourceModel(self.labelAttributeModel)
+                                                             self.tr(u'Show zero'), self.tr(u'New line'),
+                                                             self.tr(u'In percent')], self)
+        self.labelFilteredModel = AttributeFilterProxy(self)
+        self.labelFilteredModel.setSourceModel(self.labelAttributeModel)
 
-        self.labelAttributeTableView.setModel(self.labelAttributeModel)
+        self.labelAttributeTableView.setModel(self.labelFilteredModel)
         self.labelAttributeTableView.horizontalHeader().setResizeMode(0, QHeaderView.Stretch)
 
         labelExprDelegate = ExpressionDelegate(layer, False, self)
@@ -337,6 +339,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.updateWidgets()
 
         self.filteredModel.setFilter(self.currentDiagrammId)
+        self.labelFilteredModel.setFilter(self.currentDiagrammId)
+
+        self.labelAttributeTableView.resizeColumnsToContents()
 
         return
 
@@ -377,7 +382,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.labelAttributeModel.insertRow(curRow)
 
         self.labelAttributeModel.setDiagramm(curRow, self.currentDiagrammId)
-        # self.labelFilteredModel.setFilter(self.currentDiagrammId)
+        self.labelFilteredModel.setFilter(self.currentDiagrammId)
 
     @pyqtSlot()
     def on_deleteLabelAttributePushButton_clicked(self):
@@ -499,7 +504,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.scaledSizeRadioButton.setChecked(diagramm.scaleType == 1)
 
         self.filteredModel.setFilter(self.currentDiagrammId)
-        # self.labelFilteredModel.setFilter(self.currentDiagrammId)
+        self.labelFilteredModel.setFilter(self.currentDiagrammId)
 
     #Delete current diagramm
     def mDeleteDiagramm_clicked(self):
@@ -510,6 +515,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         if idx >= 0:
             for row in xrange(self.filteredModel.rowCount()):
                 self.filteredModel.removeRow(row)
+
+            for row in xrange(self.labelFilteredModel.rowCount()):
+                self.labelFilteredModel.removeRow(row)
 
             self.mDiagrammsListWidget.takeItem(idx)
             del self.layerDiagramms[idx]
@@ -760,6 +768,11 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 # key = '{0}_{1}'.format(d.diagrammId, row)
                 slices.append(slice)
             diagramm['slices'] = slices
+
+            rows = [r for r in xrange(self.labelAttributeModel.rowCount()) if
+                    self.labelAttributeModel.diagramm(r) == d.diagrammId]
+            diagramm['labels'] = self.getLabels(rows)
+
             diagramms.append(diagramm)
 
         diagrammStr = str(diagramms)
@@ -777,6 +790,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showDiagramms'] = 'True'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
             bubbleProps['diagrammStr'] = diagrammStr
+            bubbleProps['templateStr'] = None
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             if bubbleLayer:
                 bubbleLayer.setSize(3)
@@ -796,6 +810,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showDiagramms'] = 'False'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
             bubbleProps['diagrammStr'] = diagrammStr
+            bubbleProps['templateStr'] = None
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             if bubbleLayer:
                 bubbleLayer.setSize(3)
@@ -878,6 +893,37 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         return templateStr
 
+    def getLabels(self, rows):
+        labels = []
+
+        for row in rows:
+            label = {}
+
+            label['expName'] = str(row) + '_labexpression'
+
+            index = self.labelAttributeModel.index(row, AttributeTableModel.ExpressionColumn)
+            label['expression'] = self.labelAttributeModel.data(index, Qt.DisplayRole)
+
+            index = self.labelAttributeModel.index(row, AttributeTableModel.ColorColumn)
+            color =  QColor(self.labelAttributeModel.data(index, Qt.DisplayRole))
+            label['color'] = color.name()
+
+            index = self.labelAttributeModel.index(row, AttributeLabelTableModel.ShowZeroColumn)
+            label['showZero'] = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
+
+            index = self.labelAttributeModel.index(row, AttributeLabelTableModel.NewLineColumn)
+            label['isNewLine'] = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
+
+            index = self.labelAttributeModel.index(row, AttributeLabelTableModel.IsPercentColumn)
+            label['percent'] = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
+
+            label['scale'] = 1.0
+            label['decimals'] = 2
+
+            labels.append(label)
+
+        return labels
+
 
     def readSettings(self):
         count = int(self.currentLayer.customProperty("PDS/diagrammCount", 0))
@@ -926,10 +972,11 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 index = self.labelAttributeModel.index(row, col)
                 idxStr = '{0}_{1}'.format(row, col)
                 data = self.currentLayer.customProperty('PDS/diagramm_labelAttribute_' + idxStr)
-                if col > AttributeTableModel.ColorColumn:
-                    self.labelAttributeModel.setData(index, int(data), Qt.CheckStateRole)
-                else:
-                    self.labelAttributeModel.setData(index, data, Qt.EditRole)
+                if data:
+                    if col > AttributeTableModel.ColorColumn:
+                        self.labelAttributeModel.setData(index, int(data), Qt.CheckStateRole)
+                    else:
+                        self.labelAttributeModel.setData(index, data, Qt.EditRole)
 
         return True
 

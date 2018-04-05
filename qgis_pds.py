@@ -191,7 +191,7 @@ class QgisPDS(QObject):
                 return
 
 
-            if fieldname == 'LablX':
+            if fieldname.lower() == 'lablx':
                 if variant == NULL:  # case when user unpins the label > sets arrow back to arrow based on point location
                     return
                 if isinstance(variant, basestring):  # test case, when editing from attribute table, variant is sent as text! converts to float
@@ -205,7 +205,7 @@ class QgisPDS(QObject):
                 editedLayer.changeAttributeValue(FeatureId, idxOffX, mmOffset)
                 editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffset'), 1)
 
-            if fieldname == 'LablY':
+            if fieldname.lower() == 'lably':
                 if variant == NULL:  # case when user unpins the label > sets arrow back to arrow based on point location
                     return
                 if isinstance(variant, basestring):  # test case, when editing from attribute table, variant is sent as text! converts to float

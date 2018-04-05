@@ -11,6 +11,7 @@ import ast
 import math
 import xml.etree.cElementTree as ET
 import re
+import time
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -156,9 +157,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             if len(self.layerDiagramms) < 1:
                 if self.currentLayer.customProperty("qgis_pds_type") == "pds_current_production":
                     #----CURENT PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,   testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,   testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 1, 1, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,   testval=1, unitsType=1, units=14, fluids=[0, 1, 0, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 1, 1, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 1, 0, 0, 0, 0, 0, 0]))
                     bblInit.fluidCodes[2].inPercent=1
     #                 cOil=QColor()
     #                 cOil.setNamedColor('#aaaaaa')
@@ -624,18 +625,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         registry = QgsSymbolLayerV2Registry.instance()
 
-        #Save diagramm colors to Renderer`s property
-        # diagramms = {}
-        # for fluid in bblInit.fluidCodes:
-        #     slice = {}
-        #     slice['backColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.backColor)
-        #     slice['lineColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)
-        #     diagramms[fluid.code] = slice
-        #
-        # diagrammStr = str(diagramms)
-
-        #Collect fields for Data Defined props
+         #Collect fields for Data Defined props
         allDiagramms = []
+        templateStr = self.templateExpression.text()
+        sums = ''
         for d in self.layerDiagramms:
             vec = d.fluids
             if d.unitsType == 0:
@@ -645,24 +638,38 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
             selectedFluids = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
 
-            multiplier = 1.0 / float(bblInit.unit_to_mult.get(d.units, 1.0))
+            mm = float(bblInit.unit_to_mult.get(d.units, 1.0))
+            multiplier = 1.0 / mm
 
             diagramm = {}
             diagramm['scaleMaxRadius'] = maxDiagrammSize
             diagramm['scaleMinRadius'] = minDiagrammSize
             diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else maxSum
+            diagramm['multiplier'] = mm
+            diagramm['dailyProduction'] = self.dailyProduction.isChecked()
             diagramm['scaleType'] = 1
             diagramm['fixedSize'] = maxDiagrammSize
+            diagramm['decimals'] = self.decimalEdit.value()
             slices = []
             for fluid in selectedFluids:
                 attr = fluid.code + scaleType
                 slice = {}
                 slice['backColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.backColor)
                 slice['lineColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)
+                slice['labelColor'] = fluid.labelColor.name()
+                slice['inPercent'] = fluid.inPercent
                 slice['expression'] = attr
                 slices.append(slice)
             diagramm['slices'] = slices
+
+            (templateStr, ss) = self.compileLabels(templateStr, vec, scaleType)
+            if len(sums) > 0:
+                sums += '+'
+            sums += ss
+
             allDiagramms.append(diagramm)
+
+        print templateStr, sums
 
         diagrammStr = str(allDiagramms)
 
@@ -675,6 +682,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showDiagramms'] = 'True'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
             bubbleProps['diagrammStr'] = diagrammStr
+            bubbleProps['templateStr'] = templateStr
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             if bubbleLayer:
                 bubbleLayer.setSize(3)
@@ -686,13 +694,14 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         renderer = QgsRuleBasedRendererV2(symbol)
         root_rule = renderer.rootRule()
 
-        if bubbleMeta:
+        if bubbleMeta and self.showLineouts.isChecked():
             bubbleProps = {}
             bubbleProps['showLineouts'] = 'True' if self.showLineouts.isChecked() else 'False'
             bubbleProps['showLabels'] = 'False'
             bubbleProps['showDiagramms'] = 'False'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
             bubbleProps['diagrammStr'] = diagrammStr
+            bubbleProps['templateStr'] = templateStr
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
             if bubbleLayer:
                 bubbleLayer.setSize(3)
@@ -782,6 +791,110 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         templateStr = re.sub('^[\,\:\;\.\-/\\_ ]+|[\,\:\;\.\-/\\_ ]+$', '', templateStr)
         return templateStr
+
+    def compileLabels(self, templateStr, fluids, scaleType):
+        sums = ''
+        for idx, v in enumerate(fluids):
+            if v:
+                fluid = bblInit.fluidCodes[idx]
+                code = '%'+str(idx+1)
+                if code in templateStr:
+                    attr = '"{0}{1}"'.format(fluid.code, scaleType)
+                    if len(sums) > 0:
+                        sums += '+'
+                    sums += attr
+                    templateStr = templateStr.replace(code, attr)
+
+        return (templateStr, sums)
+
+    def getLabels(self, templateStr, fluids, scaleType, multiplier):
+        attributes = []
+        labels = []
+        decimals = self.decimalEdit.value()
+        showZero = int(self.mShowZero.isChecked())
+
+        nameCounter = time.time()
+
+        sums = ''
+        numbers = []
+        for idx, v in enumerate(fluids):
+            if v:
+                numbers.append(idx+1)
+                fluid = bblInit.fluidCodes[idx]
+
+                if len(sums):
+                    sums += ' + '
+                sums += '"{0}{1}"'.format(fluid.code, scaleType)
+
+        labelStr = ''
+        key = False
+        colorStr = '#000'
+        for ch in templateStr:
+            if key:
+                num = int(ch)
+                if num in numbers:
+                    fluid = bblInit.fluidCodes[num-1]
+                    colorStr = fluid.labelColor.name()
+                    expression = ''
+                    if fluid.inPercent and len(sums) > 0:
+                        expression = '"{0}{1}"/({2}) * 100.0'.format(fluid.code, scaleType, sums)
+                    else:
+                        expression = '"{0}{1}" * {2}'.format(fluid.code, scaleType, multiplier)
+                    formattedExpr = 'format_number({0}, {1})'.format(expression, decimals)
+                    if not showZero:
+                        formattedExpr = "if({0} != 0, format('{1}%1', {2}), '')".format(expression, labelStr, formattedExpr)
+                    else:
+                        formattedExpr = "format('{0} %1', {1})".format(labelStr, formattedExpr)
+                    label = {}
+                    label['expName'] = str(nameCounter) + '_labexpression'
+                    nameCounter += 1
+                    label['expression'] = formattedExpr
+                    label['color'] = colorStr
+                    label['showZero'] = False
+                    label['isNewLine'] = False
+                    label['percent'] = False
+                    label['scale'] = 1.0
+                    label['decimals'] = 0
+                    labels.append(label)
+
+                labelStr = ''
+                key = False
+            elif ch == '%':
+                key = True
+            else:
+                labelStr += ch
+
+        # for idx, v in enumerate(fluids):
+        #     code = '%' + str(idx + 1)
+        #     if v:
+        #         fluid = bblInit.fluidCodes[idx]
+        #
+        #         colorStr = fluid.labelColor.name()
+        #         if fluid.inPercent:
+        #             attr = 'format_number("{0}{1}" / ({2}) * 100.0, {3})'.format(fluid.code, scaleType, sums, decimals)
+        #             expression = '<span><font color="{0}">%{1}%</font></span>'.format(colorStr, len(attributes) + 1)
+        #         else:
+        #             attr = 'format_number("{0}{1}" * {2}, {3})'.format(fluid.code, scaleType, multiplier, decimals)
+        #             expression = '<span><font color="{0}">%{1}</font></span>'.format(colorStr, len(attributes) + 1)
+        #
+        #         if code in templateStr:
+        #             templateStr = templateStr.replace(code, expression)
+        #             attributes.append(attr)
+        #     else:
+        #         templateStr = templateStr.replace(code, '')
+        # for idx, v in enumerate(fluids):
+        #     code = '%' + str(idx + 1)
+        #     if not v:
+        #         templateStr = templateStr.replace(code, '')
+        #
+        # templateStr = re.sub('^[\,\:\;\.\-/\\_ ]+|[\,\:\;\.\-/\\_ ]+$', '', templateStr)
+
+
+
+
+        # labels.append(label)
+
+        return labels
 
 
     def scaleValueEditingFinished(self):
@@ -994,6 +1107,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
         self.mSymbolSize.setValue(float(self.currentLayer.customProperty("defaultSymbolSize", 4.0)))
         self.useScaleGroupBox.setChecked(int(self.currentLayer.customProperty("useScaleGroupBox", "0")) == 1)
+        self.templateExpression.setText(self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()))
 
         count = int(self.currentLayer.customProperty("diagrammCount", 0))
         if count < 1:
@@ -1012,7 +1126,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         self.labelSizeEdit.setValue(float(self.currentLayer.customProperty('labelSize', self.labelSizeEdit.value())))
         self.decimalEdit.setValue(int(self.currentLayer.customProperty('decimal', self.decimalEdit.value())))
-        self.templateExpression.setText(self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()))
+
         self.showLineouts.setChecked(int(self.currentLayer.customProperty('showLineout')))
         self.dailyProduction.setChecked(int(self.currentLayer.customProperty('dailyProduction')))
         for fl in bblInit.fluidCodes:

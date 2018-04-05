@@ -36,35 +36,35 @@ class ProductionWell(MyStruct):
 class bblInit:
 
     fluidCodes = [  MyStruct(name= QCoreApplication.translate('bblInit', u'Crude oil'),
-                                 code="oil", componentId="crude oil",
+                                 code="oil", componentId="crude oil", alias=u'Нефть',
                                  backColor=QColor(Qt.darkRed),   lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
                                  inPercent=0),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Natural gas'),
-                                 code="ngas", componentId="natural gas",
+                                 code="ngas", componentId="natural gas", alias=u'Газ',
                                  backColor=QColor(Qt.darkYellow), lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
                                  inPercent=0),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Produced water'),
-                                code="pw", componentId="produced water",
+                                code="pw", componentId="produced water", alias=u'Вода',
                                 backColor=QColor(Qt.blue),      lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
                                 inPercent=0),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Condensate'),
-                                code="cond", componentId="condensate",
+                                code="cond", componentId="condensate", alias=u'Конденсат',
                                 backColor=QColor(Qt.gray),      lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
                                 inPercent=0),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Injected gas'),
-                                code="igas", componentId="injected gas",
+                                code="igas", componentId="injected gas", alias=u'Закачанный газ',
                                 backColor=QColor(Qt.yellow),    lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
                                 inPercent=0),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Injected water'),
-                                code="iw", componentId="injected water",
+                                code="iw", componentId="injected water", alias=u'Закачанная вода',
                                 backColor=QColor(0, 160, 230),  lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
                                 inPercent=0),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Lift gas'),
-                                code="lgas", componentId="lift gas",
+                                code="lgas", componentId="lift gas", alias=u'Газлифт',
                                 backColor=QColor(Qt.yellow),    lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
                                 inPercent=0),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Free gas'),
-                                code="fgas", componentId="free gas",
+                                code="fgas", componentId="free gas", alias=u'Свободный газ',
                                 backColor=QColor(Qt.darkYellow), lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
                                 inPercent=0)]
 
@@ -196,10 +196,6 @@ class bblInit:
         return fluidCode + u"vol"
 
     @staticmethod
-    def attrFluidVolumeOld(fluidCode):
-        return fluidCode + u" (volume)"
-
-    @staticmethod
     def attrFluidMass(fluidCode):
         return fluidCode + u"mas"
 
@@ -208,25 +204,62 @@ class bblInit:
         return fluidCode + u" (mass)"
 
     @staticmethod
+    def attrFluidVolumeOld(fluidCode):
+        return fluidCode + u" (volume)"
+
+    @staticmethod
+    def aliasFluidVolume(fluidCode):
+        return fluidCode + u" (объем)"
+
+    @staticmethod
+    def aliasFluidMass(fluidCode):
+        return fluidCode + u" (масса)"
+
+    @staticmethod
     def updateOldProductionStructure(layer):
         needCopyData = False
+        provider = layer.dataProvider()
         with edit(layer):
             for fl in bblInit.fluidCodes:
+                #Check mass fields
                 newName = bblInit.attrFluidMass(fl.code)
                 oldName = bblInit.attrFluidMassOld(fl.componentId)
                 newIdx = layer.fieldNameIndex(newName)
                 if newIdx < 0:
-                    layer.addAttributes([QgsField(newName, QVariant.Double)])
+                    provider.addAttributes([QgsField(newName, QVariant.Double)])
                     needCopyData = True
+
+                #Check volume fields
+                newName = bblInit.attrFluidVolume(fl.code)
+                oldName = bblInit.attrFluidVolumeOld(fl.componentId)
+                newIdx = layer.fieldNameIndex(newName)
+                if newIdx < 0:
+                    provider.addAttributes([QgsField(newName, QVariant.Double)])
+                    needCopyData = True
+
 
         if needCopyData:
             with edit(layer):
                 features = layer.getFeatures()
                 for feature in features:
                     for fl in bblInit.fluidCodes:
+                        #Copy mass fields
                         newName = bblInit.attrFluidMass(fl.code)
                         oldName = bblInit.attrFluidMassOld(fl.componentId)
-                        feature.setAttrubute(newName, feature.attribute(oldName))
+                        alias = bblInit.aliasFluidMass(fl.alias)
+                        idx = layer.fieldNameIndex(newName)
+                        if idx >= 0:
+                            layer.changeAttributeValue(feature.id(), idx, feature.attribute(oldName))
+                            layer.addAttributeAlias(idx, alias)
+
+                        #Copy volume fields
+                        newName = bblInit.attrFluidVolume(fl.code)
+                        oldName = bblInit.attrFluidVolumeOld(fl.componentId)
+                        alias = bblInit.aliasFluidVolume(fl.alias)
+                        idx = layer.fieldNameIndex(newName)
+                        if idx >= 0:
+                            layer.changeAttributeValue(feature.id(), idx, feature.attribute(oldName))
+                            layer.addAttributeAlias(idx, alias)
 
 
 

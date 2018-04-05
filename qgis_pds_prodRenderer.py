@@ -32,6 +32,7 @@ import random
 import os
 import xml.etree.cElementTree as ET
 import ast
+import re
 
 try:
     from PyQt4.QtCore import QString
@@ -72,6 +73,8 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         self.showDiagramms = True
         self.labelSize = 7.0
         self.diagrammStr = u''
+        self.templateStr = None
+        # self.labelDataSums = None
 
         try:
             self.showLineouts = props[QString("showLineouts")] == "True" if QString("showLineouts") in props else True
@@ -79,6 +82,8 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
             self.showDiagramms = props[QString("showDiagramms")] == "True" if QString("showDiagramms") in props else True
             self.labelSize = float(props[QString("labelSize")]) if QString("labelSize") in props else 7.0
             self.diagrammStr = props[QString("diagrammStr")] if QString("diagrammStr") in props else u'';
+            self.templateStr = props[QString("templateStr")] if QString("templateStr") in props else u'';
+            # self.labelDataSums = props[QString("labelDataSums")] if QString("labelDataSums") in props else None;
         except Exception as e:
             QgsMessageLog.logMessage('SET PROPERTY ERROR: ' +  str(e), 'BubbleSymbolLayer')
 
@@ -87,11 +92,16 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         self.setDataDefinedProperty(BubbleSymbolLayer.LABEL_OFFSETY, QgsDataDefined(BubbleSymbolLayer.LABEL_OFFSETY))
         self.setDataDefinedProperty(BubbleSymbolLayer.BUBBLE_SIZE, QgsDataDefined(BubbleSymbolLayer.BUBBLE_SIZE))
         self.setDataDefinedProperty(BubbleSymbolLayer.DIAGRAMM_LABELS, QgsDataDefined(BubbleSymbolLayer.DIAGRAMM_LABELS))
+        if self.templateStr:
+            self.setDataDefinedProperty('DDF_Days', QgsDataDefined('days'))
+        # if self.labelDataSums:
+        #     self.setDataDefinedProperty('labelDataSums', QgsDataDefined(self.labelDataSums))
 
         self.diagrammProps = None
+        # self.labelsProps = None
 
+        idx = 1
         try:
-            idx = 1
             if len(self.diagrammStr) > 1:
                 self.diagrammProps = ast.literal_eval(self.diagrammStr)
                 for d in self.diagrammProps:
@@ -101,10 +111,34 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                             expName = str(idx) + '_expression'
                             exp = slice['expression']
                             slice['expName'] = expName
-                            self.setDataDefinedProperty(expName, QgsDataDefined('"{0}" + 0.0'.format(exp)))
+                            self.setDataDefinedProperty(expName, QgsDataDefined(exp))
+                            if not self.hasDataDefinedProperty(expName):
+                                self.setDataDefinedProperty(expName, QgsDataDefined('"{0}" + 0.0'.format(exp)))
                             idx = idx+1
+                    if 'labels' in d:
+                        labels = d['labels']
+                        if labels:
+                            for label in labels:
+                                expName = label['expName']
+                                exp = label['expression']
+                                self.setDataDefinedProperty(expName, QgsDataDefined(exp))
+                                if not self.hasDataDefinedProperty(expName):
+                                    self.setDataDefinedProperty(expName, QgsDataDefined('"{0}" + 0.0'.format(exp)))
+
         except Exception as e:
             QgsMessageLog.logMessage('Evaluate diagram props: ' + str(e), 'BubbleSymbolLayer')
+
+        # try:
+        #     if len(self.labelsStr) > 1:
+        #         self.labelsProps = ast.literal_eval(self.labelsStr)
+        #         for label in self.labelsProps:
+        #             expName = str(idx) + '_labexpression'
+        #             exp = label['expression']
+        #             label['expName'] = expName
+        #             self.setDataDefinedProperty(expName, QgsDataDefined('"{0}" + 0.0'.format(exp)))
+        #             idx = idx+1
+        # except Exception as e:
+        #     QgsMessageLog.logMessage('Evaluate label props: ' + str(e), 'BubbleSymbolLayer')
 
         self.mXIndex = -1
         self.mYIndex = -1
@@ -120,7 +154,9 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                  "showLabels" : 'True' if self.showLabels else 'False',
                  "showDiagramms" : 'True' if self.showDiagramms else 'False',
                  "labelSize" : str(self.labelSize),
-                 "diagrammStr" : str(self.diagrammStr)}
+                 "diagrammStr" : str(self.diagrammStr),
+                 "templateStr": str(self.templateStr)}
+                  # "labelDataSums": str(self.labelDataSums)}
 
         return props
 
@@ -161,6 +197,97 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 			painter.setFont(font)
 			painter.drawText(pt2, u"1P")
 
+    def addLabels(self, context, labelsProps):
+        templateStr = u''
+        if not labelsProps:
+            return templateStr
+
+        sum = 0.0
+        for label in labelsProps:
+            expName = label['expName']
+            val = None
+            if self.hasDataDefinedProperty(expName):
+                (val, ok) = self.evaluateDataDefinedProperty(expName, context, 0.0)
+                if type(val) is float:
+                    sum = sum + float(val)
+
+        for label in labelsProps:
+            expName = label['expName']
+            valStr = ''
+
+            if self.hasDataDefinedProperty(expName):
+                (val, ok) = self.evaluateDataDefinedProperty(expName, context, 0.0)
+                colorStr = label['color']
+                showZero = label['showZero']
+                isNewLine = label['isNewLine']
+
+                # QgsMessageLog.logMessage(str(val), 'BubbleSymbolLayer')
+
+                if type(val) is float:
+                    formatString = "{:." + str(label['decimals']) + "f}"
+                    if val != 0.0 or showZero:
+                        if label['percent'] and sum != 0.0:
+                            valStr = formatString.format(100.0 * float(val)/sum) + '%'
+                        else:
+                            valStr = formatString.format(float(val))
+                else:
+                    valStr = str(val)
+            else:
+                QgsMessageLog.logMessage('No DDF label ' + expName, 'BubbleSymbolLayer')
+
+            if len(valStr):
+                if isNewLine:
+                    templateStr += '<div><span><font color="{0}">{1}</font></span></div>'.format(colorStr, valStr)
+                else:
+                    templateStr += '<span><font color="{0}">{1}</font></span>'.format(colorStr, valStr)
+
+        templateStr = re.sub('^[\,\:\;\.\-/\\_ ]+|[\,\:\;\.\-/\\_ ]+$', '', templateStr)
+        return templateStr
+
+    def compileLabels(self, templateStr, sum, d, feature):
+        showZero = False
+        decimals = d['decimals']
+        formatString = "{:."+str(decimals)+"f}"
+
+        days = feature["days"]
+        if days:
+            days = 1.0 / days
+
+        slices = d['slices']
+        multiplier = d['multiplier']
+        dailyProduction = d['dailyProduction']
+        for slice in slices:
+            attr = slice['expression']
+            colorStr = slice['labelColor']
+            inPercent = slice['inPercent']
+            strVal = '0'
+            val = 0.0
+            percentStr = ''
+            if attr in templateStr:
+                val = feature[attr]
+                if val is not None:
+                    if not inPercent:
+                        val *= multiplier
+                else:
+                    val = 0
+                if inPercent and sum != 0:
+                    val = val / sum * 100
+                    percentStr = '%'
+                elif dailyProduction and days:
+                    val *= days
+                strVal = formatString.format(val) + percentStr
+
+            code = '"{0}"'.format(attr)
+            if float(formatString.format(val)) != float(0) or showZero:
+                templateStr = templateStr.replace(code, '<span><font color="{0}">{1}</font></span>'.format(colorStr,
+                                                                                                           strVal))
+            else:
+                templateStr = templateStr.replace(code, '')
+
+        templateStr = re.sub('^[\,\:\;\.\-/\\_ ]+|[\,\:\;\.\-/\\_ ]+$', '', templateStr)
+        return templateStr
+
+
     def renderPoint(self, point, context):
         feature = context.feature()
         p = context.renderContext().painter()
@@ -169,6 +296,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
             labelSize = QgsSymbolLayerV2Utils.convertToPainterUnits(context.renderContext(), self.size(), self.sizeUnit())
             self.drawPreview(p, QPointF(point.x() - labelSize / 2, point.y() - labelSize / 2), QSizeF(labelSize, labelSize))
             return
+
 
         attrs = feature.attributes()
 
@@ -182,6 +310,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                 size = float(feature.attribute(BubbleSymbolLayer.BUBBLE_SIZE))
                 diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(size), QgsSymbolV2.MM)
 
+                templateStr = self.templateStr
                 for d in self.diagrammProps:
                     slices = d['slices']
                     scaleType = int(d['scaleType'])
@@ -195,8 +324,6 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                         newSlices = []
                         for slice in slices:
                             expName = slice['expName']
-                            exp = slice['expression']
-
                             if self.hasDataDefinedProperty(expName):
                                 (val, ok) = self.evaluateDataDefinedProperty(expName, context, 0.0 )
                                 sum = sum + val
@@ -204,6 +331,8 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                                 lc = QgsSymbolLayerV2Utils.decodeColor(slice['lineColor'])
                                 newSlice = DiagrammSlice(backColor=bc, lineColor=lc, percent=val)
                                 newSlices.append(newSlice)
+                            else:
+                                QgsMessageLog.logMessage('No DDF ' + expName, 'BubbleSymbolLayer')
 
                         if sum != 0.0:
                             ds = 0.0
@@ -222,10 +351,22 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                             diagramm = DiagrammDesc(ds, newSlices)
                             diagramms.append(diagramm)
 
+                    if 'labels' in d:
+                        labels = d['labels']
+                        labelTemplate = labelTemplate + self.addLabels(context, labels)
+                        templateStr = None
+                    elif templateStr:
+                        templateStr = self.compileLabels(templateStr, sum, d, feature)
+
+                # QgsMessageLog.logMessage(templateStr, 'BubbleSymbolLayer')
                 #
                 # labelTemplate = feature.attribute(BubbleSymbolLayer.DIAGRAMM_LABELS)
                 # if labelTemplate == NULL:
                 #     labelTemplate = ''
+                # labelTemplate = self.addLabels(context)
+                if templateStr:
+                    labelTemplate = templateStr
+
 
             elif self.mDiagrammIndex >= 0:
 
@@ -343,9 +484,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         QgsMarkerSymbolLayerV2.startRender(self, context)
 
     def clone(self):
-        lay = BubbleSymbolLayer(self.properties())
-        self.copyDataDefinedProperties( lay )
-        return lay
+        return BubbleSymbolLayer(self.properties())
 
 
 
