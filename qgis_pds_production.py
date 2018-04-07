@@ -291,12 +291,12 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.uri += '&field={}:{}'.format(self.attr_labloffset, "double")
             self.uri += '&field={}:{}'.format(self.attr_lablwidth, "double")
             self.uri += '&field={}:{}'.format(self.attr_bubblesize, "double")
-            self.uri += '&field={}:{}'.format(self.attr_bubblefields, "string")
+            # self.uri += '&field={}:{}'.format(self.attr_bubblefields, "string")
             self.uri += '&field={}:{}'.format(self.attr_scaletype, "string")
             self.uri += '&field={}:{}'.format(self.attr_movingres, "string")
             self.uri += '&field={}:{}'.format(self.attr_resstate, "string")
             self.uri += '&field={}:{}'.format(self.attr_multiprod, "string")
-            self.uri += '&field={}:{}'.format(self.attr_labels, "string")
+            # self.uri += '&field={}:{}'.format(self.attr_labels, "string")
             for fl in bblInit.fluidCodes:
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidVolume(fl.code), "double")
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMass(fl.code), "double")
@@ -356,12 +356,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
         else:
-            self.updateOldProductionStructure(self.layer)
+            bblInit.updateOldProductionStructure(self.layer)
 
 
         self.loadProductionLayer(self.layer)
        
         QgsMapLayerRegistry.instance().addMapLayer(self.layer)
+        bblInit.setAliases(self.layer)
 
         self.writeSettings()
 
@@ -937,11 +938,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             if (conv.initialWellRole == initialWellRole and
                 conv.currentWellRole == wellRole and
                 conv.wellStatus == wellStatus):
-                return SYMBOL(self.tr(wellRole)+' '+self.tr(wellStatus), conv.symbol)
+                return SYMBOL(initialWellRole + ' ' + wellRole + ' ' + wellStatus, conv.symbol)
 
         for sym in bblInit.bblSymbols:
             if sym.wellRole == wellRole and sym.wellStatus == wellStatus:
-                return SYMBOL(self.tr(wellRole)+' '+self.tr(wellStatus), sym.symbol)
+                return SYMBOL(wellRole + ' '+ wellStatus, sym.symbol)
 
 
 #        sql = (" SELECT P_ALLOC_FACTOR.DATA_VALUE, WELL.WELL_ID, PRODUCTION_ALOC.START_TIME"

@@ -14,12 +14,12 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6617329"/>
+        <location line="+6616761"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6617329"/>
+        <location line="-6616761"/>
         <source>Coordinates length unmatched</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
@@ -52,12 +52,12 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6617646"/>
+        <location line="+6617178"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6617646"/>
+        <location line="-6617178"/>
         <source>Coordinate count missmatch</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
@@ -534,7 +534,7 @@
         <translation>Имя в легенде</translation>
     </message>
     <message>
-        <location line="+265"/>
+        <location line="+267"/>
         <source>Layers</source>
         <translation>Слои</translation>
     </message>
@@ -544,7 +544,7 @@
         <translation>Выберите слой</translation>
     </message>
     <message>
-        <location line="-251"/>
+        <location line="-253"/>
         <source>Show zero</source>
         <translation>Нули</translation>
     </message>
@@ -690,7 +690,7 @@
 <context>
     <name>QgisPDSProdSetup</name>
     <message>
-        <location filename="../qgis_pds_prodSetup.py" line="+295"/>
+        <location filename="../qgis_pds_prodSetup.py" line="+296"/>
         <source>Layers</source>
         <translation>Слои</translation>
     </message>
@@ -708,7 +708,7 @@
         <translation>Карта накопленной добычи</translation>
     </message>
     <message>
-        <location line="+1046"/>
+        <location line="+1047"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -728,12 +728,12 @@
         <translation>Чтение добычи из проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="-791"/>
+        <location line="-792"/>
         <source>Layer create error</source>
         <translation>Ошибка создания слоя</translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+101"/>
         <source>Reservoir is not selected</source>
         <translation>Не выбран пласт</translation>
     </message>
@@ -763,17 +763,17 @@
         <translation>Чтение скважин из проекта: {0}</translation>
     </message>
     <message>
-        <location line="-771"/>
+        <location line="-772"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>
     <message>
-        <location line="+398"/>
+        <location line="+399"/>
         <source>QGisPDS</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-458"/>
+        <location line="-459"/>
         <source>project: {0}</source>
         <translation>проект: {0}</translation>
     </message>
@@ -868,32 +868,32 @@
     <message>
         <location line="+59"/>
         <source>Processing intervals %p%</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-31"/>
         <source>Input raster volume: m^3</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+196"/>
         <source>Raster layer add error</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Creating residuals feature class...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Copying wells to residuals feature class...</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Residuals layer add error</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -960,12 +960,12 @@
         <translation>Слой {0} обновлен</translation>
     </message>
     <message>
-        <location line="-3"/>
+        <location line="-267"/>
         <source>Read wells from project {0}: {1}</source>
         <translation type="obsolete">Чтение скважин из проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="-102"/>
+        <location line="+162"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>
@@ -1045,7 +1045,7 @@
 <context>
     <name>bblInit</name>
     <message>
-        <location filename="../bblInit.py" line="+41"/>
+        <location filename="../bblInit.py" line="+46"/>
         <source>Crude oil</source>
         <translation>Сырая нефть</translation>
     </message>
@@ -1083,6 +1083,381 @@
         <location line="+4"/>
         <source>Free gas</source>
         <translation>Свободный газ</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>unknown well</source>
+        <translation>Неопределенный тип</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>water injecting active stock</source>
+        <translation>Нагнетательная скважина</translation>
+    </message>
+    <message>
+        <location line="+140"/>
+        <source>water injecting oil producing active stock</source>
+        <translation>Добывающая  скважина(конвертирована из нагнетательной)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting oil producing suspended stock</source>
+        <translation>Добывающая скважина простаивающая (конвертирована из нагнетательной)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing water injecting active stock</source>
+        <translation>Нагнетательная скважина (конвертирована из добывающей)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing water injecting suspended stock</source>
+        <translation>Нагнетательная скважина простаивающая(конвертирована из добывающей)</translation>
+    </message>
+    <message>
+        <location line="-148"/>
+        <source>oil producing active stock</source>
+        <translation>Добывающая скважина</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>gas producing active stock</source>
+        <translation>Добывающая скважина</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply active stock</source>
+        <translation>Водозаборная скважина</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing active stock</source>
+        <translation>Скважина для сброса технических вод</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing suspended stock</source>
+        <translation>Добывающая скважина простаивающая</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting suspended stock</source>
+        <translation>Нагнетательная  простаивающая</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing suspended stock</source>
+        <translation>Добывающая скважина простаивающая</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply suspended stock</source>
+        <translation>Водозаборная скважина простаивающая</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing suspended stock</source>
+        <translation>Скважина для сброса технических вод простаивающая</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing waiting completion stock</source>
+        <translation>Добывающая скважина законченная бурением</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting waiting completion stock</source>
+        <translation>Нагнетательная скважина законченная бурением</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing waiting completion stock</source>
+        <translation>Добывающая скважина законченная бурением</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply waiting completion stock</source>
+        <translation>Водозаборная скважина законченная бурением</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing waiting completion stock</source>
+        <translation>Скважина для сброса технических вод законченная бурением</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing completion stock</source>
+        <translation>Добывающая скважина в освоении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting completion stock</source>
+        <translation>Нагнетательная скважина в освоении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing completion stock</source>
+        <translation>Добывающая скважина в освоении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply completion stock</source>
+        <translation>Водозаборная скважина в освоении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing completion stock</source>
+        <translation>Скважина для сброса технических вод в освоении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing QC stock</source>
+        <translation>Контрольная скважина</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting QC stock</source>
+        <translation>Нагнетательная скважина контрольная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing QC stock</source>
+        <translation>Контрольная скважина</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply QC stock</source>
+        <translation>Водозаборная скважина контрольная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing QC stock</source>
+        <translation>Скважина для сброса технических вод контрольная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing piezometric stock</source>
+        <translation>Пьезометрическая скважина</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting piezometric stock</source>
+        <translation>Нагнетательная скважина пьезометрическая</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing piezometric stock</source>
+        <translation>Пьезометрическая скважина</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply piezometric stock</source>
+        <translation>Водозаборная скважина пьезометрическая</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing piezometric stock</source>
+        <translation>Скважина для сброса технических вод пьезометрическая</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing conservation stock</source>
+        <translation>Добывающая скважина в консервации</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting conservation stock</source>
+        <translation>Нагнетательная в консервации</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing conservation stock</source>
+        <translation>Добывающая скважина в консервации</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply conservation stock</source>
+        <translation>Водозаборная скважина в консервации</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing conservation stock</source>
+        <translation>Скважина для сброса технических вод в консервации</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing abandonment stock</source>
+        <translation>Добывающая скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting abandonment stock</source>
+        <translation>Нагнетательная скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing abandonment stock</source>
+        <translation>Добывающая скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply abandonment stock</source>
+        <translation>Водозаборная скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing abandonment stock</source>
+        <translation>Скважина для сброса технических вод ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing waiting abandonment stock</source>
+        <translation>Добывающая скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting waiting abandonment stock</source>
+        <translation>Нагнетательная скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing waiting abandonment stock</source>
+        <translation>Добывающая скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply waiting abandonment stock</source>
+        <translation>Водозаборная скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing waiting abandonment stock</source>
+        <translation>Скважина для сброса технических вод ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing inactive stock</source>
+        <translation>Добывающая скважина в бездействии</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting inactive stock</source>
+        <translation>Нагнетательная скважина в бездействии</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing inactive stock</source>
+        <translation>Добывающая скважина в бездействии</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply inactive stock</source>
+        <translation>Водозаборная скважина в бездействии</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing inactive stock</source>
+        <translation>Скважина для сброса технических вод в бездействии</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing proposed stock</source>
+        <translation>Добывающая скважина в проекте</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting proposed stock</source>
+        <translation>Нагнетательная скважина в проекте</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing proposed stock</source>
+        <translation>Добывающая скважина в проекте</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply proposed stock</source>
+        <translation>Водозаборная скважина в проекте</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing proposed stock</source>
+        <translation>Скважина для сброса технических вод в проекте</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing drilling stock</source>
+        <translation>Добывающая скважина в бурении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting drilling stock</source>
+        <translation>Нагнетательная скважина в бурении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing drilling stock</source>
+        <translation>Добывающая скважина в бурении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply drilling stock</source>
+        <translation>Водозаборная скважина в бурении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing drilling stock</source>
+        <translation>Скважина для сброса технических вод в бурении</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing test stock</source>
+        <translation>Разведочная скважина в испытании</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting test stock</source>
+        <translation>Разведочная нагнетательная скважина в испытании</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing test stock</source>
+        <translation>Разведочная скважина в испытании</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply test stock</source>
+        <translation>Разведочная водозаборная скважинав испытании</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing test stock</source>
+        <translation>Разведочная скважина для сброса технических вод в испытании</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>oil producing exploration abandonment stock</source>
+        <translation>Разведочная скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water injecting exploration abandonment stock</source>
+        <translation>Разведочная нагнетательная скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>gas producing exploration abandonment stock</source>
+        <translation>Разведочная скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water-supply exploration abandonment stock</source>
+        <translation>Разведочная водозаборная скважина ликвидированная</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>water absorbing exploration abandonment stock</source>
+        <translation>Разведочная скважина для сброса технических вод ликвидированная</translation>
     </message>
 </context>
 </TS>

@@ -580,6 +580,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 if ds > maxDiagrammSize:
                     ds = maxDiagrammSize
 
+                diagramm = {}
+                if sum != 0:
+                    for fluid in selectedFluids:
+                        prods[fluid.code] = fluid
+
+
                 # diagramm = {}
                 # if sum != 0:
                 #     diag = ET.SubElement(root, "diagramm", size=str(ds))
@@ -669,8 +675,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
             allDiagramms.append(diagramm)
 
-        print templateStr, sums
-
         diagrammStr = str(allDiagramms)
 
         symbol = QgsMarkerSymbolV2()
@@ -724,7 +728,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             symbol.changeSymbolLayer(0, svg)
 
             rule = QgsRuleBasedRendererV2.Rule(symbol)
-            rule.setLabel(uniqSymbols[symId])
+            try:
+                rule.setLabel(QCoreApplication.translate('bblInit', uniqSymbols[symId]))
+            except:
+                rule.setLabel(uniqSymbols[symId])
 
             rule.setFilterExpression(u'\"{0}\"={1}'.format("SymbolCode", symId))
             root_rule.appendChild(rule)
@@ -739,7 +746,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
             rule = QgsRuleBasedRendererV2.Rule(symbol)
             try:
-                rule.setLabel(QCoreApplication.translate('bblInit', ff.name))
+                newName = QCoreApplication.translate('bblInit', ff.name)
+                rule.setLabel(newName)
             except:
                 rule.setLabel(ff.name)
             rule.setFilterExpression(u'\"SymbolCode\"=-1')
