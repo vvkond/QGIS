@@ -613,6 +613,11 @@ class QgisPDS(QObject):
       
             
     def createProductionlayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+
         dlg = QgisPDSProductionDialog(self.currentProject, self.iface)
         if dlg.isInitialised():
             result = dlg.exec_()
@@ -621,6 +626,11 @@ class QgisPDS(QObject):
 
 
     def loadPressure(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+
         dlg = QgisPDSPressure(self.currentProject, self.iface)
         if dlg.isInitialised():
             result = dlg.exec_()
@@ -633,6 +643,11 @@ class QgisPDS(QObject):
         self.renderComplete()
 
     def createSummProductionlayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+
         dlg = QgisPDSProductionDialog(self.currentProject, self.iface, False)
         if dlg.isInitialised():
             result = dlg.exec_()
@@ -707,6 +722,11 @@ class QgisPDS(QObject):
 
 
     def createWellDeviationLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+
         wells = QgisPDSDeviation(self.iface, self.currentProject)
         layer = wells.createWellLayer()
         # if layer is not None:

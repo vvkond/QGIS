@@ -532,8 +532,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 multiplier = 1.0 #float(bblInit.unit_to_mult.get(d.units, 1.0))
                 for attrName in prodFields:
                     attr = attrName + scaleType
-                    if feature.attribute(attr) is not None:
-                        val = float(feature.attribute(attr) * multiplier)
+                    variant = feature.attribute(attr)
+                    if variant is not None and variant != NULL:
+                        val = float(variant) * multiplier
                         sum += val
 
                 if maxSum < sum:
@@ -570,8 +571,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 sum = 0.0
                 for fluid in selectedFluids:
                     attr = fluid.code + scaleType
-                    if feature[attr] is not None:
-                        val = float(feature[attr] * multiplier)
+                    variant = feature[attr]
+                    if variant is not None and variant != NULL:
+                        val = float(variant) * multiplier
                         sum += val
 
                 ds = minDiagrammSize + sum * koef
@@ -604,10 +606,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 if ds > diagrammSize:
                     diagrammSize = ds
 
-                templateStr = self.addLabels(templateStr, sum, vec, feature, scaleType, multiplier)
+                # templateStr = self.addLabels(templateStr, sum, vec, feature, scaleType, multiplier)
 
-            if diagrammSize >= minDiagrammSize:
-                ET.SubElement(root, "label", labelText=templateStr)
+            # if diagrammSize >= minDiagrammSize:
+            #     ET.SubElement(root, "label", labelText=templateStr)
                 # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bbllabels'), templateStr)
 
             offset = diagrammSize if diagrammSize < maxDiagrammSize else maxDiagrammSize

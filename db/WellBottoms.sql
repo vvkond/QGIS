@@ -34,7 +34,7 @@ FROM
         REPLACE(REPLACE(w.TIG_ON_OR_OFF_SHORE, '1', 'Offshore'), '0', 'Onshore') "On/Offshore",
         w.TIG_LATEST_WELL_STATE_NO "Status",
         s.TIG_DESCRIPTION "Symbol",
-        b.SPUD_DATE "Spud Date",
+        TO_CHAR(b.SPUD_DATE, 'DD-MM-YYYY') "Spud Date",
         REPLACE(REPLACE(w.TIG_GLOBAL_DATA_FLAG, '1', 'Global'), '0', 'Private') "Global/Private",
         'gg' "Owner",
         TO_CHAR((TO_DATE('01-01-1970', 'DD-MM-YYYY') +(w.DB_INSTANCE_TIME_STAMP / 86400)), 'DD-MM-YYYY') "Created",

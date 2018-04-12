@@ -265,7 +265,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
             percentStr = ''
             if attr in templateStr:
                 val = feature[attr]
-                if val is not None:
+                if val is not None and val != NULL:
                     if not inPercent:
                         val *= multiplier
                 else:
@@ -326,11 +326,12 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                             expName = slice['expName']
                             if self.hasDataDefinedProperty(expName):
                                 (val, ok) = self.evaluateDataDefinedProperty(expName, context, 0.0 )
-                                sum = sum + val
-                                bc = QgsSymbolLayerV2Utils.decodeColor(slice['backColor'])
-                                lc = QgsSymbolLayerV2Utils.decodeColor(slice['lineColor'])
-                                newSlice = DiagrammSlice(backColor=bc, lineColor=lc, percent=val)
-                                newSlices.append(newSlice)
+                                if val != NULL:
+                                    sum = sum + val
+                                    bc = QgsSymbolLayerV2Utils.decodeColor(slice['backColor'])
+                                    lc = QgsSymbolLayerV2Utils.decodeColor(slice['lineColor'])
+                                    newSlice = DiagrammSlice(backColor=bc, lineColor=lc, percent=val)
+                                    newSlices.append(newSlice)
                             else:
                                 QgsMessageLog.logMessage('No DDF ' + expName, 'BubbleSymbolLayer')
 
@@ -464,7 +465,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                         if labelTemplate and labelTemplate != NULL and self.showLabels:
                             p.drawStaticText(pt1.x(), pt1.y(), st)
         except Exception as e:
-            QgsMessageLog.logMessage(str(e), 'BubbleSymbolLayer')
+            QgsMessageLog.logMessage('renderPoint: ' + str(e), 'BubbleSymbolLayer')
 
 
     def startRender(self, context):
