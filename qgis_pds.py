@@ -773,7 +773,7 @@ class QgisPDS(QObject):
         projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
         proj = ast.literal_eval(projStr)
 
-        dlg  = QgisPDSCoordFromZoneDialog(proj, self.iface, currentLayer)
+        dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, currentLayer)
         dlg.exec_()
         return
 
@@ -785,7 +785,7 @@ class QgisPDS(QObject):
         projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
         proj = ast.literal_eval(projStr)
 
-        dlg = QgisPDSTransitionsDialog(proj, self.iface, currentLayer)
+        dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, currentLayer)
         dlg.exec_()
         return
 

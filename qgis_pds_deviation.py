@@ -286,14 +286,23 @@ class QgisPDSDeviation(QObject):
                     well.setAttribute(self.attrOperator, row[3])
                     well.setAttribute(self.attrCountry, row[4])
                     well.setAttribute(self.attrDepth, row[7])
-                    well.setAttribute(self.attrMeasurement, row[8])
+                    try:
+                        well.setAttribute(self.attrMeasurement, row[8])
+                    except:
+                        pass
                     well.setAttribute(self.attrElevation, row[9])
                     well.setAttribute(self.attrDatum, row[10])
-                    well.setAttribute(self.attrOn_offshore, row[11])
+                    try:
+                        well.setAttribute(self.attrOn_offshore, row[11])
+                    except:
+                        pass
                     well.setAttribute(self.attrStatus, row[12])
                     well.setAttribute(self.attrSymbol, row[13])
-                    well.setAttribute(self.attrSpud_date, row[14])
-                    well.setAttribute(self.attrGlobal_private, row[15])
+                    well.setAttribute(self.attrSpud_date, QDateTime.fromString(row[14], self.dateFormat))
+                    try:
+                        well.setAttribute(self.attrGlobal_private, row[15])
+                    except:
+                        pass
                     well.setAttribute(self.attrOwner, row[16])
                     well.setAttribute(self.attrCreated, QDateTime.fromString(row[17], self.dateFormat))
                     well.setAttribute(self.attrProject, projectName)

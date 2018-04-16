@@ -11,7 +11,7 @@ from PyQt4.QtCore import *
 
 from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
-from QgisPDS.utils import to_unicode
+from utils import *
 from QgisPDS.tig_projection import *
 from QgisPDS.qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 from QgisPDS.qgis_pds_zoneparams import QgisPDSZoneparamsDialog
@@ -31,6 +31,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         self.mParameterFrame.setVisible(True)
         self.mWellsListWidget.setVisible(True)
         self.mWellLabel.setVisible(True)
+
+        settings = QSettings()
+        self.mUseElevation.setChecked(settings.value("/PDS/Zonations/UseElevation", u'True') == u'True')
+        self.mUseErosion.setChecked(settings.value("/PDS/Zonations/UseErosion", u'False') == u'True')
 
         selectedParameters = QSettings().value("/PDS/Zonations/SelectedParameters", [])
         self.selectedParameters = [int(z) for z in selectedParameters]
@@ -70,31 +74,38 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             return
 
         paramId = self.mParamComboBox.itemData(self.mParamComboBox.currentIndex())
-        if self.createLayer(self.mParamComboBox.currentText()):
+        layerName = self.mParamComboBox.currentText()
+        parts = layerName.split('(')
+        if len(parts) > 0:
+            layerName = parts[0]
+
+        if self.createLayer(layerName):
             with edit(self.layer):
                 self.execute(sel, paramId)
+
+            self.layer = memoryToShp(self.layer, self.project['project'], layerName)
+            QgsMapLayerRegistry.instance().addMapLayer(self.layer)
 
         try:
             settings = QSettings()
             settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
             settings.setValue("/PDS/Zonations/selectedZones", selectedZones)
             settings.setValue("/PDS/Zonations/SelectedParameter", paramId)
+            settings.setValue("/PDS/Zonations/UseElevation", u'True' if self.mUseElevation.isChecked() else u'False')
+            settings.setValue("/PDS/Zonations/UseErosion", u'True' if self.mUseErosion.isChecked() else u'False')
         except:
             return
 
 
     def createLayer(self, name):
         try:
-            parts = name.split('(')
-            if len(parts) > 0:
-                name = parts[0]
             uri = "Point?crs={}".format(self.proj4String)
             uri += '&field={}:{}'.format(u'well_id', "string")
             uri += '&field={}:{}'.format(name, "double")
 
             self.layer = QgsVectorLayer(uri, name, "memory")
-            if self.layer:
-                QgsMapLayerRegistry.instance().addMapLayer(self.layer)
+            # if self.layer:
+            #     QgsMapLayerRegistry.instance().addMapLayer(self.layer)
 
             return self.layer is not None
         except Exception as e:
@@ -277,6 +288,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         zone_top = input_row[self.zone_top_column_index]
         zone_bottom = input_row[self.zone_bottom_column_index]
 
+        elevation = 0.0
+        if self.mUseElevation.isChecked():
+            elevation = input_row[22]
+
         value = None
         depth = None
 
@@ -322,12 +337,12 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             yPosition = y[jp] + rinterp * (y[jp + 1] - y[jp])
 
             if parameter_name in ['TopTVD', 'BotTVD']:
-                value = tvd[jp] + rinterp * (tvd[jp + 1] - tvd[jp])
+                value = elevation + tvd[jp] + rinterp * (tvd[jp + 1] - tvd[jp])
         elif depth >= md[lastIdx]:
             xPosition = x[lastIdx]
             yPosition = y[lastIdx]
             if parameter_name in ['TopTVD', 'BotTVD']:
-                value = tvd[lastIdx]
+                value = tvd[lastIdx] + elevation
 
         lng = input_row[self.well_lng_column_index]
         lat = input_row[self.well_lat_column_index]
