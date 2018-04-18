@@ -337,12 +337,12 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             yPosition = y[jp] + rinterp * (y[jp + 1] - y[jp])
 
             if parameter_name in ['TopTVD', 'BotTVD']:
-                value = elevation + tvd[jp] + rinterp * (tvd[jp + 1] - tvd[jp])
+                value = tvd[jp] + rinterp * (tvd[jp + 1] - tvd[jp]) - elevation
         elif depth >= md[lastIdx]:
             xPosition = x[lastIdx]
             yPosition = y[lastIdx]
             if parameter_name in ['TopTVD', 'BotTVD']:
-                value = tvd[lastIdx] + elevation
+                value = tvd[lastIdx] - elevation
 
         lng = input_row[self.well_lng_column_index]
         lat = input_row[self.well_lat_column_index]

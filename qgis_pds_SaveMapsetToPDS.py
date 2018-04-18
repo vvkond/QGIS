@@ -37,7 +37,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.groupFile = 'ControlPoints_group.sql'
         self.setFile = 'ControlPoints_set.sql'
         self.mapSetType = 0
-        self.mapSetCpSource = 0
+        self.mapSetCpSource = 1
         self.plugin_dir = os.path.dirname(__file__)
         self.xform = None
 
@@ -229,7 +229,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         return mapSetNo
 
     def resetMapSetType(self):
-        self.mapSetCpSource = 0
+        self.mapSetCpSource = 1
         self.mKeyFields.setEnabled(False)
         self.mKetFieldsLabel.setEnabled(False)
         self.mEmptyValue.setEnabled(False)
