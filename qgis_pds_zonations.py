@@ -124,7 +124,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         records = self.db.execute(sql, parameter_id=paramId, zonation_id=zoneDef[1], zone_id=zoneDef[0])
         if records:            
             for input_row in records:
-                x,y,value = self.get_zone_coord_value(input_row)
+                x,y,value = self.get_zone_coord_value(input_row, zoneDef[1], zoneDef[0])
                 if x is not None and y is not None:
                     wellId = input_row[self.well_name_column_index]
                     sldnid = input_row[self.well_id_column_index]
@@ -135,6 +135,17 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                         feat.setGeometry(l)
                         feat.setAttributes([wellId, float(value)])
                         self.layer.addFeatures([feat])
+
+    def getNextZonationDepth(self, wellId, zonationId, zoneId):
+        sql = self.get_sql('ZonationErosion.sql')
+        records = self.db.execute(sql, well_id=wellId, zonation_id=zonationId, zone_id=zoneId)
+        result = 0.0
+        for input_row in records:
+            val = float(input_row[0])
+            if val > 0 and val < 1.0E+19:
+                result = val
+                break
+        return result
 
 
     @cached_property
@@ -278,15 +289,15 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                 return value
 
 
-    def get_zone_coord_value(self, input_row):
+    def get_zone_coord_value(self, input_row, zonationId, zoneId):
         ZAV_INDT_LO = -1000.9
         ZAV_INDT_HI = -998.9
 
         parameter_name = input_row[self.parameter_name_column_index]
         zonation_param_value = self.get_zonation_param_value(input_row)
 
-        zone_top = input_row[self.zone_top_column_index]
-        zone_bottom = input_row[self.zone_bottom_column_index]
+        zone_top = float(input_row[self.zone_top_column_index])
+        zone_bottom = float(input_row[self.zone_bottom_column_index])
 
         elevation = 0.0
         if self.mUseElevation.isChecked():
@@ -295,10 +306,18 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         value = None
         depth = None
 
+        _well_id = input_row[self.well_id_column_index]
+
+        useErosion = self.mUseErosion.isChecked()
+
         if parameter_name == 'TopTVD':
+            if useErosion and (zone_top == 0 or zone_top > 1.0E+19):
+                zone_top = self.getNextZonationDepth(_well_id, zonationId, zoneId)
             depth = zone_top
             value = zone_top
         elif parameter_name == 'BotTVD':
+            if useErosion and (zone_bottom == 0 or zone_bottom > 1.0E+19):
+                zone_bottom = self.getNextZonationDepth(_well_id, zonationId, zoneId)
             depth = zone_bottom
             value = zone_bottom
         else:
