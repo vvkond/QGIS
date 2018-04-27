@@ -14,12 +14,12 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6616761"/>
+        <location line="+6616335"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6616761"/>
+        <location line="-6616335"/>
         <source>Coordinates length unmatched</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
@@ -52,12 +52,12 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6617178"/>
+        <location line="+6616827"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6617178"/>
+        <location line="-6616827"/>
         <source>Coordinate count missmatch</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
@@ -381,12 +381,12 @@
 <context>
     <name>QgisPDS</name>
     <message>
-        <location filename="../qgis_pds.py" line="+610"/>
+        <location filename="../qgis_pds.py" line="+659"/>
         <source>Select PDS project</source>
         <translation>Выбор проекта PDS</translation>
     </message>
     <message>
-        <location line="-189"/>
+        <location line="-221"/>
         <source>Select project</source>
         <translation>Выберите проект</translation>
     </message>
@@ -451,12 +451,12 @@
         <translation>Остаточные запасы</translation>
     </message>
     <message>
-        <location line="+41"/>
+        <location line="+73"/>
         <source>&amp;PDS</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-115"/>
+        <location line="-147"/>
         <source>Load well deviations</source>
         <translation>Загрузить инклинометрию</translation>
     </message>
@@ -471,17 +471,17 @@
         <translation>Статистика</translation>
     </message>
     <message>
-        <location line="+288"/>
+        <location line="+443"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+0"/>
+        <location line="-103"/>
         <source>Save project before using plugin</source>
         <translation>Пожалуйста, сначала сохраните проект</translation>
     </message>
     <message>
-        <location line="-281"/>
+        <location line="-333"/>
         <source>Save to PDS</source>
         <translation>Сохранить в PDS</translation>
     </message>
@@ -506,14 +506,73 @@
         <translation>Настроить круговые диаграммы</translation>
     </message>
     <message>
-        <location line="+186"/>
+        <location line="+233"/>
         <source>Save project before load wells</source>
         <translation>Сохраните проект перед загрузкой скважин</translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location line="+12"/>
         <source>Save project before load</source>
         <translation>Сохраните проект перед загрузкой</translation>
+    </message>
+    <message>
+        <location line="-179"/>
+        <source>Well Correlation &amp;&amp; Zonation</source>
+        <translation>Корреляция скважин и зонирование</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Well view</source>
+        <translation>Карточка скважины</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Well Log Processing</source>
+        <translation>Обработка каротажа</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Deviation Survey</source>
+        <translation>Загрузка инклинометрии</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Log Plot</source>
+        <translation>Сводная диаграмма</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Seismic Interpretation 2D</source>
+        <translation>Интерпретация 2D</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Seismic Interpretation 3D</source>
+        <translation>Интерпретация 3D</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Run application</source>
+        <translation>Запуск приложения Tigress</translation>
+    </message>
+    <message>
+        <source>File not found {0}.
+Please set TIGDIR variable</source>
+        <translation type="obsolete">Файл не найден {0}..
+Пожалуйста, установите системную переменную TIGDIR</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>File not found {0}.Please set TIGDIR variable</source>
+        <translation type="obsolete">Файл не найден {0}..
+Пожалуйста, установите системную переменную TIGDIR</translation>
+    </message>
+    <message>
+        <location line="+391"/>
+        <source>file not found.
+Please set TIGDIR variable</source>
+        <translation>Файл не найден.
+Пожалуйста, установите системную переменную TIGDIR</translation>
     </message>
 </context>
 <context>
@@ -677,12 +736,12 @@
         <translation>Карта давлений</translation>
     </message>
     <message>
-        <location line="+127"/>
+        <location line="+130"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-97"/>
+        <location line="-99"/>
         <source>Error create pressure layer</source>
         <translation>Ошибка создания слоя давлений</translation>
     </message>
@@ -960,12 +1019,11 @@
         <translation>Слой {0} обновлен</translation>
     </message>
     <message>
-        <location line="-267"/>
         <source>Read wells from project {0}: {1}</source>
         <translation type="obsolete">Чтение скважин из проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="+162"/>
+        <location line="-105"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>
@@ -978,7 +1036,7 @@
         <translation>Загрузить параметры пластов</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+88"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>

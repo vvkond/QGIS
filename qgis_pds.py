@@ -49,8 +49,10 @@ from QgisPDS.qgis_pds_SaveMapsetToPDS import QgisSaveMapsetToPDS
 from QgisPDS.qgis_pds_oracleSql import QgisOracleSql
 from QgisPDS.qgis_pds_createIsolines import QgisPDSCreateIsolines
 from QgisPDS.qgis_pds_transite import QgisPDSTransitionsDialog
+import os
 import os.path
 import ast
+import json
 
 
 class QgisPDS(QObject):
@@ -220,19 +222,28 @@ class QgisPDS(QObject):
                 editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffset'), 1)
 
 
-
+    @property
+    def sldnidFieldName(self):
+        return 'sldnid'
 
     def layerSelected(self, layer):
         """Change action enable"""
         enabled = False
         enabledWell = False
-        if layer is not None: 
-            enabled = bblInit.isProductionLayer(layer)
-            enabledWell = bblInit.isWellLayer(layer)
+        runAppEnabled = False
+        try:
+            if layer is not None:
+                enabled = bblInit.isProductionLayer(layer)
+                enabledWell = bblInit.isWellLayer(layer)
+                runAppEnabled = layer.fieldNameIndex(self.sldnidFieldName) >= 0
+        except:
+            pass
 
         self.actionProductionSetup.setEnabled(enabled)
         self.actionCoordsFromZone.setEnabled(enabled or enabledWell)
         self.actionTransiteWells.setEnabled(enabled or enabledWell)
+
+        self.runAppAction.setEnabled(runAppEnabled)
 
 
     
@@ -377,18 +388,20 @@ class QgisPDS(QObject):
         self,
         icon_path,
         text,
-        callback,
+        callback=None,
         enabled_flag=True,
         add_to_menu=True,
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None,
+        menu=None):
         
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
-        action.triggered.connect(callback)
+        if callback is not None:
+            action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
 
         if status_tip is not None:
@@ -396,6 +409,9 @@ class QgisPDS(QObject):
 
         if whats_this is not None:
             action.setWhatsThis(whats_this)
+
+        if menu is not None:
+            action.setMenu(menu)
 
         if add_to_toolbar:
             self.toolbar.addAction(action)
@@ -416,6 +432,7 @@ class QgisPDS(QObject):
         toolTipText = self.tr(u'Select PDS project')
         if self.currentProject:
             toolTipText += ' ({0})'.format(self.currentProject['project'])
+
         icon_path = ':/plugins/QgisPDS/splash_logo.png'
         self.selectProjectAction = self.add_action(
             icon_path,
@@ -574,6 +591,38 @@ class QgisPDS(QObject):
             text=self.tr(u'Create isolines'),
             callback=self.createIsolines,
             parent=self.iface.mainWindow())
+
+        applicationMenu = QMenu(self.iface.mainWindow())
+        action = QAction(self.tr(u'Well Correlation && Zonation'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startWcorr)
+        action = QAction(self.tr(u'Well view'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startWellView)
+        action = QAction(self.tr(u'Well Log Processing'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startWellLogProcessing)
+        action = QAction(self.tr(u'Deviation Survey'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startDevSurvey)
+        action = QAction(self.tr(u'Log Plot'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startLogPlot)
+        applicationMenu.addSeparator()
+        action = QAction(self.tr(u'Seismic Interpretation 2D'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.seis2D)
+        action = QAction(self.tr(u'Seismic Interpretation 3D'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.seis3D)
+
+        icon_path = ':/plugins/QgisPDS/play_24x24.png'
+        self.runAppAction = self.add_action(
+            icon_path,
+            text=self.tr(u'Run application'),
+            parent=self.iface.mainWindow(),
+            enabled_flag=False,
+            menu=applicationMenu)
 
         self._metadata = BabbleSymbolLayerMetadata()
         QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
@@ -862,7 +911,120 @@ class QgisPDS(QObject):
 
         dlg = QgisPDSCreateIsolines(self.iface)
         dlg.exec_()
+
+    def createProjectString(self, args={}):
+        projectName = args['project']
+        options = json.loads(args['options'])
+        host = options['host']
+        sid = options['sid']
+
+        return u'{0}/{1}/{2}'.format(host, sid, projectName)
+
+    def startWcorr(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"wcorr.load_template(" + "'{0}', ".format(project)
+        args += '{' + ids + '})" '
+        self.runTigressProcess('wcorr.exe', args)
+
+    def startWellView(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"wellview.load_well(" + "'{0}', ".format(project)
+        args += '{' + ids + '})" '
+        self.runTigressProcess('wellview.exe', args)
+
+    def startWellLogProcessing(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"gsp.load_tz_table(" + "'{0}', ".format(project)
+        args += '{' + ids + '})" '
+        self.runTigressProcess('gsp.exe', args)
+
+    def startDevSurvey(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"dvsrvy.load_survey(" + "'{0}', ".format(project)
+        args += '{' + ids + '})" '
+        self.runTigressProcess('dvsrvy.exe', args)
+
+    def startLogPlot(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"compos.load_resultsplot(" + "'{0}', ".format(project)
+        args += '{' + ids + '})" '
+        self.runTigressProcess('compos.exe', args)
+
+    def seis2D(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        ids = '0'
+        args = " -script \"inp.load_2dlines(" + "'{0}', ".format(project)
+        args += '{' + ids + '})" '
+        self.runTigressProcess('inp.exe', args)
+
+    def seis3D(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        ids = '0'
+        args = " -script \"inp.load_survey3d(" + "'{0}', ".format(project)
+        args += '{' + ids + '})" '
+        self.runTigressProcess('inp.exe', args)
         
     def saveSettings(self):
         QSettings().setValue('currentProject', self.currentProject)
-        
+
+    def runTigressProcess(self, appName, args):
+        tigdir = os.environ['TIGDIR']
+        tigdir = tigdir.replace('\\', '/')
+        exeName = tigdir + '/bin/' + appName
+        if not os.path.exists(exeName):
+            exeName = tigdir + '/../bin/' + appName
+
+        if not os.path.exists(exeName):
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'),
+                                       appName + ': ' + self.tr(u'file not found.\nPlease set TIGDIR variable'.format(appName)),
+                                       QtGui.QMessageBox.Ok)
+            return
+
+        runStr = exeName + ' ' + args
+        process = QProcess(self.iface)
+        process.start(runStr)
+
+    def getSelectedSldnids(self, layer):
+        idx = layer.fieldNameIndex(self.sldnidFieldName)
+        if idx < 0:
+            return '';
+
+        result = '0'
+        features = layer.selectedFeatures()
+        for f in features:
+             result += ',{0}'.format(f.attribute(self.sldnidFieldName))
+
+        return result

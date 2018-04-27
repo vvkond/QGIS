@@ -263,5 +263,5 @@ class Sqlite(Base):
                 raise 'check me'
                 logging.exception('!!! possible locked database, try reexecute')
                 sleep(reexecute_interval)
-
-        raise
+            except:
+                raise

@@ -28,5 +28,6 @@
         <file>GeoCART24.png</file>
         <file>mActionFilter.png</file>
         <file>symbologyRemove.png</file>
+        <file>play_24x24.png</file>
     </qresource>
 </RCC>
