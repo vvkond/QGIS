@@ -59,8 +59,7 @@ class QgisPDSSelectMapTool(QgsMapToolEmitPoint):
             self.showRect(self.endPoint)
         elif e.button() == Qt.RightButton:
             self.finished.emit(self.features, self.exeName, self.appArgs)
-            self.features = []
-            self.rubberBand.reset()
+            self.reset()
 
     def canvasReleaseEvent(self, e):
         pass

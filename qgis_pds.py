@@ -933,9 +933,11 @@ class QgisPDS(QObject):
 
     @pyqtSlot(list, str, str)
     def selectMapTool_finished(self, features, exeName, appArgs):
-        ids = self.getSelectedSldnids(features)
-        # print  appArgs + '{' + ids + '})" '
-        self.runTigressProcess(exeName, appArgs + '{' + ids + '})" ')
+        if len(features):
+            ids = self.getSelectedSldnids(features)
+            # print  appArgs + '{' + ids + '})" '
+            self.runTigressProcess(exeName, appArgs + '{' + ids + '})" ')
+
 
     def startWcorr(self):
         currentLayer = self.iface.activeLayer()
