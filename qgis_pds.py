@@ -49,6 +49,7 @@ from QgisPDS.qgis_pds_SaveMapsetToPDS import QgisSaveMapsetToPDS
 from QgisPDS.qgis_pds_oracleSql import QgisOracleSql
 from QgisPDS.qgis_pds_createIsolines import QgisPDSCreateIsolines
 from QgisPDS.qgis_pds_transite import QgisPDSTransitionsDialog
+from qgis_pds_SelectMapTool import QgisPDSSelectMapTool
 import os
 import os.path
 import ast
@@ -99,6 +100,8 @@ class QgisPDS(QObject):
         self.timer = QTimer()
         self.timer.timeout.connect(self.onTimer)
         # QObject.connect(self.timer, SIGNAL("timeout()"), self.onTimer)
+
+        self.selectMapTool = None
 
 
     # noinspection PyMethodMayBeStatic
@@ -920,16 +923,31 @@ class QgisPDS(QObject):
 
         return u'{0}/{1}/{2}'.format(host, sid, projectName)
 
+    def startSelectMapTool(self, layer, exeName, appArgs):
+        if not self.selectMapTool:
+            self.selectMapTool = QgisPDSSelectMapTool(self.iface.mapCanvas(), layer)
+            self.selectMapTool.finished.connect(self.selectMapTool_finished)
+
+        self.selectMapTool.setArgs(exeName, appArgs)
+        self.iface.mapCanvas().setMapTool(self.selectMapTool)
+
+    @pyqtSlot(list, str, str)
+    def selectMapTool_finished(self, features, exeName, appArgs):
+        ids = self.getSelectedSldnids(features)
+        # print  appArgs + '{' + ids + '})" '
+        self.runTigressProcess(exeName, appArgs + '{' + ids + '})" ')
+
     def startWcorr(self):
         currentLayer = self.iface.activeLayer()
         if not currentLayer:
             return
 
         project = self.createProjectString(args=self.currentProject)
-        ids = self.getSelectedSldnids(currentLayer)
+        # ids = self.getSelectedSldnids(currentLayer)
         args = " -script \"wcorr.load_template(" + "'{0}', ".format(project)
-        args += '{' + ids + '})" '
-        self.runTigressProcess('wcorr.exe', args)
+        self.startSelectMapTool(currentLayer, 'wcorr.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('wcorr.exe', args)
 
     def startWellView(self):
         currentLayer = self.iface.activeLayer()
@@ -937,10 +955,11 @@ class QgisPDS(QObject):
             return
 
         project = self.createProjectString(args=self.currentProject)
-        ids = self.getSelectedSldnids(currentLayer)
+        # ids = self.getSelectedSldnids(currentLayer)
         args = " -script \"wellview.load_well(" + "'{0}', ".format(project)
-        args += '{' + ids + '})" '
-        self.runTigressProcess('wellview.exe', args)
+        self.startSelectMapTool(currentLayer, 'wellview.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('wellview.exe', args)
 
     def startWellLogProcessing(self):
         currentLayer = self.iface.activeLayer()
@@ -948,10 +967,11 @@ class QgisPDS(QObject):
             return
 
         project = self.createProjectString(args=self.currentProject)
-        ids = self.getSelectedSldnids(currentLayer)
+        # ids = self.getSelectedSldnids(currentLayer)
         args = " -script \"gsp.load_tz_table(" + "'{0}', ".format(project)
-        args += '{' + ids + '})" '
-        self.runTigressProcess('gsp.exe', args)
+        self.startSelectMapTool(currentLayer, 'gsp.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('gsp.exe', args)
 
     def startDevSurvey(self):
         currentLayer = self.iface.activeLayer()
@@ -959,10 +979,11 @@ class QgisPDS(QObject):
             return
 
         project = self.createProjectString(args=self.currentProject)
-        ids = self.getSelectedSldnids(currentLayer)
+        # ids = self.getSelectedSldnids(currentLayer)
         args = " -script \"dvsrvy.load_survey(" + "'{0}', ".format(project)
-        args += '{' + ids + '})" '
-        self.runTigressProcess('dvsrvy.exe', args)
+        self.startSelectMapTool(currentLayer, 'dvsrvy.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('dvsrvy.exe', args)
 
     def startLogPlot(self):
         currentLayer = self.iface.activeLayer()
@@ -970,10 +991,11 @@ class QgisPDS(QObject):
             return
 
         project = self.createProjectString(args=self.currentProject)
-        ids = self.getSelectedSldnids(currentLayer)
+        # ids = self.getSelectedSldnids(currentLayer)
         args = " -script \"compos.load_resultsplot(" + "'{0}', ".format(project)
-        args += '{' + ids + '})" '
-        self.runTigressProcess('compos.exe', args)
+        self.startSelectMapTool(currentLayer, 'compos.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('compos.exe', args)
 
     def seis2D(self):
         currentLayer = self.iface.activeLayer()
@@ -983,8 +1005,8 @@ class QgisPDS(QObject):
         project = self.createProjectString(args=self.currentProject)
         ids = '0'
         args = " -script \"inp.load_2dlines(" + "'{0}', ".format(project)
-        args += '{' + ids + '})" '
-        self.runTigressProcess('inp.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('inp.exe', args)
 
     def seis3D(self):
         currentLayer = self.iface.activeLayer()
@@ -1017,14 +1039,23 @@ class QgisPDS(QObject):
         process = QProcess(self.iface)
         process.start(runStr)
 
-    def getSelectedSldnids(self, layer):
-        idx = layer.fieldNameIndex(self.sldnidFieldName)
-        if idx < 0:
-            return '';
-
+    # def getSelectedSldnids(self, layer):
+    #     idx = layer.fieldNameIndex(self.sldnidFieldName)
+    #     if idx < 0:
+    #         return '';
+    #
+    #     result = '0'
+    #     features = layer.selectedFeatures()
+    #     for f in features:
+    #          result += ',{0}'.format(f.attribute(self.sldnidFieldName))
+    #
+    #     return result
+    def getSelectedSldnids(self, features):
         result = '0'
-        features = layer.selectedFeatures()
-        for f in features:
-             result += ',{0}'.format(f.attribute(self.sldnidFieldName))
+        try:
+            for f in features:
+                 result += ',{0}'.format(f.attribute(self.sldnidFieldName))
+        except:
+            pass
 
         return result
