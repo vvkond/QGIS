@@ -29,5 +29,8 @@
         <file>mActionFilter.png</file>
         <file>symbologyRemove.png</file>
         <file>play_24x24.png</file>
+        <file>sort_ascend.png</file>
+        <file>sort_descend.png</file>
+        <file>list.png</file>
     </qresource>
 </RCC>

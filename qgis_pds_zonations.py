@@ -13,8 +13,9 @@ from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
 from utils import *
 from QgisPDS.tig_projection import *
-from QgisPDS.qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
-from QgisPDS.qgis_pds_zoneparams import QgisPDSZoneparamsDialog
+from qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
+from qgis_pds_zoneparams import QgisPDSZoneparamsDialog
+from qgis_pds_WellFilterSetup import QgisPDSWellFilterSetupDialog
 
 class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
     def __init__(self, _project, _iface, parent=None):
@@ -29,8 +30,11 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
 
         self.mParameterFrame.setVisible(True)
-        self.mWellsListWidget.setVisible(True)
-        self.mWellLabel.setVisible(True)
+        self.mWellsFrame.setVisible(True)
+        self.mWellFilterToolButton.setIcon(QIcon(':/plugins/QgisPDS/mActionFilter.png'))
+        self.mSortToolButton.setIcon(QIcon(':/plugins/QgisPDS/sort_ascend.png'))
+        self.mWellListToolButton.setIcon(QIcon(':/plugins/QgisPDS/list.png'))
+        self.sortDirection = None
 
         settings = QSettings()
         self.mUseElevation.setChecked(settings.value("/PDS/Zonations/UseElevation", u'True') == u'True')
@@ -300,7 +304,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         zone_bottom = float(input_row[self.zone_bottom_column_index])
 
         elevation = 0.0
-        if self.mUseElevation.isChecked():
+        if self.mUseElevation.isChecked() and input_row[22] != None:
             elevation = input_row[22]
 
         value = None
@@ -404,4 +408,31 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             self.selectedParameters = dlg.getSelected()
             QSettings().setValue("/PDS/Zonations/SelectedParameters", self.selectedParameters)
             self.fillParameters()
+
+    def on_mSortToolButton_pressed(self):
+        if self.sortDirection == None or self.sortDirection == 2:
+            self.mSortToolButton.setIcon(QIcon(':/plugins/QgisPDS/sort_descend.png'))
+            self.sortDirection = 1
+            self.mWellsListWidget.sortItems(Qt.DescendingOrder)
+        else:
+            self.mSortToolButton.setIcon(QIcon(':/plugins/QgisPDS/sort_ascend.png'))
+            self.sortDirection = 2
+            self.mWellsListWidget.sortItems()
+
+    @pyqtSlot(bool)
+    def on_mWellListToolButton_clicked(self, checked):
+        if checked:
+            self.mWellFilterToolButton.setChecked(False)
+
+
+    def setupWellFilter(self):
+        dlg = QgisPDSWellFilterSetupDialog(self.project, self.iface, self)
+        if dlg.exec_():
+            pass
+
+    @pyqtSlot(bool)
+    def on_mWellFilterToolButton_clicked(self, checked):
+        if checked:
+            self.mWellListToolButton.setChecked(False)
+            self.setupWellFilter()
 
