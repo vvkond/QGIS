@@ -2,6 +2,7 @@
 
 import os
 import numpy
+import fnmatch
 from struct import unpack_from
 from qgis.core import *
 from qgis.gui import QgsMessageBar
@@ -428,7 +429,68 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
     def setupWellFilter(self):
         dlg = QgisPDSWellFilterSetupDialog(self.project, self.iface, self)
         if dlg.exec_():
-            pass
+            self.applyFilter(dlg)
+
+    def applyFilter(self, sender):
+        # logic, method, caseSensitive = sender.getFilterOptions()
+        #
+        # numFilters = 0 #Общее количество фильтров
+        #
+        # wellnameFilter = sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.WELLNAME_FILTER)
+        # numFilters = numFilters + 1 if len(wellnameFilter) else numFilters
+        #
+        # fullnameFilter = sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.FULLNAME_FILTER)
+        # numFilters = numFilters + 1 if len(fullnameFilter) else numFilters
+        #
+        # operatorFilter = sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.OPERATOR_FILTER)
+        # numFilters = numFilters + 1 if len(operatorFilter) else numFilters
+        #
+        # apiFilter = sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.APINUMBER_FILTER )
+        # numFilters = numFilters + 1 if len(apiFilter) else numFilters
+        #
+        # locationFilter = sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.LOCATION_FILTER )
+        # numFilters = numFilters + 1 if len(locationFilter) else numFilters
+        #
+        # latitudeFilter = sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.LATITUDE_FILTER)
+        # numFilters = numFilters + 1 if len(latitudeFilter) else numFilters
+        #
+        # longitudeFilter = sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.LONGITUDE_FILTER)
+        # numFilters = numFilters + 1 if len(longitudeFilter) else numFilters
+        #
+        # slotFilter = sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.SLOT_FILTER )
+        # numFilters = numFilters + 1 if len(slotFilter) else numFilters
+        #
+        # authorFilter =sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.AUTHOR_FILTER )
+        # numFilters = numFilters + 1 if len(authorFilter) else numFilters
+        #
+        # dateTimeFilter = sender.getFilterAttribute(QgisPDSWellFilterSetupDialog.DATETIME_FILTER)
+        # numFilters = numFilters + 1 if len(dateTimeFilter) else numFilters
+
+        zonation_id = None
+        zone_id = None
+        for zones in self.zoneListWidget.selectedItems():
+            zoneDef = zones.data(Qt.UserRole)
+            zonation_id = zoneDef[1]
+            zone_id = zoneDef[0]
+
+        # wellSql = self.get_sql('Well.sql')
+
+        sql = self.get_sql('ZonationParams_well.sql')
+        records = self.db.execute(sql, zonation_id=zonation_id, zone_id=zone_id)
+        if records:
+            for input_row in records:
+                sender.checkWell(self.db, input_row[1])
+                # well_records = self.db.execute(wellSql, well_id = input_row[1])
+                # for row in well_records:
+                #     if row[0]: #Well name
+                #         wn = str(row[0])
+                #         wellName = [row[0] for w in wellnameFilter if fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                #         if len(wellName):
+                #             print wellName
+
+                    #Full well name TODO
+
+
 
     @pyqtSlot(bool)
     def on_mWellFilterToolButton_clicked(self, checked):

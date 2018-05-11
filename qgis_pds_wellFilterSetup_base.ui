@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>470</width>
-    <height>380</height>
+    <height>373</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="1">
-       <widget class="QComboBox" name="comboBox">
+       <widget class="QComboBox" name="mLogicComboBox">
         <item>
          <property name="text">
           <string>И</string>
@@ -52,7 +52,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QComboBox" name="comboBox_2">
+       <widget class="QComboBox" name="mMethodComboBox">
         <item>
          <property name="text">
           <string>Включая</string>
@@ -66,7 +66,7 @@
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QCheckBox" name="checkBox">
+       <widget class="QCheckBox" name="mUseRegistry">
         <property name="text">
          <string>Регистр</string>
         </property>
@@ -188,16 +188,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
-     </property>
-    </widget>
-   </item>
-   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -210,6 +200,16 @@
      </property>
     </spacer>
    </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
@@ -221,8 +221,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>257</x>
+     <y>363</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -237,8 +237,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>325</x>
+     <y>363</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

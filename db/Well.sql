@@ -46,7 +46,8 @@ FROM
         global.tig_well_symbol s,
         tig_interpreter ii
     WHERE
-        w.TIG_LATEST_WELL_NAME = b.WELL_ID
+        w.DB_SLDNID = :well_id
+        AND w.TIG_LATEST_WELL_NAME = b.WELL_ID
         AND w.TIG_WELL_SYMBOL_ID = s.TIG_WELL_SYMBOL_ID(+)
         AND w.TIG_INTERPRETER_SLDNID = ii.TIG_USER_ID(+)
         AND w.TIG_LATITUDE IS NOT NULL
