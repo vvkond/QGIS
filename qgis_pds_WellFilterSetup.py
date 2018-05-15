@@ -43,12 +43,58 @@ class QgisPDSWellFilterSetupDialog(QtGui.QDialog, FORM_CLASS):
 
         self.wellnameFilter = None
 
+        self.editWidgets = {}
+        self.editWidgets[QgisPDSWellFilterSetupDialog.WELLNAME_FILTER] = self.mWellName
+        self.editWidgets[QgisPDSWellFilterSetupDialog.FULLNAME_FILTER] = self.mFullName
+        self.editWidgets[QgisPDSWellFilterSetupDialog.OPERATOR_FILTER] = self.mOperator
+        self.editWidgets[QgisPDSWellFilterSetupDialog.APINUMBER_FILTER] = self.mApiNumber
+        self.editWidgets[QgisPDSWellFilterSetupDialog.LOCATION_FILTER] = self.mLocation
+        self.editWidgets[QgisPDSWellFilterSetupDialog.LATITUDE_FILTER] = self.mLatitude
+        self.editWidgets[QgisPDSWellFilterSetupDialog.LONGITUDE_FILTER] = self.mLongitude
+        self.editWidgets[QgisPDSWellFilterSetupDialog.SLOT_FILTER] = self.mSlotNumber
+        self.editWidgets[QgisPDSWellFilterSetupDialog.AUTHOR_FILTER] = self.mAuthor
+        self.editWidgets[QgisPDSWellFilterSetupDialog.DATETIME_FILTER] = self.mDateTime
+
 
     def get_sql(self, value):
         plugin_dir = os.path.dirname(__file__)
         sql_file_path = os.path.join(plugin_dir, 'db', value)
         with open(sql_file_path, 'rb') as f:
             return f.read().decode('utf-8')
+
+    def getFilter(self):
+        filter = {}
+
+        for k, w in self.editWidgets.items():
+            filter[k] = w.text()
+
+        filter[QgisPDSWellFilterSetupDialog.LOGIC_FILTER] = self.mLogicComboBox.currentIndex()
+        filter[QgisPDSWellFilterSetupDialog.METHOD_FILTER] = self.mMethodComboBox.currentIndex()
+        filter[QgisPDSWellFilterSetupDialog.CONTEXT_FILTER] = 1 if self.mUseRegistry.isChecked() else 0
+
+        return filter
+
+    def resetFilter(self):
+        for k, w in self.editWidgets.items():
+            w.setText('')
+
+    def setFilter(self, filter):
+        for k, v in filter.items():
+            if k in self.editWidgets:
+                widget = self.editWidgets[k]
+                widget.setText(v)
+
+        try:
+            if QgisPDSWellFilterSetupDialog.LOGIC_FILTER in filter:
+                self.mLogicComboBox.setCurrentIndex(int(filter[QgisPDSWellFilterSetupDialog.LOGIC_FILTER]))
+
+            if QgisPDSWellFilterSetupDialog.METHOD_FILTER in filter:
+                self.mMethodComboBox.setCurrentIndex(int(filter[QgisPDSWellFilterSetupDialog.METHOD_FILTER]))
+
+            if QgisPDSWellFilterSetupDialog.CONTEXT_FILTER in filter:
+                self.mUseRegistry.setChecked(int(filter[QgisPDSWellFilterSetupDialog.CONTEXT_FILTER]) == 1)
+        except Exception as e:
+            QgsMessageLog.logMessage('Set well filter: ' + str(e), 'QGisPDS')
 
 
     def getFilterOptions(self):
@@ -68,35 +114,11 @@ class QgisPDSWellFilterSetupDialog(QtGui.QDialog, FORM_CLASS):
     def getFilterAttribute(self, attr):
         filter = []
 
-        if attr == QgisPDSWellFilterSetupDialog.WELLNAME_FILTER and self.mWellName.text():
-            filter = [ x.strip() for x in self.mWellName.text().split(',')]
-
-        elif attr == QgisPDSWellFilterSetupDialog.FULLNAME_FILTER and self.mFullName.text():
-            filter = [x.strip() for x in self.mFullName.text().split(',')]
-
-        elif attr == QgisPDSWellFilterSetupDialog.OPERATOR_FILTER and self.mOperator.text():
-            filter = [x.strip() for x in self.mOperator.text().split(',')]
-
-        elif attr == QgisPDSWellFilterSetupDialog.APINUMBER_FILTER and self.mApiNumber.text():
-            filter = [x.strip() for x in self.mApiNumber.text().split(',')]
-
-        elif attr == QgisPDSWellFilterSetupDialog.LOCATION_FILTER and self.mLocation.text():
-            filter = [x.strip() for x in self.mLocation.text().split(',')]
-
-        elif attr == QgisPDSWellFilterSetupDialog.LATITUDE_FILTER and self.mLatitude.text():
-            filter = [x.strip() for x in self.mLatitude.text().split(',')]
-
-        elif attr == QgisPDSWellFilterSetupDialog.LONGITUDE_FILTER and self.mLongitude.text():
-            filter = [x.strip() for x in self.mLongitude.text().split(',')]
-
-        elif attr == QgisPDSWellFilterSetupDialog.SLOT_FILTER and self.mSlotNumber.text():
-            filter = [x.strip() for x in self.mSlotNumber.text().split(',')]
-
-        elif attr == QgisPDSWellFilterSetupDialog.AUTHOR_FILTER and self.mAuthor.text():
-            filter = [x.strip() for x in self.mAuthor.text().split(',')]
-
-        elif attr == QgisPDSWellFilterSetupDialog.DATETIME_FILTER and self.mDateTime.text():
-            filter = [x.strip() for x in self.mDateTime.text().split(',')]
+        if attr in self.editWidgets:
+            widget = self.editWidgets[attr]
+            text = widget.text()
+            if text:
+                filter = [x.strip() for x in text.split(',')]
 
         return filter
 
@@ -144,21 +166,94 @@ class QgisPDSWellFilterSetupDialog(QtGui.QDialog, FORM_CLASS):
         well_records = db.execute(wellSql, well_id=well_sldnid)
         num = 0
         for row in well_records:
-            if row[0]:  # Well name
-                wn = str(row[0])
-                wellName = [row[0] for w in self.wellnameFilter if
+            #Well name
+            wn = str(row[0])
+            if wn:
+                wells = [wn for w in self.wellnameFilter if
                             fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
-                num = num + 1 if len(wellName) else num
+                num = num + 1 if len(wells) else num
 
+            # Fullname
+            wn = str(row[22])
+            if wn:
+                wells = [wn for w in self.fullnameFilter if
+                         fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                num = num + 1 if len(wells) else num
+
+            #Operator
+            wn = str(row[3])
+            if wn:
+                wells = [wn for w in self.operatorFilter if
+                            fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                num = num + 1 if len(wells) else num
+
+            #API number
+            wn = str(row[2])
+            if wn:
+                wells = [wn for w in self.apiFilter if
+                            fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                num = num + 1 if len(wells) else num
+
+            # Location
+            wn = str(row[11])
+            if wn:
+                wells = [wn for w in self.locationFilter if
+                         fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                num = num + 1 if len(wells) else num
+
+            # Latitude
+            wn = str(row[5])
+            if wn:
+                wells = [wn for w in self.latitudeFilter if
+                         fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                num = num + 1 if len(wells) else num
+
+            # Longitude
+            wn = str(row[6])
+            if wn:
+                wells = [wn for w in self.longitudeFilter if
+                         fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                num = num + 1 if len(wells) else num
+
+            # Slot number
+            wn = str(row[21])
+            if wn:
+                wells = [wn for w in self.slotFilter if
+                         fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                num = num + 1 if len(wells) else num
+
+            # Author
+            wn = str(row[16])
+            if wn:
+                wells = [wn for w in self.authorFilter if
+                         fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                num = num + 1 if len(wells) else num
+
+            # DateTime
+            wn = str(row[17])
+            if wn:
+                wells = [wn for w in self.dateTimeFilter if
+                         fnmatch.fnmatchcase(wn, w) or (not caseSensitive and fnmatch.fnmatch(wn, w))]
+                num = num + 1 if len(wells) else num
+
+        use = False
         if logic == 'and':
-            return num == numFilters
+            use = num == numFilters
         else:
-            return num > 0
+            use = num > 0
+
+        if method == 'include':
+            return use
+        else:
+            return not use
 
     def on_buttonBox_accepted(self):
         self.prepareFilter()
 
     def on_buttonBox_clicked(self, button):
-        if self.buttonBox.buttonRole(button) == QDialogButtonBox.ApplyRole and self.parentDlg != None:
+        role = self.buttonBox.buttonRole(button)
+        if role == QDialogButtonBox.ApplyRole and self.parentDlg != None:
             self.prepareFilter()
-            self.parentDlg.applyFilter(self)
+            self.parentDlg.applyFilter(self, True, True)
+        elif role == QDialogButtonBox.ResetRole:
+            self.resetFilter()

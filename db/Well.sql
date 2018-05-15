@@ -19,7 +19,9 @@ SELECT
     well."Created",
     well."Project",
     well.TIG_LATITUDE,
-    well.TIG_LONGITUDE
+    well.TIG_LONGITUDE,
+    well.TIG_SLOT_NUMBER,
+    well.TIG_CLIENT_WELL_NAME
 FROM
     (SELECT DISTINCT
         w.TIG_LATEST_WELL_NAME AS "Well Name",
@@ -39,7 +41,9 @@ FROM
         'qq' "Project",
         w.DB_SLDNID Well_ID,
         w.TIG_LATITUDE,
-        w.TIG_LONGITUDE
+        w.TIG_LONGITUDE,
+        w.TIG_SLOT_NUMBER,
+        w.TIG_CLIENT_WELL_NAME
     FROM
         tig_well_history w,
         well b,

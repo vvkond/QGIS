@@ -714,6 +714,7 @@ class QgisPDS(QObject):
             if result and layer:
                 prodSetup = QgisPDSProdSetup(self.iface, layer)
                 prodSetup.setup(layer)
+        del dlg
 
 
     def createCPointsLayer(self):

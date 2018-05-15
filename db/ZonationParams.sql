@@ -62,7 +62,8 @@ FROM
         e.Elev_ID = i.max_elev_Id
     ) elev
 WHERE
-    wh.DB_SLDNID = vi.TIG_WELL_SLDNID
+    wh.DB_SLDNID = :well_id
+    AND wh.DB_SLDNID = vi.TIG_WELL_SLDNID
     AND vi.TIG_INTERVAL_SLDNID = i.DB_SLDNID
     AND vi.TIG_WELL_SLDNID = elev.Well_ID(+)
     AND i.TIG_ZONATION_SLDNID = z.DB_SLDNID
