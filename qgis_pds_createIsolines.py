@@ -41,9 +41,12 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
 
         for layer in layers:
             lt = layer.type()
-            provider = layer.dataProvider()
-            if lt == QgsMapLayer.VectorLayer and provider.geometryType() == geomType:
-                combo.addItem(layer.name(), layer.id())
+            try:
+                provider = layer.dataProvider()
+                if lt == QgsMapLayer.VectorLayer and provider.geometryType() == geomType:
+                    combo.addItem(layer.name(), layer.id())
+            except:
+                pass
 
     def fillComboboxRaster(self, combo):
         combo.clear()

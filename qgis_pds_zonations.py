@@ -22,6 +22,12 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         super(QgisPDSZonationsDialog, self).__init__(_project, _iface, None, parent)
 
         self.setWindowTitle(self.tr(u'Zonation parameters'))
+        if _project:
+            scheme = _project['project']
+            if scheme:
+                self.setWindowTitle(self.windowTitle() + ' - ' + scheme)
+
+
         self.mParameterFrame.setVisible(True)
         self.mWellsListWidget.setVisible(True)
         self.mWellLabel.setVisible(True)
@@ -99,6 +105,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
 
     def execute(self, zoneDef, paramId):
+        well_ids = []
+        for wells in self.mWellsListWidget.selectedItems():
+            well_ids.append(wells.data(Qt.UserRole))
+
         sql = self.get_sql('ZonationParams.sql')
         records = self.db.execute(sql, parameter_id=paramId, zonation_id=zoneDef[1], zone_id=zoneDef[0])
         if records:            
@@ -106,12 +116,14 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                 x,y,value = self.get_zone_coord_value(input_row)
                 if x is not None and y is not None:
                     wellId = input_row[self.well_name_column_index]
-                    pt = QgsPoint(x, y)
-                    l = QgsGeometry.fromPoint(pt)
-                    feat = QgsFeature(self.layer.fields())
-                    feat.setGeometry(l)
-                    feat.setAttributes([wellId, float(value)])
-                    self.layer.addFeatures([feat])
+                    sldnid = input_row[self.well_id_column_index]
+                    if not len(well_ids) or sldnid in well_ids:
+                        pt = QgsPoint(x, y)
+                        l = QgsGeometry.fromPoint(pt)
+                        feat = QgsFeature(self.layer.fields())
+                        feat.setGeometry(l)
+                        feat.setAttributes([wellId, float(value)])
+                        self.layer.addFeatures([feat])
 
 
     @cached_property
@@ -246,7 +258,6 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         _name = input_row[self.parameter_name_column_index]
         for t in self.read_zonation_params(zonation_params):
             zonation_id, well_id, zone_id, name, type, value = t
-            a=value
             if (
                 zonation_id == _zonation_id and
                 well_id == _well_id and

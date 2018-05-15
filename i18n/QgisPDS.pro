@@ -23,6 +23,7 @@ SOURCES = ../bblInit.py \
 	../qgis_pds_CoordFromZone.py \
 	../qgis_pds_wellFilter.py \
 	../qgis_pds_zoneparams.py \
-	../qgis_pds_statistic.py
+	../qgis_pds_statistic.py \
+	../qgis_pds_bubbleSetup.py
 
 TRANSLATIONS = QgisPDS_ru.ts

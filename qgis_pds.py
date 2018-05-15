@@ -508,7 +508,7 @@ class QgisPDS(QObject):
             icon_path,
             text=self.tr(u'Bubbles setup'),
             callback=self.bubblesSetup,
-            enabled_flag=False,
+            enabled_flag=True,
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/CoordFromZonations.png'
@@ -569,8 +569,8 @@ class QgisPDS(QObject):
             callback=self.createIsolines,
             parent=self.iface.mainWindow())
 
-        # self._metadata = BabbleSymbolLayerMetadata()
-        # QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
+        self._metadata = BabbleSymbolLayerMetadata()
+        QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
 
 
     def unload(self):
@@ -670,10 +670,11 @@ class QgisPDS(QObject):
       
 
     def createWellLayer(self):
-        # if not QgsProject.instance().homePath():
-            # self.iface.messageBar().pushMessage(self.tr("Error"),
-                        # self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
-            # return
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load wells'), level=QgsMessageBar.CRITICAL)
+            return
+
         wells = QgisPDSWells(self.iface, self.currentProject)
         layer = wells.createWellLayer()
         if layer is not None:
@@ -755,17 +756,17 @@ class QgisPDS(QObject):
 
         prop = currentLayer.customProperty("qgis_pds_type")
         if prop == "pds_wells":
-            dlg = QgisPDSRefreshSetup(proj)
+            dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():
-                self.loadWells(currentLayer, proj, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
+                self.loadWells(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
         elif prop == "pds_current_production":
-            self.loadProduction(currentLayer, proj, True)
+            self.loadProduction(currentLayer, self.currentProject, True)
         elif prop == "pds_cumulative_production":
-            self.loadProduction(currentLayer, proj, False)
+            self.loadProduction(currentLayer, self.currentProject, False)
         elif prop == "pds_well_deviations":
-            dlg = QgisPDSRefreshSetup(proj)
+            dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():
-                self.loadWellDeviations(currentLayer, proj, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
+                self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
 
        
     def addProductionLayer(self):

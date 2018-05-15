@@ -23,7 +23,7 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         newTitle = self.tr(u'Transite wells') + ' - ' + self.project['project']
         self.setWindowTitle(newTitle)
 
-    def process(self):
+    def performOperation(self):
         selectedZonations = []
         selectedZones = []
         for si in self.zonationListWidget.selectedItems():
@@ -50,7 +50,9 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
             if wellIdIdx < 0:
                 wellIdIdx = self.editLayer.dataProvider().fieldNameIndex('well_id')
 
+            fCount = float(self.editLayer.featureCount()) + 1.0
             iter = self.editLayer.dataProvider().getFeatures()
+            index = 0
             for feature in iter:
                 wellId = feature[wellIdIdx]
                 self.editLayer.changeAttributeValue(feature.id(), fieldIdx, None)
@@ -58,7 +60,11 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
                 if transites:
                     self.editLayer.changeAttributeValue(feature.id(), fieldIdx, transites)
 
-            self.editLayer.setSubsetString('"transite" is not NULL')
+                self.progress.setValue(index/fCount*100.0)
+                index = index + 1
+
+        self.editLayer.updateExtents()
+        self.editLayer.setSubsetString('"transite" is not NULL')
 
         try:
             settings = QSettings()
@@ -66,6 +72,19 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
             settings.setValue("/PDS/Zonations/selectedZones", selectedZones)
         except:
             return
+
+    def process(self):
+        progressMessageBar = self.iface.messageBar()
+        self.progress = QProgressBar()
+        self.progress.setMaximum(100)
+        progressMessageBar.pushWidget(self.progress)
+
+        try:
+            self.performOperation()
+        except Exception as e:
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
+
+        self.iface.messageBar().clearWidgets()
 
 
     def getTransiteList(self, wellId, zoneDef):
