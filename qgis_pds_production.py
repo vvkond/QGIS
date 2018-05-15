@@ -387,7 +387,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         #self.iface.messageBar().pushMessage(self.tr("Error"), self.tr(str(e)), level=QgsMessageBar.CRITICAL)
      
         
-    #Create production layer
+    #===========================================================================
+    # Create production layer
+    #===========================================================================
     def readProduction(self):
         time_start = time.time()
         
@@ -413,6 +415,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         QgsMessageLog.logMessage("prod config read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS")
         time_start=time.time()
         
+  
         for pdw in self.mProductionWells:
             self.readWellProduction(pdw)
         QgsMessageLog.logMessage("prod read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS")
@@ -429,8 +432,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         QgsMessageLog.logMessage("well read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS")
         time_start=time.time()
 
+        is_refreshed = False                                      #--- id that layer have refreshed records
+        is_layerfiltered=len(self.layer.subsetString().strip())>1 #--- if layer with filter provider allowed only update production/coordinates.
+        is_needupdcoord=self.mUpdateWellLocation.isChecked()
+        is_needaddall=self.mAddAllWells.isChecked()
+        is_rowwithprod=lambda feature:feature.attribute(self.attrSymbol)!=71
+
         #Refresh or add feature
-        refreshed = False
         with edit(self.layer):
             
             ############################
@@ -458,40 +466,45 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
 
                 num = 0
-                for f in searchRes:
-                    refreshed = True
-                    if self.mUpdateWellLocation.isChecked():
+                for f in searchRes:             #--- iterate over each row in base layer for current well
+                    is_refreshed = True
+                    #--- update coord if checked
+                    if is_needupdcoord:                                 #--- update coord if checked
                         self.layer.changeGeometry(f.id(), feature.geometry())
-                        
-                    for (c_old_name,c_old_idx,c_new_name) in attr_2_upd:
+                    #--- update well attribute
+                    for (c_old_name,c_old_idx,c_new_name) in attr_2_upd: #--- update well special attribute @see:'attr_2_upd'
                         if f.attribute(c_old_name)!=feature.attribute(c_new_name):
-                            #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
-                            self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))
-
-                    if liftMethodIdx >= 0:
+                            self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))  #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
+                    if liftMethodIdx >= 0:                               #--- update liftmetho id
                         self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(self.attrLiftMethod))
-
-                    for fl in bblInit.fluidCodes:
+                    for fl in bblInit.fluidCodes:                        #--- update production attributes
                         attrMass = QgisPDSProductionDialog.attrFluidMass(fl.code)
                         attrVol =  QgisPDSProductionDialog.attrFluidVolume(fl.code)
-
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass), feature.attribute(attrMass))
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol), feature.attribute(attrVol))
-                    num = num + 1
-                if not num:
-                    self.layer.addFeatures([feature])
-                self.layer.commitChanges()  # -commit each row
-                self.layer.startEditing()   # -and start edit again
+                    #--- add new well if need
+                    num +=1
+                    if not num:                 #--- well not present in base layer
+                        if not is_layerfiltered:  #--- if layer without filter provider,than allow add new records
+                            if is_needaddall or is_rowwithprod(feature):       #--- Add All wells checked or new row have production
+                                self.layer.addFeatures([feature])
+                        else:
+                            pass
+                self.layer.commitChanges()  #--- commit each row
+                self.layer.startEditing()   #--- and start edit again
+                
 
         QgsMessageLog.logMessage("att updated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS")
         time_start=time.time()
                     
-        if refreshed:
+        if is_refreshed:
             self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(self.layer.name()), duration=10)
         
         self.writeSettings()
 
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def setWellAttribute(self, name, attr, value):
         feature = self.mWells[name]
         feature.setAttribute(attr, value)
@@ -539,7 +552,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.setWellAttribute(prodWell.name, QgisPDSProductionDialog.attrFluidMass(fl.code), sumMass[i])
             self.setWellAttribute(prodWell.name, QgisPDSProductionDialog.attrFluidVolume(fl.code), sumVols[i])
 
-     
+     #==========================================================================
+     # @todo: need speedup
+     #==========================================================================
     def readWellProduction(self, prodWell):
         TableUnit = namedtuple('TableUnit', ['table', 'unit'])
         prodTables = [TableUnit("p_std_vol_lq", "Volume"), 
