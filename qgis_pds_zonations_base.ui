@@ -59,6 +59,36 @@
             </widget>
            </item>
            <item>
+            <widget class="QToolButton" name="mSelectAll">
+             <property name="toolTip">
+              <string>Выделить все</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="mUnselectAll">
+             <property name="toolTip">
+              <string>Снять выделение</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line">
+             <property name="lineWidth">
+              <number>2</number>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QToolButton" name="mSortToolButton">
              <property name="toolTip">
               <string>Сортировать список</string>
@@ -70,6 +100,9 @@
            </item>
            <item>
             <widget class="QToolButton" name="mWellListToolButton">
+             <property name="toolTip">
+              <string>Список скважин</string>
+             </property>
              <property name="text">
               <string/>
              </property>
@@ -202,6 +235,19 @@
     </widget>
    </item>
   </layout>
+  <action name="actionSetupFilter">
+   <property name="text">
+    <string>Установка...</string>
+   </property>
+   <property name="toolTip">
+    <string>Настроить фильтр</string>
+   </property>
+  </action>
+  <action name="actionSelectList">
+   <property name="text">
+    <string>Выбрать список...</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
