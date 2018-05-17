@@ -133,7 +133,12 @@ class SurfaceReader(ReaderBase):
 #                fileName = u'%d_%d.tif' % (groupSetId[0], groupSetId[1])
                 fileName = u'%s_%s.tif' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
                 layerName = u'%s/%s' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
-                fileName = QgsProject.instance().homePath() +'/' + fileName
+
+                (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
+                if not os.path.exists(prjPath):
+                    os.mkdir(prjPath)
+
+                fileName = prjPath +'/' + fileName
                 output_raster = driver.Create(fileName, size_x, size_y, 1 ,gdal.GDT_Float32)
 
                 band = output_raster.GetRasterBand(1)

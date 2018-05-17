@@ -34,7 +34,7 @@ FROM
         s.TIG_DESCRIPTION "Symbol",
         TO_CHAR(b.SPUD_DATE, 'DD-MM-YYYY') "Spud Date",
         REPLACE(REPLACE(w.TIG_GLOBAL_DATA_FLAG, '1', 'Global'), '0', 'Private') "Global/Private",
-        w.TIG_INTERPRETER_SLDNID "Owner",
+        ii.TIG_LOGIN_NAME "Owner",
         TO_CHAR((TO_DATE('01-01-1970', 'DD-MM-YYYY') +(w.DB_INSTANCE_TIME_STAMP / 86400)), 'DD-MM-YYYY') "Created",
         'qq' "Project",
         w.DB_SLDNID Well_ID,
@@ -43,10 +43,12 @@ FROM
     FROM
         tig_well_history w,
         well b,
-        global.tig_well_symbol s
+        global.tig_well_symbol s,
+        tig_interpreter ii
     WHERE
         w.TIG_LATEST_WELL_NAME = b.WELL_ID
         AND w.TIG_WELL_SYMBOL_ID = s.TIG_WELL_SYMBOL_ID(+)
+        AND w.TIG_INTERPRETER_SLDNID = ii.TIG_USER_ID(+)
         AND w.TIG_LATITUDE IS NOT NULL
         AND w.TIG_LONGITUDE IS NOT NULL
         AND w.TIG_ONLY_PROPOSAL <= 1

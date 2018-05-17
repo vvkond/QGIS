@@ -5,10 +5,11 @@ import numpy
 from qgis.core import *
 from qgis.gui import QgsMessageBar
 from PyQt4.QtCore import *
+import time
 
 from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
-from QgisPDS.utils import to_unicode
+from QgisPDS.utils import *
 from tig_projection import *
 from ReaderBase import *
 
@@ -20,13 +21,13 @@ class ContoursReader(ReaderBase):
         self.plugin_dir = os.path.dirname(__file__)
 
         self.setNoAttr = u'set_no'
-        self.parameterNoAttr = u'parameter_no'
+        self.parameterNoAttr = u'param_no'
         self.subsetNoAttr = u'subset_no'
         self.setNameAttr = u'set_name'
         self.paramNameAttr = u'param_name'
-        self.subsetNameAttr = u'subset_name'
+        self.subsetNameAttr = u'subsetname'
         self.paramAttr = u'parameter'
-        self.varNameAttr = u'variable_name'
+        self.varNameAttr = u'var_name'
 
         self.dataType = _dataType
         if self.dataType == 0:      #Contours
@@ -98,13 +99,20 @@ class ContoursReader(ReaderBase):
         self.uri += '&field={}:{}'.format(self.varNameAttr, "string")
         layer = QgsVectorLayer(self.uri, layerName, "memory")
 
-        layer.startEditing()
+        uniqSymbols = self.readData(layer, groupSetId)
+
+        layer = self.memoryToShp(layer, pdsProject['project'], layerName)
         layer.setCustomProperty("pds_project", str(pdsProject))
         layer.setCustomProperty("qgis_pds_type", self.pdsType)
 
-        self.readData(layer, groupSetId)
+        categories = []
+        for ss in uniqSymbols:
+            symbol = QgsSymbolV2.defaultSymbol(layer.geometryType())
+            category = QgsRendererCategoryV2(ss, symbol, ss)
+            categories.append(category)
 
-        layer.commitChanges()
+        renderer = QgsCategorizedSymbolRendererV2(self.subsetNameAttr, categories)
+        layer.setRendererV2(renderer)
 
         return layer
 
@@ -172,14 +180,14 @@ class ContoursReader(ReaderBase):
 
                     layer.addFeatures([cPoint])
 
-        categories = []
-        for ss in uniqSymbols:
-            symbol = QgsSymbolV2.defaultSymbol(layer.geometryType())
-            category = QgsRendererCategoryV2(ss, symbol, ss)
-            categories.append(category)
-
-        renderer = QgsCategorizedSymbolRendererV2(self.subsetNameAttr, categories)
-        layer.setRendererV2(renderer)
+        # categories = []
+        # for ss in uniqSymbols:
+        #     symbol = QgsSymbolV2.defaultSymbol(layer.geometryType())
+        #     category = QgsRendererCategoryV2(ss, symbol, ss)
+        #     categories.append(category)
+        #
+        # renderer = QgsCategorizedSymbolRendererV2(self.subsetNameAttr, categories)
+        # layer.setRendererV2(renderer)
         layer.commitChanges()
 
-        return
+        return uniqSymbols

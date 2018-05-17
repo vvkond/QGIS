@@ -1,6 +1,7 @@
-*.pyc
 .idea/misc.xml
 .idea/modules.xml
 .idea/QgisPDS.iml
 .idea/vcs.xml
 .idea/workspace.xml
+*.pyc
+save/bblInit.c

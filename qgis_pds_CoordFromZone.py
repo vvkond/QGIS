@@ -9,7 +9,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from QgisPDS.db import Oracle
-from QgisPDS.connections import create_connection
+from connections import create_connection
 from QgisPDS.utils import to_unicode
 from QgisPDS.tig_projection import *
 
@@ -24,8 +24,9 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         self.setupUi(self)
 
         self.mParameterFrame.setVisible(False)
-        self.mWellsListWidget.setVisible(False)
-        self.mWellLabel.setVisible(False)
+        self.mWellsFrame.setVisible(False)
+        self.mUseElevation.setVisible(False)
+        self.mUseErosion.setVisible(False)
 
         self.plugin_dir = os.path.dirname(__file__)
         self.iface = _iface

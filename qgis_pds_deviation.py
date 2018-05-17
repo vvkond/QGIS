@@ -5,6 +5,7 @@ from qgis.gui import *
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from processing.tools.vector import VectorWriter
 from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
 from QgisPDS.utils import to_unicode
@@ -12,6 +13,7 @@ from tig_projection import *
 import numpy
 import ast
 import os
+import time
 
 class QgisPDSDeviation(QObject):
     def __init__(self, iface, project):
@@ -25,6 +27,27 @@ class QgisPDSDeviation(QObject):
         self.attrWellId = u'well_id'
         self.attrLatitude = u'latitude'
         self.attrLongitude = u'longitude'
+        self.attrSLDNID = "sldnid"
+        self.attrAPI = "api"
+        self.attrOperator = "Operator"
+        self.attrCountry = "Country"
+        self.attrDepth = "depth"
+        self.attrMeasurement = "measure"
+        self.attrElevation = "elevation"
+        self.attrDatum = "datum"
+        self.attrOn_offshore = "onoffshore"
+        self.attrStatus = "status"
+        self.attrSymbol = "symbol"
+        self.attrSpud_date = "spud_date"
+        self.attrGlobal_private = "glb_priv"
+        self.attrOwner = "owner"
+        self.attrCreated = "created"
+        self.attrProject = "project"
+        self.attrLablX = "lablx"
+        self.attrLablY = "lably"
+        self.attrLablOffX = "labloffx"
+        self.attrLablOffY = "labloffy"
+
         self.proj4String = 'epsg:4326'
         self.db = None
 
@@ -82,28 +105,27 @@ class QgisPDSDeviation(QObject):
         self.uri += '&field={}:{}'.format(self.attrWellId, "string")
         self.uri += '&field={}:{}'.format(self.attrLatitude, "double")
         self.uri += '&field={}:{}'.format(self.attrLongitude, "double")
+        self.uri += '&field={}:{}'.format(self.attrSLDNID, "int")
+        self.uri += '&field={}:{}'.format(self.attrAPI, "string")
+        self.uri += '&field={}:{}'.format(self.attrOperator, "string")
+        self.uri += '&field={}:{}'.format(self.attrCountry, "string")
+        self.uri += '&field={}:{}'.format(self.attrDepth, "double")
+        self.uri += '&field={}:{}'.format(self.attrMeasurement, "string")
+        self.uri += '&field={}:{}'.format(self.attrElevation, "double")
+        self.uri += '&field={}:{}'.format(self.attrDatum, "string")
+        self.uri += '&field={}:{}'.format(self.attrOn_offshore, "string")
+        self.uri += '&field={}:{}'.format(self.attrStatus, "string")
+        self.uri += '&field={}:{}'.format(self.attrSymbol, "string")
+        self.uri += '&field={}:{}'.format(self.attrSpud_date, "string")
+        self.uri += '&field={}:{}'.format(self.attrGlobal_private, "string")
+        self.uri += '&field={}:{}'.format(self.attrOwner, "string")
+        self.uri += '&field={}:{}'.format(self.attrCreated, "DateTime")
+        self.uri += '&field={}:{}'.format(self.attrProject, "string")
+        self.uri += '&field={}:{}'.format(self.attrLablX, "double")
+        self.uri += '&field={}:{}'.format(self.attrLablY, "double")
+        self.uri += '&field={}:{}'.format(self.attrLablOffX, "double")
+        self.uri += '&field={}:{}'.format(self.attrLablOffY, "double")
 
-        self.uri += '&field={}:{}'.format("SLDNID", "int")
-        self.uri += '&field={}:{}'.format("API", "string")
-        self.uri += '&field={}:{}'.format("Operator", "string")
-        self.uri += '&field={}:{}'.format("Country", "string")
-        self.uri += '&field={}:{}'.format("Depth", "double")
-        self.uri += '&field={}:{}'.format("Measurement", "string")
-        self.uri += '&field={}:{}'.format("Elevation", "double")
-        self.uri += '&field={}:{}'.format("Datum", "string")
-        self.uri += '&field={}:{}'.format("On_offshore", "string")
-        self.uri += '&field={}:{}'.format("Status", "string")
-        self.uri += '&field={}:{}'.format("Symbol", "string")
-        self.uri += '&field={}:{}'.format("Spud_date", "string")
-        self.uri += '&field={}:{}'.format("Global_private", "string")
-        self.uri += '&field={}:{}'.format("Owner", "string")
-        self.uri += '&field={}:{}'.format("Created", "DateTime")
-        self.uri += '&field={}:{}'.format("Project", "string")
-
-        self.uri += '&field={}:{}'.format("LablX", "double")
-        self.uri += '&field={}:{}'.format("LablY", "double")
-        self.uri += '&field={}:{}'.format("LablOffX", "double")
-        self.uri += '&field={}:{}'.format("LablOffY", "double")
         layer = QgsVectorLayer(self.uri, "Well deviations", "memory")
         if layer is None:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'),
@@ -111,16 +133,70 @@ class QgisPDSDeviation(QObject):
 
             return
 
-        layer.startEditing()
+        self.loadWells(layer, True, True, False)
+        layer.commitChanges()
+        self.db.disconnect()
+
+        settings = QSettings()
+        systemEncoding = settings.value('/UI/encoding', 'System')
+        scheme = self.project['project']
+        layerFile = '/{0}_deviations_{1}.shp'.format(scheme, time.strftime('%d_%m_%Y_%H_%M_%S', time.localtime()))
+
+        (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
+        if not os.path.exists(prjPath):
+            os.mkdir(prjPath)
+
+        layerFileName = prjPath + layerFile
+        provider = layer.dataProvider()
+        fields = provider.fields()
+        writer = VectorWriter(layerFileName, systemEncoding,
+                              fields,
+                              provider.geometryType(), provider.crs())
+
+        features = layer.getFeatures()
+        for f in features:
+            try:
+                l = f.geometry()
+                feat = QgsFeature(f)
+                feat.setGeometry(l)
+                writer.addFeature(feat)
+            except:
+                pass
+
+        del writer
+
+        layerName = 'Well deviations'
+        layerList = QgsMapLayerRegistry.instance().mapLayersByName(layerName)
+        if len(layerList):
+            layerName = layerName + '  ' + time.strftime('%d-%m-%Y %H:%M:%S', time.localtime())
+
+        #Register layer
+        layer = QgsVectorLayer(layerFileName, layerName, 'ogr')
+        QgsMapLayerRegistry.instance().addMapLayer(layer)
 
         layer.setCustomProperty("qgis_pds_type", "pds_well_deviations")
         layer.setCustomProperty("pds_project", str(self.project))
-        layer.commitChanges()
 
-        self.loadWells(layer, True, True, False)
+        #Set default style
+        palyr = QgsPalLayerSettings()
+        palyr.readFromLayer(layer)
+        palyr.enabled = True
+        palyr.fieldName = self.attrWellId
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '8', '')
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', self.attrLablX)
+        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', self.attrLablY)
+        palyr.writeToLayer(layer)
 
-        QgsMapLayerRegistry.instance().addMapLayer(layer)
-        self.db.disconnect()
+        line = QgsSymbolV2.defaultSymbol(layer.geometryType())
+
+        # Create an marker line.
+        marker_line = QgsMarkerLineSymbolLayerV2()
+        marker_line.setPlacement(QgsMarkerLineSymbolLayerV2.LastVertex)
+        line.appendSymbolLayer(marker_line)
+
+        # Add the style to the line layer.
+        renderer = QgsSingleSymbolRendererV2(line)
+        layer.setRendererV2(renderer)
 
         return layer
 
@@ -199,29 +275,37 @@ class QgisPDSDeviation(QObject):
                     if not well:
                         well = QgsFeature(layer.fields())
 
-                    well.setAttribute('LablX', pt.x())
-                    well.setAttribute('LablY', pt.y())
+                    well.setAttribute(self.attrLablX, pt.x())
+                    well.setAttribute(self.attrLablY, pt.y())
 
                     well.setAttribute(self.attrWellId, name)
                     well.setAttribute(self.attrLatitude, lat)
                     well.setAttribute(self.attrLongitude, lng)
-
-                    well.setAttribute('SLDNID', row[1])
-                    well.setAttribute('API', row[2])
-                    well.setAttribute('Operator', row[3])
-                    well.setAttribute('Country', row[4])
-                    well.setAttribute('Depth', row[7])
-                    well.setAttribute('Measurement', row[8])
-                    well.setAttribute('Elevation', row[9])
-                    well.setAttribute('Datum', row[10])
-                    well.setAttribute('On_offshore', row[11])
-                    well.setAttribute('Status', row[12])
-                    well.setAttribute('Symbol', row[13])
-                    well.setAttribute('Spud_date', row[14])
-                    well.setAttribute('Global_private', row[15])
-                    well.setAttribute('Owner', row[16])
-                    well.setAttribute('Created', QDateTime.fromString(row[17], self.dateFormat))
-                    well.setAttribute('Project', projectName)
+                    well.setAttribute(self.attrSLDNID, row[1])
+                    well.setAttribute(self.attrAPI, row[2])
+                    well.setAttribute(self.attrOperator, row[3])
+                    well.setAttribute(self.attrCountry, row[4])
+                    well.setAttribute(self.attrDepth, row[7])
+                    try:
+                        well.setAttribute(self.attrMeasurement, row[8])
+                    except:
+                        pass
+                    well.setAttribute(self.attrElevation, row[9])
+                    well.setAttribute(self.attrDatum, row[10])
+                    try:
+                        well.setAttribute(self.attrOn_offshore, row[11])
+                    except:
+                        pass
+                    well.setAttribute(self.attrStatus, row[12])
+                    well.setAttribute(self.attrSymbol, row[13])
+                    well.setAttribute(self.attrSpud_date, QDateTime.fromString(row[14], self.dateFormat))
+                    try:
+                        well.setAttribute(self.attrGlobal_private, row[15])
+                    except:
+                        pass
+                    well.setAttribute(self.attrOwner, row[16])
+                    well.setAttribute(self.attrCreated, QDateTime.fromString(row[17], self.dateFormat))
+                    well.setAttribute(self.attrProject, projectName)
 
                     if not num:
                         if not isSelectedOnly:
@@ -233,26 +317,6 @@ class QgisPDSDeviation(QObject):
 
         if refreshed:
             self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(layer.name()), duration=10)
-
-        palyr = QgsPalLayerSettings()
-        palyr.readFromLayer(layer)
-        palyr.enabled = True
-        palyr.fieldName = self.attrWellId
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '8', '')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', 'LablX')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', 'LablY')
-        palyr.writeToLayer(layer)
-
-        line = QgsSymbolV2.defaultSymbol(layer.geometryType())
-
-        # Create an marker line.
-        marker_line = QgsMarkerLineSymbolLayerV2()
-        marker_line.setPlacement(QgsMarkerLineSymbolLayerV2.LastVertex)
-        line.appendSymbolLayer(marker_line)
-
-        # Add the style to the line layer.
-        renderer = QgsSingleSymbolRendererV2(line)
-        layer.setRendererV2(renderer)
 
         layer.updateExtents()
 

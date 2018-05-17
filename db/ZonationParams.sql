@@ -20,17 +20,52 @@ SELECT
     v.TIG_VARIABLE_REAL_DFLT,
     v.TIG_VARIABLE_REAL_MIN,
     v.TIG_VARIABLE_REAL_MAX,
-    v.TIG_VARIABLE_REAL_NULL
+    v.TIG_VARIABLE_REAL_NULL,
+    elev."Elevation"
 FROM
     tig_well_interval vi,
     tig_well_history wh,
     tig_interval i,
     tig_zonation z,
     tig_computed_deviation cd,
-    tig_variable v
+    tig_variable v,
+    (SELECT
+        e.Well_ID,
+        e."Elevation"
+    FROM
+        (SELECT
+            a.DB_SLDNID Elev_ID,
+            a.TIG_WELL_SLDNID Well_ID,
+            ed1.TIG_DATUM_NAME "Measurement",
+            TRUNC(a.TIG_DATUM_OFFSET, 2) "Elevation",
+            ed2.TIG_DATUM_NAME "Datum"
+        FROM
+            tig_elevation_changes a,
+            tig_elevation_datum ed1,
+            tig_elevation_datum ed2
+        WHERE
+            a.TIG_INITIAL_DATUM = ed1.DB_SLDNID
+            AND a.TIG_TERMINAL_DATUM = ed2.DB_SLDNID
+            AND(a.TIG_DESCRIPTION IS NULL
+            OR a.TIG_DESCRIPTION NOT LIKE 'BOL: %')
+        ) e,
+        (SELECT
+            MAX(tig_elevation_changes.DB_SLDNID) max_elev_Id
+        FROM
+            tig_elevation_changes
+        WHERE(tig_elevation_changes.TIG_DESCRIPTION IS NULL)
+            OR(tig_elevation_changes.TIG_DESCRIPTION NOT LIKE 'BOL: %')
+        GROUP BY
+            tig_elevation_changes.TIG_WELL_SLDNID
+        ) i
+    WHERE
+        e.Elev_ID = i.max_elev_Id
+    ) elev
 WHERE
-    wh.DB_SLDNID = vi.TIG_WELL_SLDNID
+    wh.DB_SLDNID = :well_id
+    AND wh.DB_SLDNID = vi.TIG_WELL_SLDNID
     AND vi.TIG_INTERVAL_SLDNID = i.DB_SLDNID
+    AND vi.TIG_WELL_SLDNID = elev.Well_ID(+)
     AND i.TIG_ZONATION_SLDNID = z.DB_SLDNID
     AND(z.DB_SLDNID = :zonation_id
     OR :zonation_id IS NULL)

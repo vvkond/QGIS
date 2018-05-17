@@ -15,7 +15,7 @@ import ast
 
 from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
-from QgisPDS.utils import to_unicode
+from utils import *
 from bblInit import *
 from tig_projection import *
 import time
@@ -82,6 +82,19 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.attrSymbol = u'symbolcode'
         self.attrSymbolName = u'symbolname'
         self.attrLiftMethod = u'liftmethod'
+        self.attr_lablx = "lablx"
+        self.attr_lably = "lably"
+        self.attr_labloffx = "labloffx"
+        self.attr_labloffy = "labloffy"
+        self.attr_labloffset = "labloffset"
+        self.attr_lablwidth = "lablwidth"
+        self.attr_bubblesize = "bubblesize"
+        self.attr_bubblefields = OLD_NEW_FIELDNAMES[1] #"bubblefields"
+        self.attr_scaletype = "scaletype"
+        self.attr_movingres = "movingres"
+        self.attr_resstate = "resstate"
+        self.attr_multiprod = "multiprod"
+        self.attr_labels = 'bbllabels'
 
         self.dateFormat = u'dd/MM/yyyy HH:mm:ss'
 
@@ -277,7 +290,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.mSelectedReservoirs = self.getSelectedReservoirs()
             self.mPhaseFilter = self.getSelectedFluids()
 
-            self.uri = "MultiPoint?crs={}".format(self.proj4String)
+            self.uri = "Point?crs={}".format(self.proj4String)
             self.uri += '&field={}:{}'.format(self.attrWellId, "string")
             self.uri += '&field={}:{}'.format(self.attrLatitude, "double")
             self.uri += '&field={}:{}'.format(self.attrLongitude, "double")
@@ -286,21 +299,22 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.uri += '&field={}:{}'.format(self.attrSymbol, "integer")
             self.uri += '&field={}:{}'.format(self.attrDays, "double")
             self.uri += '&field={}:{}'.format(self.attrLiftMethod, "string")
-            self.uri += '&field={}:{}'.format("lablx", "double")
-            self.uri += '&field={}:{}'.format("lably", "double")
-            self.uri += '&field={}:{}'.format("labloffx", "double")
-            self.uri += '&field={}:{}'.format("labloffy", "double")
-            self.uri += '&field={}:{}'.format("labloffset", "double")
-            self.uri += '&field={}:{}'.format("lablwidth", "double")
-            self.uri += '&field={}:{}'.format("bubblesize", "double")
-            self.uri += '&field={}:{}'.format("bubblefields", "string")
-            self.uri += '&field={}:{}'.format("scaletype", "string")
-            self.uri += '&field={}:{}'.format("movingres", "string")
-            self.uri += '&field={}:{}'.format("resstate", "string")
-            self.uri += '&field={}:{}'.format("multiprod", "string")
+            self.uri += '&field={}:{}'.format(self.attr_lablx, "double")
+            self.uri += '&field={}:{}'.format(self.attr_lably, "double")
+            self.uri += '&field={}:{}'.format(self.attr_labloffx, "double")
+            self.uri += '&field={}:{}'.format(self.attr_labloffy, "double")
+            self.uri += '&field={}:{}'.format(self.attr_labloffset, "double")
+            self.uri += '&field={}:{}'.format(self.attr_lablwidth, "double")
+            self.uri += '&field={}:{}'.format(self.attr_bubblesize, "double")
+            # self.uri += '&field={}:{}'.format(self.attr_bubblefields, "string")
+            self.uri += '&field={}:{}'.format(self.attr_scaletype, "string")
+            self.uri += '&field={}:{}'.format(self.attr_movingres, "string")
+            self.uri += '&field={}:{}'.format(self.attr_resstate, "string")
+            self.uri += '&field={}:{}'.format(self.attr_multiprod, "string")
+            # self.uri += '&field={}:{}'.format(self.attr_labels, "string")
             for fl in bblInit.fluidCodes:
-                self.uri += '&field={}:{}'.format(QgisPDSProductionDialog.attrFluidVolume(fl.code), "double")
-                self.uri += '&field={}:{}'.format(QgisPDSProductionDialog.attrFluidMass(fl.code), "double")
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidVolume(fl.code), "double")
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidMass(fl.code), "double")
                 
 
             layerName = "Current production - " + ",".join(self.mSelectedReservoirs)
@@ -312,7 +326,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'Layer create error'), QtGui.QMessageBox.Ok)
                 return
 
-            self.layer.startEditing()
+            self.layer = memoryToShp(self.layer, self.project['project'], layerName)
 
             if self.isCurrentProd:
                 self.layer.setCustomProperty("qgis_pds_type", "pds_current_production")
@@ -323,21 +337,20 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.layer.setCustomProperty("pds_prod_SelectedReservoirs", str(self.mSelectedReservoirs))
             self.layer.setCustomProperty("pds_prod_PhaseFilter", str(self.mPhaseFilter))
 
-            self.layer.commitChanges()  
 
-            symbolList = self.layer.rendererV2().symbols()
-            symbol = QgsSymbolV2.defaultSymbol(self.layer.geometryType())
+            # symbolList = self.layer.rendererV2().symbols()
+            # symbol = QgsSymbolV2.defaultSymbol(self.layer.geometryType())
 
             registry = QgsSymbolLayerV2Registry.instance()
             
-            marker = QgsMarkerSymbolV2()
-
-            bubbleMeta = registry.symbolLayerMetadata('BubbleMarker')
-            if bubbleMeta is not None:
-                bubbleLayer = bubbleMeta.createSymbolLayer({})
-                marker.changeSymbolLayer(0, bubbleLayer)
-                renderer = QgsSingleSymbolRendererV2(marker)
-                self.layer.setRendererV2(renderer)
+            # marker = QgsMarkerSymbolV2()
+            #
+            # bubbleMeta = registry.symbolLayerMetadata('BubbleMarker')
+            # if bubbleMeta is not None:
+            #     bubbleLayer = bubbleMeta.createSymbolLayer({})
+            #     marker.changeSymbolLayer(0, bubbleLayer)
+            #     renderer = QgsSingleSymbolRendererV2(marker)
+            #     self.layer.setRendererV2(renderer)
 
             
             palyr = QgsPalLayerSettings()
@@ -353,16 +366,18 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             palyr.fontSizeInMapUnits = False
             palyr.textFont.setPointSizeF(7)
 
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'','lablx')
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'','lably')
-            # palyr.setDataDefinedProperty(QgsPalLayerSettings.LabelDistance,True,False,'','LablOffset')
+            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'', self.attr_lablx)
+            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'', self.attr_lably)
             palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
+        else:
+            bblInit.updateOldProductionStructure(self.layer)
 
 
         self.loadProductionLayer(self.layer)
        
         QgsMapLayerRegistry.instance().addMapLayer(self.layer)
+        bblInit.setAliases(self.layer)
 
         self.writeSettings()
 
@@ -463,17 +478,17 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             cSymbol    =self.layer.fieldNameIndex(self.attrSymbol     )
             cSymbolId  =self.layer.fieldNameIndex(self.attrSymbolId   )
             cSymbolName=self.layer.fieldNameIndex(self.attrSymbolName )
-            cResState  =self.layer.fieldNameIndex('ResState'          )
-            cMovingRes =self.layer.fieldNameIndex('MovingRes'         )
-            cMultiProd =self.layer.fieldNameIndex('MultiProd'         )
+            cResState  =self.layer.fieldNameIndex(self.attr_resstate  )
+            cMovingRes =self.layer.fieldNameIndex(self.attr_movingres )
+            cMultiProd =self.layer.fieldNameIndex(self.attr_multiprod )
             attr_2_upd=[  ###old column       old_col_id       new_col    
                          [self.attrDays      ,cDays         ,  self.attrDays]
                         ,[self.attrSymbol    ,cSymbol       ,  self.attrSymbol]
                         ,[self.attrSymbolId  ,cSymbolId     ,  self.attrSymbolId]
                         ,[self.attrSymbolName,cSymbolName   ,  self.attrSymbolName]
-                        ,['ResState'         ,cResState     ,   'ResState']
-                        ,['MovingRes'        ,cMovingRes    ,  'MovingRes']
-                        ,['MultiProd'        ,cMultiProd    ,  'MultiProd']
+                        ,[self.attr_resstate ,cResState     ,  self.attr_resstate]
+                        ,[self.attr_movingres,cMovingRes    ,  self.attr_movingres]
+                        ,[self.attr_multiprod,cMultiProd    ,  self.attr_multiprod]
                         ]
             for feature in self.mWells.values():                                 #--- iterate over each record in result
                 args = (self.attrWellId, feature.attribute(self.attrWellId))
@@ -493,8 +508,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     if liftMethodIdx >= 0:                               #--- update liftmetho id
                         self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(self.attrLiftMethod))
                     for fl in bblInit.fluidCodes:                        #--- update production attributes
-                        attrMass = QgisPDSProductionDialog.attrFluidMass(fl.code)
-                        attrVol =  QgisPDSProductionDialog.attrFluidVolume(fl.code)
+                        attrMass = bblInit.attrFluidMass(fl.code)
+                        attrVol =  bblInit.attrFluidVolume(fl.code)
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass), feature.attribute(attrMass))
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol), feature.attribute(attrVol))
                     num +=1
@@ -574,14 +589,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             sumDays = sumDays + self.calcProds(prod, prodWell.name, sumMass, sumVols)
 
         self.setWellAttribute(prodWell.name, self.attrDays, sumDays)
-        self.setWellAttribute(prodWell.name, 'ResState', prodWell.reservoirState)
-        self.setWellAttribute(prodWell.name, 'MovingRes', prodWell.movingReservoir)
-        self.setWellAttribute(prodWell.name, 'MultiProd', prodWell.lastReservoirs)
+        self.setWellAttribute(prodWell.name, self.attr_resstate, prodWell.reservoirState)
+        self.setWellAttribute(prodWell.name, self.attr_movingres, prodWell.movingReservoir)
+        self.setWellAttribute(prodWell.name, self.attr_multiprod, prodWell.lastReservoirs)
         if len(prodWell.liftMethod):
             self.setWellAttribute(prodWell.name, self.attrLiftMethod, prodWell.liftMethod)
         for i, fl in enumerate(bblInit.fluidCodes):
-            self.setWellAttribute(prodWell.name, QgisPDSProductionDialog.attrFluidMass(fl.code), sumMass[i])
-            self.setWellAttribute(prodWell.name, QgisPDSProductionDialog.attrFluidVolume(fl.code), sumVols[i])
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMass(fl.code), sumMass[i])
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidVolume(fl.code), sumVols[i])
 
      #==========================================================================
      # @todo: need speedup
@@ -655,7 +670,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         if result is None: 
             return
 
-        fluids = [f.code for f in bblInit.fluidCodes]
+        fluids = [f.componentId for f in bblInit.fluidCodes]
         product = None
         useLiftMethod = False
         for prod, s1, e1, start_time, end_time, componentId, unitSet, wtime in result:
@@ -958,11 +973,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             if (conv.initialWellRole == initialWellRole and
                 conv.currentWellRole == wellRole and
                 conv.wellStatus == wellStatus):
-                return SYMBOL(self.tr(wellRole)+' '+self.tr(wellStatus), conv.symbol)
+                return SYMBOL(initialWellRole + ' ' + wellRole + ' ' + wellStatus, conv.symbol)
 
         for sym in bblInit.bblSymbols:
             if sym.wellRole == wellRole and sym.wellStatus == wellStatus:
-                return SYMBOL(self.tr(wellRole)+' '+self.tr(wellStatus), sym.symbol)
+                return SYMBOL(wellRole + ' '+ wellStatus, sym.symbol)
 
 
 #        sql = (" SELECT P_ALLOC_FACTOR.DATA_VALUE, WELL.WELL_ID, PRODUCTION_ALOC.START_TIME"
@@ -1130,14 +1145,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         return selectedFluids
         
         
-    @staticmethod
-    def attrFluidVolume(fluidCode):
-        return fluidCode + u" (volume)"
 
-
-    @staticmethod
-    def attrFluidMass(fluidCode):
-        return fluidCode + u" (mass)"
 
 
     def lastDateClicked(self, checked):
@@ -1187,5 +1195,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             settings.setValue("/PDS/production/UpdateWellLocation", 'True')
         else:
             settings.setValue("/PDS/production/UpdateWellLocation", 'False')
+
+
 
 

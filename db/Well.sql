@@ -18,10 +18,10 @@ SELECT
     well."Owner",
     well."Created",
     well."Project",
-    well.TIG_LONGITUDE,
     well.TIG_LATITUDE,
-    cd.TIG_DELTA_X_ORDINATE,
-    cd.TIG_DELTA_Y_ORDINATE
+    well.TIG_LONGITUDE,
+    well.TIG_SLOT_NUMBER,
+    well.TIG_CLIENT_WELL_NAME
 FROM
     (SELECT DISTINCT
         w.TIG_LATEST_WELL_NAME AS "Well Name",
@@ -36,19 +36,26 @@ FROM
         s.TIG_DESCRIPTION "Symbol",
         TO_CHAR(b.SPUD_DATE, 'DD-MM-YYYY') "Spud Date",
         REPLACE(REPLACE(w.TIG_GLOBAL_DATA_FLAG, '1', 'Global'), '0', 'Private') "Global/Private",
-        'gg' "Owner",
+        ii.TIG_LOGIN_NAME "Owner",
         TO_CHAR((TO_DATE('01-01-1970', 'DD-MM-YYYY') +(w.DB_INSTANCE_TIME_STAMP / 86400)), 'DD-MM-YYYY') "Created",
-        '%2' "Project",
+        'qq' "Project",
         w.DB_SLDNID Well_ID,
+        w.TIG_LATITUDE,
         w.TIG_LONGITUDE,
-        w.TIG_LATITUDE
+        w.TIG_SLOT_NUMBER,
+        w.TIG_CLIENT_WELL_NAME
     FROM
         tig_well_history w,
         well b,
-        global.tig_well_symbol s
+        global.tig_well_symbol s,
+        tig_interpreter ii
     WHERE
-        w.TIG_LATEST_WELL_NAME = b.WELL_ID
+        w.DB_SLDNID = :well_id
+        AND w.TIG_LATEST_WELL_NAME = b.WELL_ID
         AND w.TIG_WELL_SYMBOL_ID = s.TIG_WELL_SYMBOL_ID(+)
+        AND w.TIG_INTERPRETER_SLDNID = ii.TIG_USER_ID(+)
+        AND w.TIG_LATITUDE IS NOT NULL
+        AND w.TIG_LONGITUDE IS NOT NULL
         AND w.TIG_ONLY_PROPOSAL <= 1
     ) well,
     (SELECT
@@ -84,20 +91,8 @@ FROM
         ) i
     WHERE
         e.Elev_ID = i.max_elev_Id
-    ) elev,
-    tig_computed_deviation cd
+    ) elev
 WHERE
     well.Well_ID = elev.Well_ID(+)
-    AND cd.TIG_WELL_SLDNID = well.Well_ID
-    AND well.TIG_LONGITUDE != 0
-    AND well.TIG_LATITUDE != 0
-    AND cd.DB_SLDNID IN
-    (SELECT
-        MAX(cd2.DB_SLDNID)
-    FROM
-        tig_computed_deviation cd2
-    WHERE
-        cd2.TIG_WELL_SLDNID = well.Well_ID
-    )
 ORDER BY
     well.Well_ID

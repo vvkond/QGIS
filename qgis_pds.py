@@ -49,8 +49,11 @@ from QgisPDS.qgis_pds_SaveMapsetToPDS import QgisSaveMapsetToPDS
 from QgisPDS.qgis_pds_oracleSql import QgisOracleSql
 from QgisPDS.qgis_pds_createIsolines import QgisPDSCreateIsolines
 from QgisPDS.qgis_pds_transite import QgisPDSTransitionsDialog
+from qgis_pds_SelectMapTool import QgisPDSSelectMapTool
+import os
 import os.path
 import ast
+import json
 
 
 class QgisPDS(QObject):
@@ -117,6 +120,8 @@ class QgisPDS(QObject):
         self.timer = QTimer()
         self.timer.timeout.connect(self.onTimer)
         # QObject.connect(self.timer, SIGNAL("timeout()"), self.onTimer)
+
+        self.selectMapTool = None
 
 
     # noinspection PyMethodMayBeStatic
@@ -195,20 +200,23 @@ class QgisPDS(QObject):
             originY = editGeom.asPoint().y()
             pixelOrig = tr.transform(QgsPoint(originX, originY))
 
-            idxOffX = editLayerProvider.fieldNameIndex('LablOffX')
-            idxOffY = editLayerProvider.fieldNameIndex('LablOffY')
+            idxOffX = editLayerProvider.fieldNameIndex('labloffx')
+            idxOffY = editLayerProvider.fieldNameIndex('labloffy')
             if idxOffX < 0 or idxOffY < 0:
                 editLayerProvider.addAttributes(
-                    [QgsField("LablOffX", QVariant.Double),
-                     QgsField("LablOffY", QVariant.Double)])
-                idxOffX = editLayerProvider.fieldNameIndex('LablOffX')
-                idxOffY = editLayerProvider.fieldNameIndex('LablOffY')
+                    [QgsField("labloffx", QVariant.Double),
+                     QgsField("labloffy", QVariant.Double)])
+                idxOffX = editLayerProvider.fieldNameIndex('labloffx')
+                idxOffY = editLayerProvider.fieldNameIndex('labloffy')
+
+            if editLayerProvider.fieldNameIndex('labloffset') < 0:
+                editLayerProvider.addAttributes([QgsField("labloffset", QVariant.Double)])
 
             if idxOffX < 0 or idxOffY < 0:
                 return
 
 
-            if fieldname == 'LablX':
+            if fieldname.lower() == 'lablx':
                 if variant == NULL:  # case when user unpins the label > sets arrow back to arrow based on point location
                     return
                 if isinstance(variant, basestring):  # test case, when editing from attribute table, variant is sent as text! converts to float
@@ -220,9 +228,9 @@ class QgisPDS(QObject):
 
                 editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablX'), None)
                 editedLayer.changeAttributeValue(FeatureId, idxOffX, mmOffset)
-                editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffset'), 1)
+                editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffset'), 1)
 
-            if fieldname == 'LablY':
+            if fieldname.lower() == 'lably':
                 if variant == NULL:  # case when user unpins the label > sets arrow back to arrow based on point location
                     return
                 if isinstance(variant, basestring):  # test case, when editing from attribute table, variant is sent as text! converts to float
@@ -234,22 +242,31 @@ class QgisPDS(QObject):
 
                 editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablY'), None)
                 editedLayer.changeAttributeValue(FeatureId, idxOffY, mmOffset)
-                editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffset'), 1)
+                editedLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffset'), 1)
 
 
-
+    @property
+    def sldnidFieldName(self):
+        return 'sldnid'
 
     def layerSelected(self, layer):
         """Change action enable"""
         enabled = False
         enabledWell = False
-        if layer is not None: 
-            enabled = bblInit.isProductionLayer(layer)
-            enabledWell = bblInit.isWellLayer(layer)
+        runAppEnabled = False
+        try:
+            if layer is not None:
+                enabled = bblInit.isProductionLayer(layer)
+                enabledWell = bblInit.isWellLayer(layer)
+                runAppEnabled = layer.fieldNameIndex(self.sldnidFieldName) >= 0
+        except:
+            pass
 
         self.actionProductionSetup.setEnabled(enabled)
         self.actionCoordsFromZone.setEnabled(enabled or enabledWell)
         self.actionTransiteWells.setEnabled(enabled or enabledWell)
+
+        self.runAppAction.setEnabled(runAppEnabled)
 
 
     
@@ -394,18 +411,20 @@ class QgisPDS(QObject):
         self,
         icon_path,
         text,
-        callback,
+        callback=None,
         enabled_flag=True,
         add_to_menu=True,
         add_to_toolbar=True,
         status_tip=None,
         whats_this=None,
-        parent=None):
+        parent=None,
+        menu=None):
         
 
         icon = QIcon(icon_path)
         action = QAction(icon, text, parent)
-        action.triggered.connect(callback)
+        if callback is not None:
+            action.triggered.connect(callback)
         action.setEnabled(enabled_flag)
 
         if status_tip is not None:
@@ -413,6 +432,9 @@ class QgisPDS(QObject):
 
         if whats_this is not None:
             action.setWhatsThis(whats_this)
+
+        if menu is not None:
+            action.setMenu(menu)
 
         if add_to_toolbar:
             self.toolbar.addAction(action)
@@ -430,10 +452,14 @@ class QgisPDS(QObject):
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
+        toolTipText = self.tr(u'Select PDS project')
+        if self.currentProject:
+            toolTipText += ' ({0})'.format(self.currentProject['project'])
+
         icon_path = ':/plugins/QgisPDS/splash_logo.png'
-        self.add_action(
+        self.selectProjectAction = self.add_action(
             icon_path,
-            text=self.tr(u'Select PDS project'),
+            text=toolTipText,
             callback=self.selectProject,
             status_tip=self.tr(u'Select project'),
             parent=self.iface.mainWindow())
@@ -589,6 +615,38 @@ class QgisPDS(QObject):
             callback=self.createIsolines,
             parent=self.iface.mainWindow())
 
+        applicationMenu = QMenu(self.iface.mainWindow())
+        action = QAction(self.tr(u'Well Correlation && Zonation'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startWcorr)
+        action = QAction(self.tr(u'Well view'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startWellView)
+        action = QAction(self.tr(u'Well Log Processing'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startWellLogProcessing)
+        action = QAction(self.tr(u'Deviation Survey'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startDevSurvey)
+        action = QAction(self.tr(u'Log Plot'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.startLogPlot)
+        applicationMenu.addSeparator()
+        action = QAction(self.tr(u'Seismic Interpretation 2D'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.seis2D)
+        action = QAction(self.tr(u'Seismic Interpretation 3D'), applicationMenu)
+        applicationMenu.addAction(action)
+        action.triggered.connect(self.seis3D)
+
+        icon_path = ':/plugins/QgisPDS/play_24x24.png'
+        self.runAppAction = self.add_action(
+            icon_path,
+            text=self.tr(u'Run application'),
+            parent=self.iface.mainWindow(),
+            enabled_flag=False,
+            menu=applicationMenu)
+
         self._metadata = BabbleSymbolLayerMetadata()
         QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
 
@@ -620,9 +678,18 @@ class QgisPDS(QObject):
         if result:
             self.currentProject = dlg.selectedProject()           
             self.saveSettings()
+            toolTipText = self.tr(u'Select PDS project')
+            if self.currentProject:
+                toolTipText += ' ({0})'.format(self.currentProject['project'])
+            self.selectProjectAction.setToolTip(toolTipText)
       
             
     def createProductionlayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+
         dlg = QgisPDSProductionDialog(self.currentProject, self.iface)
         if dlg.isInitialised():
             result = dlg.exec_()
@@ -631,6 +698,11 @@ class QgisPDS(QObject):
 
 
     def loadPressure(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+
         dlg = QgisPDSPressure(self.currentProject, self.iface)
         if dlg.isInitialised():
             result = dlg.exec_()
@@ -643,6 +715,11 @@ class QgisPDS(QObject):
         self.renderComplete()
 
     def createSummProductionlayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+
         dlg = QgisPDSProductionDialog(self.currentProject, self.iface, False)
         if dlg.isInitialised():
             result = dlg.exec_()
@@ -657,34 +734,50 @@ class QgisPDS(QObject):
             if result and layer:
                 prodSetup = QgisPDSProdSetup(self.iface, layer)
                 prodSetup.setup(layer)
+        del dlg
 
 
     def createCPointsLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ControlPointReader())
         dlg.exec_()
 
 
     def createContoursLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(0))
         dlg.exec_()
 
 
     def createPolygonsLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(1))
         dlg.exec_()
 
     def createSurfaceLayer(self):
         if not QgsProject.instance().homePath():
             self.iface.messageBar().pushMessage(self.tr('Error'),
-                        self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, SurfaceReader())
         dlg.exec_()
         del dlg
 
 
     def createFaultsLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
         dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(2))
         dlg.exec_()
       
@@ -702,6 +795,11 @@ class QgisPDS(QObject):
 
 
     def createWellDeviationLayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+
         wells = QgisPDSDeviation(self.iface, self.currentProject)
         layer = wells.createWellLayer()
         # if layer is not None:
@@ -748,7 +846,7 @@ class QgisPDS(QObject):
         projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
         proj = ast.literal_eval(projStr)
 
-        dlg  = QgisPDSCoordFromZoneDialog(proj, self.iface, currentLayer)
+        dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, currentLayer)
         dlg.exec_()
         return
 
@@ -760,7 +858,7 @@ class QgisPDS(QObject):
         projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
         proj = ast.literal_eval(projStr)
 
-        dlg = QgisPDSTransitionsDialog(proj, self.iface, currentLayer)
+        dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, currentLayer)
         dlg.exec_()
         return
 
@@ -837,7 +935,150 @@ class QgisPDS(QObject):
 
         dlg = QgisPDSCreateIsolines(self.iface)
         dlg.exec_()
+
+    def createProjectString(self, args={}):
+        projectName = args['project']
+        options = json.loads(args['options'])
+        host = options['host']
+        sid = options['sid']
+
+        return u'{0}/{1}/{2}'.format(host, sid, projectName)
+
+    def startSelectMapTool(self, layer, exeName, appArgs):
+        if not self.selectMapTool:
+            self.selectMapTool = QgisPDSSelectMapTool(self.iface.mapCanvas(), layer)
+            self.selectMapTool.finished.connect(self.selectMapTool_finished)
+
+        self.selectMapTool.setArgs(exeName, appArgs)
+        self.iface.mapCanvas().setMapTool(self.selectMapTool)
+
+    @pyqtSlot(list, str, str)
+    def selectMapTool_finished(self, features, exeName, appArgs):
+        if len(features):
+            ids = self.getSelectedSldnids(features)
+            # print  appArgs + '{' + ids + '})" '
+            self.runTigressProcess(exeName, appArgs + '{' + ids + '})" ')
+
+
+    def startWcorr(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        # ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"wcorr.load_template(" + "'{0}', ".format(project)
+        self.startSelectMapTool(currentLayer, 'wcorr.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('wcorr.exe', args)
+
+    def startWellView(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        # ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"wellview.load_well(" + "'{0}', ".format(project)
+        self.startSelectMapTool(currentLayer, 'wellview.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('wellview.exe', args)
+
+    def startWellLogProcessing(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        # ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"gsp.load_tz_table(" + "'{0}', ".format(project)
+        self.startSelectMapTool(currentLayer, 'gsp.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('gsp.exe', args)
+
+    def startDevSurvey(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        # ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"dvsrvy.load_survey(" + "'{0}', ".format(project)
+        self.startSelectMapTool(currentLayer, 'dvsrvy.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('dvsrvy.exe', args)
+
+    def startLogPlot(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        # ids = self.getSelectedSldnids(currentLayer)
+        args = " -script \"compos.load_resultsplot(" + "'{0}', ".format(project)
+        self.startSelectMapTool(currentLayer, 'compos.exe', args)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('compos.exe', args)
+
+    def seis2D(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        ids = '0'
+        args = " -script \"inp.load_2dlines(" + "'{0}', ".format(project)
+        # args += '{' + ids + '})" '
+        # self.runTigressProcess('inp.exe', args)
+
+    def seis3D(self):
+        currentLayer = self.iface.activeLayer()
+        if not currentLayer:
+            return
+
+        project = self.createProjectString(args=self.currentProject)
+        ids = '0'
+        args = " -script \"inp.load_survey3d(" + "'{0}', ".format(project)
+        args += '{' + ids + '})" '
+        self.runTigressProcess('inp.exe', args)
         
     def saveSettings(self):
         QSettings().setValue('currentProject', self.currentProject)
-        
+
+    def runTigressProcess(self, appName, args):
+        tigdir = os.environ['TIGDIR']
+        tigdir = tigdir.replace('\\', '/')
+        exeName = tigdir + '/bin/' + appName
+        if not os.path.exists(exeName):
+            exeName = tigdir + '/../bin/' + appName
+
+        if not os.path.exists(exeName):
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'),
+                                       appName + ': ' + self.tr(u'file not found.\nPlease set TIGDIR variable'.format(appName)),
+                                       QtGui.QMessageBox.Ok)
+            return
+
+        runStr = exeName + ' ' + args
+        process = QProcess(self.iface)
+        process.start(runStr)
+
+    # def getSelectedSldnids(self, layer):
+    #     idx = layer.fieldNameIndex(self.sldnidFieldName)
+    #     if idx < 0:
+    #         return '';
+    #
+    #     result = '0'
+    #     features = layer.selectedFeatures()
+    #     for f in features:
+    #          result += ',{0}'.format(f.attribute(self.sldnidFieldName))
+    #
+    #     return result
+    def getSelectedSldnids(self, features):
+        result = '0'
+        try:
+            for f in features:
+                 result += ',{0}'.format(f.attribute(self.sldnidFieldName))
+        except:
+            pass
+
+        return result

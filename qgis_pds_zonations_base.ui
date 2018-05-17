@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
-    <height>366</height>
+    <width>737</width>
+    <height>440</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,11 +20,96 @@
       <string>Данные в проекте</string>
      </property>
      <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Группы</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QLabel" name="label_3">
         <property name="text">
          <string>Пласты</string>
         </property>
+       </widget>
+      </item>
+      <item row="0" column="2" rowspan="2">
+       <widget class="QFrame" name="mWellsFrame">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="margin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="mWellLabel">
+             <property name="text">
+              <string>Скважины</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="mSortToolButton">
+             <property name="toolTip">
+              <string>Сортировать список</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="mWellListToolButton">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="popupMode">
+              <enum>QToolButton::MenuButtonPopup</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="mWellFilterToolButton">
+             <property name="toolTip">
+              <string>Фильтровать список</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="popupMode">
+              <enum>QToolButton::MenuButtonPopup</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QListWidget" name="mWellsListWidget">
+           <property name="selectionMode">
+            <enum>QAbstractItemView::ExtendedSelection</enum>
+           </property>
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
       <item row="1" column="0">
@@ -34,13 +119,6 @@
         </property>
         <property name="sortingEnabled">
          <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Группы</string>
         </property>
        </widget>
       </item>
@@ -54,62 +132,10 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QListWidget" name="mWellsListWidget">
-        <property name="selectionMode">
-         <enum>QAbstractItemView::ExtendedSelection</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="3">
-       <widget class="QFrame" name="mParameterFrame">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1,0">
-         <property name="margin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Параметр</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QComboBox" name="mParamComboBox"/>
-         </item>
-         <item>
-          <widget class="QToolButton" name="mParamToolButton">
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="mWellLabel">
-        <property name="text">
-         <string>Скважины</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="3" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -117,6 +143,62 @@
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QCheckBox" name="mUseElevation">
+       <property name="text">
+        <string>Учитывать альтитуду</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="mUseErosion">
+       <property name="text">
+        <string>Учитывать эрозию</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QFrame" name="mParameterFrame">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,1,0">
+      <property name="margin">
+       <number>0</number>
+      </property>
+      <item row="0" column="2">
+       <widget class="QToolButton" name="mParamToolButton">
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Параметр</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="mParamComboBox"/>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
@@ -130,8 +212,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>356</y>
+     <x>266</x>
+     <y>430</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -146,8 +228,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>325</x>
-     <y>356</y>
+     <x>334</x>
+     <y>430</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -162,8 +244,8 @@
    <slot>mParamToolButton_clicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>552</x>
-     <y>309</y>
+     <x>727</x>
+     <y>375</y>
     </hint>
     <hint type="destinationlabel">
      <x>574</x>

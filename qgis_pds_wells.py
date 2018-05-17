@@ -84,7 +84,12 @@ class QgisPDSWells(QObject):
         systemEncoding = settings.value('/UI/encoding', 'System')
         scheme = self.project['project']
         layerFile = '/{0}_wells_{1}.shp'.format(scheme, time.strftime('%d_%m_%Y_%H_%M_%S', time.localtime()))
-        layerFileName = QgsProject.instance().homePath() + layerFile
+
+        (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
+        if not os.path.exists(prjPath):
+            os.mkdir(prjPath)
+
+        layerFileName = prjPath + layerFile
         provider = layer.dataProvider()
         fields = provider.fields()
         writer = VectorWriter(layerFileName, systemEncoding,
@@ -92,14 +97,12 @@ class QgisPDSWells(QObject):
                               provider.geometryType(), provider.crs())
 
         features = layer.getFeatures()
-        idx = 0
         for f in features:
             try:
                 l = f.geometry()
                 feat = QgsFeature(f)
                 feat.setGeometry(l)
                 writer.addFeature(feat)
-                idx = idx + 1
             except:
                 pass
 

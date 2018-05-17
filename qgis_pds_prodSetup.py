@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from PyQt4 import QtGui, uic, QtCore
-# from PyQt4 import QtCore, QtGui
 from PyQt4.QtGui import *
-# from PyQt4.QtCore import *
 from qgis import core, gui
 from qgis.gui import QgsColorButtonV2
-# from qgis.gui import *
-# from qgscolorbuttonv2 import QgsColorButtonV2
 from collections import namedtuple
 from qgis_pds_production import *
 from bblInit import *
@@ -15,6 +11,8 @@ import ast
 import math
 import xml.etree.cElementTree as ET
 import re
+import time
+
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
@@ -70,10 +68,11 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         if renderer is not None and renderer.type() == 'RuleRenderer':
             root_rule = renderer.rootRule()
             for r in root_rule.children():
-                for l in r.symbol().symbolLayers():
-                    if l.layerType() == 'BubbleDiagramm':
-                        self.bubbleProps = l.properties()
-                        break
+                if r.symbol():
+                    for l in r.symbol().symbolLayers():
+                        if l.layerType() == 'BubbleDiagramm':
+                            self.bubbleProps = l.properties()
+                            break
                 if self.bubbleProps is not None:
                     break
 
@@ -82,7 +81,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
             if bubbleMeta is not None:
                 bubbleLayer = bubbleMeta.createSymbolLayer({})
-                self.bubbleProps = bubbleLayer.properties()
+                if bubbleLayer:
+                    self.bubbleProps = bubbleLayer.properties()
 
         if self.bubbleProps is None:
             self.bubbleProps = {}
@@ -92,6 +92,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     
         self.scaleUnitsMass.setVisible(False)
         self.scaleUnitsVolume.setVisible(False)
+
+        self.isCurrentProd = True if self.currentLayer.customProperty("qgis_pds_type") == 'pds_current_production' else False
+        self.defaultUnitNum = 2 if self.isCurrentProd else 3
         
         ##--------------------------KARASU CONFIG
         def karasu():
@@ -154,9 +157,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             if len(self.layerDiagramms) < 1:
                 if self.currentLayer.customProperty("qgis_pds_type") == "pds_current_production":
                     #----CURENT PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,   testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,   testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 1, 1, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,   testval=1, unitsType=1, units=14, fluids=[0, 1, 0, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 1, 1, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 1, 0, 0, 0, 0, 0, 0]))
                     bblInit.fluidCodes[2].inPercent=1
     #                 cOil=QColor()
     #                 cOil.setNamedColor('#aaaaaa')
@@ -480,6 +483,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
     def setup(self, editLayer):
 
+        bblInit.updateOldProductionStructure(editLayer)
+
         self.applySettings()
 
         maxDiagrammSize = self.maxDiagrammSize.value()
@@ -494,12 +499,15 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         editLayer.startEditing()
 
-        idxOffX = editLayerProvider.fieldNameIndex('LablOffX')
-        idxOffY = editLayerProvider.fieldNameIndex('LablOffY')
+        idxOffX = editLayerProvider.fieldNameIndex('labloffx')
+        idxOffY = editLayerProvider.fieldNameIndex('labloffy')
         if idxOffX < 0 or idxOffY < 0:
             editLayerProvider.addAttributes(
-                [QgsField("LablOffX", QVariant.Double),
-                 QgsField("LablOffY", QVariant.Double)])
+                [QgsField("labloffx", QVariant.Double),
+                 QgsField("labloffy", QVariant.Double)])
+
+        # if editLayerProvider.fieldNameIndex('bbllabels') < 0:
+        #     editLayerProvider.addAttributes([QgsField('bbllabels', QVariant.String)])
 
         diagLabel = ''
         for d in self.layerDiagramms:
@@ -514,18 +522,19 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             for d in self.layerDiagramms:
                 vec = d.fluids
                 if d.unitsType == 0:
-                    scaleType = QgisPDSProductionDialog.attrFluidMass("")
+                    scaleType = bblInit.attrFluidMass("")
                 else:
-                    scaleType = QgisPDSProductionDialog.attrFluidVolume("")
+                    scaleType = bblInit.attrFluidVolume("")
 
                 prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
 
                 sum = 0.0
-                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
+                multiplier = 1.0 #float(bblInit.unit_to_mult.get(d.units, 1.0))
                 for attrName in prodFields:
                     attr = attrName + scaleType
-                    if feature[attr] is not None:
-                        val = float(feature[attr] * multiplier)
+                    variant = feature.attribute(attr)
+                    if variant is not None and variant != NULL:
+                        val = float(variant) * multiplier
                         sum += val
 
                 if maxSum < sum:
@@ -538,30 +547,33 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         for feature in iter:
             FeatureId = feature.id()
 
-            uniqSymbols[feature['SymbolCode']] = feature['SymbolName']
+            uniqSymbols[feature['symbolcode']] = feature['symbolname']
 
             diagrammSize = 0
             root = ET.Element("root")
             templateStr = self.templateExpression.text()
+            diagramms = []
             for d in self.layerDiagramms:
                 vec = d.fluids
                 if d.unitsType == 0:
-                    scaleType = QgisPDSProductionDialog.attrFluidMass("")
+                    scaleType = bblInit.attrFluidMass("")
                 else:
-                    scaleType = QgisPDSProductionDialog.attrFluidVolume("")
+                    scaleType = bblInit.attrFluidVolume("")
 
-                prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
+                selectedFluids = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
 
+                multiplier = 1.0
                 koef = (maxDiagrammSize - minDiagrammSize) / maxSum
                 if self.useScaleGroupBox.isChecked():
                     koef = (maxDiagrammSize - minDiagrammSize) / d.scale
+                    multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
 
                 sum = 0.0
-                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
-                for attrName in prodFields:
-                    attr = attrName + scaleType
-                    if feature[attr] is not None:
-                        val = float(feature[attr] * multiplier)
+                for fluid in selectedFluids:
+                    attr = fluid.code + scaleType
+                    variant = feature[attr]
+                    if variant is not None and variant != NULL:
+                        val = float(variant) * multiplier
                         sum += val
 
                 ds = minDiagrammSize + sum * koef
@@ -570,42 +582,102 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 if ds > maxDiagrammSize:
                     ds = maxDiagrammSize
 
+                diagramm = {}
                 if sum != 0:
-                    diag = ET.SubElement(root, "diagramm", size=str(ds))
-                    for attrName in prodFields:
-                        attr = attrName + scaleType
-                        fluid = self.fluidByCode(attrName)
+                    for fluid in selectedFluids:
                         prods[fluid.code] = fluid
-                        if feature[attr] is not None and fluid is not None:
-                            val = float(feature[attr] * multiplier)
-                            percent = val / sum
-                            ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(fluid.backColor),
-                                          lineColor=QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor),
-                                          fieldName=attr).text = str(percent)
+
+
+                # diagramm = {}
+                # if sum != 0:
+                #     diag = ET.SubElement(root, "diagramm", size=str(ds))
+                #     diagramm['size'] = ds
+                #     for fluid in selectedFluids:
+                #         attr = fluid.code + scaleType
+                #         prods[fluid.code] = fluid
+                #         if feature[attr] is not None and fluid is not None:
+                #             val = float(feature[attr] * multiplier)
+                #             percent = val / sum
+                #             ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(fluid.backColor),
+                #                           lineColor=QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)).text = str(percent)
+                #             diagramm[fluid.code] = percent
+                # diagramms.append(diagramm)
 
                 if ds > diagrammSize:
-                    diagrammSize = ds#minDiagrammSize + sum * koef
+                    diagrammSize = ds
 
-                templateStr = self.addLabels(templateStr, sum, vec, feature, scaleType, multiplier)
+                # templateStr = self.addLabels(templateStr, sum, vec, feature, scaleType, multiplier)
 
-            if diagrammSize >= minDiagrammSize:
-                ET.SubElement(root, "label", labelText=templateStr)
+            # if diagrammSize >= minDiagrammSize:
+            #     ET.SubElement(root, "label", labelText=templateStr)
+                # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bbllabels'), templateStr)
 
             offset = diagrammSize if diagrammSize < maxDiagrammSize else maxDiagrammSize
-            if feature.attribute('LablOffset') is None:
-                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffX'), offset/3)
-                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('LablOffY'), -offset/3)
+            LablOffset = feature.attribute('labloffset')
+            if LablOffset is None or LablOffset == NULL:
+                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffx'), offset/3)
+                editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('labloffy'), -offset/3)
 
-            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('BubbleSize'), diagrammSize)
-            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('BubbleFields'),
-                                           ET.tostring(root))
-            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('ScaleType'), scaleType)
+            editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bubblesize'), diagrammSize)
+
+            # compressedStr = str(diagramms) #ET.tostring(root)
+
+            # if not editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[0]), compressedStr):
+            #     editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex(OLD_NEW_FIELDNAMES[1]), compressedStr)
+            #
+            # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('scaletype'), scaleType)
 
         editLayer.commitChanges()
 
         plugin_dir = os.path.dirname(__file__)
 
         registry = QgsSymbolLayerV2Registry.instance()
+
+         #Collect fields for Data Defined props
+        allDiagramms = []
+        templateStr = self.templateExpression.text()
+        sums = ''
+        for d in self.layerDiagramms:
+            vec = d.fluids
+            if d.unitsType == 0:
+                scaleType = bblInit.attrFluidMass("")
+            else:
+                scaleType = bblInit.attrFluidVolume("")
+
+            selectedFluids = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
+
+            mm = float(bblInit.unit_to_mult.get(d.units, 1.0))
+            multiplier = 1.0 / mm
+
+            diagramm = {}
+            diagramm['scaleMaxRadius'] = maxDiagrammSize
+            diagramm['scaleMinRadius'] = minDiagrammSize
+            diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else maxSum
+            diagramm['multiplier'] = mm
+            diagramm['dailyProduction'] = self.dailyProduction.isChecked()
+            diagramm['scaleType'] = 1
+            diagramm['fixedSize'] = maxDiagrammSize
+            diagramm['decimals'] = self.decimalEdit.value()
+            slices = []
+            for fluid in selectedFluids:
+                attr = fluid.code + scaleType
+                slice = {}
+                slice['backColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.backColor)
+                slice['lineColor'] = QgsSymbolLayerV2Utils.encodeColor(fluid.lineColor)
+                slice['labelColor'] = fluid.labelColor.name()
+                slice['inPercent'] = fluid.inPercent
+                slice['expression'] = attr
+                slices.append(slice)
+            diagramm['slices'] = slices
+
+            (templateStr, ss) = self.compileLabels(templateStr, vec, scaleType)
+            if len(sums) > 0:
+                sums += '+'
+            sums += ss
+
+            allDiagramms.append(diagramm)
+
+        diagrammStr = str(allDiagramms)
 
         symbol = QgsMarkerSymbolV2()
         bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
@@ -615,30 +687,36 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             bubbleProps['showLabels'] = 'True'
             bubbleProps['showDiagramms'] = 'True'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+            bubbleProps['diagrammStr'] = diagrammStr
+            bubbleProps['templateStr'] = templateStr
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
-            bubbleLayer.setSize(3)
-            bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
-            symbol.changeSymbolLayer(0, bubbleLayer)
+            if bubbleLayer:
+                bubbleLayer.setSize(3)
+                bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                symbol.changeSymbolLayer(0, bubbleLayer)
         else:
             symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
 
         renderer = QgsRuleBasedRendererV2(symbol)
         root_rule = renderer.rootRule()
 
-        if bubbleMeta:
+        if bubbleMeta and self.showLineouts.isChecked():
             bubbleProps = {}
             bubbleProps['showLineouts'] = 'True' if self.showLineouts.isChecked() else 'False'
             bubbleProps['showLabels'] = 'False'
             bubbleProps['showDiagramms'] = 'False'
             bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+            bubbleProps['diagrammStr'] = diagrammStr
+            bubbleProps['templateStr'] = templateStr
             bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
-            bubbleLayer.setSize(3)
-            bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
-            symbol1 = QgsMarkerSymbolV2()
-            symbol1.changeSymbolLayer(0, bubbleLayer)
-            rule = QgsRuleBasedRendererV2.Rule(symbol1)
-            rule.setLabel(u'Скважины')
-            root_rule.appendChild(rule)
+            if bubbleLayer:
+                bubbleLayer.setSize(3)
+                bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                symbol1 = QgsMarkerSymbolV2()
+                symbol1.changeSymbolLayer(0, bubbleLayer)
+                rule = QgsRuleBasedRendererV2.Rule(symbol1)
+                rule.setLabel(u'Скважины')
+                root_rule.appendChild(rule)
 
         # args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
         sSize = self.mSymbolSize.value()
@@ -652,7 +730,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             symbol.changeSymbolLayer(0, svg)
 
             rule = QgsRuleBasedRendererV2.Rule(symbol)
-            rule.setLabel(uniqSymbols[symId])
+            try:
+                rule.setLabel(QCoreApplication.translate('bblInit', uniqSymbols[symId]))
+            except:
+                rule.setLabel(uniqSymbols[symId])
 
             rule.setFilterExpression(u'\"{0}\"={1}'.format("SymbolCode", symId))
             root_rule.appendChild(rule)
@@ -667,7 +748,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
             rule = QgsRuleBasedRendererV2.Rule(symbol)
             try:
-                rule.setLabel(QCoreApplication.translate('bblInit', ff.name))
+                newName = QCoreApplication.translate('bblInit', ff.name)
+                rule.setLabel(newName)
             except:
                 rule.setLabel(ff.name)
             rule.setFilterExpression(u'\"SymbolCode\"=-1')
@@ -719,6 +801,110 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         templateStr = re.sub('^[\,\:\;\.\-/\\_ ]+|[\,\:\;\.\-/\\_ ]+$', '', templateStr)
         return templateStr
+
+    def compileLabels(self, templateStr, fluids, scaleType):
+        sums = ''
+        for idx, v in enumerate(fluids):
+            if v:
+                fluid = bblInit.fluidCodes[idx]
+                code = '%'+str(idx+1)
+                if code in templateStr:
+                    attr = '"{0}{1}"'.format(fluid.code, scaleType)
+                    if len(sums) > 0:
+                        sums += '+'
+                    sums += attr
+                    templateStr = templateStr.replace(code, attr)
+
+        return (templateStr, sums)
+
+    def getLabels(self, templateStr, fluids, scaleType, multiplier):
+        attributes = []
+        labels = []
+        decimals = self.decimalEdit.value()
+        showZero = int(self.mShowZero.isChecked())
+
+        nameCounter = time.time()
+
+        sums = ''
+        numbers = []
+        for idx, v in enumerate(fluids):
+            if v:
+                numbers.append(idx+1)
+                fluid = bblInit.fluidCodes[idx]
+
+                if len(sums):
+                    sums += ' + '
+                sums += '"{0}{1}"'.format(fluid.code, scaleType)
+
+        labelStr = ''
+        key = False
+        colorStr = '#000'
+        for ch in templateStr:
+            if key:
+                num = int(ch)
+                if num in numbers:
+                    fluid = bblInit.fluidCodes[num-1]
+                    colorStr = fluid.labelColor.name()
+                    expression = ''
+                    if fluid.inPercent and len(sums) > 0:
+                        expression = '"{0}{1}"/({2}) * 100.0'.format(fluid.code, scaleType, sums)
+                    else:
+                        expression = '"{0}{1}" * {2}'.format(fluid.code, scaleType, multiplier)
+                    formattedExpr = 'format_number({0}, {1})'.format(expression, decimals)
+                    if not showZero:
+                        formattedExpr = "if({0} != 0, format('{1}%1', {2}), '')".format(expression, labelStr, formattedExpr)
+                    else:
+                        formattedExpr = "format('{0} %1', {1})".format(labelStr, formattedExpr)
+                    label = {}
+                    label['expName'] = str(nameCounter) + '_labexpression'
+                    nameCounter += 1
+                    label['expression'] = formattedExpr
+                    label['color'] = colorStr
+                    label['showZero'] = False
+                    label['isNewLine'] = False
+                    label['percent'] = False
+                    label['scale'] = 1.0
+                    label['decimals'] = 0
+                    labels.append(label)
+
+                labelStr = ''
+                key = False
+            elif ch == '%':
+                key = True
+            else:
+                labelStr += ch
+
+        # for idx, v in enumerate(fluids):
+        #     code = '%' + str(idx + 1)
+        #     if v:
+        #         fluid = bblInit.fluidCodes[idx]
+        #
+        #         colorStr = fluid.labelColor.name()
+        #         if fluid.inPercent:
+        #             attr = 'format_number("{0}{1}" / ({2}) * 100.0, {3})'.format(fluid.code, scaleType, sums, decimals)
+        #             expression = '<span><font color="{0}">%{1}%</font></span>'.format(colorStr, len(attributes) + 1)
+        #         else:
+        #             attr = 'format_number("{0}{1}" * {2}, {3})'.format(fluid.code, scaleType, multiplier, decimals)
+        #             expression = '<span><font color="{0}">%{1}</font></span>'.format(colorStr, len(attributes) + 1)
+        #
+        #         if code in templateStr:
+        #             templateStr = templateStr.replace(code, expression)
+        #             attributes.append(attr)
+        #     else:
+        #         templateStr = templateStr.replace(code, '')
+        # for idx, v in enumerate(fluids):
+        #     code = '%' + str(idx + 1)
+        #     if not v:
+        #         templateStr = templateStr.replace(code, '')
+        #
+        # templateStr = re.sub('^[\,\:\;\.\-/\\_ ]+|[\,\:\;\.\-/\\_ ]+$', '', templateStr)
+
+
+
+
+        # labels.append(label)
+
+        return labels
 
 
     def scaleValueEditingFinished(self):
@@ -931,6 +1117,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
         self.mSymbolSize.setValue(float(self.currentLayer.customProperty("defaultSymbolSize", 4.0)))
         self.useScaleGroupBox.setChecked(int(self.currentLayer.customProperty("useScaleGroupBox", "0")) == 1)
+        self.templateExpression.setText(self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()))
 
         count = int(self.currentLayer.customProperty("diagrammCount", 0))
         if count < 1:
@@ -949,7 +1136,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         self.labelSizeEdit.setValue(float(self.currentLayer.customProperty('labelSize', self.labelSizeEdit.value())))
         self.decimalEdit.setValue(int(self.currentLayer.customProperty('decimal', self.decimalEdit.value())))
-        self.templateExpression.setText(self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()))
+
         self.showLineouts.setChecked(int(self.currentLayer.customProperty('showLineout')))
         self.dailyProduction.setChecked(int(self.currentLayer.customProperty('dailyProduction')))
         for fl in bblInit.fluidCodes:

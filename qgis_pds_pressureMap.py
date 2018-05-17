@@ -15,7 +15,7 @@ import ast
 
 from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
-from QgisPDS.utils import to_unicode
+from utils import *
 from QgisPDS.qgis_pds_production import QgisPDSProductionDialog
 from bblInit import *
 from tig_projection import *
@@ -43,6 +43,7 @@ class QgisPDSPressure(QgisPDSProductionDialog):
 
 
     def createQgisLayer(self):
+        layerName = 'Pressure'
         self.uri = "Point?crs={}".format(self.proj4String)
         self.uri += '&field={}:{}'.format(self.attrWellId, "string")
         self.uri += '&field={}:{}'.format(self.attrPressure, "double")
@@ -54,14 +55,16 @@ class QgisPDSPressure(QgisPDSProductionDialog):
         self.uri += '&field={}:{}'.format("LablY", "double")
         self.uri += '&field={}:{}'.format("LablOffX", "double")
         self.uri += '&field={}:{}'.format("LablOffY", "double")
-        self.layer = QgsVectorLayer(self.uri, "Pressure", "memory")
+        self.layer = QgsVectorLayer(self.uri, layerName, "memory")
 
         if self.layer is None:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(
                 u'Error create pressure layer'), QtGui.QMessageBox.Ok)
             return
 
-        self.layer.startEditing()
+        self.layer = memoryToShp(self.layer, self.project['project'], layerName)
+
+        # self.layer.startEditing()
 
         self.layer.setCustomProperty("qgis_pds_type", "pds_wells")
         self.layer.setCustomProperty("pds_project", str(self.project))
@@ -79,7 +82,7 @@ class QgisPDSPressure(QgisPDSProductionDialog):
         palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', 'LablX')
         palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', 'LablY')
         palyr.writeToLayer(self.layer)
-        self.layer.commitChanges()
+        # self.layer.commitChanges()
 
 
     def createProductionLayer(self):
