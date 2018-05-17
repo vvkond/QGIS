@@ -58,12 +58,32 @@ import json
 
 class QgisPDS(QObject):
     """QGIS Plugin Implementation."""
+    @property
+    def currentProject(self):
+        if self._currentProject is None:
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'No current PDS project'), QtGui.QMessageBox.Ok)
+            #try:
+            #    projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+            #    proj = ast.literal_eval(projStr)
+            #    if proj is not None:
+            #        return self.currentProject
+            #    else:
+            #        QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'No current PDS project'), QtGui.QMessageBox.Ok)
+            #except:
+            #    QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'No current PDS project'), QtGui.QMessageBox.Ok)
+        else:
+            return self._currentProject
+    @currentProject.setter
+    def currentProject(self,value):
+        self._currentProject=value
 
     def __init__(self, _iface):
         """Constructor. """
         QObject.__init__(self)
         # Save reference to the QGIS interface
         self.iface = _iface
+        
+        self._currentProject = None
 
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
