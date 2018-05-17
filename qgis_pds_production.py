@@ -573,7 +573,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             if sql:
                 sql += " union all "
                 
-            sql += (" select production.data_value,"
+            sql += (" select /*+ FIRST_ROWS(5) */"
+                    " production.data_value,"
                     " production.start_time,"
                     " production.end_time,"
                     " " + self.to_oracle_char("production.start_time") + ","
