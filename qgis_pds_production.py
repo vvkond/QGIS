@@ -482,14 +482,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         attrVol =  QgisPDSProductionDialog.attrFluidVolume(fl.code)
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass), feature.attribute(attrMass))
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol), feature.attribute(attrVol))
-                    #--- add new well if need
                     num +=1
-                    if not num:                 #--- well not present in base layer
-                        if not is_layerfiltered:  #--- if layer without filter provider,than allow add new records
-                            if is_needaddall or is_rowwithprod(feature):       #--- Add All wells checked or new row have production
-                                self.layer.addFeatures([feature])
-                        else:
-                            pass
+                #--- add new well if need
+                if not num:                 #--- well not present in base layer
+                    if not is_layerfiltered:  #--- if layer without filter provider,than allow add new records
+                        if is_needaddall or is_rowwithprod(feature):       #--- Add All wells checked or new row have production
+                            self.layer.addFeatures([feature])
+                    else:
+                        pass
                 self.layer.commitChanges()  #--- commit each row
                 self.layer.startEditing()   #--- and start edit again
                 
