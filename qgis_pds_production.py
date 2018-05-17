@@ -47,6 +47,18 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     
 class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
+
+    @property
+    def db(self):
+        if self._db is None:
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'No current PDS project'), QtGui.QMessageBox.Ok)            
+        else:
+            return self._db
+    @db.setter
+    def db(self,val):
+        self._db=val
+
+
     def __init__(self, project, iface, isCP=True, _layer=None, parent=None):
         """Constructor."""
         super(QgisPDSProductionDialog, self).__init__(parent)       
@@ -58,6 +70,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         self.initialised = False
         self.layer = _layer
+        self._db = None
 
         self.reservoirsListWidget.setEnabled(self.layer is None)
         
@@ -169,6 +182,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             " and reservoir_part.reservoir_part_s = equipment_insl.facility_s "
             " and p_equipment_fcl.bsasc_source = 'order no'")
 
+        QgsMessageLog.logMessage("Execute readReservoirOrders: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
         if result is not None:
             for reservoirId, reservoirNumber in result:
