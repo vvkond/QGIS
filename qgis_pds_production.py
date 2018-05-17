@@ -18,6 +18,7 @@ from QgisPDS.connections import create_connection
 from utils import *
 from bblInit import *
 from tig_projection import *
+import time
 
 
 class BBL_LIFT_METHOD:
@@ -46,6 +47,18 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     
 class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
+
+    @property
+    def db(self):
+        if self._db is None:
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'No current PDS project'), QtGui.QMessageBox.Ok)            
+        else:
+            return self._db
+    @db.setter
+    def db(self,val):
+        self._db=val
+
+
     def __init__(self, project, iface, isCP=True, _layer=None, parent=None):
         """Constructor."""
         super(QgisPDSProductionDialog, self).__init__(parent)       
@@ -57,6 +70,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         self.initialised = False
         self.layer = _layer
+        self._db = None
 
         self.reservoirsListWidget.setEnabled(self.layer is None)
         
@@ -181,6 +195,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             " and reservoir_part.reservoir_part_s = equipment_insl.facility_s "
             " and p_equipment_fcl.bsasc_source = 'order no'")
 
+        QgsMessageLog.logMessage("Execute readReservoirOrders: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
         if result is not None:
             for reservoirId, reservoirNumber in result:
@@ -401,8 +416,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         #self.iface.messageBar().pushMessage(self.tr("Error"), self.tr(str(e)), level=QgsMessageBar.CRITICAL)
      
         
-    #Create production layer
+    #===========================================================================
+    # Create production layer
+    #===========================================================================
     def readProduction(self):
+        time_start = time.time()
         
         self.mPhaseFilterText = ""
         
@@ -423,20 +441,34 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.mSelectedReservoirsText = self.getReservoirsFilter()
         self.getWells(self.mSelectedReservoirsText)
 
+        QgsMessageLog.logMessage("prod config read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        time_start=time.time()
         
+  
         for pdw in self.mProductionWells:
             self.readWellProduction(pdw)
+        QgsMessageLog.logMessage("prod read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        time_start=time.time()
 
         for pdw in self.mProductionWells:
             self.calcBubbles(pdw)
+        QgsMessageLog.logMessage("bubble calculated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        time_start=time.time()
 
         liftMethodIdx = self.layer.fieldNameIndex(self.attrLiftMethod)
 
-        if self.mAddAllWells.isChecked(): #Load all project wells in layer
-            self._readAllWells()
+        self._readAllWells()
+        QgsMessageLog.logMessage("well read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        time_start=time.time()
+
+        is_refreshed = False                                      #--- id that layer have refreshed records
+        is_layerfiltered=len(self.layer.subsetString().strip())>1 #--- if layer with filter provider allowed only update production/coordinates.
+        is_needupdcoord=self.mUpdateWellLocation.isChecked()
+        is_needaddall=self.mAddAllWells.isChecked()
+        is_rowwithprod=lambda feature:feature.attribute(self.attrSymbol)!=71
+        QgsMessageLog.logMessage("is_layerfiltered={};is_needupdcoord={};is_needaddall={};".format(is_layerfiltered,is_needupdcoord,is_needaddall), tag="QgisPDS.readProduction")
 
         #Refresh or add feature
-        refreshed = False
         with edit(self.layer):
             
             ############################
@@ -464,74 +496,60 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
 
                 num = 0
-                for f in searchRes:
-                    refreshed = True
-                    if self.mUpdateWellLocation.isChecked():
+                for f in searchRes:             #--- iterate over each row in base layer for current well
+                    is_refreshed = True
+                    #--- update coord if checked
+                    if is_needupdcoord:                                 #--- update coord if checked
                         self.layer.changeGeometry(f.id(), feature.geometry())
-                        
-                    for (c_old_name,c_old_idx,c_new_name) in attr_2_upd:
+                    #--- update well attribute
+                    for (c_old_name,c_old_idx,c_new_name) in attr_2_upd: #--- update well special attribute @see:'attr_2_upd'
                         if f.attribute(c_old_name)!=feature.attribute(c_new_name):
-                            #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
-                            self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))
-
-                    if liftMethodIdx >= 0:
+                            self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))  #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
+                    if liftMethodIdx >= 0:                               #--- update liftmetho id
                         self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(self.attrLiftMethod))
-
-                    for fl in bblInit.fluidCodes:
+                    for fl in bblInit.fluidCodes:                        #--- update production attributes
                         attrMass = bblInit.attrFluidMass(fl.code)
                         attrVol =  bblInit.attrFluidVolume(fl.code)
-
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass), feature.attribute(attrMass))
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol), feature.attribute(attrVol))
-                    num = num + 1
-                if not num:
-                    self.layer.addFeatures([feature])
-                self.layer.commitChanges()  # -commit each row
-                self.layer.startEditing()   # -and start edit again
-                    
+                    num +=1
+                #--- add new well if need
+                if not num:                 #--- well not present in base layer
+                    if not is_layerfiltered:  #--- if layer without filter provider,than allow add new records
+                        if is_needaddall or is_rowwithprod(feature):       #--- Add All wells checked or new row have production
+                            self.layer.addFeatures([feature])
+                    else:
+                        pass
+                self.layer.commitChanges()  #--- commit each row
+                self.layer.startEditing()   #--- and start edit again
+        #--- if layer filtered and selected Add All remove filter,add all,set back filter
+        if is_layerfiltered and is_needaddall:
+            f_str=self.layer.subsetString()
+            self.layer.setSubsetString("")
+            with edit(self.layer):
+                for feature in self.mWells.values(): 
+                    args = (self.attrWellId, feature.attribute(self.attrWellId))
+                    expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in base layer record with that WELL_ID
+                    searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
+                    for f in searchRes:
+                        break
+                    else:
+                        self.layer.addFeatures([feature])
+                        self.layer.commitChanges()  #--- commit each row
+                        self.layer.startEditing()   #--- and start edit again
+            self.layer.setSubsetString(f_str)
 
-            ############################
-            ####### RESTORE BLOCK
-            ############################
-#             for feature in self.mWells.values():                                 #--- iterate over each record in result
-#                 args = (self.attrWellId, feature.attribute(self.attrWellId))
-#                 expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in layer record with that WELL_ID
-#                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
-# 
-#                 num = 0
-#                 for f in searchRes:
-#                     refreshed = True
-#                     if self.mUpdateWellLocation.isChecked():
-#                         self.layer.changeGeometry(f.id(), feature.geometry())
-# 
-#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrDays)      , feature.attribute(self.attrDays))
-#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbol)    , feature.attribute(self.attrSymbol))
-#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbolId)  , feature.attribute(self.attrSymbolId))
-#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(self.attrSymbolName), feature.attribute(self.attrSymbolName))
-#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex('ResState')         , feature.attribute('ResState'))
-#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex('MovingRes')        , feature.attribute('MovingRes'))
-#                     self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex('MultiProd')        , feature.attribute('MultiProd'))
-#                     if liftMethodIdx >= 0:
-#                         self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(self.attrLiftMethod))
-# 
-#                     for fl in bblInit.fluidCodes:
-#                         attrMass = QgisPDSProductionDialog.attrFluidMass(fl.code)
-#                         attrVol = QgisPDSProductionDialog.attrFluidVolume(fl.code)
-# 
-#                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass), feature.attribute(attrMass))
-#                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol), feature.attribute(attrVol))
-#                     num = num + 1
-#                 if not num:
-#                     self.layer.addFeatures([feature])
-
+        QgsMessageLog.logMessage("atr updated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        time_start=time.time()
                     
-                        
-        if refreshed:
-            self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(self.layer.name()), duration=10)
+        if is_refreshed:
+            self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(self.layer.name()), duration=4)
         
         self.writeSettings()
 
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def setWellAttribute(self, name, attr, value):
         feature = self.mWells[name]
         feature.setAttribute(attr, value)
@@ -579,14 +597,19 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMass(fl.code), sumMass[i])
             self.setWellAttribute(prodWell.name, bblInit.attrFluidVolume(fl.code), sumVols[i])
 
-     
+     #==========================================================================
+     # @todo: need speedup
+     #==========================================================================
     def readWellProduction(self, prodWell):
         TableUnit = namedtuple('TableUnit', ['table', 'unit'])
         prodTables = [TableUnit("p_std_vol_lq", "Volume"), 
                         TableUnit("p_std_vol_gas", "Volume"), 
                         TableUnit("p_q_mass_basis", "Mass")]
+        time_start=time.time()
 
         self.bblCalcReservoirMovingAndMultipleReservoirProduction(prodWell)
+        QgsMessageLog.logMessage("bblCalcReservoirMovingAndMultipleReservoirProduction  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+        time_start=time.time()
         
         sql = ""
         i = 0
@@ -594,7 +617,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             if sql:
                 sql += " union all "
                 
-            sql += (" select production.data_value,"
+            sql += (" select /*+ FIRST_ROWS(5) */"
+                    " production.data_value,"
                     " production.start_time,"
                     " production.end_time,"
                     " " + self.to_oracle_char("production.start_time") + ","
@@ -636,7 +660,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 sql += " and production.bsasc_source in ('" + "','".join(self.mPhaseFilter) + "')"
         
         sql += " order by start_time, end_time"
+        QgsMessageLog.logMessage("Execute readWellProduction: {}\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
+        QgsMessageLog.logMessage("query in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+        time_start=time.time()
+        
 
         if result is None: 
             return
@@ -644,7 +672,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         fluids = [f.componentId for f in bblInit.fluidCodes]
         product = None
         useLiftMethod = False
-        for prod, s1, e1, start_time, end_time, componentId, unitSet, time in result:
+        for prod, s1, e1, start_time, end_time, componentId, unitSet, wtime in result:
             stadat = QDateTime.fromString(start_time, self.dateFormat)
             enddat = QDateTime.fromString(end_time, self.dateFormat)
 
@@ -656,7 +684,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     NeedProd = product.stadat!=stadat or product.enddat!=enddat
 
                 if product is None or NeedProd:
-                    product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, time/86400.0)
+                    product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, wtime/86400.0)
                     prodWell.prods.append(product)
 
                 if componentId in fluids:
@@ -667,14 +695,18 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         product.volumeVals[PhaseIndex] += prod
                 else:
                     QgsMessageLog.logMessage( self.tr("No fluid for ") + componentId)
+        QgsMessageLog.logMessage("data parse in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+        time_start=time.time()
 
         if useLiftMethod:
             liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
             if liftMethod in bblInit.bblLiftMethods.keys():
                 prodWell.liftMethod = liftMethod
-
+            QgsMessageLog.logMessage("lift method in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
         
-    #Load production wells
+    #===========================================================================
+    # Load production wells
+    #===========================================================================
     def getWells(self, cmpl_id):
         if self.isCurrentProd:
             sql = ("SELECT DISTINCT wellbore.WELL_ID"
@@ -736,7 +768,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 "      and reservoir_part.reservoir_part_s = res.ftr_s"
                 "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
                 "      and wellbore.wellbore_s=wellbore_intv.wellbore_s")
-
+        QgsMessageLog.logMessage("Execute getWells: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
 
         for wl in result:
@@ -796,7 +828,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     #         self.loadWellByName(to_unicode("".join(wl)))
     
     
-    #Load well by name
+    #===========================================================================
+    # Load well by name
+    #===========================================================================
     def loadWellByName(self, well_name):
         sql = ("SELECT db_sldnid FROM tig_well_history "
                 "WHERE rtrim(tig_latest_well_name) = '" + well_name + "' "
