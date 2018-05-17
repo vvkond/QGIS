@@ -8,7 +8,7 @@ SELECT distinct
     wh.TIG_LATITUDE,
     wh.TIG_LONGITUDE,
     wh.TIG_SLOT_NUMBER,
-    ii.TIG_LOGIN_NAME "Owner",
+    ii.login_name "Owner",
     TO_CHAR((TO_DATE('01-01-1970', 'DD-MM-YYYY') +(wh.DB_INSTANCE_TIME_STAMP / 86400)), 'DD-MM-YYYY HH24:MI:SS') AS "Created"
 FROM
     tig_well_interval vi,
@@ -16,7 +16,7 @@ FROM
     tig_interval i,
     tig_zonation z,
     tig_variable v,
-    tig_interpreter ii
+    (select TIG_USER_ID, max(TIG_LOGIN_NAME) as login_name from tig_interpreter group by TIG_USER_ID) ii
 WHERE
     wh.DB_SLDNID = vi.TIG_WELL_SLDNID
     AND vi.TIG_INTERVAL_SLDNID = i.DB_SLDNID

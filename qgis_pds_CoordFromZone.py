@@ -25,8 +25,6 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
 
         self.mParameterFrame.setVisible(False)
         self.mWellsFrame.setVisible(False)
-        self.mUseElevation.setVisible(False)
-        self.mUseErosion.setVisible(False)
 
         self.plugin_dir = os.path.dirname(__file__)
         self.iface = _iface
