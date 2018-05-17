@@ -34,5 +34,6 @@
         <file>list.png</file>
         <file>checked_checkbox.png</file>
         <file>unchecked_checkbox.png</file>
+        <file>toggle.png</file>
     </qresource>
 </RCC>

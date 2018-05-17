@@ -19,6 +19,7 @@ from qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 from qgis_pds_zoneparams import QgisPDSZoneparamsDialog
 from qgis_pds_WellFilterSetup import QgisPDSWellFilterSetupDialog
 from qgis_pds_templateList import QgisPDSTemplateListDialog
+from qgis_pds_wellsModel import *
 
 class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
     def __init__(self, _project, _iface, parent=None):
@@ -26,14 +27,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         if _project:
             self.scheme = _project['project']
 
-        self.wellFilterActive = False
-        self.wellListActive = False
         self.wellFilter = {}
         self.wellList = []
         self.wellListId = -1
         self.isInitialized = False
-
-        self.restoreFilter()
 
         """Constructor."""
         super(QgisPDSZonationsDialog, self).__init__(_project, _iface, None, parent)
@@ -42,14 +39,15 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         if self.scheme:
             self.setWindowTitle(self.windowTitle() + ' - ' + self.scheme)
 
+        self.restoreFilter()
+
         self.mParameterFrame.setVisible(True)
         self.mWellsFrame.setVisible(True)
         self.mWellFilterToolButton.setIcon(QIcon(':/plugins/QgisPDS/mActionFilter.png'))
-        self.mSortToolButton.setIcon(QIcon(':/plugins/QgisPDS/sort_ascend.png'))
         self.mWellListToolButton.setIcon(QIcon(':/plugins/QgisPDS/list.png'))
         self.mSelectAll.setIcon(QIcon(':/plugins/QgisPDS/checked_checkbox.png'))
         self.mUnselectAll.setIcon(QIcon(':/plugins/QgisPDS/unchecked_checkbox.png'))
-        self.sortDirection = None
+        self.mToggleSelected.setIcon(QIcon(':/plugins/QgisPDS/toggle.png'))
 
         filterMenu = QMenu(self)
         filterMenu.addAction(self.actionSetupFilter)
@@ -68,22 +66,32 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         selectedParameters = QSettings().value("/PDS/Zonations/SelectedParameters", [])
         self.selectedParameters = [int(z) for z in selectedParameters]
 
-        self.mWellFilterToolButton.setChecked(self.wellFilterActive)
-        self.mWellListToolButton.setChecked(self.wellListActive)
-
         self.fillParameters()
 
         self.isInitialized = True
         self.getWells()
-        self.setupWellFilter(True)
+
+        headerData = [self.tr('Well id'), self.tr('Well name'), self.tr('Full name'),
+                      self.tr('Operator'), self.tr('API number'), self.tr('Location'),
+                      self.tr('Latitude'), self.tr('Longitude'), self.tr('Slot number'),
+                      self.tr('Created by'), self.tr('Updated')]
+        self.wellItemModel = WellsItemsModel(headerData, 1, self)
+        self.wellItemModel.setModelData(self.wellList)
+
+        self.wellItemProxyModel = WellsItemsProxyModel(self)
+        self.wellItemProxyModel.setSourceModel(self.wellItemModel)
+        self.wellItemProxyModel.setFilter(self.wellFilter)
+        self.wellItemProxyModel.setFilterActive(self.mWellFilterToolButton.isChecked())
+        self.mWellsTreeView.setModel(self.wellItemProxyModel)
+
 
     def on_zoneListWidget_itemSelectionChanged(self):
         if not self.isInitialized:
             return
 
-        if not self.wellListActive:
+        if not self.mWellListToolButton.isChecked():
             self.getZoneWells()
-            self.setupWellFilter(True)
+            self.wellItemModel.setModelData(self.wellList)
 
 
     def process(self):
@@ -143,15 +151,13 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
 
     def execute(self, zoneDef, paramId):
-        # well_ids = []
-        # for wells in self.mWellsListWidget.selectedItems():
-        #     well_ids.append(wells.data(Qt.UserRole))
-
         sql = self.get_sql('ZonationParams.sql')
-        for numWell in xrange(self.mWellsListWidget.count()):
-            well = self.mWellsListWidget.item(numWell)
-            if well.checkState() == Qt.Checked:
-                id = well.data(Qt.UserRole)
+
+        for numRow in xrange(self.wellItemProxyModel.rowCount()):
+            index = self.wellItemProxyModel.index(numRow, 0)
+            checked = self.wellItemProxyModel.data(index, Qt.CheckStateRole)
+            if checked == Qt.Checked:
+                id = self.wellItemProxyModel.data(index, Qt.UserRole)
                 records = self.db.execute(sql, well_id=id, parameter_id=paramId, zonation_id=zoneDef[1], zone_id=zoneDef[0])
                 if records:
                     for input_row in records:
@@ -165,20 +171,6 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                             feat.setAttributes([wellId, float(value)])
                             self.layer.addFeatures([feat])
 
-        # records = self.db.execute(sql, parameter_id=paramId, zonation_id=zoneDef[1], zone_id=zoneDef[0])
-        # if records:
-        #     for input_row in records:
-        #         x,y,value = self.get_zone_coord_value(input_row, zoneDef[1], zoneDef[0])
-        #         if x is not None and y is not None:
-        #             wellId = input_row[self.well_name_column_index]
-        #             sldnid = input_row[self.well_id_column_index]
-        #             if not len(well_ids) or sldnid in well_ids:
-        #                 pt = QgsPoint(x, y)
-        #                 l = QgsGeometry.fromPoint(pt)
-        #                 feat = QgsFeature(self.layer.fields())
-        #                 feat.setGeometry(l)
-        #                 feat.setAttributes([wellId, float(value)])
-        #                 self.layer.addFeatures([feat])
 
     def getNextZonationDepth(self, wellId, zonationId, zoneId):
         sql = self.get_sql('ZonationErosion.sql')
@@ -440,8 +432,11 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             zone_id = zoneDef[0]
 
         well_ids = []
-        for wells in self.mWellsListWidget.selectedItems():
-            well_ids.append(wells.data(Qt.UserRole))
+        for numRow in xrange(self.wellItemProxyModel.rowCount()):
+            index = self.wellItemProxyModel.index(numRow, 0)
+            checked = self.wellItemProxyModel.data(index, Qt.CheckStateRole)
+            if checked == Qt.Checked:
+                well_ids.append(self.wellItemProxyModel.data(index, Qt.UserRole))
 
         dlg = QgisPDSZoneparamsDialog(self.project, self.iface, zonation_id, zone_id, well_ids, self)
         if dlg.exec_():
@@ -449,22 +444,13 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             QSettings().setValue("/PDS/Zonations/SelectedParameters", self.selectedParameters)
             self.fillParameters()
 
-    def on_mSortToolButton_pressed(self):
-        if self.sortDirection == None or self.sortDirection == 2:
-            self.mSortToolButton.setIcon(QIcon(':/plugins/QgisPDS/sort_descend.png'))
-            self.sortDirection = 1
-            self.mWellsListWidget.sortItems(Qt.DescendingOrder)
-        else:
-            self.mSortToolButton.setIcon(QIcon(':/plugins/QgisPDS/sort_ascend.png'))
-            self.sortDirection = 2
-            self.mWellsListWidget.sortItems()
-
     def getWells(self):
-        if self.wellListActive:
+        if self.mWellListToolButton.isChecked() and self.wellListId > 0:
             dlg = QgisPDSTemplateListDialog(self.db, self.wellListId)
             self.wellList = dlg.getWells(self.wellListId)
         else:
             self.getZoneWells()
+        return
 
     def getZoneWells(self):
         self.wellList = []
@@ -476,47 +462,38 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             zonation_id = zoneDef[1]
             zone_id = zoneDef[0]
 
+        if not zonation_id:
+            return
+
         sql = self.get_sql('ZonationParams_well.sql')
         records = self.db.execute(sql, zonation_id=zonation_id, zone_id=zone_id)
         if records:
-            for input_row in records:
+            for rec in records:
                 well = []
-                well.append(input_row[0]) #Name
-                well.append(input_row[1])  #ID
+                well.append(int(rec[0]))
+                well.append(rec[1])
+                well.append(rec[2])
+                well.append(rec[3])
+                well.append(rec[4])
+                well.append(rec[5])
+                well.append(float(rec[6]))
+                well.append(float(rec[7]))
+                well.append(rec[8])
+                well.append(rec[9])
+                dt = QDateTime.fromString(rec[10], 'dd-MM-yyyy HH:mm:ss')
+                well.append(dt)
                 self.wellList.append(well)
 
 
-    def setupWellFilter(self, onlyApply=False):
-        dlg = QgisPDSWellFilterSetupDialog(self.project, self.iface, self)
-        dlg.setFilter(self.wellFilter)
-
-        if onlyApply:
-            self.applyFilter(dlg, False)
-        else:
-            if dlg.exec_():
-                self.applyFilter(dlg, True, True)
-
     def applyFilter(self, sender, needSave, forceFilter = False):
-        self.mWellsListWidget.clear()
-
+        self.wellFilter = sender.getFilter()
+        self.wellItemProxyModel.setFilter(self.wellFilter)
         if forceFilter:
-            self.setWellFilterOnOff(True)
+            self.mWellFilterToolButton.setChecked(True)
+            self.wellItemProxyModel.setFilterActive(True)
 
-        for well in self.wellList:
-            well_id = well[1]
-            useWell = True
-            if self.wellFilterActive:
-                useWell = sender.checkWell(self.db, well_id)
+        self.saveFilter()
 
-            if useWell:
-                item = QListWidgetItem(well[0])
-                item.setData(Qt.UserRole, well_id)
-                item.setCheckState(Qt.Checked)
-                self.mWellsListWidget.addItem(item)
-
-        if needSave:
-            self.wellFilter = sender.getFilter()
-            self.saveFilter()
 
     def saveFilter(self):
         try:
@@ -524,10 +501,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             QSettings().setValue(varName, str(self.wellFilter))
 
             varName = '/PDS/Zonations/wellFilterActive/v' + self.scheme
-            QSettings().setValue(varName, 'True' if self.wellFilterActive else 'False')
+            QSettings().setValue(varName, 'True' if self.mWellFilterToolButton.isChecked() else 'False')
 
             varName = '/PDS/Zonations/wellListActive/v' + self.scheme
-            QSettings().setValue(varName, 'True' if self.wellListActive else 'False')
+            QSettings().setValue(varName, 'True' if self.mWellListToolButton.isChecked() else 'False')
 
             varName = '/PDS/Zonations/wellListId/v' + self.scheme
             QSettings().setValue(varName, self.wellListId)
@@ -535,47 +512,50 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             QgsMessageLog.logMessage('Save WellFilter: ' + str(e), 'QGisPDS')
 
     def restoreFilter(self):
+        self.mWellFilterToolButton.blockSignals(True)
+        self.mWellListToolButton.blockSignals(True)
         try:
             varName = '/PDS/Zonations/WellFilter/v' + self.scheme
             filterStr = QSettings().value(varName, '{}')
             self.wellFilter = ast.literal_eval(filterStr)
 
             varName = '/PDS/Zonations/wellFilterActive/v' + self.scheme
-            self.wellFilterActive = QSettings().value(varName, 'False') == 'True'
+            self.mWellFilterToolButton.setChecked(QSettings().value(varName, 'False') == 'True')
 
             varName = '/PDS/Zonations/wellListActive/v' + self.scheme
-            self.wellListActive = QSettings().value(varName, 'False') == 'True'
+            self.mWellListToolButton.setChecked(QSettings().value(varName, 'False') == 'True')
 
             varName = '/PDS/Zonations/wellListId/v' + self.scheme
-            self.wellListId = QSettings().value(varName, "0")
+            self.wellListId = int(QSettings().value(varName, "0"))
         except Exception as e:
             QgsMessageLog.logMessage('Restore WellFilter: ' + str(e), 'QGisPDS')
 
+        self.mWellFilterToolButton.blockSignals(False)
+        self.mWellListToolButton.blockSignals(False)
+
 
     @pyqtSlot(bool)
-    def on_mWellFilterToolButton_clicked(self, checked):
-        self.setWellFilterOnOff(checked)
-        self.getWells()
-        self.setupWellFilter(True)
+    def on_mWellFilterToolButton_toggled(self, checked):
+        self.wellItemProxyModel.setFilterActive(checked)
         self.saveFilter()
 
     @pyqtSlot(bool)
-    def on_mWellListToolButton_clicked(self, checked):
-        self.setWellListrOnOff(checked)
-        self.getWells()
-        self.setupWellFilter(True)
-        self.saveFilter()
-
-    def setWellFilterOnOff(self, on):
-        self.mWellFilterToolButton.setChecked(on)
-        self.wellFilterActive = on
-
-    def setWellListrOnOff(self, on):
-        self.mWellListToolButton.setChecked(on)
-        self.wellListActive = on
+    def on_mWellListToolButton_toggled(self, checked):
+        if self.wellListId > 0:
+            self.getWells()
+            self.wellItemModel.setModelData(self.wellList)
+            self.saveFilter()
 
     def selectWellFilter(self):
-        self.setupWellFilter()
+        dlg = QgisPDSWellFilterSetupDialog(self.project, self.iface, self)
+        dlg.setFilter(self.wellFilter)
+        if dlg.exec_():
+            self.wellFilter = dlg.getFilter()
+            self.saveFilter()
+            self.wellItemProxyModel.setFilter(self.wellFilter)
+            self.wellItemProxyModel.setFilterActive(True)
+            self.mWellFilterToolButton.setChecked(True)
+        del dlg
 
     def selectWellList(self):
         dlg = QgisPDSTemplateListDialog(self.db, self.wellListId, False, self)
@@ -583,19 +563,27 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             self.wellListId = dlg.getListId()
             if self.wellListId:
                 self.wellList = dlg.getWells(self.wellListId)
-                self.setupWellFilter(True)
-                self.setWellListrOnOff(True)
+                self.mWellListToolButton.setChecked(True)
                 self.saveFilter()
+                self.wellItemModel.setModelData(self.wellList)
         del dlg
 
     @pyqtSlot()
     def on_mSelectAll_clicked(self):
-        for numWell in xrange(self.mWellsListWidget.count()):
-            well = self.mWellsListWidget.item(numWell)
-            well.setCheckState(Qt.Checked)
+        self.wellItemModel.setCheckstateAll(Qt.Checked)
 
     @pyqtSlot()
     def on_mUnselectAll_clicked(self):
-        for numWell in xrange(self.mWellsListWidget.count()):
-            well = self.mWellsListWidget.item(numWell)
-            well.setCheckState(Qt.Unchecked)
+        self.wellItemModel.setCheckstateAll(Qt.Unchecked)
+
+    @pyqtSlot()
+    def on_mToggleSelected_clicked(self):
+        rows = self.mWellsTreeView.selectionModel().selectedRows(0)
+        if rows:
+            for r in rows:
+                state = self.mWellsTreeView.model().data(r, Qt.CheckStateRole)
+                if state == Qt.Checked:
+                    self.mWellsTreeView.model().setData(r, Qt.Unchecked, Qt.CheckStateRole)
+                else:
+                    self.mWellsTreeView.model().setData(r, Qt.Checked, Qt.CheckStateRole)
+                self.mWellsTreeView.model().dataChanged.emit(r, r)

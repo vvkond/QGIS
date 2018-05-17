@@ -26,7 +26,9 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
 
             self.setupUi(self)
 
-            self.tableWidget.horizontalHeader().restoreState(QSettings().value('/PDS/TemplateList/HeaderState'))
+            headerState = QSettings().value('/PDS/TemplateList/HeaderState')
+            if headerState:
+                self.tableWidget.horizontalHeader().restoreState(headerState)
 
             self.fillTableWidget()
 
@@ -100,14 +102,24 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
 
     def getWellNames(self, ids):
         result = []
+        sql = self.get_sql('well.sql')
         for id in ids:
-            sql = 'select TIG_LATEST_WELL_NAME from tig_well_history where DB_SLDNID = ' + str(id)
-            records = self.db.execute(sql)
+            records = self.db.execute(sql, well_id=id)
             if records:
                 for rec in records:
                     well = []
-                    well.append(rec[0])
-                    well.append(id)
+                    well.append(int(rec[0]))
+                    well.append(rec[1])
+                    well.append(rec[2])
+                    well.append(rec[3])
+                    well.append(rec[4])
+                    well.append(rec[5])
+                    well.append(float(rec[6]))
+                    well.append(float(rec[7]))
+                    well.append(rec[8])
+                    well.append(rec[9])
+                    dt = QDateTime.fromString(rec[10], 'dd-MM-yyyy HH:mm:ss')
+                    well.append(dt)
                     result.append(well)
                     break
 
