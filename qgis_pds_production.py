@@ -507,6 +507,22 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         pass
                 self.layer.commitChanges()  #--- commit each row
                 self.layer.startEditing()   #--- and start edit again
+        #--- if layer filtered and selected Add All remove filter,add all,set back filter
+        if is_layerfiltered and is_needaddall:
+            f_str=self.layer.subsetString()
+            self.layer.setSubsetString("")
+            with edit(self.layer):
+                for feature in self.mWells.values(): 
+                    args = (self.attrWellId, feature.attribute(self.attrWellId))
+                    expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in base layer record with that WELL_ID
+                    searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
+                    for f in searchRes:
+                        break
+                    else:
+                        self.layer.addFeatures([feature])
+                        self.layer.commitChanges()  #--- commit each row
+                        self.layer.startEditing()   #--- and start edit again
+            self.layer.setSubsetString(f_str)
                 
 
         QgsMessageLog.logMessage("att updated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.QgisPDSreadProduction")
