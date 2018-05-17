@@ -538,9 +538,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         self.layer.commitChanges()  #--- commit each row
                         self.layer.startEditing()   #--- and start edit again
             self.layer.setSubsetString(f_str)
-                
 
-        QgsMessageLog.logMessage("att updated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.QgisPDSreadProduction")
+        QgsMessageLog.logMessage("atr updated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
                     
         if is_refreshed:
