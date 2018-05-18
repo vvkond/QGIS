@@ -48,7 +48,6 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         self.mSelectAll.setIcon(QIcon(':/plugins/QgisPDS/checked_checkbox.png'))
         self.mUnselectAll.setIcon(QIcon(':/plugins/QgisPDS/unchecked_checkbox.png'))
         self.mToggleSelected.setIcon(QIcon(':/plugins/QgisPDS/toggle.png'))
-        self.mSaveWellList.setIcon(QIcon(':/plugins/QgisPDS/mActionFileSave.png'))
 
         self.zonationListWidget.itemSelectionChanged.connect(self.zonationListWidget_itemSelectionChanged)
 
