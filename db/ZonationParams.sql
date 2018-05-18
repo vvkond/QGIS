@@ -21,7 +21,9 @@ SELECT
     v.TIG_VARIABLE_REAL_MIN,
     v.TIG_VARIABLE_REAL_MAX,
     v.TIG_VARIABLE_REAL_NULL,
-    elev."Elevation"
+    elev."Elevation",
+    i.tig_interval_order,
+    i.DB_SLDNID
 FROM
     tig_well_interval vi,
     tig_well_history wh,
@@ -70,8 +72,9 @@ WHERE
     AND(z.DB_SLDNID = :zonation_id
     OR :zonation_id IS NULL)
     AND v.DB_SLDNID = :parameter_id
-    AND(i.DB_SLDNID = :zone_id
-    OR :zone_id IS NULL)
+--    AND(i.DB_SLDNID = :zone_id
+--    OR :zone_id IS NULL)
+    AND i.tig_interval_order >= :base_order
     AND v.TIG_VARIABLE_TYPE = 2
     AND cd.DB_SLDNID IN
     (SELECT
@@ -81,3 +84,5 @@ WHERE
     WHERE
         cd2.TIG_WELL_SLDNID = wh.DB_SLDNID
     )
+ORDER BY
+    i.tig_interval_order

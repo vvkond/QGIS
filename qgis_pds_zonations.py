@@ -49,6 +49,8 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         self.mUnselectAll.setIcon(QIcon(':/plugins/QgisPDS/unchecked_checkbox.png'))
         self.mToggleSelected.setIcon(QIcon(':/plugins/QgisPDS/toggle.png'))
 
+        self.zonationListWidget.itemSelectionChanged.connect(self.zonationListWidget_itemSelectionChanged)
+
         filterMenu = QMenu(self)
         filterMenu.addAction(self.actionSetupFilter)
         self.actionSetupFilter.triggered.connect(self.selectWellFilter)
@@ -85,14 +87,21 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         self.mWellsTreeView.setModel(self.wellItemProxyModel)
 
 
-    def on_zoneListWidget_itemSelectionChanged(self):
+    # def on_zoneListWidget_itemSelectionChanged(self):
+    #     if not self.isInitialized:
+    #         return
+    #
+    #     if not self.mWellListToolButton.isChecked():
+    #         self.getZoneWells()
+    #         self.wellItemModel.setModelData(self.wellList)
+
+    def zonationListWidget_itemSelectionChanged(self):
         if not self.isInitialized:
             return
 
         if not self.mWellListToolButton.isChecked():
             self.getZoneWells()
             self.wellItemModel.setModelData(self.wellList)
-
 
     def process(self):
         selectedZonations = []
@@ -101,9 +110,11 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             selectedZonations.append(int(si.data(Qt.UserRole)))
 
         sel = None
+        zoneName = ''
         for zones in self.zoneListWidget.selectedItems():
             sel = zones.data(Qt.UserRole)
             selectedZones.append(sel[0])
+            zoneName = zones.text()
 
         if sel is None:
             return
@@ -114,11 +125,12 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         if len(parts) > 0:
             layerName = parts[0]
 
+        zoneName = zoneName.replace('/', '_')
         if self.createLayer(layerName):
             with edit(self.layer):
                 self.execute(sel, paramId)
 
-            self.layer = memoryToShp(self.layer, self.project['project'], layerName)
+            self.layer = memoryToShp(self.layer, self.project['project'], layerName + '_' + zoneName)
             QgsMapLayerRegistry.instance().addMapLayer(self.layer)
 
         try:
@@ -137,6 +149,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             uri = "Point?crs={}".format(self.proj4String)
             uri += '&field={}:{}'.format(u'well_id', "string")
             uri += '&field={}:{}'.format(name, "double")
+            uri += '&field={}:{}'.format(u'interval', "string")
 
             self.layer = QgsVectorLayer(uri, name, "memory")
             # if self.layer:
@@ -153,24 +166,44 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
     def execute(self, zoneDef, paramId):
         sql = self.get_sql('ZonationParams.sql')
 
+        zone_id = zoneDef[0]
+        zoneOrder = self.getIntervalOrder(zone_id)
+        useErosion = self.mUseErosion.isChecked()
+
         for numRow in xrange(self.wellItemProxyModel.rowCount()):
             index = self.wellItemProxyModel.index(numRow, 0)
             checked = self.wellItemProxyModel.data(index, Qt.CheckStateRole)
             if checked == Qt.Checked:
                 id = self.wellItemProxyModel.data(index, Qt.UserRole)
-                records = self.db.execute(sql, well_id=id, parameter_id=paramId, zonation_id=zoneDef[1], zone_id=zoneDef[0])
+
+                # records = self.db.execute(sql, well_id=id, parameter_id=paramId, zonation_id=zoneDef[1], zone_id=zoneDef[0])
+                records = self.db.execute(sql, well_id=id, parameter_id=paramId, zonation_id=zoneDef[1], base_order=zoneOrder)
                 if records:
                     for input_row in records:
-                        x, y, value = self.get_zone_coord_value(input_row, zoneDef[1], zoneDef[0])
+                        x, y, value, intervalName, intervalId, topZoneValue = self.get_zone_coord_value(input_row, zoneDef[1], zoneDef[0])
                         if x is not None and y is not None:
-                            wellId = input_row[self.well_name_column_index]
-                            pt = QgsPoint(x, y)
-                            l = QgsGeometry.fromPoint(pt)
-                            feat = QgsFeature(self.layer.fields())
-                            feat.setGeometry(l)
-                            feat.setAttributes([wellId, float(value)])
-                            self.layer.addFeatures([feat])
+                            if useErosion or intervalId == zone_id:
+                                if topZoneValue and intervalId != zone_id:
+                                    value = topZoneValue
+                                    intervalName += ' erosion topTVD'
+                                wellName = input_row[self.well_name_column_index]
+                                pt = QgsPoint(x, y)
+                                l = QgsGeometry.fromPoint(pt)
+                                feat = QgsFeature(self.layer.fields())
+                                feat.setGeometry(l)
+                                feat.setAttributes([wellName, float(value), intervalName])
+                                self.layer.addFeatures([feat])
+                            break
 
+
+    def getIntervalOrder(self, intervalId):
+        result = 0
+        sql = 'select tig_interval_order from tig_interval where DB_SLDNID=' + str(intervalId)
+        records = self.db.execute(sql)
+        if records:
+            for rec in records:
+                result = rec[0]
+        return result
 
     def getNextZonationDepth(self, wellId, zonationId, zoneId):
         sql = self.get_sql('ZonationErosion.sql')
@@ -193,6 +226,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         return 8
 
     @cached_property
+    def interval_id_column_index(self):
+        return 24
+
+    @cached_property
     def zone_top_column_index(self):
         return 4
 
@@ -207,6 +244,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
     @cached_property
     def well_name_column_index(self):
         return 0
+
+    @cached_property
+    def interval_name_column_index(self):
+        return 2
 
     @cached_property
     def well_lng_column_index(self):
@@ -342,20 +383,17 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         value = None
         depth = None
 
-        _well_id = input_row[self.well_id_column_index]
-
-        useErosion = self.mUseErosion.isChecked()
+        intervalName = input_row[self.interval_name_column_index]
+        intervalId = input_row[self.interval_id_column_index]
+        erosionDepth = None
 
         if parameter_name == 'TopTVD':
-            if useErosion and (zone_top == 0 or zone_top > 1.0E+19):
-                zone_top = self.getNextZonationDepth(_well_id, zonationId, zoneId)
             depth = zone_top
             value = zone_top
         elif parameter_name == 'BotTVD':
-            if useErosion and (zone_bottom == 0 or zone_bottom > 1.0E+19):
-                zone_bottom = self.getNextZonationDepth(_well_id, zonationId, zoneId)
             depth = zone_bottom
             value = zone_bottom
+            erosionDepth = zone_top
         else:
             if zonation_param_value is None:
                 zonation_param_value = input_row[self.variable_dflt_column_index]
@@ -379,10 +417,18 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         tvd = read_floats(self.deviation_tvd_column_index)
 
         jp = None
+        jp1 = None
         lastIdx = len(x) - 1
         for ip in xrange(lastIdx):
             if md[ip] <= depth <= md[ip + 1]:
                 jp = ip
+            if erosionDepth:
+                if md[ip] <= erosionDepth <= md[ip + 1]:
+                    jp1 = ip
+
+        if not jp and lastIdx > 0:
+            jp = lastIdx - 1
+            jp1 = lastIdx - 1
 
         xPosition = 0
         yPosition = 0
@@ -393,11 +439,18 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
             if parameter_name in ['TopTVD', 'BotTVD']:
                 value = tvd[jp] + rinterp * (tvd[jp + 1] - tvd[jp]) - elevation
+
+            if erosionDepth:
+                rinterp = (erosionDepth - md[jp1]) / (md[jp1 + 1] - md[jp1])
+                erosionDepth = tvd[jp1] + rinterp * (tvd[jp1 + 1] - tvd[jp1]) - elevation
         elif depth >= md[lastIdx]:
+            QgsMessageLog.logMessage(input_row[self.well_name_column_index] + ': short deviation ', 'QGisPDS')
             xPosition = x[lastIdx]
             yPosition = y[lastIdx]
             if parameter_name in ['TopTVD', 'BotTVD']:
                 value = tvd[lastIdx] - elevation
+                if erosionDepth:
+                    erosionDepth = value
 
         lng = input_row[self.well_lng_column_index]
         lat = input_row[self.well_lat_column_index]
@@ -407,7 +460,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         ret_x = pt.x() + xPosition
         ret_y = pt.y() + yPosition
-        return (ret_x, ret_y, value)
+        return (ret_x, ret_y, value, intervalName, intervalId, erosionDepth)
 
 
     def fillParameters(self):
@@ -460,7 +513,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         for zones in self.zoneListWidget.selectedItems():
             zoneDef = zones.data(Qt.UserRole)
             zonation_id = zoneDef[1]
-            zone_id = zoneDef[0]
+            # zone_id = zoneDef[0]
 
         if not zonation_id:
             return
