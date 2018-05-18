@@ -98,6 +98,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QToolButton" name="mSaveWellList">
+             <property name="toolTip">
+              <string>Создать список скважин из отмеченных</string>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QToolButton" name="mWellListToolButton">
              <property name="toolTip">
               <string>Список скважин</string>
