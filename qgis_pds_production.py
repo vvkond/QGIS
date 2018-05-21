@@ -504,8 +504,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     #--- update coord if checked
                     if is_needupdcoord:                                 #--- update coord if checked
                         self.layer.changeGeometry(f.id(), feature.geometry())
-                        for (c_old_name,c_old_idx,c_new_name) in [[self.attrLatitude  ,cLat          ,  self.attrLatitude]
-                                                                  [self.attrLongitude ,cLong         ,  self.attrLongitude]
+                        for (c_old_name,c_old_idx,c_new_name) in [
+                                                                  [self.attrLatitude  ,cLat          ,  self.attrLatitude]
+                                                                  ,[self.attrLongitude ,cLong         ,  self.attrLongitude]
                                                                   ]:
                             if f.attribute(c_old_name)!=feature.attribute(c_new_name):
                                 self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))  #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
