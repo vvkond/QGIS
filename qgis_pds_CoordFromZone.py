@@ -119,6 +119,8 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
                 if coords is not None:
                     geom = QgsGeometry.fromPoint(coords)
                     self.editLayer.changeGeometry(feature.id(), geom)
+                    self.editLayer.commitChanges()  #--- commit each row
+                    self.editLayer.startEditing()   #--- and start edit again
 
 
         settings = QSettings()
