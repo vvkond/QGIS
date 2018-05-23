@@ -32,5 +32,8 @@
         <file>sort_ascend.png</file>
         <file>sort_descend.png</file>
         <file>list.png</file>
+        <file>checked_checkbox.png</file>
+        <file>unchecked_checkbox.png</file>
+        <file>toggle.png</file>
     </qresource>
 </RCC>

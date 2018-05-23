@@ -17,17 +17,20 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
     """Constructor."""
-    def __init__(self, _project, _db, parent=None):
-        self.project = _project
+    def __init__(self, _db, currentId, simple=True, parent=None):
         self.db = _db
-        super(QgisPDSTemplateListDialog, self).__init__(parent)
+        self.currentId = currentId
 
-        self.setupUi(self)
+        if not simple:
+            super(QgisPDSTemplateListDialog, self).__init__(parent)
 
-        self.tableWidget.horizontalHeader().restoreState(QSettings().value('/PDS/TemplateList/HeaderState'))
+            self.setupUi(self)
 
-        self.fillTableWidget()
+            headerState = QSettings().value('/PDS/TemplateList/HeaderState')
+            if headerState:
+                self.tableWidget.horizontalHeader().restoreState(headerState)
 
+            self.fillTableWidget()
 
     def get_sql(self, value):
         plugin_dir = os.path.dirname(__file__)
@@ -47,8 +50,9 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
         for input_row in records:
             self.tableWidget.insertRow(row)
 
+            sldnid = int(input_row[0])
             item = QTableWidgetItem(input_row[1])
-            item.setData(Qt.UserRole, input_row[0])
+            item.setData(Qt.UserRole, sldnid)
             self.tableWidget.setItem(row, 0, item)
 
             item = QTableWidgetItem(input_row[2])
@@ -61,6 +65,10 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
             item = QTableWidgetItem(QVariant.DateTime)
             item.setData(Qt.DisplayRole, dt)
             self.tableWidget.setItem(row, 3, item)
+
+            if self.currentId == sldnid:
+                self.tableWidget.setCurrentItem(item)
+
             row += 1
 
         self.tableWidget.setSortingEnabled(True)
@@ -94,14 +102,24 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
 
     def getWellNames(self, ids):
         result = []
+        sql = self.get_sql('well.sql')
         for id in ids:
-            sql = 'select TIG_LATEST_WELL_NAME from tig_well_history where DB_SLDNID = ' + str(id)
-            records = self.db.execute(sql)
+            records = self.db.execute(sql, well_id=id)
             if records:
                 for rec in records:
                     well = []
-                    well.append(rec[0])
-                    well.append(id)
+                    well.append(int(rec[0]))
+                    well.append(rec[1])
+                    well.append(rec[2])
+                    well.append(rec[3])
+                    well.append(rec[4])
+                    well.append(rec[5])
+                    well.append(float(rec[6]))
+                    well.append(float(rec[7]))
+                    well.append(rec[8])
+                    well.append(rec[9])
+                    dt = QDateTime.fromString(rec[10], 'dd-MM-yyyy HH:mm:ss')
+                    well.append(dt)
                     result.append(well)
                     break
 

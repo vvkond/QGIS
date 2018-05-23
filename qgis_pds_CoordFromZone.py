@@ -25,8 +25,6 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
 
         self.mParameterFrame.setVisible(False)
         self.mWellsFrame.setVisible(False)
-        self.mUseElevation.setVisible(False)
-        self.mUseErosion.setVisible(False)
 
         self.plugin_dir = os.path.dirname(__file__)
         self.iface = _iface
@@ -132,6 +130,9 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         self.zoneListWidget.clear()
         for si in self.zonationListWidget.selectedItems():
             self._fillZones(int(si.data(Qt.UserRole)))
+
+        if len(self.zoneListWidget.selectedItems()) < 1:
+            self.zoneListWidget.setCurrentRow(0)
 
 
     def _getCoords(self, zoneDef, wellId):
@@ -252,3 +253,22 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
 
     def mParamToolButton_clicked(self):
         pass
+
+    def hideEvent(self, event):
+        className = type(self).__name__
+        QSettings().setValue('/PDS/{0}/HeaderState'.format(className), self.mWellsTreeView.header().saveState())
+        QSettings().setValue('/PDS/{0}/Geometry'.format(className), self.geometry())
+
+        super(QgisPDSCoordFromZoneDialog, self).hideEvent(event)
+
+    def showEvent(self, event):
+        super(QgisPDSCoordFromZoneDialog, self).showEvent(event)
+
+        className = type(self).__name__
+        state = QSettings().value('/PDS/{0}/HeaderState'.format(className))
+        if state:
+            self.mWellsTreeView.header().restoreState(state)
+
+        rect = QSettings().value('/PDS/{0}/Geometry'.format(className))
+        if rect:
+            self.setGeometry(rect)
