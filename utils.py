@@ -6,6 +6,7 @@ import numpy
 import time
 from processing.tools.vector import VectorWriter
 import os
+import json
 
 class StrictInit(object):
     def __init__(self, **kw):
@@ -100,3 +101,10 @@ def memoryToShp(layer, scheme, layerName):
 
     return QgsVectorLayer(layerFileName, layerName, 'ogr')
 
+def createProjectString(args):
+    projectName = args['project']
+    options = json.loads(args['options'])
+    host = options['host']
+    sid = options['sid']
+
+    return u'{0}/{1}/{2}'.format(host, sid, projectName)

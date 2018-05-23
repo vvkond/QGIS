@@ -404,6 +404,9 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.db.execute(sql1)
         self.updateSystemCounter('tig_map_set_parameter_no', self.paramNo)
 
+        self.updateMethodApplication()
+
+
     def processAsPoints(self):
         features = self.currentLayer.getFeatures()
         pointsX = []
@@ -599,19 +602,23 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                 "TIG_MAP_PARAM_VRSHRT ) values (TIG_MAP_SUBSET_PARAM_VAL_SEQ.nextval, {0}, {1}, {2}, {3}, :paramZ)"
                 .format(self.groupNo, subsetNo, self.paramNo, self.interpreter))
 
-        methodApplNo = self.maxMethodAppNo + 1
-        sql3 = ("insert into tig_ms_method_applicaton (db_sldnid, tig_ms_method_appl_no, tig_ms_method_no, tig_interpreter_sldnid)"
-                " values (TIG_MS_METHOD_APPLICATON_SEQ.nextval, {0}, 18, {1})".format(methodApplNo, self.interpreter))
-
-        sql4 = ("insert into TIG_MS_SORCE_METHOD_APPL (db_sldnid, tig_map_set_no, tig_map_set_parameter_no, "
-                "tig_ms_method_appl_no, tig_interpreter_sldnid)" 
-               " values (TIG_MS_SORCE_METHOD_APPL_SEQ.nextval, {0}, {1}, {2}, {3})"
-                .format(self.groupNo, self.paramNo, methodApplNo, self.interpreter))
-
         self.db.execute(sql, blobX=blobvarX, blobY=blobvarY)
         self.db.execute(sql2, paramZ=blobvarData)
+        self.db.commit()
+        self.updateSystemCounter('tig_map_subset_no', subsetNo)
+
+    def updateMethodApplication(self):
+        methodApplNo = self.maxMethodAppNo + 1
+        sql3 = ("insert into tig_ms_method_applicaton (db_sldnid, tig_ms_method_appl_no, tig_ms_method_no, tig_interpreter_sldnid)"
+            " values (TIG_MS_METHOD_APPLICATON_SEQ.nextval, {0}, 18, {1})".format(methodApplNo, self.interpreter))
+
+        sql4 = ("insert into TIG_MS_SORCE_METHOD_APPL (db_sldnid, tig_map_set_no, tig_map_set_parameter_no, "
+                "tig_ms_method_appl_no, tig_interpreter_sldnid)"
+                " values (TIG_MS_SORCE_METHOD_APPL_SEQ.nextval, {0}, {1}, {2}, {3})"
+                .format(self.groupNo, self.paramNo, methodApplNo, self.interpreter))
+
         self.db.execute(sql3)
         self.db.execute(sql4)
         self.db.commit()
-        self.updateSystemCounter('tig_map_subset_no', subsetNo)
+
         self.updateSystemCounter('tig_ms_method_appl_no', methodApplNo)

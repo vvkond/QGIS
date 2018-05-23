@@ -11,7 +11,8 @@ FROM
     tig_well_history wh,
     tig_computed_deviation cd
 WHERE
-    cd.TIG_WELL_SLDNID = wh.DB_SLDNID
+    (:well_id IS NULL OR wh.DB_SLDNID = :well_id)
+    AND cd.TIG_WELL_SLDNID = wh.DB_SLDNID
     AND wh.TIG_LONGITUDE != 0
     AND wh.TIG_LATITUDE != 0
     AND wh.TIG_ONLY_PROPOSAL <= 1

@@ -31,14 +31,12 @@ class QgisPDSWellFilterSetupDialog(QtGui.QDialog, FORM_CLASS):
     CONTEXT_FILTER = 'context'
 
 
-    def __init__(self, _project, _iface, parent=None):
+    def __init__(self, parent=None):
         """Constructor."""
         super(QgisPDSWellFilterSetupDialog, self).__init__(parent)
 
         self.setupUi(self)
 
-        self.project = _project
-        self.iface = _iface
         self.parentDlg = parent
 
         self.wellnameFilter = None

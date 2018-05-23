@@ -11,6 +11,7 @@ from PyQt4.QtCore import *
 from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
 from utils import *
+import cx_Oracle
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_templateList_base.ui'))
@@ -26,11 +27,17 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
 
             self.setupUi(self)
 
+            self.tableWidget.selectionModel().currentRowChanged.connect(self.currentRowChanged)
+
             headerState = QSettings().value('/PDS/TemplateList/HeaderState')
             if headerState:
                 self.tableWidget.horizontalHeader().restoreState(headerState)
 
             self.fillTableWidget()
+            self.fillUsersWidget()
+
+    def setReadOnly(self, isReadOnly):
+        self.mListNameEdit.setReadOnly(isReadOnly)
 
     def get_sql(self, value):
         plugin_dir = os.path.dirname(__file__)
@@ -73,10 +80,32 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
 
         self.tableWidget.setSortingEnabled(True)
 
+    def fillUsersWidget(self):
+        id = QSettings().value('/PDS/TemplateList/currentUserId', 0)
+
+        self.mUsersComboBox.clear()
+
+        sql = 'select TIG_USER_ID, TIG_LOGIN_NAME from tig_interpreter'
+        records = self.db.execute(sql)
+        try:
+            if records:
+                for rec in records:
+                    userId = int(rec[0])
+                    self.mUsersComboBox.addItem(rec[1], userId)
+                    if id == userId:
+                        self.mUsersComboBox.setCurrentIndex(self.mUsersComboBox.count()-1)
+        except Exception as e:
+            QgsMessageLog.logMessage('Fill users list: ' + str(e), 'QGisPDS')
+
 
     def hideEvent(self, event):
         QSettings().setValue('/PDS/TemplateList/HeaderState', self.tableWidget.horizontalHeader().saveState())
+        QSettings().setValue('/PDS/TemplateList/currentUserId', self.currentUserId)
         super(QgisPDSTemplateListDialog, self).hideEvent(event)
+
+    @property
+    def currentUserId(self):
+        return int(self.mUsersComboBox.itemData(self.mUsersComboBox.currentIndex()))
 
     def getListId(self):
         result = -1
@@ -86,6 +115,45 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
             result = item.data(Qt.UserRole)
 
         return result
+
+    def saveList(self, well_ids, project):
+        if len(well_ids) < 1:
+            return
+
+        listStr = 'VERSION:\t2\n'
+        listStr += 'PROJECT:\t{0}\t0\n'.format(createProjectString(project))
+        listStr += 'NUMBER IN LIST:\t{0}\n'.format(len(well_ids))
+        listStr += 'SLDNID\n'
+        for id in well_ids:
+            listStr += '{0}\n'.format(id)
+
+        listName = self.mListNameEdit.text()
+        if len(listName) < 1:
+            return
+
+        listName = listName.strip()
+
+        updateSql = ''
+        sql = ("select db_sldnid from tig_template where TIG_TEMPLATE_DESCRIP='{0}'"
+               " and  TIG_APPLICATION_NAME='brwwel'".format(listName))
+        records = self.db.execute(sql)
+        if records:
+            for rec in records:
+                updateSql = 'update tig_template set TIG_TEMPLATE_DATA=:blob where db_sldnid=' + str(rec[0])
+                break
+
+        if len(updateSql) < 2:
+            updateSql = ("insert into tig_template (db_sldnid, TIG_APPLICATION_NAME, TIG_TEMPLATE_DESCRIP, "
+               "TIG_GLOBAL_DATA_FLAG, tig_interpreter_sldnid, TIG_TEMPLATE_DATA) "
+               "values (TIG_TEMPLATE_SEQ.nextval, 'brwwel', '{0}', 0, {1}, :blob)"
+               .format(listName, self.currentUserId))
+
+        cursor = self.db.cursor()
+        blobvar = cursor.var(cx_Oracle.BLOB)
+        blobvar.setvalue(0, listStr)
+        self.db.execute(updateSql, blob=blobvar)
+        self.db.commit()
+
 
     def getWells(self, list_id):
         result = []
@@ -152,3 +220,8 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
             QgsMessageLog.logMessage('CLOB: ' + str(e), 'QGisPDS')
 
         return []
+
+    def currentRowChanged(self, current, previous):
+        item = self.tableWidget.item(current.row(), 0)
+        if item:
+            self.mListNameEdit.setText(item.text())

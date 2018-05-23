@@ -12,7 +12,7 @@ from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
 from QgisPDS.utils import to_unicode
 from QgisPDS.tig_projection import *
-from QgisPDS.ControlPointReader import ControlPointReader
+from ControlPointReader import ControlPointReader
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(

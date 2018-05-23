@@ -24,7 +24,6 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         self.setupUi(self)
 
         self.mParameterFrame.setVisible(False)
-        self.mWellsFrame.setVisible(False)
 
         self.plugin_dir = os.path.dirname(__file__)
         self.iface = _iface
@@ -254,7 +253,6 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
 
     def hideEvent(self, event):
         className = type(self).__name__
-        QSettings().setValue('/PDS/{0}/HeaderState'.format(className), self.mWellsTreeView.header().saveState())
         QSettings().setValue('/PDS/{0}/Geometry'.format(className), self.geometry())
 
         super(QgisPDSCoordFromZoneDialog, self).hideEvent(event)
@@ -263,10 +261,6 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         super(QgisPDSCoordFromZoneDialog, self).showEvent(event)
 
         className = type(self).__name__
-        state = QSettings().value('/PDS/{0}/HeaderState'.format(className))
-        if state:
-            self.mWellsTreeView.header().restoreState(state)
-
         rect = QSettings().value('/PDS/{0}/Geometry'.format(className))
         if rect:
             self.setGeometry(rect)
