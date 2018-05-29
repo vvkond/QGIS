@@ -25,9 +25,14 @@ class QgisPDSSelectMapTool(QgsMapToolEmitPoint):
         if self.layer:
             self.layer.removeSelection()
 
-    def setArgs(self, exeName, appArgs):
+    def setArgs(self, exeName, appArgs, layer):
         self.exeName = exeName
         self.appArgs = appArgs
+        self.layer = layer
+
+    def setLayer(self, layer):
+        self.reset()
+        self.layer = layer
 
     def reset(self):
         self.startPoint = self.endPoint = None
@@ -68,12 +73,36 @@ class QgisPDSSelectMapTool(QgsMapToolEmitPoint):
         self.endPoint = self.toMapCoordinates(e.pos())
         self.showRect(self.endPoint)
 
+    def getFeaturePoint(self, geom):
+        try:
+            t = geom.wkbType()
+            if t == QGis.WKBPoint:
+                return geom.asPoint()
+            elif t == QGis.WKBMultiPoint:
+                mpt = geom.asMultiPoint()
+                if len(mpt) > 0:
+                    return mpt[len(mpt)-1]
+            elif t == QGis.WKBLineString:
+                mpt = geom.asPolyline()
+                if len(mpt) > 0:
+                    return mpt[len(mpt)-1]
+            elif t == QGis.WKBPolygon:
+                mpt = geom.asPolygon()
+                if len(mpt) > 0:
+                    line = mpt[0]
+                    if len(line) > 0:
+                        return line[len(line) - 1]
+        except:
+            pass
+        return None
+
     def showRect(self, endPoint):
         self.rubberBand.reset()
 
         for f in self.features:
-            point1 = f.geometry().asPoint()
-            self.rubberBand.addPoint(point1, False)
+            point1 = self.getFeaturePoint(f.geometry())
+            if point1:
+                self.rubberBand.addPoint(point1, False)
 
         point3 = QgsPoint(endPoint.x(), endPoint.y())
         self.rubberBand.addPoint(point3, True)

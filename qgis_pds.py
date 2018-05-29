@@ -35,21 +35,22 @@ from qgis_pds_prodRenderer import *
 from qgis_pds_prod_layer_type import *
 from qgis_pds_prodSetup import *
 from qgis_pds_bubbleSetup import *
-from QgisPDS.ControlPointReader import ControlPointReader
-from QgisPDS.ContoursReader import ContoursReader
-from QgisPDS.SurfaceReader import SurfaceReader
-from QgisPDS.qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
-from QgisPDS.qgis_pds_zonations import QgisPDSZonationsDialog
-from QgisPDS.qgis_pds_residual import QgisPDSResidualDialog
-from QgisPDS.qgis_pds_pressureMap import QgisPDSPressure
-from QgisPDS.qgis_pds_deviation import QgisPDSDeviation
-from QgisPDS.qgis_pds_statistic import QgisPDSStatisticsDialog
-from QgisPDS.qgis_pds_refreshSetup import QgisPDSRefreshSetup
-from QgisPDS.qgis_pds_SaveMapsetToPDS import QgisSaveMapsetToPDS
-from QgisPDS.qgis_pds_oracleSql import QgisOracleSql
-from QgisPDS.qgis_pds_createIsolines import QgisPDSCreateIsolines
-from QgisPDS.qgis_pds_transite import QgisPDSTransitionsDialog
+from ControlPointReader import ControlPointReader
+from ContoursReader import ContoursReader
+from SurfaceReader import SurfaceReader
+from qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
+from qgis_pds_zonations import QgisPDSZonationsDialog
+from qgis_pds_residual import QgisPDSResidualDialog
+from qgis_pds_pressureMap import QgisPDSPressure
+from qgis_pds_deviation import QgisPDSDeviation
+from qgis_pds_statistic import QgisPDSStatisticsDialog
+from qgis_pds_refreshSetup import QgisPDSRefreshSetup
+from qgis_pds_SaveMapsetToPDS import QgisSaveMapsetToPDS
+from qgis_pds_oracleSql import QgisOracleSql
+from qgis_pds_createIsolines import QgisPDSCreateIsolines
+from qgis_pds_transite import QgisPDSTransitionsDialog
 from qgis_pds_SelectMapTool import QgisPDSSelectMapTool
+from qgis_pds_wellsBrowserDialog import *
 import os
 import os.path
 import ast
@@ -259,6 +260,13 @@ class QgisPDS(QObject):
                 enabled = bblInit.isProductionLayer(layer)
                 enabledWell = bblInit.isWellLayer(layer)
                 runAppEnabled = layer.fieldNameIndex(self.sldnidFieldName) >= 0
+
+                if self.iface.mapCanvas().mapTool() == self.selectMapTool:
+                    if self.selectMapTool:
+                        if runAppEnabled:
+                            self.selectMapTool.setLayer(layer)
+                        else:
+                            self.selectMapTool.reset()
         except:
             pass
 
@@ -788,10 +796,14 @@ class QgisPDS(QObject):
                         self.tr(u'Save project before load wells'), level=QgsMessageBar.CRITICAL)
             return
 
-        wells = QgisPDSWells(self.iface, self.currentProject)
-        layer = wells.createWellLayer()
-        if layer is not None:
-            layer.attributeValueChanged.connect(self.pdsLayerModified)
+        dlg = QgisPDSWellsBrowserDialog(self.currentProject)
+        if dlg.exec_():
+            wells = QgisPDSWells(self.iface, self.currentProject)
+            wells.setWellList(dlg.getWellIds())
+            layer = wells.createWellLayer()
+            if layer is not None:
+                layer.attributeValueChanged.connect(self.pdsLayerModified)
+        del dlg
 
 
     def createWellDeviationLayer(self):
@@ -800,20 +812,24 @@ class QgisPDS(QObject):
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
 
-        wells = QgisPDSDeviation(self.iface, self.currentProject)
-        layer = wells.createWellLayer()
+        dlg = QgisPDSWellsBrowserDialog(self.currentProject)
+        if dlg.exec_():
+            wells = QgisPDSDeviation(self.iface, self.currentProject)
+            wells.setWellList(dlg.getWellIds())
+            layer = wells.createWellLayer()
+
         # if layer is not None:
         #     layer.attributeValueChanged.connect(self.pdsLayerModified)
 
         
-    def loadWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly):
+    def refreshWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing):
         wells = QgisPDSWells(self.iface, project)
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly)
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing)
 
 
-    def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly):
+    def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing):
         wells = QgisPDSDeviation(self.iface, project)
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly)
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing)
 
 
     def productionSetup(self):
@@ -876,7 +892,8 @@ class QgisPDS(QObject):
         if prop == "pds_wells":
             dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():
-                self.loadWells(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
+                self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
+                                  dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing)
         elif prop == "pds_current_production":
             self.loadProduction(currentLayer, self.currentProject, True)
         elif prop == "pds_cumulative_production":
@@ -884,7 +901,8 @@ class QgisPDS(QObject):
         elif prop == "pds_well_deviations":
             dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():
-                self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords, dlg.isRefreshData, dlg.isSelectedOnly)
+                self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords,
+                                        dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing)
 
        
     def addProductionLayer(self):
@@ -949,7 +967,7 @@ class QgisPDS(QObject):
             self.selectMapTool = QgisPDSSelectMapTool(self.iface.mapCanvas(), layer)
             self.selectMapTool.finished.connect(self.selectMapTool_finished)
 
-        self.selectMapTool.setArgs(exeName, appArgs)
+        self.selectMapTool.setArgs(exeName, appArgs, layer)
         self.iface.mapCanvas().setMapTool(self.selectMapTool)
 
     @pyqtSlot(list, str, str)
@@ -1059,8 +1077,12 @@ class QgisPDS(QObject):
             return
 
         runStr = exeName + ' ' + args
+        QgsMessageLog.logMessage('Running: ' + runStr, 'QGisPDS')
+        # os.system(runStr)
+
         process = QProcess(self.iface)
         process.start(runStr)
+
 
     # def getSelectedSldnids(self, layer):
     #     idx = layer.fieldNameIndex(self.sldnidFieldName)

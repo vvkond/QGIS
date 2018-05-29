@@ -38,6 +38,10 @@ class QgisPDSWells(QObject):
         self.attrLongitude = u'longitude'
         self.proj4String = 'epsg:4326'
         self.db = None
+        self.wellIdList = []
+
+    def setWellList(self, wellList):
+        self.wellIdList = wellList
 
     def createWellLayer(self):
         if not self.initDb():
@@ -76,7 +80,7 @@ class QgisPDSWells(QObject):
 
             return
 
-        self.loadWells(layer, True, True, False)
+        self.loadWells(layer, True, True, False, True)
         layer.commitChanges()
         self.db.disconnect()
 
@@ -171,7 +175,7 @@ class QgisPDSWells(QObject):
         with open(sql_file_path, 'rb') as f:
             return f.read().decode('utf-8')
 
-    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly):
+    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing = True):
         if self.db is None and layer:
             # prjStr = layer.customProperty("pds_project")
             # self.project = ast.literal_eval(prjStr)
@@ -184,13 +188,16 @@ class QgisPDSWells(QObject):
 
         projectName = self.project['project']
 
+        allWells = len(self.wellIdList) < 1
+
         refreshed = False
         with edit(layer):
             for row in dbWells:
                 name= row[0]
                 lng = row[20]
                 lat = row[19]
-                if lng and lat:
+                wellId = int(row[1])
+                if lng and lat and (allWells or wellId in self.wellIdList):
                     pt = QgsPoint(lng, lat)
                     
                     if self.xform:
@@ -222,77 +229,58 @@ class QgisPDSWells(QObject):
                                 well.setGeometry(geom)
                             num = num + 1
 
-                    if not well:
+                    if not well and isAddMissing:
                         well = QgsFeature(layer.fields())
 
-                    well.setAttribute(self.attrWellId, name)
-                    well.setAttribute(self.attrLatitude, lat)
-                    well.setAttribute(self.attrLongitude, lng)
+                    if well:
+                        well.setAttribute(self.attrWellId, name)
+                        well.setAttribute(self.attrLatitude, lat)
+                        well.setAttribute(self.attrLongitude, lng)
 
-                    well.setAttribute('sldnid', row[1])
-                    well.setAttribute('api', row[2])
-                    well.setAttribute('operator', row[3])
-                    well.setAttribute('country', row[4])
-                    well.setAttribute('depth', row[7])
-                    try:
-                        well.setAttribute('measuremen', row[8])
-                    except: #Format before shapes
-                        well.setAttribute('measurement', row[8])
-                    well.setAttribute('elevation', row[9])
-                    well.setAttribute('datum', row[10])
-                    try:
-                        well.setAttribute('on_offshor', row[11])
-                    except: #Format before shapes
-                        well.setAttribute('on_offshore', row[11])
-                    well.setAttribute('status', row[12])
-                    well.setAttribute('symbol', row[13])
-                    well.setAttribute('spud_date', QDateTime.fromString(row[14], self.dateFormat))
-                    try:
-                        well.setAttribute('global_pri', row[15])
-                    except: #Format before shapes
-                        well.setAttribute('global_private', row[15])
-                    well.setAttribute('owner', row[16])
-                    well.setAttribute('created', QDateTime.fromString(row[17], self.dateFormat))
-                    well.setAttribute('project', projectName)
+                        well.setAttribute('sldnid', row[1])
+                        well.setAttribute('api', row[2])
+                        well.setAttribute('operator', row[3])
+                        well.setAttribute('country', row[4])
+                        well.setAttribute('depth', row[7])
+                        try:
+                            well.setAttribute('measuremen', row[8])
+                        except: #Format before shapes
+                            well.setAttribute('measurement', row[8])
+                        well.setAttribute('elevation', row[9])
+                        well.setAttribute('datum', row[10])
+                        try:
+                            well.setAttribute('on_offshor', row[11])
+                        except: #Format before shapes
+                            well.setAttribute('on_offshore', row[11])
+                        well.setAttribute('status', row[12])
+                        well.setAttribute('symbol', row[13])
+                        well.setAttribute('spud_date', QDateTime.fromString(row[14], self.dateFormat))
+                        try:
+                            well.setAttribute('global_pri', row[15])
+                        except: #Format before shapes
+                            well.setAttribute('global_private', row[15])
+                        well.setAttribute('owner', row[16])
+                        well.setAttribute('created', QDateTime.fromString(row[17], self.dateFormat))
+                        well.setAttribute('project', projectName)
 
-                    if not num:
-                        if not isSelectedOnly:
-                            if lat != 0 or lng != 0:
-                                well.setGeometry(geom)
-                                layer.addFeatures([well])
-                    elif isRefreshData:
-                        layer.updateFeature(well)
+                        if not num:
+                            if not isSelectedOnly:
+                                if lat != 0 or lng != 0:
+                                    well.setGeometry(geom)
+                                    layer.addFeatures([well])
+                        elif isRefreshData:
+                            layer.updateFeature(well)
 
         if refreshed:
             self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(layer.name()), duration=10)
 
-
-        # palyr = QgsPalLayerSettings()
-        # palyr.readFromLayer(layer)
-        # palyr.enabled = True
-        # palyr.fieldName = self.attrWellId
-        # palyr.placement= QgsPalLayerSettings.OverPoint
-        # palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
-        # palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY , True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
-        # palyr.labelOffsetInMapUnits = False
-        # palyr.setDataDefinedProperty(QgsPalLayerSettings.Size,True,True,'8','')
-        # palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'','lablx')
-        # palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'','lably')
-        # palyr.writeToLayer(layer)
-
         layer.updateExtents()
-
 
 
 
     def _readWells(self):
         try:
             return self.db.execute(self.get_sql('Wells.sql'))
-            # result = self.db.execute(
-            #     "select tig_latest_well_name, tig_latitude, tig_longitude from tig_well_history")
-
-            
-            # return result
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"), str(e), level=QgsMessageBar.CRITICAL)
             return None

@@ -19,7 +19,9 @@ SELECT
     well."Created",
     well."Project",
     well.TIG_LATITUDE,
-    well.TIG_LONGITUDE
+    well.TIG_LONGITUDE,
+    well.TIG_CLIENT_WELL_NAME,
+    well.TIG_SLOT_NUMBER
 FROM
     (SELECT DISTINCT
         w.TIG_LATEST_WELL_NAME AS "Well Name",
@@ -35,11 +37,13 @@ FROM
         TO_CHAR(b.SPUD_DATE, 'DD-MM-YYYY') "Spud Date",
         REPLACE(REPLACE(w.TIG_GLOBAL_DATA_FLAG, '1', 'Global'), '0', 'Private') "Global/Private",
         ii.TIG_LOGIN_NAME "Owner",
-        TO_CHAR((TO_DATE('01-01-1970', 'DD-MM-YYYY') +(w.DB_INSTANCE_TIME_STAMP / 86400)), 'DD-MM-YYYY') "Created",
+        TO_CHAR((TO_DATE('01-01-1970', 'DD-MM-YYYY') +(w.DB_INSTANCE_TIME_STAMP / 86400)), 'DD-MM-YYYY HH24:MI:SS') "Created",
         'qq' "Project",
         w.DB_SLDNID Well_ID,
         w.TIG_LATITUDE,
-        w.TIG_LONGITUDE
+        w.TIG_LONGITUDE,
+        w.TIG_CLIENT_WELL_NAME,
+        w.TIG_SLOT_NUMBER
     FROM
         tig_well_history w,
         well b,

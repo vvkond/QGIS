@@ -19,7 +19,6 @@ from qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 from qgis_pds_zoneparams import QgisPDSZoneparamsDialog
 from qgis_pds_WellFilterSetup import QgisPDSWellFilterSetupDialog
 from qgis_pds_templateList import QgisPDSTemplateListDialog
-from qgis_pds_wellsModel import *
 from qgis_pds_wellsBrowserForm import *
 
 class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
@@ -28,11 +27,6 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         if _project:
             self.scheme = _project['project']
 
-        self.wellFilter = {}
-        self.wellList = []
-        self.wellListId = -1
-        self.wellFilterActive = False
-        self.wellListActive = False
         self.isInitialized = False
 
         """Constructor."""
@@ -42,7 +36,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         if self.scheme:
             self.setWindowTitle(self.windowTitle() + ' - ' + self.scheme)
 
-        self.restoreFilter()
+        # self.restoreFilter()
 
         self.mParameterFrame.setVisible(True)
 
@@ -59,17 +53,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         self.isInitialized = True
 
-        headerData = [self.tr('Well id'), self.tr('Well name'), self.tr('Full name'),
-                      self.tr('Operator'), self.tr('API number'), self.tr('Location'),
-                      self.tr('Latitude'), self.tr('Longitude'), self.tr('Slot number'),
-                      self.tr('Created by'), self.tr('Updated')]
-
-        self.wellsBrowser = QgisPDSWellsBrowserForm(headerData, self.db, self.getZoneWells, self.project,
-                                                    wellFilter = self.wellFilter,
-                                                    wellListId = self.wellListId,
-                                                    wellFilterActive = self.wellFilterActive,
-                                                    wellListActive = self.wellListActive,
-                                                    parent=self)
+        self.wellsBrowser = QgisPDSWellsBrowserForm(self.db, self.getZoneWells, self.project, parent=self)
         self.gridLayout.addWidget(self.wellsBrowser, 2, 0, 1, 2)
 
 
@@ -531,56 +515,18 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         if records:
             for rec in records:
                 well = []
-                well.append(int(rec[0]))
-                well.append(rec[1])
-                well.append(rec[2])
-                well.append(rec[3])
-                well.append(rec[4])
-                well.append(rec[5])
-                well.append(float(rec[6]))
-                well.append(float(rec[7]))
-                well.append(rec[8])
-                well.append(rec[9])
-                dt = QDateTime.fromString(rec[10], 'dd-MM-yyyy HH:mm:ss')
+                well.append(int(rec[0]))                                    #id (not shown)
+                well.append(rec[1])                                         #wellName
+                well.append(rec[2])                                         #Full name
+                well.append(rec[3])                                         #Operator
+                well.append(rec[4])                                         #API number
+                well.append(rec[5])                                         #Location
+                well.append(float(rec[6]))                                  #Latitude
+                well.append(float(rec[7]))                                  #Longitude
+                well.append(rec[8])                                         #Slot number
+                well.append(rec[9])                                         #Owner
+                dt = QDateTime.fromString(rec[10], 'dd-MM-yyyy HH:mm:ss')   #Date
                 well.append(dt)
                 wellList.append(well)
 
         return wellList
-
-
-    def saveFilter(self):
-        try:
-            varName = '/PDS/Zonations/WellFilter/v' + self.scheme
-            QSettings().setValue(varName, str(self.wellsBrowser.currentFilter))
-
-            varName = '/PDS/Zonations/wellFilterActive/v' + self.scheme
-            QSettings().setValue(varName, 'True' if self.wellsBrowser.isWellFilterActive else 'False')
-
-            varName = '/PDS/Zonations/wellListActive/v' + self.scheme
-            QSettings().setValue(varName, 'True' if self.wellsBrowser.isWellListActive else 'False')
-
-            varName = '/PDS/Zonations/wellListId/v' + self.scheme
-            QSettings().setValue(varName, self.wellsBrowser.currentWellListId)
-        except Exception as e:
-            QgsMessageLog.logMessage('Save WellFilter: ' + str(e), 'QGisPDS')
-
-    def restoreFilter(self):
-        try:
-            varName = '/PDS/Zonations/WellFilter/v' + self.scheme
-            filterStr = QSettings().value(varName, '{}')
-            self.wellFilter = ast.literal_eval(filterStr)
-
-            varName = '/PDS/Zonations/wellFilterActive/v' + self.scheme
-            self.wellFilterActive = QSettings().value(varName, 'False') == 'True'
-
-            varName = '/PDS/Zonations/wellListActive/v' + self.scheme
-            self.wellListActive = QSettings().value(varName, 'False') == 'True'
-
-            varName = '/PDS/Zonations/wellListId/v' + self.scheme
-            self.wellListId = int(QSettings().value(varName, "0"))
-        except Exception as e:
-            QgsMessageLog.logMessage('Restore WellFilter: ' + str(e), 'QGisPDS')
-
-    def hideEvent(self, event):
-        self.saveFilter()
-        super(QgisPDSZonationsDialog, self).hideEvent(event)

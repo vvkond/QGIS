@@ -50,6 +50,7 @@ class QgisPDSDeviation(QObject):
 
         self.proj4String = 'epsg:4326'
         self.db = None
+        self.wellIdList = []
 
     def initDb(self):
         if self.project is None:
@@ -78,28 +79,12 @@ class QgisPDSDeviation(QObject):
             return False
         return True
 
+    def setWellList(self, wellList):
+        self.wellIdList = wellList
+
     def createWellLayer(self):
         if not self.initDb():
             return
-        # proj4String = 'epsg:4326'
-        # connection = create_connection(self.project)
-        # scheme = self.project['project']
-        # try:
-        #     self.db = connection.get_db(scheme)
-        #     self.tig_projections = TigProjections(db=self.db)
-        #     proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
-        #     if proj is not None:
-        #         proj4String = 'PROJ4:'+proj.qgis_string
-        #         destSrc = QgsCoordinateReferenceSystem()
-        #         destSrc.createFromProj4(proj.qgis_string)
-        #         sourceCrs = QgsCoordinateReferenceSystem('epsg:4326')
-        #         self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
-        # except Exception as e:
-        #     self.iface.messageBar().pushMessage(self.tr("Error"),
-        #                                         self.tr(u'Project projection read error {0}: {1}').format(
-        #                                         scheme, str(e)),
-        #                                         level=QgsMessageBar.CRITICAL)
-        #     return
 
         self.uri = "LineString?crs={}".format(self.proj4String)
         self.uri += '&field={}:{}'.format(self.attrWellId, "string")
@@ -206,7 +191,7 @@ class QgisPDSDeviation(QObject):
             return f.read().decode('utf-8')
 
 
-    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly):
+    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing = True):
         if self.db is None and layer:
             prjStr = layer.customProperty("pds_project")
             self.project = ast.literal_eval(prjStr)
@@ -218,6 +203,7 @@ class QgisPDSDeviation(QObject):
             return
 
         projectName = self.project['project']
+        allWells = len(self.wellIdList) < 1
 
         refreshed = False
         with edit(layer):
@@ -225,7 +211,8 @@ class QgisPDSDeviation(QObject):
                 name = row[0]
                 lng = row[19]
                 lat = row[20]
-                if lng and lat:
+                wellId = int(row[1])
+                if lng and lat and (allWells or wellId in self.wellIdList):
                     pt = QgsPoint(lng, lat)
 
                     if self.xform:
@@ -272,48 +259,49 @@ class QgisPDSDeviation(QObject):
                                 well.setGeometry(geom)
                             num = num + 1
 
-                    if not well:
+                    if not well and isAddMissing:
                         well = QgsFeature(layer.fields())
 
-                    well.setAttribute(self.attrLablX, pt.x())
-                    well.setAttribute(self.attrLablY, pt.y())
+                    if well:
+                        well.setAttribute(self.attrLablX, pt.x())
+                        well.setAttribute(self.attrLablY, pt.y())
 
-                    well.setAttribute(self.attrWellId, name)
-                    well.setAttribute(self.attrLatitude, lat)
-                    well.setAttribute(self.attrLongitude, lng)
-                    well.setAttribute(self.attrSLDNID, row[1])
-                    well.setAttribute(self.attrAPI, row[2])
-                    well.setAttribute(self.attrOperator, row[3])
-                    well.setAttribute(self.attrCountry, row[4])
-                    well.setAttribute(self.attrDepth, row[7])
-                    try:
-                        well.setAttribute(self.attrMeasurement, row[8])
-                    except:
-                        pass
-                    well.setAttribute(self.attrElevation, row[9])
-                    well.setAttribute(self.attrDatum, row[10])
-                    try:
-                        well.setAttribute(self.attrOn_offshore, row[11])
-                    except:
-                        pass
-                    well.setAttribute(self.attrStatus, row[12])
-                    well.setAttribute(self.attrSymbol, row[13])
-                    well.setAttribute(self.attrSpud_date, QDateTime.fromString(row[14], self.dateFormat))
-                    try:
-                        well.setAttribute(self.attrGlobal_private, row[15])
-                    except:
-                        pass
-                    well.setAttribute(self.attrOwner, row[16])
-                    well.setAttribute(self.attrCreated, QDateTime.fromString(row[17], self.dateFormat))
-                    well.setAttribute(self.attrProject, projectName)
+                        well.setAttribute(self.attrWellId, name)
+                        well.setAttribute(self.attrLatitude, lat)
+                        well.setAttribute(self.attrLongitude, lng)
+                        well.setAttribute(self.attrSLDNID, row[1])
+                        well.setAttribute(self.attrAPI, row[2])
+                        well.setAttribute(self.attrOperator, row[3])
+                        well.setAttribute(self.attrCountry, row[4])
+                        well.setAttribute(self.attrDepth, row[7])
+                        try:
+                            well.setAttribute(self.attrMeasurement, row[8])
+                        except:
+                            pass
+                        well.setAttribute(self.attrElevation, row[9])
+                        well.setAttribute(self.attrDatum, row[10])
+                        try:
+                            well.setAttribute(self.attrOn_offshore, row[11])
+                        except:
+                            pass
+                        well.setAttribute(self.attrStatus, row[12])
+                        well.setAttribute(self.attrSymbol, row[13])
+                        well.setAttribute(self.attrSpud_date, QDateTime.fromString(row[14], self.dateFormat))
+                        try:
+                            well.setAttribute(self.attrGlobal_private, row[15])
+                        except:
+                            pass
+                        well.setAttribute(self.attrOwner, row[16])
+                        well.setAttribute(self.attrCreated, QDateTime.fromString(row[17], self.dateFormat))
+                        well.setAttribute(self.attrProject, projectName)
 
-                    if not num:
-                        if not isSelectedOnly:
-                            if lat != 0 or lng != 0:
-                                well.setGeometry(geom)
-                                layer.addFeatures([well])
-                    elif isRefreshData:
-                        layer.updateFeature(well)
+                        if not num:
+                            if not isSelectedOnly:
+                                if lat != 0 or lng != 0:
+                                    well.setGeometry(geom)
+                                    layer.addFeatures([well])
+                        elif isRefreshData:
+                            layer.updateFeature(well)
 
         if refreshed:
             self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(layer.name()), duration=10)

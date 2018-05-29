@@ -27,6 +27,8 @@ SOURCES = ../bblInit.py \
 	../qgis_pds_bubbleSetup.py \
 	../qgis_pds_wellsModel.py \
 	../qgis_pds_WellFilterSetup.py \
-	../qgis_pds_templateList.py
+	../qgis_pds_templateList.py \
+	../qgis_pds_wellsBrowserForm.py \
+	../qgis_pds_wellsBrowserDialog.py
 
 TRANSLATIONS = QgisPDS_ru.ts

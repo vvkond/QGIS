@@ -16,7 +16,7 @@ import ast
 from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
 from utils import *
-from QgisPDS.qgis_pds_production import QgisPDSProductionDialog
+from qgis_pds_production import QgisPDSProductionDialog
 from bblInit import *
 from tig_projection import *
 

@@ -41,12 +41,17 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
             sett.setValue('PDS/refreshSetup/mSelectedCheckBox', 'True')
         else:
             sett.setValue('PDS/refreshSetup/mSelectedCheckBox', 'False')
+        if self.isAddMissing:
+            sett.setValue('PDS/refreshSetup/mAddMissingCheckBox', 'True')
+        else:
+            sett.setValue('PDS/refreshSetup/mAddMissingCheckBox', 'False')
 
     def restoreSettings(self):
         sett = QSettings()
         self.mKoordsCheckBox.setChecked(sett.value('PDS/refreshSetup/mKoordsCheckBox', 'True') == 'True')
         self.mDataCheckBox.setChecked(sett.value('PDS/refreshSetup/mDataCheckBox', 'True') == 'True')
         self.mSelectedCheckBox.setChecked(sett.value('PDS/refreshSetup/mSelectedCheckBox', 'False') == 'True')
+        self.mAddMissingCheckBox.setChecked(sett.value('PDS/refreshSetup/mAddMissingCheckBox', 'False') == 'True')
 
     @property
     def isRefreshKoords(self):
@@ -59,3 +64,7 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
     @property
     def isSelectedOnly(self):
         return self.mSelectedCheckBox.isChecked()
+
+    @property
+    def isAddMissing(self):
+        return self.mAddMissingCheckBox.isChecked()

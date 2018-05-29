@@ -26,21 +26,23 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
     """Constructor."""
-    def __init__(self, headerData, _db, getWellsFunc, _project,
-                 wellFilter = {},
-                 wellListId = -1,
-                 wellFilterActive = False,
-                 wellListActive = False,
-                 parent=None):
+    def __init__(self, _db, getWellsFunc, _project, parent=None):
         super(QgisPDSWellsBrowserForm, self).__init__(parent)
         self.setupUi(self)
 
         self.project = _project
         self.db = _db
-        self.wellFilter = wellFilter
-        self.wellListId = wellListId
-        self.getWellsFunc = getWellsFunc
+        self.wellFilter = {}
+        self.wellListId = -1
         self.wellList = []
+        # self.wellFilter = wellFilter
+        # self.wellListId = wellListId
+        self.getWellsFunc = getWellsFunc
+        # self.wellList = []
+        if _project:
+            self.scheme = _project['project']
+
+        self.restoreFilter()
 
         #Setup toolButton icons
         self.mWellFilterToolButton.setIcon(QIcon(':/plugins/QgisPDS/mActionFilter.png'))
@@ -62,26 +64,30 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
         self.mWellListToolButton.setMenu(listMenu)
 
         #Active toolButtons
-        self.mWellListToolButton.blockSignals(True)
-        self.mWellFilterToolButton.blockSignals(True)
-
-        self.mWellListToolButton.setChecked(wellListActive)
-        self.mWellFilterToolButton.setChecked(wellFilterActive)
-
-        self.mWellListToolButton.blockSignals(False)
-        self.mWellFilterToolButton.blockSignals(False)
+        # self.mWellListToolButton.blockSignals(True)
+        # self.mWellFilterToolButton.blockSignals(True)
+        #
+        # self.mWellListToolButton.setChecked(wellListActive)
+        # self.mWellFilterToolButton.setChecked(wellFilterActive)
+        #
+        # self.mWellListToolButton.blockSignals(False)
+        # self.mWellFilterToolButton.blockSignals(False)
 
         #Read wells data
         self.getWells()
 
         #Setup data model
+        headerData = [self.tr('Well id'), self.tr('Well name'), self.tr('Full name'),
+                      self.tr('Operator'), self.tr('API number'), self.tr('Location'),
+                      self.tr('Latitude'), self.tr('Longitude'), self.tr('Slot number'),
+                      self.tr('Created by'), self.tr('Updated')]
         self.wellItemModel = WellsItemsModel(headerData, 1, self)
         self.wellItemModel.setModelData(self.wellList)
         #Setup proxy model
         self.wellItemProxyModel = WellsItemsProxyModel(self)
         self.wellItemProxyModel.setSourceModel(self.wellItemModel)
         self.wellItemProxyModel.setFilter(self.wellFilter)
-        self.wellItemProxyModel.setFilterActive(wellFilterActive)
+        self.wellItemProxyModel.setFilterActive(self.mWellFilterToolButton.isChecked())
 
         self.mWellsTreeView.setModel(self.wellItemProxyModel)
 
@@ -209,6 +215,8 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
         className = type(self).__name__
         QSettings().setValue('/PDS/{0}/HeaderState'.format(className), self.mWellsTreeView.header().saveState())
 
+        self.saveFilter()
+
         super(QgisPDSWellsBrowserForm, self).hideEvent(event)
 
     def showEvent(self, event):
@@ -218,3 +226,47 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
         state = QSettings().value('/PDS/{0}/HeaderState'.format(className))
         if state:
             self.mWellsTreeView.header().restoreState(state)
+
+    def saveFilter(self):
+        try:
+            varName = '/PDS/Zonations/WellFilter/v' + self.scheme
+            QSettings().setValue(varName, str(self.wellFilter))
+
+            varName = '/PDS/Zonations/wellFilterActive/v' + self.scheme
+            QSettings().setValue(varName, 'True' if self.isWellFilterActive else 'False')
+
+            varName = '/PDS/Zonations/wellListActive/v' + self.scheme
+            QSettings().setValue(varName, 'True' if self.isWellListActive else 'False')
+
+            varName = '/PDS/Zonations/wellListId/v' + self.scheme
+            QSettings().setValue(varName, self.currentWellListId)
+        except Exception as e:
+            QgsMessageLog.logMessage('Save WellFilter: ' + str(e), 'QGisPDS')
+
+
+    def restoreFilter(self):
+        try:
+            varName = '/PDS/Zonations/WellFilter/v' + self.scheme
+            filterStr = QSettings().value(varName, '{}')
+            self.wellFilter = ast.literal_eval(filterStr)
+
+            varName = '/PDS/Zonations/wellFilterActive/v' + self.scheme
+            wellFilterActive = QSettings().value(varName, 'False') == 'True'
+
+            varName = '/PDS/Zonations/wellListActive/v' + self.scheme
+            wellListActive = QSettings().value(varName, 'False') == 'True'
+
+            varName = '/PDS/Zonations/wellListId/v' + self.scheme
+            self.wellListId = int(QSettings().value(varName, "0"))
+
+            self.mWellListToolButton.blockSignals(True)
+            self.mWellFilterToolButton.blockSignals(True)
+
+            self.mWellListToolButton.setChecked(wellListActive)
+            self.mWellFilterToolButton.setChecked(wellFilterActive)
+
+            self.mWellListToolButton.blockSignals(False)
+            self.mWellFilterToolButton.blockSignals(False)
+
+        except Exception as e:
+            QgsMessageLog.logMessage('Restore WellFilter: ' + str(e), 'QGisPDS')
