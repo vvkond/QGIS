@@ -296,8 +296,8 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
                 size_x = blob_x.size()
                 size_y = blob_y.size()
                 if size_x == size_y and size_x >= 4:
-                    delta_x = numpy.fromstring(blob_x.read(size_x - 3), '>f').astype('d')[0]
-                    delta_y = numpy.fromstring(blob_y.read(size_y - 3), '>f').astype('d')[0]
+                    delta_x = numpy.fromstring(self.db.blobToString(blob_x, size_x - 3), '>f').astype('d')[0]
+                    delta_y = numpy.fromstring(self.db.blobToString(blob_y, size_y - 3), '>f').astype('d')[0]
                     # pos = lonlat_add_list(pos[0], pos[1], delta_x, delta_y)
                     pos = (pos[0]+delta_x, pos[1]+delta_y)
             yield Well(
@@ -308,7 +308,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
 
     def _getCoords(self, lon, lat, idZonation, idZone, wellId):
         def read_floats(index):
-            return numpy.fromstring(input_row[index].read(), '>f').astype('d')
+            return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d')
 
 
         sql = self.get_sql('ZonationCoords.sql')

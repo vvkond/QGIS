@@ -129,13 +129,13 @@ class ContoursReader(ReaderBase):
             layer.startEditing()
             # for setNo, paramNo, subsetNo, setName, paramName, subsetName, mapX, mapY, mapZ, varName in groups:
             for raw in groups:
-                xCoords = numpy.fromstring(raw[6].read(), '>d').astype('d')
-                yCoords = numpy.fromstring(raw[7].read(), '>d').astype('d')
+                xCoords = numpy.fromstring(self.db.blobToString(raw[6]), '>d').astype('d')
+                yCoords = numpy.fromstring(self.db.blobToString(raw[7]), '>d').astype('d')
 
                 param = 0
                 # paramLen = 0
                 # if self.dataType > 0:   #Faults, #Contours
-                zParams = numpy.fromstring(raw[8].read(), '>d').astype('d')
+                zParams = numpy.fromstring(self.db.blobToString(raw[8]), '>d').astype('d')
                 paramLen = len(zParams)
 
                 if len(xCoords) != len(yCoords):

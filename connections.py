@@ -4,8 +4,9 @@ Connesion class
 
 import json
 
-from QgisPDS.db import Oracle
-from QgisPDS.utils import StrictInit, cached_property
+from db import Oracle, Sqlite
+from utils import StrictInit, cached_property
+import os
 
 
 class TigressConnection(StrictInit):
@@ -63,10 +64,27 @@ class TigressConnection(StrictInit):
             schema=project,
         )
 
+class TigressSQliteConnection(TigressConnection):
+
+    @cached_property
+    def path(self):
+        """ oracle users password """
+        return unicode(self.options['path'])
+
+    def get_db(self, project=None):
+        """ create and return SQLite db """
+        dbPath = os.path.abspath(os.path.join(self.path, project))
+        globalPath = os.path.abspath(os.path.join(self.path, 'global'))
+        db = Sqlite(dbPath)
+        db.execute("attach '{0}' as global".format(globalPath))
+        return db
+
+
 
 def create_connection(args):
     return connection_types[args['type']](args=args)
 
 connection_types = {
     'tigress': TigressConnection,
+    'sqlite': TigressSQliteConnection,
 }

@@ -43,10 +43,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         self.zonationListWidget.itemSelectionChanged.connect(self.zonationListWidget_itemSelectionChanged)
 
         settings = QSettings()
-        self.mUseElevation.setChecked(settings.value("/PDS/Zonations/UseElevation", u'True') == u'True')
-        self.mUseErosion.setChecked(settings.value("/PDS/Zonations/UseErosion", u'False') == u'True')
+        self.mUseElevation.setChecked(settings.value("/PDS/Zonations/UseElevation/v"+self.scheme, u'True') == u'True')
+        self.mUseErosion.setChecked(settings.value("/PDS/Zonations/UseErosion/v"+self.scheme, u'False') == u'True')
 
-        selectedParameters = QSettings().value("/PDS/Zonations/SelectedParameters", [])
+        selectedParameters = QSettings().value("/PDS/Zonations/SelectedParameters/v"+self.scheme, [])
         self.selectedParameters = [int(z) for z in selectedParameters]
 
         self.fillParameters()
@@ -104,11 +104,11 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         try:
             settings = QSettings()
-            settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
-            settings.setValue("/PDS/Zonations/selectedZones", selectedZones)
-            settings.setValue("/PDS/Zonations/SelectedParameter", paramId)
-            settings.setValue("/PDS/Zonations/UseElevation", u'True' if self.mUseElevation.isChecked() else u'False')
-            settings.setValue("/PDS/Zonations/UseErosion", u'True' if self.mUseErosion.isChecked() else u'False')
+            settings.setValue("/PDS/Zonations/SelectedZonations/v"+self.scheme, selectedZonations)
+            settings.setValue("/PDS/Zonations/selectedZones/v"+self.scheme, selectedZones)
+            settings.setValue("/PDS/Zonations/SelectedParameter/v"+self.scheme, paramId)
+            settings.setValue("/PDS/Zonations/UseElevation/v"+self.scheme, u'True' if self.mUseElevation.isChecked() else u'False')
+            settings.setValue("/PDS/Zonations/UseErosion/v"+self.scheme, u'True' if self.mUseErosion.isChecked() else u'False')
         except:
             return
 
@@ -139,9 +139,8 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         useErosion = self.mUseErosion.isChecked()
 
         well_ids = self.wellsBrowser.getSelectedWells()
-
+        wellsWithoutElev = ''
         for id in well_ids:
-            # records = self.db.execute(sql, well_id=id, parameter_id=paramId, zonation_id=zoneDef[1], zone_id=zoneDef[0])
             records = self.db.execute(sql, well_id=id, parameter_id=paramId, zonation_id=zoneDef[1], base_order=zoneOrder)
             hasRecords = False
             if records:
@@ -158,7 +157,13 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                             l = QgsGeometry.fromPoint(pt)
                             feat = QgsFeature(self.layer.fields())
                             feat.setGeometry(l)
-                            feat.setAttributes([wellName, float(value), intervalName])
+                            if self.mUseElevation.isChecked() and not input_row[22]:
+                                feat.setAttributes([wellName, None, intervalName])
+                                if len(wellsWithoutElev) > 0:
+                                    wellsWithoutElev += ', '
+                                wellsWithoutElev += wellName
+                            else:
+                                feat.setAttributes([wellName, float(value), intervalName])
                             self.layer.addFeatures([feat])
                         break
             if not hasRecords and useErosion:
@@ -169,6 +174,11 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                     feat.setGeometry(l)
                     feat.setAttributes([wellName, None, None])
                     self.layer.addFeatures([feat])
+
+        if len(wellsWithoutElev):
+            QtGui.QMessageBox.warning(None, self.tr(u'Warning'),
+                                       self.tr(u'No elevation in wells:') + '\n' + wellsWithoutElev,
+                                       QtGui.QMessageBox.Ok)
 
 
     def getWellBottom(self, sql, wellId):
@@ -186,8 +196,8 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                 startX = pt.x()
                 startY = pt.y()
 
-                blob_x = numpy.fromstring(rec[6].read(), '>f').astype('d')
-                blob_y = numpy.fromstring(rec[7].read(), '>f').astype('d')
+                blob_x = numpy.fromstring(self.db.blobToString(rec[6]), '>f').astype('d')
+                blob_y = numpy.fromstring(self.db.blobToString(rec[7]), '>f').astype('d')
                 ip  = len(blob_x) - 1
                 dx = 0
                 dy = 0
@@ -306,7 +316,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         return 21
 
     def read_zonation_params(self, params):
-        d = params.read()
+        d = self.db.blobToString(params)
         if not d:
             return
         _pos = [0]
@@ -413,7 +423,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                 depth = zone_bottom
 
         def read_floats(index):
-            return numpy.fromstring(input_row[index].read(), '>f').astype('d')
+            return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d')
 
         x = read_floats(self.deviation_x_column_index)
         y = read_floats(self.deviation_y_column_index)
@@ -469,7 +479,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
     def fillParameters(self):
         settings = QSettings()
-        selectedParameter = int(settings.value("/PDS/Zonations/SelectedParameter", -1))
+        selectedParameter = int(settings.value("/PDS/Zonations/SelectedParameter/v"+self.scheme, -1))
 
         self.mParamComboBox.clear()
         records = self.db.execute(self.get_sql('ZonationParams_parameter.sql'))
@@ -493,7 +503,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         dlg = QgisPDSZoneparamsDialog(self.project, self.iface, zonation_id, zone_id, well_ids, self)
         if dlg.exec_():
             self.selectedParameters = dlg.getSelected()
-            QSettings().setValue("/PDS/Zonations/SelectedParameters", self.selectedParameters)
+            QSettings().setValue("/PDS/Zonations/SelectedParameters/v"+self.scheme, self.selectedParameters)
             self.fillParameters()
 
 

@@ -30,6 +30,11 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         self.project = _project
         self.editLayer = _editLayer
 
+        if _project:
+            self.scheme = _project['project']
+        else:
+            self.scheme = ''
+
         try:
             connection = create_connection(self.project)
             scheme = self.project['project']
@@ -58,8 +63,8 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
                                                 level=QgsMessageBar.CRITICAL)
 
         settings = QSettings()
-        selectedZonations = settings.value("/PDS/Zonations/SelectedZonations", [])
-        selectedZones = settings.value("/PDS/Zonations/selectedZones", [])
+        selectedZonations = settings.value("/PDS/Zonations/SelectedZonations/v"+self.scheme, [])
+        selectedZones = settings.value("/PDS/Zonations/selectedZones/v"+self.scheme, [])
 
         self.selectedZonations = [int(z) for z in selectedZonations]
         self.selectedZones = [int(z) for z in selectedZones]
@@ -119,8 +124,8 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
 
 
         settings = QSettings()
-        settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
-        settings.setValue("/PDS/Zonations/selectedZones", selectedZones)
+        settings.setValue("/PDS/Zonations/SelectedZonations/v"+self.scheme, selectedZonations)
+        settings.setValue("/PDS/Zonations/selectedZones/v"+self.scheme, selectedZones)
 
 
     def on_zonationListWidget_itemSelectionChanged(self):
@@ -136,7 +141,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         sqlFile = os.path.join(self.plugin_dir, 'db', 'ZonationCoords.sql')
 
         def read_floats(index):
-            return numpy.fromstring(input_row[index].read(), '>f').astype('d')
+            return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d')
 
         newCoords = None
 

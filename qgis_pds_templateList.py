@@ -68,7 +68,7 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
             item = QTableWidgetItem(input_row[3])
             self.tableWidget.setItem(row, 2, item)
 
-            dt = QDateTime.fromString(input_row[4], 'dd-MM-yyyy HH:mm:ss')
+            dt = QDateTime.fromTime_t(0).addSecs(int(input_row[4])) #QDateTime.fromString(input_row[4], 'dd-MM-yyyy HH:mm:ss')
             item = QTableWidgetItem(QVariant.DateTime)
             item.setData(Qt.DisplayRole, dt)
             self.tableWidget.setItem(row, 3, item)

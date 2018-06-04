@@ -37,17 +37,11 @@ class ControlPointReader(ReaderBase):
 
     def createLayer(self, layerName, pdsProject, groupSetId, defaultValue):
         proj4String = 'epsg:4326'
-        try:
-            self.tig_projections = TigProjections(db=self.db)
-            proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
-            if proj is not None:
-                proj4String = 'PROJ4:'+proj.qgis_string
-        except Exception as e:
-            self.iface.messageBar().pushMessage(self.tr('Error'),
-                                                self.tr(u'Project projection read error {0}: {1}').format(
-                                                scheme, str(e)),
-                                                level=QgsMessageBar.CRITICAL)
-            return
+        self.tig_projections = TigProjections(db=self.db)
+        proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
+        if proj is not None:
+            proj4String = 'PROJ4:'+proj.qgis_string
+
 
         self.uri = "Point?crs={}".format(proj4String)
         self.uri += '&field={}:{}'.format(self.setNoAttr, "double")
@@ -109,9 +103,9 @@ class ControlPointReader(ReaderBase):
 
             layer.startEditing()
             for setNo, paramNo, subsetNo, setName, paramName, subsetName, param, mapX, mapY in groups:
-                xCoords = numpy.fromstring(mapX.read(), '>d').astype('d')
-                yCoords = numpy.fromstring(mapY.read(), '>d').astype('d')
-                mapParams = numpy.fromstring(param.read(), '>d').astype('d')
+                xCoords = numpy.fromstring(self.db.blobToString(mapX), '>d').astype('d')
+                yCoords = numpy.fromstring(self.db.blobToString(mapY), '>d').astype('d')
+                mapParams = numpy.fromstring(self.db.blobToString(param), '>d').astype('d')
 
                 if len(xCoords) != len(yCoords):
                     self.iface.messageBar().pushMessage(self.tr('Error'),

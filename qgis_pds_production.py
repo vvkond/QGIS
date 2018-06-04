@@ -176,9 +176,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         connection = create_connection(self.project)
         scheme = self.project['project']
         try:           
-            db = connection.get_db(scheme)
-            result = db.execute("select reservoir_part_code from reservoir_part where  entity_type_nm = 'RESERVOIR_ZONE'")
-            db.disconnect()
+            self.db = connection.get_db(scheme)
+            result = self.db.execute("select reservoir_part_code from reservoir_part where  entity_type_nm = 'RESERVOIR_ZONE'")
+            # db.disconnect()
             return result
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"), 

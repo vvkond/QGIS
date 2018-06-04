@@ -45,6 +45,9 @@ class Base(object):
     def cursor(self):
         raise NotImplementedError()
 
+    def blobToString(self, blob, offset):
+        raise NotImplementedError()
+
     def __del__(self):
         self.disconnect()
 
@@ -177,6 +180,9 @@ class Oracle(Base):
     def cursor(self):
         return self.connection.cursor()
 
+    def blobToString(self, blob, offset=1):
+        return blob.read(offset)
+
     def disconnect(self):
         self._connection = None
 
@@ -241,6 +247,12 @@ class Sqlite(Base):
 
     def cursor(self):
         return self.connection.cursor()
+
+    def blobToString(self, blob, offset=0):
+        if blob:
+            return blob[offset:]
+        else:
+            return ''
 
     def disconnect(self):
         if self._connection is not None:

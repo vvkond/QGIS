@@ -796,7 +796,7 @@ class QgisPDS(QObject):
                         self.tr(u'Save project before load wells'), level=QgsMessageBar.CRITICAL)
             return
 
-        dlg = QgisPDSWellsBrowserDialog(self.currentProject)
+        dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
         if dlg.exec_():
             wells = QgisPDSWells(self.iface, self.currentProject)
             wells.setWellList(dlg.getWellIds())
@@ -812,7 +812,7 @@ class QgisPDS(QObject):
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
 
-        dlg = QgisPDSWellsBrowserDialog(self.currentProject)
+        dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
         if dlg.exec_():
             wells = QgisPDSDeviation(self.iface, self.currentProject)
             wells.setWellList(dlg.getWellIds())

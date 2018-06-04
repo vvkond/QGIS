@@ -130,8 +130,12 @@ class Utm(TigProjection):
     def from_row(cls, p_type, units, p, **_kw):
         prj_assert(p_type == 1, 'P_TYPE')
         prj_assert(units == 1, 'UNITS')
-        prj_assert(p.size() >= 8 * 3 + 4, 'len(p)')
-        s = p.read(1, 8 * 3 + 4)
+        if type(p) is buffer:
+            prj_assert(len(p) >= 8 * 3 + 4, 'len(p)')
+            s = p[:8 * 3 + 4]
+        else:
+            prj_assert(p.size() >= 8 * 3 + 4, 'len(p)')
+            s = p.read(1, 8 * 3 + 4)
         return cls(params=struct.unpack('>dddI', s))
 
     @cached_property
@@ -202,8 +206,12 @@ class Tm(TigProjection):
     @classmethod
     def from_row(cls, p_type, p, **_kw):
         prj_assert(p_type == 1, 'P_TYPE')
-        prj_assert(p.size() >= 64, 'len(p)')
-        s = p.read(1, 64)
+        if type(p) is buffer:
+            prj_assert(len(p) >= 64, 'len(p)')
+            s = p[:64]
+        else:
+            prj_assert(p.size() >= 64, 'len(p)')
+            s = p.read(1, 64)
         params = struct.unpack('>dddddddd', s)
         prj_assert(params[3] == 0, 'params[3]')
         return cls(params=params)

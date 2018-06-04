@@ -25,8 +25,8 @@ import os
 
 from PyQt4 import QtGui, uic
 from qgis.gui import QgsMessageBar
-from QgisPDS.db import Sqlite
-from QgisPDS.connections import create_connection
+from db import Sqlite
+from connections import create_connection
 from QgisPDS.utils import to_unicode
 from os.path import abspath
 import json
@@ -40,7 +40,7 @@ class Db(object):
         self.db = Sqlite(db_path)
 
     def enumerate_connections(self):
-        return self.db.execute('select id, name from connections order by name, id')
+        return self.db.execute('select id, name, type from connections order by name, id')
 
     def get_connection(self, id):
         row = self.db.fetch_assoc('select * from connections where id=:id', id=id)
@@ -100,41 +100,45 @@ class QgisPDSDialog(QtGui.QDialog, FORM_CLASS):
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'File not exists - ')+db_path, QtGui.QMessageBox.Ok)
             return
                        
-        try:	
+        try:
             row = 0
             self.projects = []
-            for connection_id, connection_name in db.enumerate_connections():
+            for connection_id, connection_name, connection_type in db.enumerate_connections():
                 conn_row = db.get_connection(connection_id)
                 opt = self._getUiOptions(conn_row, connection_id)
                 projects = self._getPDSProjects(opt)
-                
+
                 if projects is not None:
                     for project, host, server in projects:
                         self.tableWidget.insertRow(row)
-                        
-                        item = QtGui.QTableWidgetItem(host)                     
+
+                        item = QtGui.QTableWidgetItem(host)
                         self.tableWidget.setItem(row, 0, item)
-                        
-                        item = QtGui.QTableWidgetItem(server)                     
+
+                        item = QtGui.QTableWidgetItem(server)
                         self.tableWidget.setItem(row, 1, item)
-                        
-                        item = QtGui.QTableWidgetItem(project)                     
+
+                        item = QtGui.QTableWidgetItem(project)
                         self.tableWidget.setItem(row, 2, item)
-                        
+
                         port = conn_row['options']['port']
                         user = to_unicode(conn_row['options']['user'])
                         password = to_unicode(conn_row['options']['password'])
+                        path = ''
+                        if 'path' in conn_row['options']:
+                            path = to_unicode(conn_row['options']['path'])
 
-                        self.projects.append(self._createProjectRecord(host, server, project, port, user, password))
-                        
+                        self.projects.append(self._createProjectRecord(host, server, project, port, user,
+                                                                       password, connection_type, path))
+
                         row += 1
                 
         except Exception as e:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(str(e)), QtGui.QMessageBox.Ok)
      
-    def _createProjectRecord(self, host, server, project, port, user, password):
+    def _createProjectRecord(self, host, server, project, port, user, password, ctype, path):
         return {
-            'type': u'tigress',
+            'type': to_unicode(ctype),
             'project': to_unicode(project),
             'options': json.dumps({
                 'host': to_unicode(host),
@@ -142,30 +146,34 @@ class QgisPDSDialog(QtGui.QDialog, FORM_CLASS):
                 'sid': to_unicode(server),
                 'user': to_unicode(user),
                 'password': to_unicode(password),
+                'path': path,
             }, ensure_ascii=False),       
         }
       
     def _getUiOptions(self, d, connection_id):  
-        """ get ui options """    
+        """ get ui options """
+        path = ''
+        if 'path' in d['options']:
+            path = to_unicode(d['options']['path'])
         return {
             'id': connection_id,
             'name': to_unicode(d['name']),
-            'type': u'tigress',
+            'type': to_unicode(d['type']),
             'options': json.dumps({
                 'host': to_unicode(d['options']['host']),
                 'port': d['options']['port'],
                 'sid': to_unicode(d['options']['sid']),
                 'user': to_unicode(d['options']['user']),
                 'password': to_unicode(d['options']['password']),
+                'path': path,
             }, ensure_ascii=False),
         }
  
     def _getPDSProjects(self, options):
         connection = create_connection(options)
         try:
-            db = connection.get_db()
-            result = db.execute('SELECT PROJECT_NAME, PROJECT_HOST, PROJECT_SERVER FROM GLOBAL.project WHERE PROJECT_NAME <> \'global\' ')
-            db.disconnect()
+            self.db = connection.get_db('global')
+            result = self.db.execute('SELECT PROJECT_NAME, PROJECT_HOST, PROJECT_SERVER FROM project WHERE PROJECT_NAME <> \'global\' ')
             return result
         except Exception as e:
             #print 'Connection {0}: {1}'.format(connection.name, str(e))

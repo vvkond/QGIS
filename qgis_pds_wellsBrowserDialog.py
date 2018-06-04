@@ -19,12 +19,13 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
     """Constructor."""
-    def __init__(self, _project, parent=None):
+    def __init__(self, _iface, _project, parent=None):
         super(QgisPDSWellsBrowserDialog, self).__init__(parent)
         self.setupUi(self)
 
         self.plugin_dir = os.path.dirname(__file__)
         self.project = _project
+        self.iface = _iface
         self.initDb()
 
         self.wellsBrowser = QgisPDSWellsBrowserForm(self.db, self.getAllWells, self.project, parent=self)
@@ -82,8 +83,8 @@ class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
                     well.append(float(rec[20]))  # Longitude
                     well.append(rec[22])  # Slot number
                     well.append(rec[16])  # Owner
-                    dt = QDateTime.fromString(rec[17], 'dd-MM-yyyy HH:mm:ss')  # Date
-                    well.append(dt)
+                    # dt = QDateTime.fromString(rec[17], 'dd-MM-yyyy HH:mm:ss')  # Date
+                    well.append(QDateTime.fromTime_t(0).addSecs(int(rec[17])))
                     wellList.append(well)
 
             return wellList

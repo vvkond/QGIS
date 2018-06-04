@@ -254,13 +254,13 @@ class QgisPDSWells(QObject):
                             well.setAttribute('on_offshore', row[11])
                         well.setAttribute('status', row[12])
                         well.setAttribute('symbol', row[13])
-                        well.setAttribute('spud_date', QDateTime.fromString(row[14], self.dateFormat))
+                        well.setAttribute('spud_date', str(row[14]))
                         try:
                             well.setAttribute('global_pri', row[15])
                         except: #Format before shapes
                             well.setAttribute('global_private', row[15])
                         well.setAttribute('owner', row[16])
-                        well.setAttribute('created', QDateTime.fromString(row[17], self.dateFormat))
+                        well.setAttribute('created', QDateTime.fromTime_t(0).addSecs(int(row[17])))
                         well.setAttribute('project', projectName)
 
                         if not num:

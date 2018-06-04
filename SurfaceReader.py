@@ -109,13 +109,13 @@ class SurfaceReader(ReaderBase):
                 TIG_MAP_SUBSET_GEOM,
                 TIG_MAP_SUBSET_GEOM_DATA) in groups:
 
-                x = numpy.fromstring(TIG_MAP_X.read(), '>d').astype('d')
-                y = numpy.fromstring(TIG_MAP_Y.read(), '>d').astype('d')
-                z = numpy.fromstring(TIG_MAP_Z.read(), '>d').astype('d')
+                x = numpy.fromstring(self.db.blobToString(TIG_MAP_X), '>d').astype('d')
+                y = numpy.fromstring(self.db.blobToString(TIG_MAP_Y), '>d').astype('d')
+                z = numpy.fromstring(self.db.blobToString(TIG_MAP_Z), '>d').astype('d')
                 min_x, max_x, step_x = x
                 min_y, max_y, step_y = y
 
-                values = numpy.fromstring(TIG_MAP_PARAM_VRSHRT.read(), '>f').astype('d')
+                values = numpy.fromstring(self.db.blobToString(TIG_MAP_PARAM_VRSHRT), '>f').astype('d')
 
                 size_x = int((max_x - min_x) / step_x + 1.005)
                 size_y = int((max_y - min_y) / step_y + 1.005)
