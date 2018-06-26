@@ -1,6 +1,7 @@
 SELECT
-    PROD_END_TIME,
-    TO_CHAR(PROD_END_TIME, 'DD.MM.YYYY')
+    PROD_END_TIME as "[timestamp]",
+    PROD_END_TIME
+--    TO_CHAR(PROD_END_TIME, 'DD.MM.YYYY')
 FROM
     (SELECT
         PROD_END_TIME

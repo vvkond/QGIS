@@ -46,15 +46,15 @@ WITH
         OR grp.RESERVOIR_PART_S = :reservoir_element_group_id)
     )
 SELECT
-    TIME
+    TIME as "[timestamp]"
 FROM
     (SELECT DISTINCT
-        tt.PROD_START_TIME AS TIME
+        datetime(tt.PROD_START_TIME) AS TIME
     FROM
         tt
     UNION
     SELECT DISTINCT
-        tt.PROD_END_TIME + 1 AS TIME
+        datetime(tt.PROD_END_TIME, '+1 days') AS TIME
     FROM
         tt
     )

@@ -25,12 +25,7 @@ SELECT
     i.tig_interval_order,
     i.DB_SLDNID
 FROM
-    tig_well_interval vi,
-    tig_well_history wh,
-    tig_interval i,
-    tig_zonation z,
-    tig_computed_deviation cd,
-    tig_variable v,
+    tig_well_interval vi left join
     (SELECT
         e.Well_ID,
         e."Elevation"
@@ -39,7 +34,7 @@ FROM
             a.DB_SLDNID Elev_ID,
             a.TIG_WELL_SLDNID Well_ID,
             ed1.TIG_DATUM_NAME "Measurement",
-            TRUNC(a.TIG_DATUM_OFFSET, 2) "Elevation",
+            a.TIG_DATUM_OFFSET "Elevation",
             ed2.TIG_DATUM_NAME "Datum"
         FROM
             tig_elevation_changes a,
@@ -62,12 +57,16 @@ FROM
         ) i
     WHERE
         e.Elev_ID = i.max_elev_Id
-    ) elev
+    ) elev on vi.TIG_WELL_SLDNID = elev.Well_ID,
+    tig_well_history wh,
+    tig_interval i,
+    tig_zonation z,
+    tig_computed_deviation cd,
+    tig_variable v
 WHERE
     wh.DB_SLDNID = :well_id
     AND wh.DB_SLDNID = vi.TIG_WELL_SLDNID
     AND vi.TIG_INTERVAL_SLDNID = i.DB_SLDNID
-    AND vi.TIG_WELL_SLDNID = elev.Well_ID(+)
     AND i.TIG_ZONATION_SLDNID = z.DB_SLDNID
     AND(z.DB_SLDNID = :zonation_id
     OR :zonation_id IS NULL)

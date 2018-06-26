@@ -26,12 +26,13 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
     """Constructor."""
-    def __init__(self, _db, getWellsFunc, _project, parent=None):
+    def __init__(self, _iface, _db, getWellsFunc, _project, parent=None):
         super(QgisPDSWellsBrowserForm, self).__init__(parent)
         self.setupUi(self)
 
         self.project = _project
         self.db = _db
+        self.iface = _iface
         self.wellFilter = {}
         self.wellListId = -1
         self.wellList = []
@@ -152,7 +153,7 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
             self.selectWellList()
 
     def selectWellFilter(self):
-        dlg = QgisPDSWellFilterSetupDialog(self)
+        dlg = QgisPDSWellFilterSetupDialog(self.iface, self)
         dlg.setFilter(self.wellFilter)
         if dlg.exec_():
             self.wellFilter = dlg.getFilter()

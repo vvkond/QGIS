@@ -7,13 +7,39 @@
     <x>0</x>
     <y>0</y>
     <width>470</width>
-    <height>373</height>
+    <height>425</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Критерии поиска</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Выборка</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1,0">
+      <item>
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>Слой</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="mLayerComboBox"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>Поле</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
    <item>
     <widget class="QFrame" name="frame">
      <property name="frameShape">
@@ -87,17 +113,17 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="mWellName"/>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>Имя скважины</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>Полное имя</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Имя скважины</string>
         </property>
        </widget>
       </item>
@@ -115,17 +141,17 @@
         </property>
        </widget>
       </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Номер слота</string>
+        </property>
+       </widget>
+      </item>
       <item row="2" column="0">
        <widget class="QLabel" name="label_5">
         <property name="text">
          <string>Оператор</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>Широта</string>
         </property>
        </widget>
       </item>
@@ -136,12 +162,15 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="label_10">
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_8">
         <property name="text">
-         <string>Номер слота</string>
+         <string>Широта</string>
         </property>
        </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLineEdit" name="mLocation"/>
       </item>
       <item row="8" column="0">
        <widget class="QLabel" name="label_11">
@@ -150,6 +179,30 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="mOperator"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="mFullName"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="mApiNumber"/>
+      </item>
+      <item row="7" column="1">
+       <widget class="QLineEdit" name="mSlotNumber"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="mLatitude"/>
+      </item>
+      <item row="9" column="1">
+       <widget class="QLineEdit" name="mDateTime"/>
+      </item>
+      <item row="8" column="1">
+       <widget class="QLineEdit" name="mAuthor"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QLineEdit" name="mLongitude"/>
+      </item>
       <item row="9" column="0">
        <widget class="QLabel" name="label_12">
         <property name="text">
@@ -157,32 +210,105 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="mFullName"/>
+      <item row="3" column="2">
+       <widget class="QToolButton" name="mApiNumberToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QLineEdit" name="mOperator"/>
+      <item row="6" column="2">
+       <widget class="QToolButton" name="mLongitudeToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QLineEdit" name="mApiNumber"/>
+      <item row="0" column="2">
+       <widget class="QToolButton" name="mWellsToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QLineEdit" name="mLocation"/>
+      <item row="4" column="2">
+       <widget class="QToolButton" name="mLocationToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
       </item>
-      <item row="5" column="1">
-       <widget class="QLineEdit" name="mLatitude"/>
+      <item row="9" column="2">
+       <widget class="QToolButton" name="mDateToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
       </item>
-      <item row="6" column="1">
-       <widget class="QLineEdit" name="mLongitude"/>
+      <item row="1" column="2">
+       <widget class="QToolButton" name="mFullNameToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
       </item>
-      <item row="7" column="1">
-       <widget class="QLineEdit" name="mSlotNumber"/>
+      <item row="7" column="2">
+       <widget class="QToolButton" name="mSlotNumberToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
       </item>
-      <item row="8" column="1">
-       <widget class="QLineEdit" name="mAuthor"/>
+      <item row="5" column="2">
+       <widget class="QToolButton" name="mLatitudeToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
       </item>
-      <item row="9" column="1">
-       <widget class="QLineEdit" name="mDateTime"/>
+      <item row="2" column="2">
+       <widget class="QToolButton" name="mOperatorToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="2">
+       <widget class="QToolButton" name="mAuthorToolButton">
+        <property name="toolTip">
+         <string>Получить список значений поля в выборке</string>
+        </property>
+        <property name="text">
+         <string>&lt;&lt;</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -221,8 +347,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>257</x>
-     <y>363</y>
+     <x>266</x>
+     <y>415</y>
     </hint>
     <hint type="destinationlabel">
      <x>157</x>
@@ -237,8 +363,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>325</x>
-     <y>363</y>
+     <x>334</x>
+     <y>415</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>

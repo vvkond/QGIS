@@ -2,9 +2,11 @@ SELECT p_trpr.data_value,
 	 reservoir_part.tig_zonation_key, 
 	 reservoir_part.tig_top_zone_key, 
 	 reservoir_part.tig_base_zone_key, 
-	 reservoir_part.reservoir_part_code, 
-	 TO_CHAR(surv_meas.start_time, 'DD/MM/YYYY HH24:MI:SS'),
-	 TO_CHAR(surv_meas.end_time, 'DD/MM/YYYY HH24:MI:SS')
+	 reservoir_part.reservoir_part_code,
+	 {0} start_time,
+	 {1} end_time
+--	 TO_CHAR(surv_meas.start_time, 'DD/MM/YYYY HH24:MI:SS'),
+--	 TO_CHAR(surv_meas.end_time, 'DD/MM/YYYY HH24:MI:SS')
 FROM other_prod_act, 
     pfnu_prod_act_x, 
     reservoir_part, 
@@ -28,10 +30,10 @@ WHERE
 
 	 p_trpr.data_value > 0 and 
 
-	 reservoir_part.reservoir_part_code in ({0}) and
+	 reservoir_part.reservoir_part_code in ({2}) and
 	 wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s and
 	 wellbore.wellbore_s=wellbore_intv.wellbore_s and
 	 well.well_s=wellbore.well_s and
 	 tig_well_history.tig_latest_well_name=well.well_id and
 	 tig_well_history.DB_SLDNID = :wellsldnid
-ORDER BY surv_meas.start_time, surv_meas.end_time
+ORDER BY start_time, end_time

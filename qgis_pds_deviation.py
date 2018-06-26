@@ -286,13 +286,13 @@ class QgisPDSDeviation(QObject):
                             pass
                         well.setAttribute(self.attrStatus, row[12])
                         well.setAttribute(self.attrSymbol, row[13])
-                        well.setAttribute(self.attrSpud_date, QDateTime.fromString(row[14], self.dateFormat))
+                        well.setAttribute(self.attrSpud_date, str(row[14]))
                         try:
                             well.setAttribute(self.attrGlobal_private, row[15])
                         except:
                             pass
                         well.setAttribute(self.attrOwner, row[16])
-                        well.setAttribute(self.attrCreated, QDateTime.fromString(row[17], self.dateFormat))
+                        well.setAttribute(self.attrCreated, QDateTime.fromTime_t(0).addSecs(int(row[17])))
                         well.setAttribute(self.attrProject, projectName)
 
                         if not num:

@@ -28,29 +28,28 @@ FROM
         w.TIG_API_NUMBER "API No.",
         w.TIG_LATEST_OPERATOR_NAME "Operator",
         w.TIG_COUNTRY "Country",
-        TO_CHAR(TRUNC(w.TIG_LATITUDE, 6)) "Latitude",
-        TO_CHAR(TRUNC(w.TIG_LONGITUDE, 6)) "Longitude",
+        w.TIG_LATITUDE "Latitude",
+        w.TIG_LONGITUDE "Longitude",
         w.TIG_TOTAL_DEPTH "Total Depth",
         REPLACE(REPLACE(w.TIG_ON_OR_OFF_SHORE, '1', 'Offshore'), '0', 'Onshore') "On/Offshore",
         w.TIG_LATEST_WELL_STATE_NO "Status",
         s.TIG_DESCRIPTION "Symbol",
-        TO_CHAR(b.SPUD_DATE, 'DD-MM-YYYY') "Spud Date",
+        b.SPUD_DATE "Spud Date",
         REPLACE(REPLACE(w.TIG_GLOBAL_DATA_FLAG, '1', 'Global'), '0', 'Private') "Global/Private",
         'gg' "Owner",
-        TO_CHAR((TO_DATE('01-01-1970', 'DD-MM-YYYY') +(w.DB_INSTANCE_TIME_STAMP / 86400)), 'DD-MM-YYYY') "Created",
+        w.DB_INSTANCE_TIME_STAMP "Created",
         '%2' "Project",
         w.DB_SLDNID Well_ID,
         w.TIG_LONGITUDE,
         w.TIG_LATITUDE
     FROM
-        tig_well_history w,
-        well b,
-        global.tig_well_symbol s
+        tig_well_history w
+        left join global.tig_well_symbol s on w.TIG_WELL_SYMBOL_ID=s.TIG_WELL_SYMBOL_ID,
+        well b
     WHERE
         w.TIG_LATEST_WELL_NAME = b.WELL_ID
-        AND w.TIG_WELL_SYMBOL_ID = s.TIG_WELL_SYMBOL_ID(+)
         AND w.TIG_ONLY_PROPOSAL <= 1
-    ) well,
+    ) well left join
     (SELECT
         e.Well_ID,
         e."Measurement",
@@ -61,7 +60,7 @@ FROM
             a.DB_SLDNID Elev_ID,
             a.TIG_WELL_SLDNID Well_ID,
             ed1.TIG_DATUM_NAME "Measurement",
-            TRUNC(a.TIG_DATUM_OFFSET, 2) "Elevation",
+            a.TIG_DATUM_OFFSET "Elevation",
             ed2.TIG_DATUM_NAME "Datum"
         FROM
             tig_elevation_changes a,
@@ -84,11 +83,10 @@ FROM
         ) i
     WHERE
         e.Elev_ID = i.max_elev_Id
-    ) elev,
+    ) elev on well.Well_ID = elev.Well_ID,
     tig_computed_deviation cd
 WHERE
-    well.Well_ID = elev.Well_ID(+)
-    AND cd.TIG_WELL_SLDNID = well.Well_ID
+    cd.TIG_WELL_SLDNID = well.Well_ID
     AND well.TIG_LONGITUDE != 0
     AND well.TIG_LATITUDE != 0
     AND cd.DB_SLDNID IN

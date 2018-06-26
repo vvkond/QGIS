@@ -12,12 +12,11 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from QgisPDS.db import Oracle
-from QgisPDS.connections import create_connection
+from connections import create_connection
 from utils import *
 from QgisPDS.tig_projection import *
 from qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 from qgis_pds_zoneparams import QgisPDSZoneparamsDialog
-from qgis_pds_WellFilterSetup import QgisPDSWellFilterSetupDialog
 from qgis_pds_templateList import QgisPDSTemplateListDialog
 from qgis_pds_wellsBrowserForm import *
 
@@ -53,7 +52,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         self.isInitialized = True
 
-        self.wellsBrowser = QgisPDSWellsBrowserForm(self.db, self.getZoneWells, self.project, parent=self)
+        self.wellsBrowser = QgisPDSWellsBrowserForm(_iface, self.db, self.getZoneWells, self.project, parent=self)
         self.gridLayout.addWidget(self.wellsBrowser, 2, 0, 1, 2)
 
 
@@ -535,7 +534,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                 well.append(float(rec[7]))                                  #Longitude
                 well.append(rec[8])                                         #Slot number
                 well.append(rec[9])                                         #Owner
-                dt = QDateTime.fromString(rec[10], 'dd-MM-yyyy HH:mm:ss')   #Date
+                dt = QDateTime.fromTime_t(0).addSecs(int(rec[10]))          #Date
                 well.append(dt)
                 wellList.append(well)
 

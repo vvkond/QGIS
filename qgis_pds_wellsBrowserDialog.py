@@ -28,7 +28,7 @@ class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
         self.iface = _iface
         self.initDb()
 
-        self.wellsBrowser = QgisPDSWellsBrowserForm(self.db, self.getAllWells, self.project, parent=self)
+        self.wellsBrowser = QgisPDSWellsBrowserForm(_iface, self.db, self.getAllWells, self.project, parent=self)
         self.verticalLayout.insertWidget(0, self.wellsBrowser)
 
     def initDb(self):

@@ -196,6 +196,15 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
         if isolineLayer:
             QgsMapLayerRegistry.instance().addMapLayer(isolineLayer)
 
+    def updateMinMax(self):
+        raster = self.input_raster
+        if raster:
+            rasterProvider = raster.dataProvider()
+            stats = rasterProvider.bandStatistics(1, QgsRasterBandStats.All, raster.extent(), 0)
+            self.mMinSpinBox.setValue(stats.minimumValue)
+            self.mMaxSpinBox.setValue(stats.maximumValue)
+        else:
+            print 'No raster'
 
     def on_buttonBox_accepted(self):
         self.createIsolines()
@@ -205,16 +214,8 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
         if type(item) is int:
             return
 
-        raster = self.input_raster
-        if raster:
-            rasterProvider = raster.dataProvider()
-            stats = rasterProvider.bandStatistics(1, QgsRasterBandStats.All, raster.extent(), 0)
-            if self.mMinSpinBox.value() == 0:
-                self.mMinSpinBox.setValue(stats.minimumValue)
-            if self.mMaxSpinBox.value() == 0:
-                self.mMaxSpinBox.setValue(stats.maximumValue)
-        else:
-            print 'No raster'
+        if self.mUpdateMinMax.isChecked():
+            self.updateMinMax()
 
         if not self.mIsolinesLineEdit.text():
             self.mIsolinesLineEdit.setPlaceholderText(self.tr(u'isolines ') + item)
@@ -225,6 +226,10 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
     def on_mFaultsComboBox_activated(self, item):
         if type(item) is int:
             return
+
+    def on_mUpdateMinMax_toggled(self, checked):
+        if checked:
+            self.updateMinMax()
 
 
     def runProcess(self, runStr):

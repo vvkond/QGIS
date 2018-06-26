@@ -9,14 +9,14 @@ SELECT distinct
     wh.TIG_LONGITUDE,
     wh.TIG_SLOT_NUMBER,
     ii.login_name "Owner",
-    TO_CHAR((TO_DATE('01-01-1970', 'DD-MM-YYYY') +(wh.DB_INSTANCE_TIME_STAMP / 86400)), 'DD-MM-YYYY HH24:MI:SS') AS "Created"
+    wh.DB_INSTANCE_TIME_STAMP AS "Created"
 FROM
     tig_well_interval vi,
-    tig_well_history wh,
+    tig_well_history wh left join
+    (select TIG_USER_ID, max(TIG_LOGIN_NAME) as login_name from tig_interpreter group by TIG_USER_ID) ii on wh.TIG_INTERPRETER_SLDNID = ii.TIG_USER_ID,
     tig_interval i,
     tig_zonation z,
-    tig_variable v,
-    (select TIG_USER_ID, max(TIG_LOGIN_NAME) as login_name from tig_interpreter group by TIG_USER_ID) ii
+    tig_variable v
 WHERE
     wh.DB_SLDNID = vi.TIG_WELL_SLDNID
     AND vi.TIG_INTERVAL_SLDNID = i.DB_SLDNID
@@ -26,5 +26,4 @@ WHERE
     AND(i.DB_SLDNID = :zone_id
     OR :zone_id IS NULL)
     AND v.TIG_VARIABLE_TYPE = 2
-    AND wh.TIG_INTERPRETER_SLDNID = ii.TIG_USER_ID(+)
 

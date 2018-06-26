@@ -1,6 +1,7 @@
 import json
+import os
 
-from tig_loader.db import Oracle
+from tig_loader.db import Oracle, Sqlite
 from tig_loader.utils import StrictInit, cached_property
 
 
@@ -50,9 +51,27 @@ class TigressConnection(StrictInit):
         )
 
 
+class TigressSQliteConnection(TigressConnection):
+
+    @cached_property
+    def path(self):
+        """ oracle users password """
+        return unicode(self.options['path'])
+
+    def get_db(self, project='global'):
+        """ create and return SQLite db """
+        dbPath = os.path.abspath(os.path.join(self.path, project))
+        globalPath = os.path.abspath(os.path.join(self.path, 'global'))
+        db = Sqlite(dbPath)
+        db.execute("attach '{0}' as global".format(globalPath))
+        return db
+
+
+
 def create_connection(args):
     return connection_types[args['type']](args=args)
 
 connection_types = {
     'tigress': TigressConnection,
+    'sqlite': TigressSQliteConnection,
 }

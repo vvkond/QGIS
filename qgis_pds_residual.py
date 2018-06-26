@@ -22,7 +22,7 @@ from osgeo import gdal
 import ogr
 import csv
 
-from QgisPDS.db import Oracle
+from db import Oracle, Sqlite
 from QgisPDS.connections import create_connection
 from QgisPDS.utils import to_unicode, StrictInit, lonlat_add_list
 from bblInit import *
@@ -106,10 +106,9 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         
         self.reservoir_element_group = 0
         self.reservoir_name = ''
-        self.start_date = self.to_oracle_date(QDateTime().currentDateTime())
-        self.endDate = self.to_oracle_date(QDateTime().currentDateTime())
         self.currentZonation = 0
         self.currentZone = 0
+        self.dateFormat = u'dd/MM/yyyy HH:mm:ss'
 
         self.wellFilter = []
         selectedParams = QSettings().value("/PDS/WellFilter/SelectedParameters", [])
@@ -120,11 +119,13 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         scheme = self.project['project']
         try:           
             self.db = self.connection.get_db(scheme)
-
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"), 
                 self.tr(u'Open project {0}: {1}').format(scheme, str(e)), level=QgsMessageBar.CRITICAL)
-            return 
+            return
+
+        self.start_date = QDateTime().currentDateTime().toString(u'yyyy-MM-dd HH:mm:ss')
+        self.endDate = QDateTime().currentDateTime().toString(u'yyyy-MM-dd HH:mm:ss')
         
         self.setupUi(self)
 
@@ -293,12 +294,18 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
             blob_x = row[4]
             blob_y = row[5]
             if blob_x is not None and blob_y is not None:
-                size_x = blob_x.size()
-                size_y = blob_y.size()
-                if size_x == size_y and size_x >= 4:
-                    delta_x = numpy.fromstring(self.db.blobToString(blob_x, size_x - 3), '>f').astype('d')[0]
-                    delta_y = numpy.fromstring(self.db.blobToString(blob_y, size_y - 3), '>f').astype('d')[0]
-                    # pos = lonlat_add_list(pos[0], pos[1], delta_x, delta_y)
+                xx = numpy.fromstring(self.db.blobToString(blob_x), '>f').astype('d')
+                yy = numpy.fromstring(self.db.blobToString(blob_y), '>f').astype('d')
+                size_x = len(xx)
+                size_y = len(yy)
+
+                # size_x = blob_x.size()
+                # size_y = blob_y.size()
+                if size_x == size_y and size_x >= 0:
+                    # delta_x = numpy.fromstring(self.db.blobToString(blob_x, size_x - 3), '>f').astype('d')[0]
+                    # delta_y = numpy.fromstring(self.db.blobToString(blob_y, size_y - 3), '>f').astype('d')[0]
+                    delta_x = xx[size_x-1]
+                    delta_y = yy[size_y-1]
                     pos = (pos[0]+delta_x, pos[1]+delta_y)
             yield Well(
                 id=int(row[0]),
@@ -378,16 +385,26 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
 
     @property 
     def query_sql(self):
-        return self.get_sql('Residual.sql')
+        if type(self.db) is Sqlite:
+            return self.get_sql('Residual_sqlite.sql')
+        else:
+            return self.get_sql('Residual.sql')
 
     @property
     def times_sql(self):
-        return self.get_sql('Residual_times.sql')
+        if type(self.db) is Sqlite:
+            return self.get_sql('Residual_times_sqlite.sql')
+        else:
+            return self.get_sql('Residual_times.sql')
 
     def get_times(self):
         times = []
         first_time = None
-        for time in self.db.execute_scalar(self.times_sql, **self.sql_args):
+        sql = self.times_sql
+        #     .format(self.db.fieldToDate('tt.PROD_START_TIME'),
+        #                             self.db.fieldToDate('tt.PROD_END_TIME', '+1'))
+        # print sql
+        for time in self.db.execute_scalar(sql, **self.sql_args):
             if first_time is None:
                 first_time = time
                 times.append(0)
@@ -883,12 +900,16 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
     def setStartDate(self):
         self.mStartDateComboBox.clear()
 
-        startDates = self.execSql('Residual_start_date.sql', bsasc_source=self.productionKind, 
+        # sql = self.get_sql('Residual_start_date.sql').format(self.db.formatDateField('PROD_START_TIME'))
+        # startDates = self.db.execute(sql, bsasc_source=self.productionKind,
+        #                             reservoir_element_group_id=self.reservoir_element_group)
+        startDates = self.execSql('Residual_start_date.sql', bsasc_source=self.productionKind,
                                     reservoir_element_group_id=self.reservoir_element_group)
 
         if startDates is not None:
             idx = 0
-            for s, name in startDates:
+            for s, ss in startDates:
+                name = s.strftime('%d.%m.%Y') #QDateTime.fromString(ss, self.dateFormat).toString('dd.MM.yyyy')
                 self.mStartDateComboBox.addItem(name, s)
                 if s == self.start_date:
                     idx = self.mStartDateComboBox.count()-1
@@ -899,13 +920,18 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
     def setEndDate(self):
         self.mEndDateComboBox.clear()
 
-        endDates = self.execSql('Residual_end_date.sql', bsasc_source=self.productionKind, 
+        # sql = self.get_sql('Residual_end_date.sql').format(self.db.formatDateField('PROD_END_TIME'))
+        # endDates = self.db.execute(sql, bsasc_source=self.productionKind,
+        #                         reservoir_element_group_id=self.reservoir_element_group,
+        #                         start_date=self.mStartDateComboBox.itemData(self.mStartDateComboBox.currentIndex()))
+        endDates = self.execSql('Residual_end_date.sql', bsasc_source=self.productionKind,
                                     reservoir_element_group_id=self.reservoir_element_group,
                                     start_date=self.mStartDateComboBox.itemData(self.mStartDateComboBox.currentIndex()))
 
         if endDates is not None:
             idx = 0
-            for s, name in endDates:
+            for s, ss in endDates:
+                name = s.strftime('%d.%m.%Y') #QDateTime.fromString(ss, self.dateFormat).toString('dd.MM.yyyy')
                 self.mEndDateComboBox.addItem(name, s)
                 if s == self.endDate:
                     idx = self.mEndDateComboBox.count() - 1
@@ -1006,8 +1032,12 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
 
 
     def to_oracle_date(self, qDate):
-        dateText = qDate.toString(u'dd/MM/yyyy HH:mm:ss')
-        return "TO_DATE('"+dateText+"', 'DD/MM/YYYY HH24:MI:SS')"
+        # dateText = qDate.toString(u'dd/MM/yyyy HH:mm:ss')
+        # return "TO_DATE('"+dateText+"', 'DD/MM/YYYY HH24:MI:SS')"
+        try:
+            return self.db.stringToSqlDate(qDate)
+        except:
+            return self.db.stringToSqlDate(QDateTime().currentDateTime())
 
     #SLOTS
     def on_buttonBox_accepted(self):

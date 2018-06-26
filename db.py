@@ -48,6 +48,15 @@ class Base(object):
     def blobToString(self, blob, offset):
         raise NotImplementedError()
 
+    def formatDateField(self, field):
+        raise NotImplementedError()
+
+    def fieldToDate(self, field, offset):
+        raise NotImplementedError()
+
+    def stringToSqlDate(self, qDate):
+        raise NotImplementedError()
+
     def __del__(self):
         self.disconnect()
 
@@ -183,6 +192,17 @@ class Oracle(Base):
     def blobToString(self, blob, offset=1):
         return blob.read(offset)
 
+    def formatDateField(self, field):
+        return "TO_CHAR({0}, 'DD/MM/YYYY HH24:MI:SS')".format(field)
+
+    def fieldToDate(self, field, modifier=''):
+        return "TO_DATE({0}{1})".format(field, modifier)
+
+    def stringToSqlDate(self, qDate):
+        """qdate is QDate"""
+        dateText = qDate.toString(u'dd/MM/yyyy HH:mm:ss')
+        return "TO_DATE('"+dateText+"', 'DD/MM/YYYY HH24:MI:SS')"
+
     def disconnect(self):
         self._connection = None
 
@@ -240,7 +260,7 @@ class Sqlite(Base):
 
     def _connect(self):
         try:
-            return sqlite3.connect(self.path)
+            return sqlite3.connect(self.path, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         except Exception as e:
             e.args = e.args + (self.path,)
             raise
@@ -253,6 +273,20 @@ class Sqlite(Base):
             return blob[offset:]
         else:
             return ''
+
+    def formatDateField(self, field):
+        return "strftime('%d/%m/%Y %H:%M:%S', {0})".format(field)
+
+    def fieldToDate(self, field, modifier=None):
+        if modifier:
+            return "date({0}, '{1}')".format(field, modifier)
+        else:
+            return "date({0})".format(field)
+
+    def stringToSqlDate(self, qDate):
+        """qdate is QDate"""
+        dateText = qDate.toString(u'yyyy-MM-dd HH:mm:ss')
+        return "date('" + dateText + "')"
 
     def disconnect(self):
         if self._connection is not None:

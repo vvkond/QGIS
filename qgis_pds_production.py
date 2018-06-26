@@ -13,7 +13,7 @@ from os.path import abspath
 import json
 import ast
 
-from QgisPDS.db import Oracle
+from db import Oracle, Sqlite
 from QgisPDS.connections import create_connection
 from utils import *
 from bblInit import *
@@ -619,8 +619,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 
             sql += (" select /*+ FIRST_ROWS(5) */"
                     " production.data_value,"
-                    " production.start_time,"
-                    " production.end_time,"
+                    " production.start_time start_time,"
+                    " production.end_time end_time,"
                     " " + self.to_oracle_char("production.start_time") + ","
                     " " + self.to_oracle_char("production.end_time") + ","
                     " production.bsasc_source,"
@@ -1062,12 +1062,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
     #Return TO_DATE oracle string 
     def to_oracle_date(self, qDate):
-        dateText = qDate.toString(self.dateFormat)
-        return "TO_DATE('"+dateText+"', 'DD/MM/YYYY HH24:MI:SS')"
-        
+        # dateText = qDate.toString(self.dateFormat)
+        # return "TO_DATE('"+dateText+"', 'DD/MM/YYYY HH24:MI:SS')"
+        return self.db.stringToSqlDate(qDate)
         
     def to_oracle_char(self, field):
-        return "TO_CHAR(" + field + ", 'DD/MM/YYYY HH24:MI:SS')"
+        return self.db.formatDateField(field)
+        # return "TO_CHAR(" + field + ", 'DD/MM/YYYY HH24:MI:SS')"
         
     #return selected in reservoirsListWidget items
     def getSelectedReservoirs(self):
@@ -1103,13 +1104,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             
             sql = ""
             if OnlyProduction:
-                sql =  (" select TO_CHAR(min(production.start_time), 'DD/MM/YYYY HH24:MI:SS'),"
-                        " TO_CHAR(max(production.end_time), 'DD/MM/YYYY HH24:MI:SS') from p_std_vol_lq production, production_aloc"
+                sql =  (" select {0},"
+                        " {1} from p_std_vol_lq production, production_aloc"
                         " WHERE production.activity_s = production_aloc.production_aloc_s and"
-                        " production_aloc.bsasc_source = 'Reallocated Production'")
+                        " production_aloc.bsasc_source = 'Reallocated Production'")\
+                        .format(db.formatDateField('min(production.start_time)'), db.formatDateField('max(production.end_time)'))
             else:
-                sql = (" select TO_CHAR(min(start_date), 'DD/MM/YYYY HH24:MI:SS') start_date,"
-                        " TO_CHAR(max(end_date), 'DD/MM/YYYY HH24:MI:SS') end_date"
+                sql = (" select {0} start_date,"
+                        " {1} end_date"
                         " from"
                         " (select min(production.start_time) start_date,"
                         " max(production.end_time) end_date from p_std_vol_lq production, production_aloc"
@@ -1118,8 +1120,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         " union"
                         " select  min(wtst_meas.start_time) start_date,"
                         " max(wtst_meas.end_time) end_date"
-                        " from wtst_meas)")
-    
+                        " from wtst_meas)")\
+                    .format(db.formatDateField('min(start_date)'), db.formatDateField('max(end_date)'))
+
             result = db.execute(sql)
 
             if result is not None:

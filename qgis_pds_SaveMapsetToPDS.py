@@ -276,7 +276,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             self.db.commit()
             return True
         except Exception as e:
-            self.iface.messageBar().pushMessage(self.tr("Error"), str(e), level=QgsMessageBar.CRITICAL, duration=30)
+            QtGui.QMessageBox.critical(self, self.tr("Error"), str(e))
             return False
 
     def executeInsert(self, sql):
@@ -285,7 +285,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             self.db.commit()
             return True
         except Exception as e:
-            self.iface.messageBar().pushMessage(self.tr("Error"), str(e), level=QgsMessageBar.CRITICAL, duration=30)
+            QtGui.QMessageBox.critical(self, self.tr("Error"), str(e))
             return False
 
     def saveToDb(self):
@@ -344,7 +344,9 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                     return
 
             #Create Group/Set
-            self.createGroupSet(groupNameToSave, setNameToSave)
+            if not self.createGroupSet(groupNameToSave, setNameToSave):
+                QtGui.QMessageBox.critical(self, self.tr('Error'), self.tr('Param create error'))
+                return
 
             isPointsGeom = 0
             features = self.currentLayer.getFeatures()
@@ -390,10 +392,10 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                                       "TIG_MAP_SET_TYPE, tig_interpreter_sldnid) "
                                "values (TIG_MAP_SET_SEQ.nextval, '{0}', {1}, {2}, {3})"
                                .format(groupNameToSave, self.groupNo, self.mapSetType, self.interpreter)):
-                return
+                return False
 
             if not self.updateSystemCounter('tig_map_set_no', self.groupNo):
-                return
+                return False
 
         # Create new param set
         self.paramNo = self.maxMapSetParameterNo + 1
@@ -405,6 +407,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.updateSystemCounter('tig_map_set_parameter_no', self.paramNo)
 
         self.updateMethodApplication()
+        return True
 
 
     def processAsPoints(self):

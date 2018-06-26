@@ -94,7 +94,9 @@ class QgisPDSPressure(QgisPDSProductionDialog):
         self.mSelectedReservoirs = self.getSelectedReservoirs()
         reservoirs = u"'" + u"','".join(self.mSelectedReservoirs) + u"'"
 
-        pressureSql = self.get_sql('pressure.sql').format(reservoirs)
+        pressureSql = self.get_sql('pressure.sql').format(self.db.formatDateField('surv_meas.start_time'),
+                                         self.db.formatDateField('surv_meas.end_time'), reservoirs)
+        QgsMessageLog.logMessage("pressureMap.createProductionLayer: {}\n\n".format(pressureSql), tag="QgisPDS.sql")
 
         wells = self._readDbWells()
         if wells is None:

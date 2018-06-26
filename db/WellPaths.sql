@@ -1,8 +1,8 @@
 SELECT
     wh.TIG_LATEST_WELL_NAME "Well Name",
     wh.DB_SLDNID "Well_ID",
-    TO_CHAR(TRUNC(wh.TIG_LATITUDE, 6)) "Latitude",
-    TO_CHAR(TRUNC(wh.TIG_LONGITUDE, 6)) "Longitude",
+    wh.TIG_LATITUDE "Latitude",
+    wh.TIG_LONGITUDE "Longitude",
     wh.TIG_LONGITUDE,
     wh.TIG_LATITUDE,
     cd.TIG_DELTA_X_ORDINATE,
