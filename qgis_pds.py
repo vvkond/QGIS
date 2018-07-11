@@ -584,7 +584,7 @@ class QgisPDS(QObject):
         icon_path = ':/plugins/QgisPDS/Refresh.png'
         self.actionRefreshLayer = self.add_action(
             icon_path,
-            text=self.tr(u'Update production layer'),
+            text=self.tr(u'Update layer'),
             callback=self.refreshLayer,
             parent=self.iface.mainWindow())
 

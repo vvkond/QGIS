@@ -193,8 +193,8 @@ class QgisPDSDeviation(QObject):
 
     def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing = True):
         if self.db is None and layer:
-            prjStr = layer.customProperty("pds_project")
-            self.project = ast.literal_eval(prjStr)
+            # prjStr = layer.customProperty("pds_project")
+            # self.project = ast.literal_eval(prjStr)
             if not self.initDb():
                 return
 
