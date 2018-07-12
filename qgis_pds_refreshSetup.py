@@ -45,6 +45,10 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
             sett.setValue('PDS/refreshSetup/mAddMissingCheckBox', 'True')
         else:
             sett.setValue('PDS/refreshSetup/mAddMissingCheckBox', 'False')
+        if self.isDeleteMissing:
+            sett.setValue('PDS/refreshSetup/mDeleteMissingCheckBox', 'True')
+        else:
+            sett.setValue('PDS/refreshSetup/mDeleteMissingCheckBox', 'False')
 
     def restoreSettings(self):
         sett = QSettings()
@@ -52,6 +56,7 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
         self.mDataCheckBox.setChecked(sett.value('PDS/refreshSetup/mDataCheckBox', 'True') == 'True')
         self.mSelectedCheckBox.setChecked(sett.value('PDS/refreshSetup/mSelectedCheckBox', 'False') == 'True')
         self.mAddMissingCheckBox.setChecked(sett.value('PDS/refreshSetup/mAddMissingCheckBox', 'False') == 'True')
+        self.mDeleteMissingCheckBox.setChecked(sett.value('PDS/refreshSetup/mDeleteMissingCheckBox', 'False') == 'True')
 
     @property
     def isRefreshKoords(self):
@@ -68,3 +73,7 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
     @property
     def isAddMissing(self):
         return self.mAddMissingCheckBox.isChecked()
+
+    @property
+    def isDeleteMissing(self):
+        return self.mDeleteMissingCheckBox.isChecked()

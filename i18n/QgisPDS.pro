@@ -10,6 +10,7 @@ SOURCES = ../bblInit.py \
 	../qgis_pds_prod_layer.py \
 	../qgis_pds_prodSetup.py \
 	../qgis_pds_wells.py \
+	../qgis_pds_deviation.py \
 	../qgis_pds_production.py \
 	../ContoursReader.py \
 	../ControlPointReader.py \

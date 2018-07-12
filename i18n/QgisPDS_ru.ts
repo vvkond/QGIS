@@ -14,12 +14,12 @@
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6615909"/>
+        <location line="+6615625"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6615909"/>
+        <location line="-6615625"/>
         <source>Coordinates length unmatched</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
@@ -47,24 +47,23 @@
         <translation>Контрольные точки</translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+77"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="+6616476"/>
+        <location line="+6616254"/>
         <source>Project projection read error</source>
         <translation type="obsolete">Ошибка чтения проекции</translation>
     </message>
     <message>
-        <location line="-6616476"/>
+        <location line="-6616254"/>
         <source>Coordinate count missmatch</source>
         <translation>Не совпадает количество кординат</translation>
     </message>
     <message>
-        <location line="-71"/>
         <source>Project projection read error {0}: {1}</source>
-        <translation>Ошибка чтения проекции {0}: {1}</translation>
+        <translation type="obsolete">Ошибка чтения проекции {0}: {1}</translation>
     </message>
 </context>
 <context>
@@ -381,7 +380,7 @@
 <context>
     <name>QgisPDS</name>
     <message>
-        <location filename="../qgis_pds.py" line="+690"/>
+        <location filename="../qgis_pds.py" line="+692"/>
         <source>Select PDS project</source>
         <translation>Выбор проекта PDS</translation>
     </message>
@@ -411,12 +410,11 @@
         <translation>Настроить диаграммы добычи</translation>
     </message>
     <message>
-        <location line="+32"/>
         <source>Update production layer</source>
-        <translation>Обновить слой добычи</translation>
+        <translation type="obsolete">Обновить слой добычи</translation>
     </message>
     <message>
-        <location line="-109"/>
+        <location line="-77"/>
         <source>Load control points</source>
         <translation>Загрузить контрольные точки</translation>
     </message>
@@ -471,7 +469,7 @@
         <translation>Статистика</translation>
     </message>
     <message>
-        <location line="+475"/>
+        <location line="+482"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -481,7 +479,7 @@
         <translation>Пожалуйста, сначала сохраните проект</translation>
     </message>
     <message>
-        <location line="-344"/>
+        <location line="-351"/>
         <source>Save to PDS</source>
         <translation>Сохранить в PDS</translation>
     </message>
@@ -556,29 +554,33 @@
         <translation>Запуск приложения Tigress</translation>
     </message>
     <message>
-        <location line="-652"/>
+        <location line="-649"/>
         <source>File not found {0}.
 Please set TIGDIR variable</source>
         <translation type="obsolete">Файл не найден {0}..
 Пожалуйста, установите системную переменную TIGDIR</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>File not found {0}.Please set TIGDIR variable</source>
         <translation type="obsolete">Файл не найден {0}..
 Пожалуйста, установите системную переменную TIGDIR</translation>
     </message>
     <message>
-        <location line="+1075"/>
+        <location line="+1079"/>
         <source>file not found.
 Please set TIGDIR variable</source>
         <translation>Файл не найден.
 Пожалуйста, установите системную переменную TIGDIR</translation>
     </message>
     <message>
-        <location line="-1010"/>
+        <location line="-1019"/>
         <source>No current PDS project</source>
         <translation>Не выбран проект</translation>
+    </message>
+    <message>
+        <location line="+523"/>
+        <source>Update layer</source>
+        <translation>Обновить слой</translation>
     </message>
 </context>
 <context>
@@ -645,7 +647,7 @@ Please set TIGDIR variable</source>
         <translation type="obsolete">Проект {0}: {1}</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+36"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -683,7 +685,7 @@ Please set TIGDIR variable</source>
         <translation>Ошибка преобразования формата растра</translation>
     </message>
     <message>
-        <location line="+125"/>
+        <location line="+126"/>
         <source>isolines </source>
         <translation></translation>
     </message>
@@ -694,19 +696,52 @@ Please set TIGDIR variable</source>
     </message>
 </context>
 <context>
-    <name>QgisPDSDialog</name>
+    <name>QgisPDSDeviation</name>
     <message>
-        <location filename="../qgis_pds_dialog.py" line="+172"/>
+        <location filename="../qgis_pds_deviation.py" line="+339"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-72"/>
+        <location line="-282"/>
+        <source>No current PDS project</source>
+        <translation>Не выбран проект</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Project projection read error {0}: {1}</source>
+        <translation>Ошибка чтения проекции {0}: {1}</translation>
+    </message>
+    <message>
+        <location line="+41"/>
+        <source>Error create wells layer</source>
+        <translation>Ошибка создания слоя скважин</translation>
+    </message>
+    <message>
+        <location line="+106"/>
+        <source>Deleted from layer</source>
+        <translation>Удалены из слоя</translation>
+    </message>
+    <message>
+        <location line="+108"/>
+        <source>Layer: {0} refreshed</source>
+        <translation>Слой {0} обновлен</translation>
+    </message>
+</context>
+<context>
+    <name>QgisPDSDialog</name>
+    <message>
+        <location filename="../qgis_pds_dialog.py" line="+182"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location line="-82"/>
         <source>File not exists - </source>
         <translation>Файл отсутствует - </translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+82"/>
         <source>Connection {0}: {1}</source>
         <translation>Соединение {0}: {1}</translation>
     </message>
@@ -719,7 +754,7 @@ Please set TIGDIR variable</source>
         <translation></translation>
     </message>
     <message utf8="true">
-        <location line="+38"/>
+        <location line="+41"/>
         <source>Хост</source>
         <translation></translation>
     </message>
@@ -742,12 +777,12 @@ Please set TIGDIR variable</source>
         <translation>Карта давлений</translation>
     </message>
     <message>
-        <location line="+130"/>
+        <location line="+132"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-99"/>
+        <location line="-101"/>
         <source>Error create pressure layer</source>
         <translation>Ошибка создания слоя давлений</translation>
     </message>
@@ -773,12 +808,12 @@ Please set TIGDIR variable</source>
         <translation>Карта накопленной добычи</translation>
     </message>
     <message>
-        <location line="+1068"/>
+        <location line="+1071"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-743"/>
+        <location line="-746"/>
         <source>No current PDS project</source>
         <translation>Не выбран проект</translation>
     </message>
@@ -788,12 +823,12 @@ Please set TIGDIR variable</source>
         <translation>Текущий проект: {0}</translation>
     </message>
     <message>
-        <location line="+740"/>
+        <location line="+743"/>
         <source>Read production from project {0}: {1}</source>
         <translation>Чтение добычи из проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="-811"/>
+        <location line="-814"/>
         <source>Layer create error</source>
         <translation>Ошибка создания слоя</translation>
     </message>
@@ -846,17 +881,17 @@ Please set TIGDIR variable</source>
 <context>
     <name>QgisPDSResidualDialog</name>
     <message>
-        <location filename="../qgis_pds_residual.py" line="+817"/>
+        <location filename="../qgis_pds_residual.py" line="+834"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-691"/>
+        <location line="-710"/>
         <source>Open project {0}: {1}</source>
         <translation>Открытие проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="+23"/>
+        <location line="+26"/>
         <source>Well top</source>
         <translation>Устье</translation>
     </message>
@@ -871,7 +906,7 @@ Please set TIGDIR variable</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
     </message>
     <message>
-        <location line="+435"/>
+        <location line="+451"/>
         <source>Creating temp feature class for polygons...</source>
         <translation></translation>
     </message>
@@ -911,7 +946,7 @@ Please set TIGDIR variable</source>
         <translation>PolygonToRaster_conversionсоздал растр размером {0}, который меньше чем размер исходного растра {1}</translation>
     </message>
     <message>
-        <location line="+376"/>
+        <location line="+389"/>
         <source>Save layer</source>
         <translation>Сохранить слой</translation>
     </message>
@@ -921,12 +956,12 @@ Please set TIGDIR variable</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-932"/>
+        <location line="-961"/>
         <source>Zone intersection</source>
         <translation>Пластопересечение</translation>
     </message>
     <message>
-        <location line="+396"/>
+        <location line="+412"/>
         <source>Input NPT raster is not selected</source>
         <translation></translation>
     </message>
@@ -1018,12 +1053,12 @@ Please set TIGDIR variable</source>
 <context>
     <name>QgisPDSWells</name>
     <message>
-        <location filename="../qgis_pds_wells.py" line="+285"/>
+        <location filename="../qgis_pds_wells.py" line="+308"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
     <message>
-        <location line="-207"/>
+        <location line="-230"/>
         <source>Error create wells layer</source>
         <translation>Ошибка создания слоя скважин</translation>
     </message>
@@ -1033,25 +1068,35 @@ Please set TIGDIR variable</source>
         <translation>Не выбран проект</translation>
     </message>
     <message>
-        <location line="+127"/>
+        <location line="+151"/>
         <source>Layer: {0} refreshed</source>
         <translation>Слой {0} обновлен</translation>
     </message>
     <message>
-        <location line="-275"/>
+        <location line="-148"/>
         <source>Read wells from project {0}: {1}</source>
         <translation type="obsolete">Чтение скважин из проекта {0}: {1}</translation>
     </message>
     <message>
-        <location line="+166"/>
+        <location line="+15"/>
         <source>Project projection read error {0}: {1}</source>
         <translation>Ошибка чтения проекции {0}: {1}</translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>Deleted from layer</source>
+        <translation>Удалены из слоя</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Warning</source>
+        <translation>Предупреждение</translation>
     </message>
 </context>
 <context>
     <name>QgisPDSWellsBrowserDialog</name>
     <message>
-        <location filename="../qgis_pds_wellsBrowserDialog.py" line="+91"/>
+        <location filename="../qgis_pds_wellsBrowserDialog.py" line="+92"/>
         <source>Error</source>
         <translation>Ошибка</translation>
     </message>
@@ -1069,7 +1114,7 @@ Please set TIGDIR variable</source>
 <context>
     <name>QgisPDSWellsBrowserForm</name>
     <message>
-        <location filename="../qgis_pds_wellsBrowserForm.py" line="+80"/>
+        <location filename="../qgis_pds_wellsBrowserForm.py" line="+81"/>
         <source>Well id</source>
         <translation>ИД</translation>
     </message>
@@ -1127,7 +1172,7 @@ Please set TIGDIR variable</source>
 <context>
     <name>QgisPDSZonationsDialog</name>
     <message>
-        <location filename="../qgis_pds_zonations.py" line="+36"/>
+        <location filename="../qgis_pds_zonations.py" line="+35"/>
         <source>Zonation parameters</source>
         <translation>Загрузить параметры пластов</translation>
     </message>
@@ -1142,16 +1187,16 @@ Please set TIGDIR variable</source>
         <translation>Ошибка создания слоя {0}</translation>
     </message>
     <message>
-        <location line="-129"/>
+        <location line="-128"/>
         <source>Well id</source>
         <translation type="obsolete">ИД</translation>
     </message>
     <message>
+        <location line="+0"/>
         <source>Well name</source>
         <translation type="obsolete">Имя скважины</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>Full name</source>
         <translation type="obsolete">Полное имя</translation>
     </message>
@@ -1161,39 +1206,42 @@ Please set TIGDIR variable</source>
         <translation type="obsolete">Оператор</translation>
     </message>
     <message>
+        <location line="-1"/>
         <source>API number</source>
         <translation type="obsolete">Номер по API</translation>
     </message>
     <message>
-        <location line="-1"/>
+        <location line="+0"/>
         <source>Location</source>
         <translation type="obsolete">Размещение</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+0"/>
         <source>Latitude</source>
         <translation type="obsolete">Широта</translation>
     </message>
     <message>
+        <location line="+0"/>
         <source>Longitude</source>
         <translation type="obsolete">Долгота</translation>
     </message>
     <message>
-        <location line="-1"/>
+        <location line="+0"/>
         <source>Slot number</source>
         <translation type="obsolete">Номер слота</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+0"/>
         <source>Created by</source>
         <translation type="obsolete">Автор</translation>
     </message>
     <message>
+        <location line="+0"/>
         <source>Updated</source>
         <translation type="obsolete">Дата/Время</translation>
     </message>
     <message>
-        <location line="+182"/>
+        <location line="+181"/>
         <source>No elevation in wells:</source>
         <translation>Нет альтитуды в скважинах:</translation>
     </message>

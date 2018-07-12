@@ -176,6 +176,8 @@ class QgisPDS(QObject):
         if not sender or not sender.type() == 0 or sender == self:
             return
 
+        # print 'start pdsLayerModified', sender
+
         editedLayer = sender
         mc = self.iface.mapCanvas()
         tr = mc.getCoordinateTransform()
@@ -822,14 +824,14 @@ class QgisPDS(QObject):
         #     layer.attributeValueChanged.connect(self.pdsLayerModified)
 
         
-    def refreshWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing):
+    def refreshWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
         wells = QgisPDSWells(self.iface, project)
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing)
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing)
 
 
-    def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing):
+    def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
         wells = QgisPDSDeviation(self.iface, project)
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing)
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing)
 
 
     def productionSetup(self):
@@ -842,16 +844,21 @@ class QgisPDS(QObject):
         if currentLayer is None:
             return
 
+        currentLayer.blockSignals(True)
         prodSetup = QgisPDSProdSetup(self.iface, currentLayer)
         prodSetup.exec_()
+        currentLayer.blockSignals(False)
+
 
     def bubblesSetup(self):
         currentLayer = self.iface.activeLayer()
         if currentLayer is None:
             return
 
+        currentLayer.blockSignals(True)
         prodSetup = QgisPDSBubbleSetup(self.iface, currentLayer)
         prodSetup.exec_()
+        currentLayer.blockSignals(False)
 
 
     def wellCoordFromZone(self):
@@ -888,12 +895,13 @@ class QgisPDS(QObject):
         projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
         proj = ast.literal_eval(projStr)
 
+        currentLayer.blockSignals(True)
         prop = currentLayer.customProperty("qgis_pds_type")
         if prop == "pds_wells":
             dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():
                 self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                  dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing)
+                                  dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing)
         elif prop == "pds_current_production":
             self.loadProduction(currentLayer, self.currentProject, True)
         elif prop == "pds_cumulative_production":
@@ -902,7 +910,8 @@ class QgisPDS(QObject):
             dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():
                 self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                        dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing)
+                                        dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing)
+        currentLayer.blockSignals(False)
 
        
     def addProductionLayer(self):

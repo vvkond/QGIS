@@ -80,7 +80,7 @@ class QgisPDSWells(QObject):
 
             return
 
-        self.loadWells(layer, True, True, False, True)
+        self.loadWells(layer, True, True, False, True, False)
         layer.commitChanges()
         self.db.disconnect()
 
@@ -175,12 +175,36 @@ class QgisPDSWells(QObject):
         with open(sql_file_path, 'rb') as f:
             return f.read().decode('utf-8')
 
-    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing = True):
+    def checkWell(self, well_name):
+        sql = ("SELECT db_sldnid FROM tig_well_history WHERE rtrim(tig_latest_well_name) = '" + well_name + "' ")
+
+        records = self.db.execute(sql)
+        num = 0
+        if records:
+            for r in records:
+                num += 1
+
+        return num
+
+
+    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
         if self.db is None and layer:
             # prjStr = layer.customProperty("pds_project")
             # self.project = ast.literal_eval(prjStr)
             if not self.initDb():
                 return
+
+        if isDeleteMissing:
+            deletedWells = []
+            with edit(layer):
+                for f in layer.getFeatures():
+                    well_name = f.attribute(self.attrWellId)
+                    if self.checkWell(well_name) < 1:
+                        deletedWells.append(well_name)
+                        layer.deleteFeature(f.id())
+            if len(deletedWells):
+                s = self.tr('Deleted from layer') + ': ' + ','.join(str(s) for s in deletedWells)
+                QtGui.QMessageBox.warning(None, self.tr(u'Warning'), s, QtGui.QMessageBox.Ok)
 
         dbWells = self._readWells()
         if dbWells is None:
@@ -275,7 +299,6 @@ class QgisPDSWells(QObject):
             self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(layer.name()), duration=10)
 
         layer.updateExtents()
-
 
 
     def _readWells(self):
