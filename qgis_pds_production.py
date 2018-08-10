@@ -165,6 +165,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 sourceCrs = QgsCoordinateReferenceSystem('epsg:4326')
                 self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
         except Exception as e:
+            QgsMessageLog.logMessage(u"Project projection read error {0}: {1}".format(scheme, str(e)), tag="QgisPDS.Error")
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Project projection read error {0}: {1}').format(
                                                 scheme, str(e)),
@@ -181,6 +182,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             # db.disconnect()
             return result
         except Exception as e:
+            QgsMessageLog.logMessage(u"Project production read error {0}: {1}".format(scheme, str(e)), tag="QgisPDS.Error")
             self.iface.messageBar().pushMessage(self.tr("Error"), 
                 self.tr(u'Read production from project {0}: {1}').format(scheme, str(e)), level=QgsMessageBar.CRITICAL)
             return None
@@ -315,6 +317,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             for fl in bblInit.fluidCodes:
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidVolume(fl.code), "double")
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMass(fl.code), "double")
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitMass(fl.code), "double")
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitDateMass(fl.code), "date")
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitVol(fl.code), "double")
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitDateVol(fl.code), "date")
                 
 
             layerName = "Current production - " + ",".join(self.mSelectedReservoirs)
@@ -510,8 +516,19 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     for fl in bblInit.fluidCodes:                        #--- update production attributes
                         attrMass = bblInit.attrFluidMass(fl.code)
                         attrVol =  bblInit.attrFluidVolume(fl.code)
+                        attrMaxDebitMass = bblInit.attrFluidMaxDebitMass(fl.code)
+                        attrMaxDebitVol = bblInit.attrFluidMaxDebitVol(fl.code)
+                        attrMaxDebitMass = bblInit.attrFluidMaxDebitMass(fl.code)
+                        attrMaxDebitDateMass = bblInit.attrFluidMaxDebitDateMass(fl.code)
+                        attrMaxDebitDateVol = bblInit.attrFluidMaxDebitDateVol(fl.code)
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass), feature.attribute(attrMass))
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol), feature.attribute(attrVol))
+                        self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMaxDebitMass), feature.attribute(attrMaxDebitMass))
+                        self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMaxDebitVol), feature.attribute(attrMaxDebitVol))
+                        self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMaxDebitDateMass),
+                                                        feature.attribute(attrMaxDebitDateMass))
+                        self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMaxDebitDateVol),
+                                                        feature.attribute(attrMaxDebitDateVol))
                     num +=1
                 #--- add new well if need
                 if not num:                 #--- well not present in base layer
@@ -597,6 +614,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMass(fl.code), sumMass[i])
             self.setWellAttribute(prodWell.name, bblInit.attrFluidVolume(fl.code), sumVols[i])
 
+        for i, fl in enumerate(bblInit.fluidCodes):
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitMass(fl.code), prodWell.maxDebits[i].massValue)
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitDateMass(fl.code), prodWell.maxDebits[i].massDebitDate)
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitVol(fl.code),
+                                  prodWell.maxDebits[i].volValue)
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitDateVol(fl.code),
+                                  prodWell.maxDebits[i].volDebitDate)
+
      #==========================================================================
      # @todo: need speedup
      #==========================================================================
@@ -675,6 +700,20 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         for prod, s1, e1, start_time, end_time, componentId, unitSet, wtime in result:
             stadat = QDateTime.fromString(start_time, self.dateFormat)
             enddat = QDateTime.fromString(end_time, self.dateFormat)
+            days = wtime/86400.0
+
+            #Max component debits for well
+            if componentId in fluids and days != 0.0:
+                PhaseIndex = fluids.index(componentId)
+                debit = prod / days
+                if "Mass" in unitSet:
+                    if prodWell.maxDebits[PhaseIndex].massValue < debit:
+                        prodWell.maxDebits[PhaseIndex].massValue = debit
+                        prodWell.maxDebits[PhaseIndex].massDebitDate = stadat
+                else:
+                    if prodWell.maxDebits[PhaseIndex].volValue < debit:
+                        prodWell.maxDebits[PhaseIndex].volValue = debit
+                        prodWell.maxDebits[PhaseIndex].volDebitDate = stadat
 
             if (stadat >= self.mStartDate and stadat <= self.mEndDate) or (enddat >= self.mStartDate and enddat <= self.mEndDate):
                 useLiftMethod = True
@@ -684,7 +723,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     NeedProd = product.stadat!=stadat or product.enddat!=enddat
 
                 if product is None or NeedProd:
-                    product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, wtime/86400.0)
+                    product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, days)
                     prodWell.prods.append(product)
 
                 if componentId in fluids:
@@ -845,7 +884,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
             self.loadWellFeature(wId, symbolId)
 
-            pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[])
+            pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
+                                 maxDebits = [ProdDebit() for c in bblInit.fluidCodes])
             self.mProductionWells.append(pwp)
 
 
@@ -943,21 +983,20 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     well.setAttribute (self.attrSymbol, 71)
                     well.setAttribute (self.attrSymbolName, self.tr('unknown well'))
 
-                    pt = QgsPoint(lon, lat)
-                    if self.xform:
-                        pt = self.xform.transform(pt)
-                    well.setGeometry(QgsGeometry.fromPoint(pt))
+                    if lon and lat and lon != NULL and lat != NULL:
+                        pt = QgsPoint(lon, lat)
+                        if self.xform:
+                            pt = self.xform.transform(pt)
+                        well.setGeometry(QgsGeometry.fromPoint(pt))
 
-                    self.mWells[well_name] = well
+                        self.mWells[well_name] = well
 
-                    pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[])
-                    self.mProductionWells.append(pwp)
+                        pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
+                                             maxDebits=[ProdDebit() for c in bblInit.fluidCodes])
+                        self.mProductionWells.append(pwp)
 
         except Exception as e:
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                                                self.tr(u'Read wells from project : {0}').format(str(e)),
-                                                level=QgsMessageBar.CRITICAL)
-
+            QgsMessageLog.logMessage("Read wells from project : {}".format(str(e)), tag="QgisPDS.Error")
             return
 
 
@@ -1132,8 +1171,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
             db.disconnect()
         except Exception as e:
-            self.iface.messageBar().pushMessage(self.tr("Error"), 
-                self.tr(u'Read production from project {0}: {1}').format(scheme, str(e)), level=QgsMessageBar.CRITICAL)
+            QgsMessageLog.logMessage("Read production from project : {}".format(str(e)), tag="QgisPDS.Error")
 
      
     #return selected in fluidsListWidget items   

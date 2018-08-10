@@ -466,7 +466,7 @@ class QgisPDS(QObject):
         if self.currentProject:
             toolTipText += ' ({0})'.format(self.currentProject['project'])
 
-        icon_path = ':/plugins/QgisPDS/splash_logo.png'
+        icon_path = ':/plugins/QgisPDS/database.png'
         self.selectProjectAction = self.add_action(
             icon_path,
             text=toolTipText,

@@ -762,6 +762,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         editLayer.setRendererV2(renderer)
 
         editLayer.triggerRepaint()
+        self.mIface.layerTreeView().refreshLayerSymbology(editLayer.id())
 
         return
 

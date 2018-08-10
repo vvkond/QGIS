@@ -29,6 +29,12 @@ class NAMES(MyStruct):
     name = None
     selected = False
 
+class ProdDebit(MyStruct):
+    massValue = 0
+    volValue = 0
+    massDebitDate = ''
+    volDebitDate = ''
+
 class ProductionWell(MyStruct):
     sldnid = 0
     name = ''
@@ -36,6 +42,7 @@ class ProductionWell(MyStruct):
     prods = []
     reservoirState = 'NO_MOVING'
     movingReservoir = ''
+    maxDebits = []
 
 
 class bblInit:
@@ -281,6 +288,22 @@ class bblInit:
         return fluidCode + u"mas"
 
     @staticmethod
+    def attrFluidMaxDebitMass(fluidCode):
+        return fluidCode + u"max_m"
+
+    @staticmethod
+    def attrFluidMaxDebitDateMass(fluidCode):
+        return fluidCode + u"maxd_m"
+
+    @staticmethod
+    def attrFluidMaxDebitVol(fluidCode):
+        return fluidCode + u"max_v"
+
+    @staticmethod
+    def attrFluidMaxDebitDateVol(fluidCode):
+        return fluidCode + u"maxd_v"
+
+    @staticmethod
     def attrFluidMassOld(fluidCode):
         return fluidCode + u" (mass)"
 
@@ -295,6 +318,22 @@ class bblInit:
     @staticmethod
     def aliasFluidMass(fluidCode):
         return fluidCode + u" (масса)"
+
+    @staticmethod
+    def aliasFluidMaxDebitMass(fluidCode):
+        return fluidCode + u" (макс. дебит по массе)"
+
+    @staticmethod
+    def aliasFluidMaxDebitDateMass(fluidCode):
+        return fluidCode + u" (дата макс. дебита по массе)"
+
+    @staticmethod
+    def aliasFluidMaxDebitVol(fluidCode):
+        return fluidCode + u" (макс. дебит по объему)"
+
+    @staticmethod
+    def aliasFluidMaxDebitDateVol(fluidCode):
+        return fluidCode + u" (дата макс. дебита по объему)"
 
     @staticmethod
     def updateOldProductionStructure(layer):
@@ -326,6 +365,30 @@ class bblInit:
                 if newIdx < 0:
                     provider.addAttributes([QgsField(newName, QVariant.Double, QString(""), 20, 5)])
                     needCopyData = True
+
+                # Check max debit fields mass
+                newName = bblInit.attrFluidMaxDebitMass(fl.code)
+                newIdx = layer.fieldNameIndex(newName)
+                if newIdx < 0:
+                    provider.addAttributes([QgsField(newName, QVariant.Double, QString(""), 20, 5)])
+
+                # Check max debit date fields mass
+                newName = bblInit.attrFluidMaxDebitDateMass(fl.code)
+                newIdx = layer.fieldNameIndex(newName)
+                if newIdx < 0:
+                    provider.addAttributes([QgsField(newName, QVariant.Date, QString(""), 50, 0)])
+
+                # Check max debit fields volume
+                newName = bblInit.attrFluidMaxDebitVol(fl.code)
+                newIdx = layer.fieldNameIndex(newName)
+                if newIdx < 0:
+                    provider.addAttributes([QgsField(newName, QVariant.Double, QString(""), 20, 5)])
+
+                # Check max debit date fields volume
+                newName = bblInit.attrFluidMaxDebitDateVol(fl.code)
+                newIdx = layer.fieldNameIndex(newName)
+                if newIdx < 0:
+                    provider.addAttributes([QgsField(newName, QVariant.Date, QString(""), 50, 0)])
 
 
         if needCopyData:
@@ -360,16 +423,44 @@ class bblInit:
         features = layer.getFeatures()
         for feature in features:
             for fl in bblInit.fluidCodes:
-                # Copy mass fields
+                # mass fields
                 newName = bblInit.attrFluidMass(fl.code)
                 alias = bblInit.aliasFluidMass(fl.alias)
                 idx = layer.fieldNameIndex(newName)
                 if idx >= 0:
                     layer.addAttributeAlias(idx, alias)
 
-                # Copy volume fields
+                # volume fields
                 newName = bblInit.attrFluidVolume(fl.code)
                 alias = bblInit.aliasFluidVolume(fl.alias)
+                idx = layer.fieldNameIndex(newName)
+                if idx >= 0:
+                    layer.addAttributeAlias(idx, alias)
+
+                # Max debit fields mass
+                newName = bblInit.attrFluidMaxDebitMass(fl.code)
+                alias = bblInit.aliasFluidMaxDebitMass(fl.alias)
+                idx = layer.fieldNameIndex(newName)
+                if idx >= 0:
+                    layer.addAttributeAlias(idx, alias)
+
+                # Max debit date fields mass
+                newName = bblInit.attrFluidMaxDebitDateMass(fl.code)
+                alias = bblInit.aliasFluidMaxDebitDateMass(fl.alias)
+                idx = layer.fieldNameIndex(newName)
+                if idx >= 0:
+                    layer.addAttributeAlias(idx, alias)
+
+                # Max debit fields volume
+                newName = bblInit.attrFluidMaxDebitVol(fl.code)
+                alias = bblInit.aliasFluidMaxDebitVol(fl.alias)
+                idx = layer.fieldNameIndex(newName)
+                if idx >= 0:
+                    layer.addAttributeAlias(idx, alias)
+
+                # Max debit date fields volume
+                newName = bblInit.attrFluidMaxDebitDateVol(fl.code)
+                alias = bblInit.aliasFluidMaxDebitDateVol(fl.alias)
                 idx = layer.fieldNameIndex(newName)
                 if idx >= 0:
                     layer.addAttributeAlias(idx, alias)

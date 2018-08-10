@@ -5,7 +5,7 @@ from PyQt4 import QtGui, uic, QtCore
 from PyQt4.QtGui import *
 # from PyQt4.QtCore import *
 from qgis import core, gui
-from qgis.gui import QgsColorButtonV2, QgsFieldExpressionWidget
+from qgis.gui import QgsColorButtonV2, QgsFieldExpressionWidget, QgsFieldProxyModel
 # from qgis.gui import *
 # from qgscolorbuttonv2 import QgsColorButtonV2
 from collections import namedtuple
@@ -16,6 +16,7 @@ import math
 import xml.etree.cElementTree as ET
 import re
 import sip
+import inspect
 
 #Table model for attribute TableView
 class AttributeTableModel(QAbstractTableModel):
@@ -27,6 +28,11 @@ class AttributeTableModel(QAbstractTableModel):
         QAbstractTableModel.__init__(self, parent, *args)
         self.arraydata = []
         self.headerdata = headerData
+
+    def clearRows(self):
+        self.beginResetModel()
+        self.arraydata = []
+        self.endResetModel()
 
     def rowCount(self, parent=QModelIndex()):
         return len(self.arraydata)
@@ -298,8 +304,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         #Add FieldExpression for maximum value calculate
         self.maxValueAttribute = QgsFieldExpressionWidget(self)
         self.maxValueAttribute.setLayer(self.currentLayer)
+        self.maxValueAttribute.setFilters(QgsFieldProxyModel.Filters(8))
         self.maxValueAttribute.fieldChanged.connect(self.maxValueAttribute_fieldChanged)
-        self.scaledSizeGridLayout.addWidget(self.maxValueAttribute, 0, 1, 1, 2)
+        self.horizontalLayout.addWidget(self.maxValueAttribute)
 
 
         self.layerDiagramms = []
@@ -390,6 +397,29 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         rows.sort(reverse=True)
         for row in rows:
             self.labelAttributeTableView.model().removeRow(row)
+
+    @pyqtSlot()
+    def on_mSaveToFile_clicked(self):
+        plugin_dir = os.path.dirname(__file__)
+        lastFileDir = QSettings().value('PDS/BubbleSetup/lastTemplateDir', plugin_dir)
+        fname = QFileDialog.getSaveFileName(self, u'Выбрать файл',
+                                            lastFileDir, u"Файлы bbl (*.bbl *.BBL)")
+        if fname:
+            (fname, ext) = os.path.splitext(fname)
+            fname += '.bbl'
+            self.saveSettingsToFile(fname)
+            QSettings().setValue('PDS/BubbleSetup/lastTemplateDir', os.path.dirname(fname))
+
+    @pyqtSlot()
+    def on_mReadFromFile_clicked(self):
+        plugin_dir = os.path.dirname(__file__)
+        lastFileDir = QSettings().value('PDS/BubbleSetup/lastTemplateDir', plugin_dir)
+        fname = QFileDialog.getOpenFileName(self, u'Выбрать файл',
+                                            lastFileDir, u"Файлы bbl (*.bbl *.BBL);;Все файлы (*.*)")
+        if fname:
+            if self.readSettingsFromFile(fname):
+                self.updateWidgets()
+            QSettings().setValue('PDS/BubbleSetup/lastTemplateDir', os.path.dirname(fname))
 
     def createMyStruct(self):
         newName = u'Диаграмма {}'.format(len(self.layerDiagramms) + 1)
@@ -722,10 +752,15 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 diagramms.append(diagramm)
 
             #Add labels
-            templateStr = self.addLabels(context, feature)
-            if diagrammSize >= d.scaleMinRadius and templateStr:
-                ET.SubElement(root, "label", labelText=templateStr)
-                # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bbllabels'), templateStr)
+            try:
+                templateStr = self.addLabels(context, feature)
+                if diagrammSize >= d.scaleMinRadius and templateStr:
+                    ET.SubElement(root, "label", labelText=templateStr)
+                    # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bbllabels'), templateStr)
+            except Exception as e:
+                QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
+                break
+
 
             offset = diagrammSize if diagrammSize < d.scaleMaxRadius else d.scaleMaxRadius
             LablOffset = feature.attribute('labloffset')
@@ -853,6 +888,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         editLayer.setRendererV2(renderer)
 
         editLayer.triggerRepaint()
+        self.mIface.layerTreeView().refreshLayerSymbology(editLayer.id())
 
         return
 
@@ -879,11 +915,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 context.setFeature(feature)
                 val = exp.evaluate(context)
             else:
-                try:
-                    val = feature[expression]
-                except:
-                    print exp.evalErrorString()
-                    pass
+                val = feature[expression]
 
             if val or (not val and showZero):
                 if isNewLine:
@@ -952,6 +984,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 pass
 
         count = int(self.currentLayer.customProperty('PDS/diagramm_attributeCount', 0))
+        self.attributeModel.clearRows()
         self.attributeModel.insertRows(0, count)
         for row in xrange(count):
             self.attributeModel.setDiagramm(row, int(self.currentLayer.customProperty('PDS/diagramm_filter_' + str(row))))
@@ -965,6 +998,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                     pass
 
         count = int(self.currentLayer.customProperty('PDS/diagramm_labelCount', 0))
+        self.labelAttributeModel.clearRows()
         self.labelAttributeModel.insertRows(0, count)
         for row in xrange(count):
             self.labelAttributeModel.setDiagramm(row, int(self.currentLayer.customProperty('PDS/diagramm_labelfilter_' + str(row))))
@@ -1024,5 +1058,111 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 idxStr = '{0}_{1}'.format(row, col)
                 self.currentLayer.setCustomProperty('PDS/diagramm_labelAttribute_' + idxStr, data)
 
+    def saveSettingsToFile(self, fileName):
+        settings = QSettings(fileName, QSettings.IniFormat)
+
+        settings.setValue("PDS/diagrammCount", len(self.layerDiagramms))
+        # settings.setValue("PDS/symbolSize", self.mSymbolSize.value())
+        settings.setValue("PDS/labelSize", self.labelSizeEdit.value())
+        settings.setValue("PDS/showLineouts", 'true' if self.showLineouts.isChecked() else 'false')
+
+        #Write common diagramm properties
+        num = 1
+        for val in self.layerDiagramms:
+            d = str(num)
+            settings.setValue('PDS/diagramm_name_' + d, val.name)
+            settings.setValue('PDS/diagramm_scale_' + d, val.scale)
+            settings.setValue('PDS/diagramm_scaleType_' + d, val.scaleType)
+            settings.setValue('PDS/diagramm_scaleAttribute_' + d, val.scaleAttribute)
+            settings.setValue('PDS/diagramm_fixedSize_' + d, val.fixedSize)
+            settings.setValue('PDS/diagramm_scaleMinRadius_' + d, val.scaleMinRadius)
+            settings.setValue('PDS/diagramm_scaleMaxRadius_' + d, val.scaleMaxRadius)
+            settings.setValue('PDS/diagramm_diagrammId_' + d, val.diagrammId)
+            num = num + 1
+
+        #Write attributes
+        settings.setValue('PDS/diagramm_attributeCount', self.attributeModel.rowCount())
+        for row in xrange(self.attributeModel.rowCount()):
+            settings.setValue('PDS/diagramm_filter_' + str(row), self.attributeModel.diagramm(row))
+            for col in xrange(self.attributeModel.columnCount()):
+                index = self.attributeModel.index(row, col)
+                data = self.attributeModel.data(index, Qt.DisplayRole)
+                idxStr = '{0}_{1}'.format(row, col)
+                settings.setValue('PDS/diagramm_attribute_' + idxStr, data)
+
+        #Write label settings
+        settings.setValue('PDS/diagramm_labelCount', self.labelAttributeModel.rowCount())
+        for row in xrange(self.labelAttributeModel.rowCount()):
+            settings.setValue('PDS/diagramm_labelfilter_' + str(row), self.labelAttributeModel.diagramm(row))
+            for col in xrange(self.labelAttributeModel.columnCount()):
+                index = self.labelAttributeModel.index(row, col)
+                if col > AttributeTableModel.ColorColumn:
+                    data = self.labelAttributeModel.data(index, Qt.CheckStateRole)
+                else:
+                    data = self.labelAttributeModel.data(index, Qt.DisplayRole)
+                idxStr = '{0}_{1}'.format(row, col)
+                settings.setValue('PDS/diagramm_labelAttribute_' + idxStr, data)
 
 
+
+    def readSettingsFromFile(self, fileName):
+        settings = QSettings(fileName, QSettings.IniFormat)
+
+        count = int(settings.value("PDS/diagrammCount", 0))
+        if count < 1:
+            return False
+
+        # self.mSymbolSize.setValue(float(settings.value("PDS/symbolSize", 4)))
+        self.labelSizeEdit.setValue(float(settings.value("PDS/labelSize", 7)))
+        self.showLineouts.setChecked(
+            True if settings.value("PDS/showLineouts", 'true') == 'true' else False)
+
+        self.layerDiagramms = []
+        for num in xrange(count):
+            d = str(num + 1)
+            val = self.createMyStruct()
+            try:
+                val.name = settings.value('PDS/diagramm_name_' + d, "--")
+                val.scale = float(settings.value('PDS/diagramm_scale_' + d, 300000))
+                val.scaleType = int(settings.value('PDS/diagramm_scaleType_' + d, 0))
+                val.scaleAttribute = settings.value('PDS/diagramm_scaleAttribute_' + d, '')
+                val.fixedSize = float(settings.value('PDS/diagramm_fixedSize_' + d, 15))
+                val.scaleMinRadius = float(settings.value('PDS/diagramm_scaleMinRadius_' + d, 3))
+                val.scaleMaxRadius = float(settings.value('PDS/diagramm_scaleMaxRadius_' + d, 15))
+                val.diagrammId = int(settings.value('PDS/diagramm_diagrammId_' + d, 0))
+                self.layerDiagramms.append(val)
+            except:
+                pass
+
+        count = int(settings.value('PDS/diagramm_attributeCount', 0))
+        self.attributeModel.clearRows()
+        self.attributeModel.insertRows(0, count)
+        for row in xrange(count):
+            self.attributeModel.setDiagramm(row,
+                                            int(settings.value('PDS/diagramm_filter_' + str(row))))
+            for col in xrange(self.attributeModel.columnCount()):
+                try:
+                    idxStr = '{0}_{1}'.format(row, col)
+                    data = settings.value('PDS/diagramm_attribute_' + idxStr)
+                    index = self.attributeModel.index(row, col)
+                    self.attributeModel.setData(index, data, Qt.EditRole)
+                except:
+                    pass
+
+        count = int(settings.value('PDS/diagramm_labelCount', 0))
+        self.labelAttributeModel.clearRows()
+        self.labelAttributeModel.insertRows(0, count)
+        for row in xrange(count):
+            self.labelAttributeModel.setDiagramm(row, int(
+                settings.value('PDS/diagramm_labelfilter_' + str(row))))
+            for col in xrange(self.labelAttributeModel.columnCount()):
+                index = self.labelAttributeModel.index(row, col)
+                idxStr = '{0}_{1}'.format(row, col)
+                data = settings.value('PDS/diagramm_labelAttribute_' + idxStr)
+                if data:
+                    if col > AttributeTableModel.ColorColumn:
+                        self.labelAttributeModel.setData(index, int(data), Qt.CheckStateRole)
+                    else:
+                        self.labelAttributeModel.setData(index, data, Qt.EditRole)
+
+        return True

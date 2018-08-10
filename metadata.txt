@@ -30,7 +30,7 @@ tags=PDS
 
 homepage=https://github.com/vvkond/QGIS
 category=Database
-icon=splash_logo.png
+icon=database.png
 # experimental flag
 experimental=False
 
