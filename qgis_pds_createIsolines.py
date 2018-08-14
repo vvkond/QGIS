@@ -121,10 +121,10 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
 
         prjPath = QgsProject.instance().homePath()
         sn,se = os.path.splitext(os.path.basename(sourceRasterName))
-        isolinePath = prjPath + '/' + sn + '_iso.shp'
-        contourPath = prjPath + '/' + sn + '_cntr.shp'
-        isolinePrj = prjPath + '/' + sn + '_iso.prj'
-        contourPrj = prjPath + '/' + sn + '_cntr.prj'
+        isolinePath = self.createPath(prjPath, sn, '_iso.shp')
+        contourPath = self.createPath(prjPath, sn, '_cntr.shp')
+        isolinePrj = self.createPath(prjPath, sn, '_iso.prj')
+        contourPrj = self.createPath(prjPath, sn, '_cntr.prj')
 
 #Create projection files for new created SHP
         prjWkt = raster.crs().toWkt()
@@ -208,6 +208,14 @@ class QgisPDSCreateIsolines(QtGui.QDialog, FORM_CLASS):
 
     def on_buttonBox_accepted(self):
         self.createIsolines()
+
+    def createPath(self, prjPath, sn, ext):
+        fn =  prjPath + '/' + sn + ext
+        num = 1
+        while os.path.exists(fn):
+            fn = prjPath + '/' + sn + str(num) + ext
+            num += 1
+        return fn
 
 
     def on_mSurfaceComboBox_currentIndexChanged(self, item):
