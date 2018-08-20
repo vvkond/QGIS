@@ -336,6 +336,14 @@ class bblInit:
         return fluidCode + u" (дата макс. дебита по объему)"
 
     @staticmethod
+    def checkFieldExists(layer, fieldName, fieldType, fieldLen=20, fieldPrec=5):
+        provider = layer.dataProvider()
+        newIdx = layer.fieldNameIndex(fieldName)
+        if newIdx < 0:
+            with edit(layer):
+                provider.addAttributes([QgsField(fielName, fieldType, QString(""), fieldLen, fieldPrec)])
+
+    @staticmethod
     def updateOldProductionStructure(layer):
         needCopyData = False
         provider = layer.dataProvider()

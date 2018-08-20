@@ -95,6 +95,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.attr_resstate = "resstate"
         self.attr_multiprod = "multiprod"
         self.attr_labels = 'bbllabels'
+        self.attr_startDate = 'startdate'
 
         self.dateFormat = u'dd/MM/yyyy HH:mm:ss'
 
@@ -122,8 +123,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.endDateEdit.setDateTime(self.mEndDate)
         self.startDateEdit.setDateTime(self.mStartDate)
 
-        self.startDateEdit.setEnabled(not self.isCurrentProd)
-        self.firstDate.setEnabled(not self.isCurrentProd)
+        self.mDynamicCheckBox.setEnabled(self.isCurrentProd)
+        self.startDateEdit.setEnabled(not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked()) )
+        self.firstDate.setEnabled(not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked()))
 
         self._getProjection()
 
@@ -299,6 +301,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.uri += '&field={}:{}'.format(self.attrSymbolId, "string")
             self.uri += '&field={}:{}'.format(self.attrSymbolName, "string")
             self.uri += '&field={}:{}'.format(self.attrSymbol, "integer")
+            self.uri += '&field={}:{}'.format(self.attr_startDate, "date")
             self.uri += '&field={}:{}'.format(self.attrDays, "double")
             self.uri += '&field={}:{}'.format(self.attrLiftMethod, "string")
             self.uri += '&field={}:{}'.format(self.attr_lablx, "double")
@@ -377,6 +380,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
         else:
+            bblInit.checkFieldExists(self.layer, self.attr_startDate, QVariant.Date, 50, 0)
             bblInit.updateOldProductionStructure(self.layer)
 
 
@@ -413,7 +417,53 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         scheme = self.project['project']
         self.db = connection.get_db(scheme)
 
-        self.readProduction()
+
+        self.mSelectedReservoirsText = self.getReservoirsFilter()
+
+        self.mEndDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), self.mEndDate.date().daysInMonth()))
+        if self.isCurrentProd:
+            self.mStartDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), 1))
+        else:
+            self.mStartDate.setDate(QDate(self.mStartDate.date().year(), self.mStartDate.date().month(), 1))
+
+        if self.mDynamicCheckBox.isChecked() and self.isCurrentProd:
+            progressMessageBar = self.iface.messageBar()
+            self.progress = QProgressBar()
+            self.progress.setMaximum(100)
+            progressMessageBar.pushWidget(self.progress)
+
+            tmpStartDate = self.startDateEdit.dateTime()
+
+            saveStartDate = QDateTime(tmpStartDate)
+            saveEndDate = QDateTime(self.mEndDate)
+
+            curDate = self.mEndDate
+            daysTo = tmpStartDate.daysTo(curDate)
+            curDays = 0
+            try:
+                while curDate > tmpStartDate:
+                    self.mEndDate.setDate(QDate(curDate.date().year(), curDate.date().month(), curDate.date().daysInMonth()))
+                    self.mStartDate.setDate(QDate(curDate.date().year(), curDate.date().month(), 1))
+
+                    self.mProductionWells = []
+                    self.mWells = {}
+                    self.readProduction()
+
+                    curDays += curDate.date().daysInMonth()
+                    self.progress.setValue(100 * curDays / daysTo)
+                    QCoreApplication.processEvents()
+
+                    curDate = curDate.addMonths(-1)
+            except:
+                pass
+
+            self.mStartDate = QDateTime(saveStartDate)
+            self.mEndDate = QDateTime(saveEndDate)
+
+            self.iface.messageBar().clearWidgets()
+        else:
+            self.readProduction()
+
         self.db.disconnect()
 
         self.layer.updateExtents()
@@ -438,13 +488,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         
         self.productions = self.layer.dataProvider()     
         
-        self.mEndDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), self.mEndDate.date().daysInMonth()))
-        if self.isCurrentProd:
-            self.mStartDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), 1))
-        else:
-            self.mStartDate.setDate(QDate(self.mStartDate.date().year(), self.mStartDate.date().month(), 1))
-        
-        self.mSelectedReservoirsText = self.getReservoirsFilter()
+        # self.mEndDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), self.mEndDate.date().daysInMonth()))
+        # if self.isCurrentProd:
+        #     self.mStartDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), 1))
+        # else:
+        #     self.mStartDate.setDate(QDate(self.mStartDate.date().year(), self.mStartDate.date().month(), 1))
+        #
+        # self.mSelectedReservoirsText = self.getReservoirsFilter()
         self.getWells(self.mSelectedReservoirsText)
 
         QgsMessageLog.logMessage("prod config read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
@@ -472,6 +522,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         is_needupdcoord=self.mUpdateWellLocation.isChecked()
         is_needaddall=self.mAddAllWells.isChecked()
         is_rowwithprod=lambda feature:feature.attribute(self.attrSymbol)!=71
+        isDynamicProd = self.mDynamicCheckBox.isChecked()
+        dateText = self.mStartDate.toString(u'yyyy-MM-dd')
         QgsMessageLog.logMessage("is_layerfiltered={};is_needupdcoord={};is_needaddall={};".format(is_layerfiltered,is_needupdcoord,is_needaddall), tag="QgisPDS.readProduction")
 
         #Refresh or add feature
@@ -480,13 +532,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             ############################
             ####### TEST BLOCK
             ############################
-            cDays      =self.layer.fieldNameIndex(self.attrDays       )
-            cSymbol    =self.layer.fieldNameIndex(self.attrSymbol     )
-            cSymbolId  =self.layer.fieldNameIndex(self.attrSymbolId   )
-            cSymbolName=self.layer.fieldNameIndex(self.attrSymbolName )
-            cResState  =self.layer.fieldNameIndex(self.attr_resstate  )
-            cMovingRes =self.layer.fieldNameIndex(self.attr_movingres )
-            cMultiProd =self.layer.fieldNameIndex(self.attr_multiprod )
+            cDays      =self.layer.fieldNameIndex(self.attrDays        )
+            cSymbol    =self.layer.fieldNameIndex(self.attrSymbol      )
+            cSymbolId  =self.layer.fieldNameIndex(self.attrSymbolId    )
+            cSymbolName=self.layer.fieldNameIndex(self.attrSymbolName  )
+            cResState  =self.layer.fieldNameIndex(self.attr_resstate   )
+            cMovingRes =self.layer.fieldNameIndex(self.attr_movingres  )
+            cMultiProd =self.layer.fieldNameIndex(self.attr_multiprod  )
+            cStartDate = self.layer.fieldNameIndex(self.attr_startDate )
             attr_2_upd=[  ###old column       old_col_id       new_col    
                          [self.attrDays      ,cDays         ,  self.attrDays]
                         ,[self.attrSymbol    ,cSymbol       ,  self.attrSymbol]
@@ -495,10 +548,16 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         ,[self.attr_resstate ,cResState     ,  self.attr_resstate]
                         ,[self.attr_movingres,cMovingRes    ,  self.attr_movingres]
                         ,[self.attr_multiprod,cMultiProd    ,  self.attr_multiprod]
+                        ,[self.attr_startDate,cStartDate    ,  self.attr_startDate]
                         ]
             for feature in self.mWells.values():                                 #--- iterate over each record in result
-                args = (self.attrWellId, feature.attribute(self.attrWellId))
-                expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in layer record with that WELL_ID
+                if isDynamicProd:
+                    args = (self.attrWellId, feature.attribute(self.attrWellId), self.attr_startDate, dateText)
+                    exprStr = '\"{0}\"=\'{1}\' and \"{2}\"=to_date(\'{3}\')'.format(*args)
+                    expr = QgsExpression(exprStr)
+                else:
+                    args = (self.attrWellId, feature.attribute(self.attrWellId))
+                    expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in layer record with that WELL_ID
                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
 
                 num = 0
@@ -559,8 +618,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         QgsMessageLog.logMessage("atr updated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
                     
-        if is_refreshed:
-            self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(self.layer.name()), duration=4)
+        # if is_refreshed:
+        #     self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(self.layer.name()), duration=4)
         
         self.writeSettings()
 
@@ -608,6 +667,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.setWellAttribute(prodWell.name, self.attr_resstate, prodWell.reservoirState)
         self.setWellAttribute(prodWell.name, self.attr_movingres, prodWell.movingReservoir)
         self.setWellAttribute(prodWell.name, self.attr_multiprod, prodWell.lastReservoirs)
+        self.setWellAttribute(prodWell.name, self.attr_startDate, self.mStartDate.date())
         if len(prodWell.liftMethod):
             self.setWellAttribute(prodWell.name, self.attrLiftMethod, prodWell.liftMethod)
         for i, fl in enumerate(bblInit.fluidCodes):
@@ -1201,6 +1261,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         else:
             self.startDateEdit.setDateTime(self.mStartDate)
 
+    def on_mDynamicCheckBox_toggled(self, checked):
+        self.startDateEdit.setEnabled(checked)
+        self.firstDate.setEnabled(checked)
+
 
     def readSettings(self):
         settings = QSettings()
@@ -1210,6 +1274,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.mPhaseFilter = settings.value("/PDS/production/selectedPhases")
         self.mAddAllWells.setChecked(settings.value("/PDS/production/loadAllWells", 'False') == 'True')
         self.mUpdateWellLocation.setChecked(settings.value("/PDS/production/UpdateWellLocation", 'True') == 'True')
+        self.mDynamicCheckBox.setChecked(settings.value("/PDS/production/DynamicProduction", 'False') == 'True')
 
         self.currentDiagramm = settings.value("/PDS/production/currentDiagramm", "1LIQUID_PRODUCTION")
         
@@ -1225,16 +1290,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         settings.setValue("/PDS/production/endDate", self.mEndDate)
         settings.setValue("/PDS/production/selectedReservoirs", self.mSelectedReservoirs)
         settings.setValue("/PDS/production/selectedPhases", self.mPhaseFilter)
-        if self.mAddAllWells.isChecked():
-            settings.setValue("/PDS/production/loadAllWells", 'True')
-        else:
-            settings.setValue("/PDS/production/loadAllWells", 'False')
 
+        settings.setValue("/PDS/production/loadAllWells", 'True' if self.mAddAllWells.isChecked() else 'False' )
         settings.setValue("/PDS/production/currentDiagramm", self.currentDiagramm)
-        if self.mUpdateWellLocation.isChecked():
-            settings.setValue("/PDS/production/UpdateWellLocation", 'True')
-        else:
-            settings.setValue("/PDS/production/UpdateWellLocation", 'False')
+        settings.setValue("/PDS/production/UpdateWellLocation", 'True' if self.mUpdateWellLocation.isChecked() else 'False' )
+        settings.setValue("/PDS/production/DynamicProduction",  'True' if self.mDynamicCheckBox.isChecked() else 'False')
 
 
 

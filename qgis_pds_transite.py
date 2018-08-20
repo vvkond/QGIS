@@ -13,7 +13,7 @@ from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
 from QgisPDS.utils import to_unicode
 from QgisPDS.tig_projection import *
-from QgisPDS.qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
+from qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 
 class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
     def __init__(self, _project, _iface, _editLayer, parent=None):
