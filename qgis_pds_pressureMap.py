@@ -35,6 +35,19 @@ class QgisPDSPressure(QgisPDSProductionDialog):
 
         self.plugin_dir = os.path.dirname(__file__)
 
+    #read reservoirs names from DB
+    def _getReservoirs(self):
+        connection = create_connection(self.project)
+        scheme = self.project['project']
+        try:           
+            self.db = connection.get_db(scheme)
+            result = self.db.execute("select distinct ACTIVITY_NAME from WTST_MEAS where BSASC_SOURCE='KVD' and CONTAINING_ACT_T='WTST_MEAS' and CONTAINING_ACT_S is not NULL and ACTIVITY_NAME is not NULL")
+            # db.disconnect()
+            return result
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr("Error"), 
+                self.tr(u'Read production from project {0}: {1}').format(scheme, str(e)), level=QgsMessageBar.CRITICAL)
+            return None
 
     def get_sql(self, value):
         sql_file_path = os.path.join(self.plugin_dir, 'db', value)
@@ -48,8 +61,8 @@ class QgisPDSPressure(QgisPDSProductionDialog):
         self.uri += '&field={}:{}'.format(self.attrWellId, "string")
         self.uri += '&field={}:{}'.format(self.attrPressure, "double")
         self.uri += '&field={}:{}'.format("zonation", "string")
-        self.uri += '&field={}:{}'.format("top_zone_key", "string")
-        self.uri += '&field={}:{}'.format("base_zone_key", "string")
+        self.uri += '&field={}:{}'.format("top_zone", "string")
+        self.uri += '&field={}:{}'.format("base_zone", "string")
         self.uri += '&field={}:{}'.format("reservoir", "string")
         self.uri += '&field={}:{}'.format("LablX", "double")
         self.uri += '&field={}:{}'.format("LablY", "double")
@@ -92,12 +105,14 @@ class QgisPDSPressure(QgisPDSProductionDialog):
         self.mStartDate = self.startDateEdit.dateTime() 
 
         self.mSelectedReservoirs = self.getSelectedReservoirs()
+        
         reservoirs = u"'" + u"','".join(self.mSelectedReservoirs) + u"'"
-
-        pressureSql = self.get_sql('pressure.sql').format(self.db.formatDateField('surv_meas.start_time'),
-                                         self.db.formatDateField('surv_meas.end_time'), reservoirs)
-        QgsMessageLog.logMessage("pressureMap.createProductionLayer: {}\n\n".format(pressureSql), tag="QgisPDS.sql")
-
+        pressureSql = self.get_sql('pressure.kvd.sql').format(
+                                                              self.db.formatDateField('STUDY.START_TIME')
+                                                              ,self.db.formatDateField('STUDY.END_TIME')
+                                                              , reservoirs
+                                                              )
+        QgsMessageLog.logMessage(u"pressureMap.createProductionLayer: {}\n\n".format(pressureSql), tag="QgisPDS.sql")
         wells = self._readDbWells()
         if wells is None:
             return
@@ -134,8 +149,8 @@ class QgisPDSPressure(QgisPDSProductionDialog):
                         f.setAttribute(self.attrWellId, well_name)
                         f.setAttribute(self.attrPressure, pres)
                         f.setAttribute('zonation', zonation)
-                        f.setAttribute('top_zone_key', top_zone_key)
-                        f.setAttribute('base_zone_key', base_zone_key)
+                        f.setAttribute('top_zone', top_zone_key)
+                        f.setAttribute('base_zone', base_zone_key)
                         f.setAttribute('reservoir', reservoir)
 
                         self.layer.addFeatures([f])
