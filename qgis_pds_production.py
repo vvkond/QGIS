@@ -540,6 +540,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             cMovingRes =self.layer.fieldNameIndex(self.attr_movingres  )
             cMultiProd =self.layer.fieldNameIndex(self.attr_multiprod  )
             cStartDate = self.layer.fieldNameIndex(self.attr_startDate )
+            cLat       =self.layer.fieldNameIndex(self.attrLatitude   )
+            cLong      =self.layer.fieldNameIndex(self.attrLongitude  )
+            
             attr_2_upd=[  ###old column       old_col_id       new_col    
                          [self.attrDays      ,cDays         ,  self.attrDays]
                         ,[self.attrSymbol    ,cSymbol       ,  self.attrSymbol]
@@ -566,6 +569,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     #--- update coord if checked
                     if is_needupdcoord:                                 #--- update coord if checked
                         self.layer.changeGeometry(f.id(), feature.geometry())
+                        for (c_old_name,c_old_idx,c_new_name) in [
+                                                                  [self.attrLatitude  ,cLat          ,  self.attrLatitude]
+                                                                  ,[self.attrLongitude ,cLong         ,  self.attrLongitude]
+                                                                  ]:
+                            if f.attribute(c_old_name)!=feature.attribute(c_new_name):
+                                self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))  #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
+                        
                     #--- update well attribute
                     for (c_old_name,c_old_idx,c_new_name) in attr_2_upd: #--- update well special attribute @see:'attr_2_upd'
                         if f.attribute(c_old_name)!=feature.attribute(c_new_name):
