@@ -326,9 +326,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitDateVol(fl.code), "date")
                 
 
-            layerName = "Current production - " + ",".join(self.mSelectedReservoirs)
+            layerName = u"Current production - " + ",".join(self.mSelectedReservoirs)
             if not self.isCurrentProd:
-                layerName = "Cumulative production - " + ",".join(self.mSelectedReservoirs)
+                layerName = u"Cumulative production - " + ",".join(self.mSelectedReservoirs)
             self.layer = QgsVectorLayer(self.uri, layerName, "memory")
 
             if self.layer is None:
@@ -500,8 +500,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         QgsMessageLog.logMessage("prod config read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
         
-  
+
         for pdw in self.mProductionWells:
+            QgsMessageLog.logMessage("read well {}".format(pdw), tag="QgisPDS.readProduction")
             self.readWellProduction(pdw)
         QgsMessageLog.logMessage("prod read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
@@ -542,7 +543,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             cStartDate = self.layer.fieldNameIndex(self.attr_startDate )
             cLat       =self.layer.fieldNameIndex(self.attrLatitude   )
             cLong      =self.layer.fieldNameIndex(self.attrLongitude  )
-            
             attr_2_upd=[  ###old column       old_col_id       new_col    
                          [self.attrDays      ,cDays         ,  self.attrDays]
                         ,[self.attrSymbol    ,cSymbol       ,  self.attrSymbol]
@@ -608,6 +608,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         pass
                 self.layer.commitChanges()  #--- commit each row
                 self.layer.startEditing()   #--- and start edit again
+
         #--- if layer filtered and selected Add All remove filter,add all,set back filter
         if is_layerfiltered and is_needaddall:
             f_str=self.layer.subsetString()
@@ -640,15 +641,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         feature = self.mWells[name]
         feature.setAttribute(attr, value)
 
-
     def calcProds(self, prod, wellName, sumMass, sumVols):
         if prod.stadat > self.mEndDate or prod.enddat < self.mStartDate: return
 
         for i, fl in enumerate(bblInit.fluidCodes):
             sumMass[i] = sumMass[i] + prod.massVals[i]
             sumVols[i] = sumVols[i] + prod.volumeVals[i]
-            # self.setWellAttribute(wellName, QgisPDSProductionDialog.attrFluidMass(fl.code), prod.massVals[i])
-            # self.setWellAttribute(wellName, QgisPDSProductionDialog.attrFluidVolume(fl.code), prod.volumeVals[i])
+
 
         days = prod.days
         if days <= 0:
@@ -818,10 +817,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     #===========================================================================
     def getWells(self, cmpl_id):
         if self.isCurrentProd:
-            sql = ("SELECT DISTINCT wellbore.WELL_ID"
+            sql = ("SELECT DISTINCT well.WELL_ID"
                 "    FROM  reservoir_part,"
                 "    wellbore_intv,"
                 "    wellbore,"
+                "    well,"
                 "    production_aloc,"
                 "    pfnu_prod_act_x,"
                 "    (SELECT"
@@ -854,12 +854,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 "      AND wellbore.WELL_ID=md.w_id"
                 "      and reservoir_part.reservoir_part_s = res.ftr_s"
                 "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
-                "      and wellbore.wellbore_s=wellbore_intv.wellbore_s")
+                "      and wellbore.wellbore_s=wellbore_intv.wellbore_s"
+                "      and well.well_s=wellbore.well_s")
         else:
-            sql = ("SELECT DISTINCT wellbore.WELL_ID"
+            sql = ("SELECT DISTINCT well.WELL_ID"
                 "    FROM  reservoir_part,"
                 "    wellbore_intv,"
                 "    wellbore,"
+                "    well,"
                 "    production_aloc,"
                 "    pfnu_prod_act_x, "
                 "    (select wellbore_intv.geologic_ftr_s ftr_s"
@@ -876,7 +878,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 "      AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate) +
                 "      and reservoir_part.reservoir_part_s = res.ftr_s"
                 "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
-                "      and wellbore.wellbore_s=wellbore_intv.wellbore_s")
+                "      and wellbore.wellbore_s=wellbore_intv.wellbore_s"
+                "      and well.well_s=wellbore.well_s")
         QgsMessageLog.logMessage("Execute getWells: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
 
@@ -945,6 +948,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 "WHERE rtrim(tig_latest_well_name) = '" + well_name + "' "
                 "AND (tig_only_proposal = 0 OR tig_only_proposal = 1) ")
         
+        QgsMessageLog.logMessage("Execute loadWellByName: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
 
         for id in result:
@@ -990,6 +994,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         prevFindat = 1
         findat = 0
 
+        QgsMessageLog.logMessage("Execute bblCalcReservoirMovingAndMultipleReservoirProduction: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
         for reservoirId,prodEndTime in result:
             if prevProdEndTime != prodEndTime:
