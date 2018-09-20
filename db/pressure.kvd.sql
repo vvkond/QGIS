@@ -8,6 +8,8 @@ PRESS.DATA_VALUE v_pressure
 ---,STUDY.START_TIME as start_time
 ,{1} as end_time
 ---,STUDY.END_TIME as end_time
+,PL1D.data_frst_ord as v_meas_depth
+
 
 from
 --MEASURE(for RESERVOIR)
@@ -17,6 +19,11 @@ left join p_trpr PRESS
     on PRESS.ACTIVITY_S=MEAS.WTST_MEAS_S
     and upper(PRESS.ACTIVITY_T)='WTST_MEAS'
     and PRESS.BSASC_SOURCE='GaugeDepthReservoirPressure'
+left join P_Location_1d PL1D
+    on PL1D.ACTIVITY_S=MEAS.WTST_MEAS_S
+    and upper(PL1D.ACTIVITY_T)='WTST_MEAS'
+    and PL1D.BSASC_SOURCE='MeasureDepthPoint'
+    
 --STUDY(PARENT)    
 ,wtst_meas STUDY
 inner join pfnu_prod_act_x PPAX

@@ -27,6 +27,8 @@ class QgisPDSPressure(QgisPDSProductionDialog):
 
         self.attrWellId = u'well_id'
         self.attrPressure = u'pressure'
+        self.attrDate = u'date'
+        self.attrDepth = u'depth'
         self.setWindowTitle(self.tr(u'Pressure map'))
 
         self.mAddAllWells.setVisible(False)
@@ -60,6 +62,8 @@ class QgisPDSPressure(QgisPDSProductionDialog):
         self.uri = "Point?crs={}".format(self.proj4String)
         self.uri += '&field={}:{}'.format(self.attrWellId, "string")
         self.uri += '&field={}:{}'.format(self.attrPressure, "double")
+        self.uri += '&field={}:{}'.format(self.attrDate, "date")        
+        self.uri += '&field={}:{}'.format(self.attrDepth, "double")
         self.uri += '&field={}:{}'.format("zonation", "string")
         self.uri += '&field={}:{}'.format("top_zone", "string")
         self.uri += '&field={}:{}'.format("base_zone", "string")
@@ -126,6 +130,9 @@ class QgisPDSPressure(QgisPDSProductionDialog):
                     top_zone_key = ''
                     base_zone_key = ''
                     reservoir = ''
+                    stadat=''
+                    findat=''
+                    depth=''
                     for raw in records:
                         stadat = QDateTime.fromString(raw[5], self.dateFormat)
                         findat = QDateTime.fromString(raw[6], self.dateFormat)
@@ -137,6 +144,7 @@ class QgisPDSPressure(QgisPDSProductionDialog):
                             top_zone_key = raw[2]
                             base_zone_key = raw[3]
                             reservoir = raw[4]
+                            depth = raw[7]
 
                     if pres != -9999:
                         f = QgsFeature(self.layer.fields())
@@ -148,6 +156,8 @@ class QgisPDSPressure(QgisPDSProductionDialog):
                         f.setGeometry(geom)
                         f.setAttribute(self.attrWellId, well_name)
                         f.setAttribute(self.attrPressure, pres)
+                        f.setAttribute(self.attrDepth, depth)
+                        f.setAttribute(self.attrDate, stadat)
                         f.setAttribute('zonation', zonation)
                         f.setAttribute('top_zone', top_zone_key)
                         f.setAttribute('base_zone', base_zone_key)
