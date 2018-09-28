@@ -329,6 +329,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             layerName = u"Current production - " + ",".join(self.mSelectedReservoirs)
             if not self.isCurrentProd:
                 layerName = u"Cumulative production - " + ",".join(self.mSelectedReservoirs)
+            elif self.mDynamicCheckBox.isChecked():
+                layerName = u"Dynamic production - " + ",".join(self.mSelectedReservoirs)
+
             self.layer = QgsVectorLayer(self.uri, layerName, "memory")
 
             if self.layer is None:
@@ -421,47 +424,55 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.mSelectedReservoirsText = self.getReservoirsFilter()
 
         self.mEndDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), self.mEndDate.date().daysInMonth()))
-        if self.isCurrentProd:
+        if self.isCurrentProd and not self.mDynamicCheckBox.isChecked():
             self.mStartDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), 1))
         else:
             self.mStartDate.setDate(QDate(self.mStartDate.date().year(), self.mStartDate.date().month(), 1))
 
         if self.mDynamicCheckBox.isChecked() and self.isCurrentProd:
-            progressMessageBar = self.iface.messageBar()
-            self.progress = QProgressBar()
-            self.progress.setMaximum(100)
-            progressMessageBar.pushWidget(self.progress)
+            # progressMessageBar = self.iface.messageBar()
+            # self.progress = QProgressBar()
+            # self.progress.setMaximum(100)
+            # progressMessageBar.pushWidget(self.progress)
 
-            tmpStartDate = self.startDateEdit.dateTime()
+            self.getWells(self.mSelectedReservoirsText)
+            self.readDynamicProduction()
 
-            saveStartDate = QDateTime(tmpStartDate)
-            saveEndDate = QDateTime(self.mEndDate)
-
-            curDate = self.mEndDate
-            daysTo = tmpStartDate.daysTo(curDate)
-            curDays = 0
-            try:
-                while curDate > tmpStartDate:
-                    self.mEndDate.setDate(QDate(curDate.date().year(), curDate.date().month(), curDate.date().daysInMonth()))
-                    self.mStartDate.setDate(QDate(curDate.date().year(), curDate.date().month(), 1))
-
-                    self.mProductionWells = []
-                    self.mWells = {}
-                    self.readProduction()
-
-                    curDays += curDate.date().daysInMonth()
-                    self.progress.setValue(100 * curDays / daysTo)
-                    QCoreApplication.processEvents()
-
-                    curDate = curDate.addMonths(-1)
-            except:
-                pass
-
-            self.mStartDate = QDateTime(saveStartDate)
-            self.mEndDate = QDateTime(saveEndDate)
-
-            self.iface.messageBar().clearWidgets()
+            # saveProductionWells = list(self.mProductionWells)
+            # saveWells = dict(self.mWells)
+            #
+            # tmpStartDate = self.startDateEdit.dateTime()
+            #
+            # saveStartDate = QDateTime(tmpStartDate)
+            # saveEndDate = QDateTime(self.mEndDate)
+            #
+            # curDate = self.mEndDate
+            # daysTo = tmpStartDate.daysTo(curDate)
+            # curDays = 0
+            # # try:
+            # while curDate > tmpStartDate:
+            #     self.mEndDate.setDate(QDate(curDate.date().year(), curDate.date().month(), curDate.date().daysInMonth()))
+            #     self.mStartDate.setDate(QDate(curDate.date().year(), curDate.date().month(), 1))
+            #
+            #     self.mProductionWells = list(saveProductionWells)
+            #     print self.mProductionWells
+            #     self.mWells = dict(saveWells)
+            #     self.readProduction()
+            #
+            #     curDays += curDate.date().daysInMonth()
+            #     self.progress.setValue(100 * curDays / daysTo)
+            #     QCoreApplication.processEvents()
+            #
+            #     curDate = curDate.addMonths(-1)
+            # # except:
+            # #     pass
+            #
+            # self.mStartDate = QDateTime(saveStartDate)
+            # self.mEndDate = QDateTime(saveEndDate)
+            #
+            # self.iface.messageBar().clearWidgets()
         else:
+            self.getWells(self.mSelectedReservoirsText)
             self.readProduction()
 
         self.db.disconnect()
@@ -480,12 +491,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         
         self.mPhaseFilterText = ""
         
-        
         if len(self.mSelectedReservoirs) < 1:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'Reservoir is not selected'), QtGui.QMessageBox.Ok)
             return
     
-        
         self.productions = self.layer.dataProvider()     
         
         # self.mEndDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), self.mEndDate.date().daysInMonth()))
@@ -495,12 +504,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         #     self.mStartDate.setDate(QDate(self.mStartDate.date().year(), self.mStartDate.date().month(), 1))
         #
         # self.mSelectedReservoirsText = self.getReservoirsFilter()
-        self.getWells(self.mSelectedReservoirsText)
+        # self.getWells(self.mSelectedReservoirsText)
 
         QgsMessageLog.logMessage(u"prod config read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
         
-
         for pdw in self.mProductionWells:
             QgsMessageLog.logMessage(u"read well {}".format(pdw), tag="QgisPDS.readProduction")
             self.readWellProduction(pdw)
@@ -523,8 +531,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         is_needupdcoord=self.mUpdateWellLocation.isChecked()
         is_needaddall=self.mAddAllWells.isChecked()
         is_rowwithprod=lambda feature:feature.attribute(self.attrSymbol)!=71
-        isDynamicProd = self.mDynamicCheckBox.isChecked()
-        dateText = self.mStartDate.toString(u'yyyy-MM-dd')
         QgsMessageLog.logMessage("is_layerfiltered={};is_needupdcoord={};is_needaddall={};".format(is_layerfiltered,is_needupdcoord,is_needaddall), tag="QgisPDS.readProduction")
 
         #Refresh or add feature
@@ -554,13 +560,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         ,[self.attr_startDate,cStartDate    ,  self.attr_startDate]
                         ]
             for feature in self.mWells.values():                                 #--- iterate over each record in result
-                if isDynamicProd:
-                    args = (self.attrWellId, feature.attribute(self.attrWellId), self.attr_startDate, dateText)
-                    exprStr = '\"{0}\"=\'{1}\' and \"{2}\"=to_date(\'{3}\')'.format(*args)
-                    expr = QgsExpression(exprStr)
-                else:
-                    args = (self.attrWellId, feature.attribute(self.attrWellId))
-                    expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in layer record with that WELL_ID
+                args = (self.attrWellId, feature.attribute(self.attrWellId))
+                expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in layer record with that WELL_ID
                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
 
                 num = 0
@@ -569,13 +570,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     #--- update coord if checked
                     if is_needupdcoord:                                 #--- update coord if checked
                         self.layer.changeGeometry(f.id(), feature.geometry())
-                        for (c_old_name,c_old_idx,c_new_name) in [
-                                                                  [self.attrLatitude  ,cLat          ,  self.attrLatitude]
-                                                                  ,[self.attrLongitude ,cLong         ,  self.attrLongitude]
-                                                                  ]:
-                            if f.attribute(c_old_name)!=feature.attribute(c_new_name):
-                                self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))  #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
-                        
                     #--- update well attribute
                     for (c_old_name,c_old_idx,c_new_name) in attr_2_upd: #--- update well special attribute @see:'attr_2_upd'
                         if f.attribute(c_old_name)!=feature.attribute(c_new_name):
@@ -632,6 +626,245 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         # if is_refreshed:
         #     self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(self.layer.name()), duration=4)
         
+        self.writeSettings()
+
+
+    def updateFeature(self, feature, prod):
+        feature.setAttribute(self.attrDays, prod.days)
+        feature.setAttribute(self.attr_startDate, prod.stadat.date())
+
+        for i, fl in enumerate(bblInit.fluidCodes):
+            feature.setAttribute(bblInit.attrFluidMass(fl.code), prod.massVals[i])
+            feature.setAttribute(bblInit.attrFluidVolume(fl.code), prod.volumeVals[i])
+
+
+  # ===========================================================================
+    # Create production layer
+    # ===========================================================================
+    def readDynamicProduction(self):
+        time_start = time.time()
+
+        self.mPhaseFilterText = ""
+
+        if len(self.mSelectedReservoirs) < 1:
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'Reservoir is not selected'),
+                                       QtGui.QMessageBox.Ok)
+            return
+
+        self.productions = self.layer.dataProvider()
+
+
+        for pdw in self.mProductionWells:
+            self.readWellProduction(pdw)
+
+        is_refreshed = False  # --- id that layer have refreshed records
+        is_layerfiltered = len(self.layer.subsetString().strip()) > 1  # --- if layer with filter provider allowed only update production/coordinates.
+        is_needupdcoord = self.mUpdateWellLocation.isChecked()
+        is_needaddall = self.mAddAllWells.isChecked()
+        is_rowwithprod = lambda feature: feature.attribute(self.attrSymbol) != 71
+
+        # Refresh or add feature
+        with edit(self.layer):
+
+            ############################
+            ####### TEST BLOCK
+            ############################
+            cDays = self.layer.fieldNameIndex(self.attrDays)
+            cSymbol = self.layer.fieldNameIndex(self.attrSymbol)
+            cSymbolId = self.layer.fieldNameIndex(self.attrSymbolId)
+            cSymbolName = self.layer.fieldNameIndex(self.attrSymbolName)
+            cResState = self.layer.fieldNameIndex(self.attr_resstate)
+            cMovingRes = self.layer.fieldNameIndex(self.attr_movingres)
+            cMultiProd = self.layer.fieldNameIndex(self.attr_multiprod)
+            cStartDate = self.layer.fieldNameIndex(self.attr_startDate)
+            attr_2_upd = [  ###old column       old_col_id       new_col
+                [self.attrDays, cDays, self.attrDays]
+                , [self.attrSymbol, cSymbol, self.attrSymbol]
+                , [self.attrSymbolId, cSymbolId, self.attrSymbolId]
+                , [self.attrSymbolName, cSymbolName, self.attrSymbolName]
+                , [self.attr_resstate, cResState, self.attr_resstate]
+                , [self.attr_movingres, cMovingRes, self.attr_movingres]
+                , [self.attr_multiprod, cMultiProd, self.attr_multiprod]
+                , [self.attr_startDate, cStartDate, self.attr_startDate]
+            ]
+
+            for prodWell in self.mProductionWells:
+                oldFeature = self.mWells[prodWell.name]
+
+                for prod in prodWell.prods:
+                    feature = QgsFeature(oldFeature)
+                    self.updateFeature(feature, prod)
+
+                    dateText = prod.stadat.toString(u'yyyy-MM-dd')
+                    args = (self.attrWellId, feature.attribute(self.attrWellId), self.attr_startDate, dateText)
+                    exprStr = '\"{0}\"=\'{1}\' and \"{2}\"=to_date(\'{3}\')'.format(*args)
+                    num = 0
+                    expr = QgsExpression(exprStr)
+                    
+                    searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
+                    
+                    for f in searchRes:  # --- iterate over each row in base layer for current well
+                        is_refreshed = True
+                        # --- update coord if checked
+                        if is_needupdcoord:  # --- update coord if checked
+                            self.layer.changeGeometry(f.id(), feature.geometry())
+                        # --- update well attribute if changed
+                        for (c_old_name, c_old_idx, c_new_name) in attr_2_upd:
+                            if f.attribute(c_old_name) != feature.attribute(c_new_name):
+                                self.layer.changeAttributeValue(f.id(), c_old_idx, feature.attribute(c_new_name))
+                    
+                        for fl in bblInit.fluidCodes:  # --- update production attributes
+                            attrMass = bblInit.attrFluidMass(fl.code)
+                            attrVol = bblInit.attrFluidVolume(fl.code)
+                    
+                            self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass),
+                                                            feature.attribute(attrMass))
+                            self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol),
+                                                            feature.attribute(attrVol))
+                    
+                        num += 1
+                    # --- add new well if need
+                    if not num:  # --- well not present in base layer
+                        if not is_layerfiltered:  # --- if layer without filter provider,than allow add new records
+                            if is_needaddall or is_rowwithprod(feature):  # --- Add All wells checked or new row have production
+                                self.layer.addFeatures([feature])
+                        else:
+                            pass
+                    self.layer.commitChanges()  # --- commit each row
+                    self.layer.startEditing()  # --- and start edit again
+
+        # --- if layer filtered and selected Add All remove filter,add all,set back filter
+        if is_layerfiltered and is_needaddall:
+            f_str = self.layer.subsetString()
+            self.layer.setSubsetString("")
+            with edit(self.layer):
+                for feature in self.mWells.values():
+                    args = (self.attrWellId, feature.attribute(self.attrWellId))
+                    expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))  # --- search in base layer record with that WELL_ID
+                    searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
+                    for f in searchRes:
+                        break
+                    else:
+                        self.layer.addFeatures([feature])
+                        self.layer.commitChanges()  # --- commit each row
+                        self.layer.startEditing()  # --- and start edit again
+            self.layer.setSubsetString(f_str)
+
+        self.writeSettings()
+
+
+    # ===========================================================================
+    # Create production layer
+    # ===========================================================================
+    def readDynamicProduction_bck(self):
+        time_start = time.time()
+
+        self.mPhaseFilterText = ""
+
+        if len(self.mSelectedReservoirs) < 1:
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'Reservoir is not selected'),
+                                       QtGui.QMessageBox.Ok)
+            return
+
+        self.productions = self.layer.dataProvider()
+
+
+        for pdw in self.mProductionWells:
+            self.readWellProduction(pdw)
+
+        is_refreshed = False  # --- id that layer have refreshed records
+        is_layerfiltered = len(self.layer.subsetString().strip()) > 1  # --- if layer with filter provider allowed only update production/coordinates.
+        is_needupdcoord = self.mUpdateWellLocation.isChecked()
+        is_needaddall = self.mAddAllWells.isChecked()
+        is_rowwithprod = lambda feature: feature.attribute(self.attrSymbol) != 71
+
+        # Refresh or add feature
+        with edit(self.layer):
+
+            ############################
+            ####### TEST BLOCK
+            ############################
+            cDays = self.layer.fieldNameIndex(self.attrDays)
+            cSymbol = self.layer.fieldNameIndex(self.attrSymbol)
+            cSymbolId = self.layer.fieldNameIndex(self.attrSymbolId)
+            cSymbolName = self.layer.fieldNameIndex(self.attrSymbolName)
+            cResState = self.layer.fieldNameIndex(self.attr_resstate)
+            cMovingRes = self.layer.fieldNameIndex(self.attr_movingres)
+            cMultiProd = self.layer.fieldNameIndex(self.attr_multiprod)
+            cStartDate = self.layer.fieldNameIndex(self.attr_startDate)
+            attr_2_upd = [  ###old column       old_col_id       new_col
+                [self.attrDays, cDays, self.attrDays]
+                , [self.attrSymbol, cSymbol, self.attrSymbol]
+                , [self.attrSymbolId, cSymbolId, self.attrSymbolId]
+                , [self.attrSymbolName, cSymbolName, self.attrSymbolName]
+                , [self.attr_resstate, cResState, self.attr_resstate]
+                , [self.attr_movingres, cMovingRes, self.attr_movingres]
+                , [self.attr_multiprod, cMultiProd, self.attr_multiprod]
+                , [self.attr_startDate, cStartDate, self.attr_startDate]
+            ]
+
+            for prodWell in self.mProductionWells:
+                oldFeature = self.mWells[prodWell.name]
+
+                for prod in prodWell.prods:
+                    feature = QgsFeature(oldFeature)
+                    self.updateFeature(feature, prod)
+
+                    dateText = prod.stadat.toString(u'yyyy-MM-dd')
+                    args = (self.attrWellId, feature.attribute(self.attrWellId), self.attr_startDate, dateText)
+                    exprStr = '\"{0}\"=\'{1}\' and \"{2}\"=to_date(\'{3}\')'.format(*args)
+                    expr = QgsExpression(exprStr)
+
+                    searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
+
+                    num = 0
+                    for f in searchRes:  # --- iterate over each row in base layer for current well
+                        is_refreshed = True
+                        # --- update coord if checked
+                        if is_needupdcoord:  # --- update coord if checked
+                            self.layer.changeGeometry(f.id(), feature.geometry())
+                        # --- update well attribute if changed
+                        for (c_old_name, c_old_idx, c_new_name) in attr_2_upd:
+                            if f.attribute(c_old_name) != feature.attribute(c_new_name):
+                                self.layer.changeAttributeValue(f.id(), c_old_idx, feature.attribute(c_new_name))
+
+                        for fl in bblInit.fluidCodes:  # --- update production attributes
+                            attrMass = bblInit.attrFluidMass(fl.code)
+                            attrVol = bblInit.attrFluidVolume(fl.code)
+
+                            self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass),
+                                                            feature.attribute(attrMass))
+                            self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol),
+                                                            feature.attribute(attrVol))
+
+                        num += 1
+                    # --- add new well if need
+                    if not num:  # --- well not present in base layer
+                        if not is_layerfiltered:  # --- if layer without filter provider,than allow add new records
+                            if is_needaddall or is_rowwithprod(feature):  # --- Add All wells checked or new row have production
+                                self.layer.addFeatures([feature])
+                        else:
+                            pass
+                    self.layer.commitChanges()  # --- commit each row
+                    self.layer.startEditing()  # --- and start edit again
+
+        # --- if layer filtered and selected Add All remove filter,add all,set back filter
+        if is_layerfiltered and is_needaddall:
+            f_str = self.layer.subsetString()
+            self.layer.setSubsetString("")
+            with edit(self.layer):
+                for feature in self.mWells.values():
+                    args = (self.attrWellId, feature.attribute(self.attrWellId))
+                    expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))  # --- search in base layer record with that WELL_ID
+                    searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
+                    for f in searchRes:
+                        break
+                    else:
+                        self.layer.addFeatures([feature])
+                        self.layer.commitChanges()  # --- commit each row
+                        self.layer.startEditing()  # --- and start edit again
+            self.layer.setSubsetString(f_str)
+
         self.writeSettings()
 
     #===========================================================================
@@ -691,119 +924,228 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitDateVol(fl.code),
                                   prodWell.maxDebits[i].volDebitDate)
 
-     #==========================================================================
-     # @todo: need speedup
-     #==========================================================================
+    #==========================================================================
+    # read production for selected well from  BASE
+    #==========================================================================
     def readWellProduction(self, prodWell):
-        TableUnit = namedtuple('TableUnit', ['table', 'unit'])
-        prodTables = [TableUnit("p_std_vol_lq", "Volume"), 
-                        TableUnit("p_std_vol_gas", "Volume"), 
-                        TableUnit("p_q_mass_basis", "Mass")]
+        #TableUnit = namedtuple('TableUnit', ['table', 'unit'])
+        #prodTables = [
+        #                TableUnit("p_std_vol_lq",   "Volume"), 
+        #                TableUnit("p_std_vol_gas",  "Volume"), 
+        #                TableUnit("p_q_mass_basis", "Mass")
+        #                ]
+        
         time_start=time.time()
 
         self.bblCalcReservoirMovingAndMultipleReservoirProduction(prodWell)
         QgsMessageLog.logMessage(u"bblCalcReservoirMovingAndMultipleReservoirProduction  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
         time_start=time.time()
-        
-        sql = ""
         i = 0
-        for tu in prodTables:
-            if sql:
-                sql += " union all "
-                
-            sql += (" select /*+ FIRST_ROWS(5) */"
-                    " production.data_value,"
-                    " production.start_time start_time,"
-                    " production.end_time end_time,"
-                    " " + self.to_oracle_char("production.start_time") + ","
-                    " " + self.to_oracle_char("production.end_time") + ","
-                    " production.bsasc_source,"
-                    " '" + tu.unit + "',"
-                    " p_pfnu_port_time.data_value"
-                    " from " + tu.table + " production,"
-                    " pfnu_prod_act_x, production_aloc, tig_well_history,"
-                    " reservoir_part, wellbore_intv, wellbore, well, p_pfnu_port_time, "
-                    "    (select wellbore_intv.geologic_ftr_s ftr_s"
-                    "           from earth_pos_rgn, wellbore_intv, topological_rel, reservoir_part "
-                    "           where earth_pos_rgn_s = topological_rel.prim_toplg_obj_s "
-                    "           and wellbore_intv_s = topological_rel.sec_toplg_obj_s "
-                    "           and earth_pos_rgn.geologic_ftr_s = reservoir_part_s "
-                    "           and entity_type_nm = 'RESERVOIR_ZONE' "
-                    "           and reservoir_part_code in ('" + "','".join(self.mSelectedReservoirs) +"')) res"
-
-                    " where "
-
-                    " production.data_value is not null and"
-                    " p_pfnu_port_time.data_value is not null and"
-
-                    " production.activity_s = production_aloc.production_aloc_s and "
-                    " p_pfnu_port_time.activity_s = production_aloc.production_aloc_s and "
-
-                    " production_aloc.production_aloc_s = pfnu_prod_act_x.production_act_s and "
-                    " production_aloc.bsasc_source = 'Reallocated Production' and reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s and"
-
-                    # " reservoir_part.reservoir_part_s in (" + self.mSelectedReservoirsText + ") and"
-                    " reservoir_part.reservoir_part_s = res.ftr_s and"
-                    " wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s and"
-                    " wellbore.wellbore_s=wellbore_intv.wellbore_s and"
-                    " well.well_s=wellbore.well_s and"
-                    " tig_well_history.tig_latest_well_name=well.well_id and"
-                    " tig_well_history.DB_SLDNID = " + str(prodWell.sldnid))
-
-            if self.mPhaseFilter:
-                sql += " and production.bsasc_source in ('" + "','".join(self.mPhaseFilter) + "')"
         
-        sql += " order by start_time, end_time"
+        # ---1 generate query for all bblInit item  like 'oil_Volume,oil_Mass...'
+        prod_tables=set()
+        query_fields=[
+                        "start_time"
+                        ,"end_time"
+                        ,"start_time_txt"
+                        ,"end_time_txt"
+                        ,"days"
+                        ,"reservoir_group"
+                        ]
+        FluidFields=namedtuple('FluidFields', ['code', 'idx','field','unit'])
+        fluid_fields=[]
+        sql_1=""
+        for idx,fluidCode in enumerate(bblInit.fluidCodes):
+            for tu in fluidCode.sourceTables:
+                prod_tables.add(tu.table)
+                if sql_1:
+                    sql_1+=",\n"      
+                sql_1+=u" sum(case when tmp_prod.SOURCE_T='{tbl_name}'   and tmp_prod.BSASC_SOURCE in ('{source_fluids}') then tmp_prod.DATA_VALUE else 0 end) {field_name}_{tbl_unit}".format(
+                            tbl_name=tu.table
+                            ,source_fluids= fluidCode.componentId if  fluidCode.componentId is not None else "','".join(fluidCode.subComponentIds)    
+                            ,tbl_unit=tu.unit
+                            ,field_name=fluidCode.code
+                           )
+                fluid_fields.append(
+                            FluidFields(
+                                        code=fluidCode.code
+                                        ,idx=idx
+                                        ,field="{field_name}_{tbl_unit}".format( field_name=fluidCode.code,tbl_unit=tu.unit )
+                                        ,unit=tu.unit
+                                        )
+                                    )
+        query_fields.extend(ff.field for ff in fluid_fields )
+        # ---2 now generate UNION table with prod 
+        sql_2 = ""
+        for tbl_name in prod_tables:            
+            if sql_2:
+                sql_2 += u" union all "
+            sql_2 +=u"""
+                select 
+                        '{tbl_name}' as SOURCE_T
+                        ,{tbl_name}_s as SOURCE_S
+                        ,DATA_VALUE
+                        ,DATA_VALUE_U
+                        ,ACTIVITY_S
+                        ,ACTIVITY_T
+                        ,BSASC_SOURCE
+                    FROM    {tbl_name} 
+                    WHERE DATA_VALUE is not Null
+                    AND ACTIVITY_T='PRODUCTION_ALOC'
+                    {st_time_filter}
+                    {en_time_filter}
+            """.format(
+                tbl_name=tbl_name
+                ,st_time_filter="AND START_TIME>="+self.to_oracle_date(self.mStartDate)
+                ,en_time_filter="AND END_TIME<="+self.to_oracle_date(self.mEndDate)
+                )
+        # ---3 now generate full QUERY   
+        sql=u"""
+            SELECT
+                pa.START_TIME             START_TIME
+                ,pa.END_TIME              END_TIME
+                ,{st_time}  
+                ,{en_time}
+                ,max(ppt.DATA_VALUE)/86400.0  WORK_DAYS 
+                ,reservoirs.group_name        
+                ,{prod_select}
+            FROM
+                (
+                    SELECT grp.RESERVOIR_PART_CODE group_name
+                            ,wbi.GEOLOGIC_FTR_S reservoir_part_s
+                            ,twh.TIG_LATEST_WELL_NAME
+                    FROM 
+                        RESERVOIR_PART grp
+                        ,EARTH_POS_RGN epr
+                        ,TOPOLOGICAL_REL tr
+                        ,wellbore_intv wbi
+                        ,wellbore wb
+                        ,well w
+                        ,tig_well_history twh
+                        
+                    where 
+                         epr.GEOLOGIC_FTR_S=grp.RESERVOIR_PART_S
+                         AND
+                         epr.GEOLOGIC_FTR_T='RESERVOIR_PART'
+                         AND
+                         tr.PRIM_TOPLG_OBJ_S =epr.EARTH_POS_RGN_S
+                         AND
+                         tr.PRIM_TOPLG_OBJ_T='EARTH_POS_RGN'
+                         AND
+                         tr.SEC_TOPLG_OBJ_T = 'WELLBORE_INTV'
+                         AND
+                         tr.SEC_TOPLG_OBJ_S = wbi.WELLBORE_INTV_S
+                         AND
+                         wbi.GEOLOGIC_FTR_T='RESERVOIR_PART'
+                         AND 
+                         wb.WELLBORE_S=wbi.WELLBORE_S
+                         AND
+                         w.WELL_S=wb.WELL_S
+                         AND
+                         twh.TIG_LATEST_WELL_NAME=w.WELL_ID
+                         {twh_filter} 
+                         {reservoir_filter}
+                ) reservoirs
+                left join PFNU_PROD_ACT_X ppax 
+                    ON
+                        ppax.PFNU_S=reservoirs.reservoir_part_s
+                        AND
+                        upper(ppax.PFNU_T)='RESERVOIR_PART'
+                        AND
+                        upper(ppax.PRODUCTION_ACT_T)='PRODUCTION_ALOC'
+                left join PRODUCTION_ALOC pa
+                    ON
+                        pa.PRODUCTION_ALOC_S= ppax.PRODUCTION_ACT_S
+                        AND
+                        pa.bsasc_source = 'Reallocated Production'
+                 join   ({prod_table}) tmp_prod 
+                    ON
+                        tmp_prod.ACTIVITY_S=pa.PRODUCTION_ALOC_S
+                        AND           
+                        tmp_prod.ACTIVITY_T='PRODUCTION_ALOC'
+                left join p_pfnu_port_time ppt
+                    ON 
+                        ppt.activity_s = pa.production_aloc_s 
+                        AND             
+                        ppt.activity_t ='PRODUCTION_ALOC'
+                        AND
+                        ppt.data_value is not Null ---filter time,take only record with value. So not need filter by BSASC_SOURCE -production,water injection,gas injection
+            where
+                pa.bsasc_source = 'Reallocated Production'
+                {phase_filter}
+                {st_time_filter}
+                {en_time_filter}
+            group by 
+                pa.START_TIME
+                ,pa.END_TIME
+                ,pa.PROD_START_TIME
+                ,pa.PROD_END_TIME
+                ,pa.BSASC_SOURCE
+                ,reservoirs.group_name
+            order by
+                pa.START_TIME
+                ,pa.END_TIME
+                ,pa.PROD_START_TIME
+                ,pa.PROD_END_TIME
+                ,reservoirs.group_name            
+        """.format(
+            prod_select=sql_1
+            ,prod_table=sql_2
+            ,st_time=self.to_oracle_char("pa.start_time")
+            ,en_time=self.to_oracle_char("pa.end_time")
+            ,phase_filter=u" AND tmp_prod.bsasc_source in ('" + "','".join(self.mPhaseFilter) + "')"  if  self.mPhaseFilter else  ""
+            ,twh_filter=u" AND twh.DB_SLDNID ="+ str(prodWell.sldnid) 
+            ,st_time_filter=u"AND pa.START_TIME>="+self.to_oracle_date(self.mStartDate)
+            ,en_time_filter=u"AND pa.END_TIME<="+self.to_oracle_date(self.mEndDate)
+            ,reservoir_filter=u"AND grp.RESERVOIR_PART_CODE in ('" + u"','".join(self.mSelectedReservoirs) +u"')"
+            )
+        # ---4 execute QUERY
         QgsMessageLog.logMessage(u"Execute readWellProduction: {}\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
         QgsMessageLog.logMessage(u"query in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
         time_start=time.time()
         
-
         if result is None: 
             return
-
-        fluids = [f.componentId for f in bblInit.fluidCodes]
+    
+        # ---5 read QUERY result
+        #fluids=[f.code for f in  bblInit.fluidCodes]
         product = None
         useLiftMethod = False
-        for prod, s1, e1, start_time, end_time, componentId, unitSet, wtime in result:
-            stadat = QDateTime.fromString(start_time, self.dateFormat)
-            enddat = QDateTime.fromString(end_time, self.dateFormat)
-            days = wtime/86400.0
-
+        # @TODO: not optimal code. Need change...
+        for row in result:
+            row_dict=dict(zip(query_fields,row))
+            QgsMessageLog.logMessage(u"result row: {}".format(row_dict), tag="QgisPDS.readWellProduction")
             #Max component debits for well
-            if componentId in fluids and days != 0.0:
-                PhaseIndex = fluids.index(componentId)
-                debit = prod / days
-                if "Mass" in unitSet:
-                    if prodWell.maxDebits[PhaseIndex].massValue < debit:
-                        prodWell.maxDebits[PhaseIndex].massValue = debit
-                        prodWell.maxDebits[PhaseIndex].massDebitDate = stadat
-                else:
-                    if prodWell.maxDebits[PhaseIndex].volValue < debit:
-                        prodWell.maxDebits[PhaseIndex].volValue = debit
-                        prodWell.maxDebits[PhaseIndex].volDebitDate = stadat
-
+            stadat = QDateTime.fromString(row_dict["start_time_txt"], self.dateFormat)
+            enddat = QDateTime.fromString(row_dict["end_time_txt"], self.dateFormat)
+            days=row_dict["days"]
+            if row_dict["days"]>0:
+                for fluid in fluid_fields:
+                    debit=row_dict[fluid.field]/days
+                    if fluid.unit=="Mass":
+                        if prodWell.maxDebits[fluid.idx].massValue < debit:
+                            prodWell.maxDebits[fluid.idx].massValue = debit
+                            prodWell.maxDebits[fluid.idx].massDebitDate = stadat
+                    else:
+                        if prodWell.maxDebits[fluid.idx].volValue < debit:
+                            prodWell.maxDebits[fluid.idx].volValue = debit
+                            prodWell.maxDebits[fluid.idx].volDebitDate = stadat
             if (stadat >= self.mStartDate and stadat <= self.mEndDate) or (enddat >= self.mStartDate and enddat <= self.mEndDate):
                 useLiftMethod = True
                 NeedProd = True
-
                 if product is not None :
                     NeedProd = product.stadat!=stadat or product.enddat!=enddat
-
                 if product is None or NeedProd:
+                    #init clear production record
                     product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, days)
                     prodWell.prods.append(product)
-
-                if componentId in fluids:
-                    PhaseIndex = fluids.index(componentId)
-                    if "Mass" in unitSet:
-                        product.massVals[PhaseIndex] += prod
+                for fluid in fluid_fields:
+                    if fluid.unit=="Mass":
+                        product.massVals[fluid.idx] += row_dict[fluid.field]
                     else:
-                        product.volumeVals[PhaseIndex] += prod
-                else:
-                    QgsMessageLog.logMessage( self.tr(u"No fluid for ") + componentId)
-        QgsMessageLog.logMessage(u"data parse in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+                        product.volumeVals[fluid.idx] += row_dict[fluid.field]
+        QgsMessageLog.logMessage(u"row init in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
         time_start=time.time()
 
         if useLiftMethod:
@@ -811,6 +1153,57 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             if liftMethod in bblInit.bblLiftMethods.keys():
                 prodWell.liftMethod = liftMethod
             QgsMessageLog.logMessage(u"lift method in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+         
+         
+         
+#===============================================================================
+#         for prod, s1, e1, start_time, end_time, componentId, unitSet, wtime in result:
+#             stadat = QDateTime.fromString(start_time, self.dateFormat)
+#             enddat = QDateTime.fromString(end_time, self.dateFormat)
+#             days = wtime/86400.0
+# 
+#         
+#             #Max component debits for well
+#             if componentId in fluids and days != 0.0:        #!!!!!!!!!!!!!!!!
+#                 PhaseIndex = fluids.index(componentId)       #!!!!!!!!!!!!!!!!
+#                 debit = prod / days
+#                 if "Mass" in unitSet:
+#                     if prodWell.maxDebits[PhaseIndex].massValue < debit:
+#                         prodWell.maxDebits[PhaseIndex].massValue = debit
+#                         prodWell.maxDebits[PhaseIndex].massDebitDate = stadat
+#                 else:
+#                     if prodWell.maxDebits[PhaseIndex].volValue < debit:
+#                         prodWell.maxDebits[PhaseIndex].volValue = debit
+#                         prodWell.maxDebits[PhaseIndex].volDebitDate = stadat
+# 
+#             if (stadat >= self.mStartDate and stadat <= self.mEndDate) or (enddat >= self.mStartDate and enddat <= self.mEndDate):
+#                 useLiftMethod = True
+#                 NeedProd = True
+# 
+#                 if product is not None :
+#                     NeedProd = product.stadat!=stadat or product.enddat!=enddat
+# 
+#                 if product is None or NeedProd:
+#                     product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, days)
+#                     prodWell.prods.append(product)
+# 
+#                 if componentId in fluids:                             #!!!!!!!!!!!!!!!!
+#                     PhaseIndex = fluids.index(componentId)            #!!!!!!!!!!!!!!!!
+#                     if "Mass" in unitSet:
+#                         product.massVals[PhaseIndex] += prod
+#                     else:
+#                         product.volumeVals[PhaseIndex] += prod
+#                 else:
+#                     QgsMessageLog.logMessage( self.tr(u"No fluid for ") + componentId)        #!!!!!!!!!!!!!!!!
+#         QgsMessageLog.logMessage(u"data parse in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+#         time_start=time.time()
+# 
+#         if useLiftMethod:
+#             liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
+#             if liftMethod in bblInit.bblLiftMethods.keys():
+#                 prodWell.liftMethod = liftMethod
+#             QgsMessageLog.logMessage(u"lift method in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+#===============================================================================
         
     #===========================================================================
     # Load production wells
@@ -953,11 +1346,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         for id in result:
             wId = id[0]
-
+            #if wId!=682:continue # @DEBUG
             symbolId = self.bbl_wellsymbol(wId)
-
             self.loadWellFeature(wId, symbolId)
-
             pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
                                  maxDebits = [ProdDebit() for c in bblInit.fluidCodes])
             self.mProductionWells.append(pwp)

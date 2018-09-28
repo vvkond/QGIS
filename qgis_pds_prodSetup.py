@@ -42,10 +42,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.currentLayer = layer       
 
         self.standardDiagramms = {
-                    "1_liquidproduction": MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0]),
-                    "2_liquidinjection": MyStruct(name=u'Диаграмма закачки', scale=300000, testval=1,unitsType=0, units=0, fluids=[0, 0, 0, 0, 1, 1, 0, 0]),
-                    "3_gasproduction": MyStruct(name=u"Диаграмма газа", scale=300000, testval=1,unitsType=1, units=0, fluids=[0, 1, 0, 0, 0, 0, 0, 0]),
-                    "4_condensatproduction": MyStruct(name=u"Диаграмма конденсата", scale=3000000, testval=1,unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0])
+                    "1_liquidproduction":    MyStruct(name=u'Диаграмма жидкости',   scale=300000,  testval=1, unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]),
+                    "2_liquidinjection":     MyStruct(name=u'Диаграмма закачки',    scale=300000,  testval=1, unitsType=0, units=0, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0]),
+                    "3_gasproduction":       MyStruct(name=u"Диаграмма газа",       scale=300000,  testval=1, unitsType=1, units=0, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0]),
+                    "4_condensatproduction": MyStruct(name=u"Диаграмма конденсата", scale=3000000, testval=1, unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0, 0])
                 }
 
         self.layerDiagramms = []
@@ -101,8 +101,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             if len(self.layerDiagramms) < 1:
                 if self.currentLayer.customProperty("qgis_pds_type") == "pds_current_production":
                     #----CURENT PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,   testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,   testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 0, 1, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,   testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0 ,0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,   testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 0, 1, 0, 0 ,0]))
                     bblInit.fluidCodes[2].inPercent=1
                     self.bubbleProps['dailyProduction']=1
                     self.dailyProduction.setChecked(1)
@@ -114,8 +114,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                     
                 elif self.currentLayer.customProperty("qgis_pds_type") == "pds_cumulative_production":
                     #----CUMMULATIV PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=50,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=50,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 0, 1, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=50,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=50,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 0, 1, 0, 0, 0]))
                 #oil
                 bblInit.fluidCodes[0].backColor.setNamedColor('#daa520')
                 bblInit.fluidCodes[0].lineColor.setNamedColor('#daa520')
@@ -157,9 +157,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             if len(self.layerDiagramms) < 1:
                 if self.currentLayer.customProperty("qgis_pds_type") == "pds_current_production":
                     #----CURENT PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 1, 1, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 1, 0, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0]))
                     bblInit.fluidCodes[2].inPercent=1
     #                 cOil=QColor()
     #                 cOil.setNamedColor('#aaaaaa')
@@ -169,9 +169,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                     
                 elif self.currentLayer.customProperty("qgis_pds_type") == "pds_cumulative_production":
                     #----CUMMULATIV PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 1, 1, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=15, fluids=[0, 1, 0, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=15, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0]))
                 #oil
                 bblInit.fluidCodes[0].backColor.setNamedColor('#daa520')
                 bblInit.fluidCodes[0].lineColor.setNamedColor('#daa520')
@@ -230,7 +230,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         if len(self.layerDiagramms) < 1:
             self.dailyProduction.setChecked(self.isCurrentProd)
             self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0,
-                                                units=self.defaultUnitNum, fluids=[1, 0, 1, 0, 0, 0, 0, 0]))
+                                                units=self.defaultUnitNum, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]))
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
         for d in self.layerDiagramms:
@@ -266,7 +266,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     def mAddDiagramm_clicked(self):
         newName = u'Диаграмма {}'.format(len(self.layerDiagramms)+1)
         d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=self.defaultUnitNum,
-                                            fluids=[0, 0, 0, 0, 0, 0, 0, 0])
+                                            fluids=[0, 0, 0, 0, 0, 0, 0, 0, 0])
         self.layerDiagramms.append(d)
 
         item = QtGui.QListWidgetItem(newName)

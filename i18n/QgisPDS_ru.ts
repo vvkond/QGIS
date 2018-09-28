@@ -1361,6 +1361,11 @@ Please set TIGDIR variable</source>
         <translation>Свободный газ</translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>Produced fluid</source>
+        <translation>Жидкость</translation>
+    </message>
+    <message>
         <location line="+23"/>
         <source>unknown well</source>
         <translation>Неопределенный тип</translation>
