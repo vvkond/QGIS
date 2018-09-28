@@ -43,6 +43,8 @@ class ProductionWell(MyStruct):
     reservoirState = 'NO_MOVING'
     movingReservoir = ''
     maxDebits = []
+    wRole="unknown"
+    wStatus="unknown"
     
 
 
