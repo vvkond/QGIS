@@ -85,8 +85,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.attrSymbolId =     u'symbolid'
         self.attrSymbol =       u'symbolcode'
         self.attrSymbolName =   u'symbolname'
-        self.attrWellRole =     u'well_role'
-        self.attrWellStatus =   u'well_status'
+        self.attrWellRole =     u'wellrole'
+        self.attrWellStatus =   u'wellstatus'
         self.attrLiftMethod =   u'liftmethod'
         self.attr_lablx =       u"lablx"
         self.attr_lably =       u"lably"
@@ -333,6 +333,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.uri += '&field={}:{}'.format(self.attrSymbolId,    "string" )
             self.uri += '&field={}:{}'.format(self.attrSymbolName,  "string" )
             self.uri += '&field={}:{}'.format(self.attrSymbol,      "integer")
+            self.uri += '&field={}:{}'.format(self.attrWellRole,    "string" )
+            self.uri += '&field={}:{}'.format(self.attrWellStatus,  "string" )
             self.uri += '&field={}:{}'.format(self.attr_startDate,  "date"   )
             self.uri += '&field={}:{}'.format(self.attrDays,        "double" )
             self.uri += '&field={}:{}'.format(self.attrLiftMethod,  "string" )
@@ -815,24 +817,24 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         for prod in prodWell.prods:
             sumDays = sumDays + self.calcProds(prod, prodWell.name, sumMass, sumVols)
 
-        self.setWellAttribute(prodWell.name, self.attrDays, sumDays)
-        self.setWellAttribute(prodWell.name, self.attr_resstate, prodWell.reservoirState)
-        self.setWellAttribute(prodWell.name, self.attr_movingres, prodWell.movingReservoir)
-        self.setWellAttribute(prodWell.name, self.attr_multiprod, prodWell.lastReservoirs)
-        self.setWellAttribute(prodWell.name, self.attr_startDate, self.mStartDate.date())
+        self.setWellAttribute(prodWell.name, self.attrDays        , sumDays                 )
+        self.setWellAttribute(prodWell.name, self.attr_resstate   , prodWell.reservoirState )
+        self.setWellAttribute(prodWell.name, self.attr_movingres  , prodWell.movingReservoir)
+        self.setWellAttribute(prodWell.name, self.attr_multiprod  , prodWell.lastReservoirs )
+        self.setWellAttribute(prodWell.name, self.attr_startDate  , self.mStartDate.date()  )
+        self.setWellAttribute(prodWell.name, self.attrWellRole    , prodWell.wRole          )
+        self.setWellAttribute(prodWell.name, self.attrWellStatus  , prodWell.wStatus        )
         if len(prodWell.liftMethod):
             self.setWellAttribute(prodWell.name, self.attrLiftMethod, prodWell.liftMethod)
         for i, fl in enumerate(bblInit.fluidCodes):
-            self.setWellAttribute(prodWell.name, bblInit.attrFluidMass(fl.code), sumMass[i])
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMass(  fl.code), sumMass[i])
             self.setWellAttribute(prodWell.name, bblInit.attrFluidVolume(fl.code), sumVols[i])
 
         for i, fl in enumerate(bblInit.fluidCodes):
-            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitMass(fl.code), prodWell.maxDebits[i].massValue)
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitMass(    fl.code), prodWell.maxDebits[i].massValue)
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitDateMass(fl.code), prodWell.maxDebits[i].massDebitDate)
-            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitVol(fl.code),
-                                  prodWell.maxDebits[i].volValue)
-            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitDateVol(fl.code),
-                                  prodWell.maxDebits[i].volDebitDate)
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitVol(     fl.code), prodWell.maxDebits[i].volValue)
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitDateVol( fl.code), prodWell.maxDebits[i].volDebitDate)
 
     #==========================================================================
     # read production for selected well from  BASE
@@ -1211,7 +1213,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.loadWellFeature(wId, symbolId)
             pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
                                  maxDebits = [ProdDebit() for c in bblInit.fluidCodes]
-                                 wRole=role,wStatus=status
+                                 ,wRole=role,wStatus=status
                                  )
             self.mProductionWells.append(pwp)
 
@@ -1314,6 +1316,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     well.setAttribute (self.attrLongitude, lon)
                     well.setAttribute (self.attrSymbol, 71)
                     well.setAttribute (self.attrSymbolName, self.tr('unknown well'))
+                    well.setAttribute (self.attrWellRole,   self.tr('unknown'))
+                    well.setAttribute (self.attrWellStatus, self.tr('unknown'))
 
                     if lon and lat and lon != NULL and lat != NULL:
                         pt = QgsPoint(lon, lat)
@@ -1324,7 +1328,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         self.mWells[well_name] = well
 
                         pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
-                                             maxDebits=[ProdDebit() for c in bblInit.fluidCodes])
+                                             maxDebits=[ProdDebit() for c in bblInit.fluidCodes]
+                                             )
                         self.mProductionWells.append(pwp)
 
         except Exception as e:
