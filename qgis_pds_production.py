@@ -22,7 +22,7 @@ import time
 
 
 IS_DEBUG=False
-IS_PROFILING=True
+IS_PROFILING=False
 
 class BBL_LIFT_METHOD:
     def __init__(self, code, isFlowing, isPump):
