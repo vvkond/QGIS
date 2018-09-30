@@ -21,6 +21,9 @@ from tig_projection import *
 import time
 
 
+IS_DEBUG=False
+IS_PROFILING=True
+
 class BBL_LIFT_METHOD:
     def __init__(self, code, isFlowing, isPump):
         self.code = code
@@ -211,7 +214,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             " and reservoir_part.reservoir_part_s = equipment_insl.facility_s "
             " and p_equipment_fcl.bsasc_source = 'order no'")
 
-        QgsMessageLog.logMessage(u"Execute readReservoirOrders: {}\\n\n".format(sql), tag="QgisPDS.sql")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Execute readReservoirOrders: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
         if result is not None:
             for reservoirId, reservoirNumber in result:
@@ -293,7 +296,24 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     # 
     #===========================================================================
     def on_buttonBox_accepted(self):
+        if IS_DEBUG or IS_PROFILING:
+            import cProfile
+            _profiler = cProfile.Profile()
+            _profiler.enable()
+        #
         self.createProductionLayer()
+        #
+        if IS_DEBUG or IS_PROFILING:
+            import pstats, io
+            from os.path import expanduser
+            home = expanduser("~")            
+            _profiler.disable()
+            s = open(os.path.join(home,'qgispds.prof.log'), 'a')
+            ps=pstats.Stats(_profiler, stream=s).strip_dirs().sort_stats('cumulative').print_stats()
+            s = open(os.path.join(home,'qgispds.prof.log'), 'r')            
+            QgsMessageLog.logMessage(u"profile: \n{}".format(''.join(s.readlines())), tag="QgisPDS.profile")
+
+        
 
     #===========================================================================
     # 
@@ -438,7 +458,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     #try:
         # self.mEndDate = QDateTime.fromString(layer.customProperty("pds_prod_endDate"), self.dateFormat)
         self.mSelectedReservoirs = ast.literal_eval(layer.customProperty("pds_prod_SelectedReservoirs"))
-        self.mPhaseFilter = ast.literal_eval(layer.customProperty("pds_prod_PhaseFilter"))
+        self.mPhaseFilter =        ast.literal_eval(layer.customProperty("pds_prod_PhaseFilter")       )
         self.mProductionWells = []
         self.mWells = {}
     
@@ -532,24 +552,24 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         # self.mSelectedReservoirsText = self.getReservoirsFilter()
         # self.getWells(self.mSelectedReservoirsText)
 
-        QgsMessageLog.logMessage(u"prod config read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        IS_DEBUG and QgsMessageLog.logMessage(u"prod config read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
         
         for pdw in self.mProductionWells:
-            QgsMessageLog.logMessage(u"read well {}".format(pdw), tag="QgisPDS.readProduction")
+            IS_DEBUG and QgsMessageLog.logMessage(u"read well {}".format(pdw.name), tag="QgisPDS.readProduction")
             self.readWellProduction(pdw)
-        QgsMessageLog.logMessage(u"prod read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        IS_DEBUG and QgsMessageLog.logMessage(u"prod read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
 
         for pdw in self.mProductionWells:
             self.calcBubbles(pdw)
-        QgsMessageLog.logMessage(u"bubble calculated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        IS_DEBUG and QgsMessageLog.logMessage(u"bubble calculated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
 
         liftMethodIdx = self.layer.fieldNameIndex(self.attrLiftMethod)
 
         self._readAllWells()
-        QgsMessageLog.logMessage(u"well read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        IS_DEBUG and QgsMessageLog.logMessage(u"well read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
 
         is_refreshed =   False                                      #--- id that layer have refreshed records
@@ -557,7 +577,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         is_needupdcoord= self.mUpdateWellLocation.isChecked()
         is_needaddall=   self.mAddAllWells.isChecked()
         is_rowwithprod=  lambda feature:feature.attribute(self.attrSymbol)!=71
-        QgsMessageLog.logMessage("is_layerfiltered={};is_needupdcoord={};is_needaddall={};".format(is_layerfiltered,is_needupdcoord,is_needaddall), tag="QgisPDS.readProduction")
+        IS_DEBUG and QgsMessageLog.logMessage("is_layerfiltered={};is_needupdcoord={};is_needaddall={};".format(is_layerfiltered,is_needupdcoord,is_needaddall), tag="QgisPDS.readProduction")
         #Refresh or add feature
         with edit(self.layer):
             ############################
@@ -590,6 +610,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in layer record with that WELL_ID
                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
                 num = 0
+                IS_DEBUG and QgsMessageLog.logMessage(u"update attribute of well {}".format(feature.attribute(self.attrWellId)), tag="QgisPDS.debug")
                 for f in searchRes:             #--- iterate over each row in base layer for current well
                     is_refreshed = True
                     #--- update coord if checked
@@ -643,7 +664,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         self.layer.startEditing()   #--- and start edit again
             self.layer.setSubsetString(f_str)
 
-        QgsMessageLog.logMessage(u"atr updated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
+        IS_DEBUG and QgsMessageLog.logMessage(u"atr updated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
                     
         # if is_refreshed:
@@ -795,7 +816,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         days = prod.days
         if days <= 0:
             days = prod.stadat.daysTo(prod.enddat)
-            QgsMessageLog.logMessage( self.tr( u"calcProds: zero time value for well " ) + wellName, self.tr( "QGisPDS" ) )
+            IS_DEBUG and QgsMessageLog.logMessage( self.tr( u"calcProds: zero time value for well " ) + wellName, self.tr( "QGisPDS" ) )
 
 
         if prod.stadat < self.mStartDate:
@@ -850,7 +871,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         time_start=time.time()
 
         self.bblCalcReservoirMovingAndMultipleReservoirProduction(prodWell)
-        QgsMessageLog.logMessage(u"bblCalcReservoirMovingAndMultipleReservoirProduction  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+        IS_DEBUG and QgsMessageLog.logMessage(u"bblCalcReservoirMovingAndMultipleReservoirProduction  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
         time_start=time.time()
         i = 0
         
@@ -1014,9 +1035,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             ,reservoir_filter=u"AND grp.RESERVOIR_PART_CODE in ('" + u"','".join(self.mSelectedReservoirs) +u"')"
             )
         # ---4 execute QUERY
-        QgsMessageLog.logMessage(u"Execute readWellProduction: {}\n\n".format(sql), tag="QgisPDS.sql")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Execute readWellProduction: {}\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
-        QgsMessageLog.logMessage(u"query in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+        IS_DEBUG and QgsMessageLog.logMessage(u"query in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
         time_start=time.time()
         
         if result is None: 
@@ -1059,14 +1080,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         product.massVals[fluid.idx] += row_dict[fluid.field]
                     else:
                         product.volumeVals[fluid.idx] += row_dict[fluid.field]
-        QgsMessageLog.logMessage(u"row init in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+        IS_DEBUG and QgsMessageLog.logMessage(u"row init in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
         time_start=time.time()
 
         if useLiftMethod:
             liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
             if liftMethod in bblInit.bblLiftMethods.keys():
                 prodWell.liftMethod = liftMethod
-            QgsMessageLog.logMessage(u"lift method in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+            IS_DEBUG and QgsMessageLog.logMessage(u"lift method in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
         
     #===========================================================================
     # Load production wells
@@ -1136,7 +1157,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
                 "      and wellbore.wellbore_s=wellbore_intv.wellbore_s"
                 "      and well.well_s=wellbore.well_s")
-        QgsMessageLog.logMessage(u"Execute getWells: {}\\n\n".format(sql), tag="QgisPDS.sql")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Execute getWells: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
 
         for wl in result:
@@ -1204,7 +1225,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 "WHERE rtrim(tig_latest_well_name) = '" + well_name + "' "
                 "AND (tig_only_proposal = 0 OR tig_only_proposal = 1) ")
         
-        QgsMessageLog.logMessage(u"Execute loadWellByName: {}\\n\n".format(sql), tag="QgisPDS.sql")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Execute loadWellByName: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
         for id in result:
             wId = id[0]
@@ -1251,7 +1272,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         prevFindat = 1
         findat = 0
 
-        QgsMessageLog.logMessage(u"Execute bblCalcReservoirMovingAndMultipleReservoirProduction: {}\\n\n".format(sql), tag="QgisPDS.sql")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Execute bblCalcReservoirMovingAndMultipleReservoirProduction: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
         for reservoirId,prodEndTime in result:
             if prevProdEndTime != prodEndTime:
@@ -1316,19 +1337,21 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     well.setAttribute (self.attrLongitude, lon)
                     well.setAttribute (self.attrSymbol, 71)
                     well.setAttribute (self.attrSymbolName, self.tr('unknown well'))
-                    well.setAttribute (self.attrWellRole,   self.tr('unknown'))
-                    well.setAttribute (self.attrWellStatus, self.tr('unknown'))
+                    wellRole =        self.getWellStrProperty(wId, self.mEndDate, "current well role")
+                    wellStatus =      self.getWellStrProperty(wId, self.mEndDate, "well status"      )
+                    well.setAttribute (self.attrWellRole,   wellRole)
+                    well.setAttribute (self.attrWellStatus, wellStatus)
 
                     if lon and lat and lon != NULL and lat != NULL:
                         pt = QgsPoint(lon, lat)
                         if self.xform:
                             pt = self.xform.transform(pt)
                         well.setGeometry(QgsGeometry.fromPoint(pt))
-
                         self.mWells[well_name] = well
-
                         pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
                                              maxDebits=[ProdDebit() for c in bblInit.fluidCodes]
+                                             ,wRole=wellRole
+                                             ,wStatus=wellStatus
                                              )
                         self.mProductionWells.append(pwp)
 
@@ -1380,15 +1403,12 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     # Load well geometry
     #===========================================================================
     def loadWellFeature(self, sldnid, symbolId):
-        well = QgsFeature (self.layer.fields())
-
         sql = ("select tig_latest_well_name, tig_latitude, tig_longitude "
                 "  from tig_well_history where db_sldnid = " + str(sldnid))
-
         result = self.db.execute(sql)
 
+        well = QgsFeature (self.layer.fields())
         plugin_dir = os.path.dirname(__file__)
-  
         for well_name, lat, lon in result:
             well.setAttribute (self.attrWellId,    well_name)
             well.setAttribute (self.attrLatitude,  lat)
@@ -1397,13 +1417,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 well.setAttribute (self.attrSymbolId, plugin_dir+"/svg/WellSymbol"+str(symbolId.symbol+1).zfill(3)+".svg")
                 well.setAttribute (self.attrSymbol, symbolId.symbol+1)
                 well.setAttribute (self.attrSymbolName, symbolId.wellRole)
-
             pt = QgsPoint(lon, lat)
             if self.xform:
                 pt = self.xform.transform(pt)
             well.setGeometry(QgsGeometry.fromPoint(pt))
             # well.setGeometry(QgsGeometry.fromPoint(QgsPoint(lon, lat)))
-
             self.mWells[well_name] = well
             
 
