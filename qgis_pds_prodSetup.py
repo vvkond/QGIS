@@ -634,7 +634,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         registry = QgsSymbolLayerV2Registry.instance()
 
-         #Collect fields for Data Defined props
+        #Collect fields for Data Defined props
         allDiagramms = []
         templateStr = self.templateExpression.text()
         sums = ''
@@ -756,6 +756,39 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             rule.setFilterExpression(u'\"SymbolCode\"=-1')
             root_rule.appendChild(rule)
 
+
+        #--- add arrow FROM_LOWER_RESERVOIR/FROM_UPPER_RESERVOIR
+        symbol = QgsMarkerSymbolV2.createSimple({ 
+                                                   'name': 'arrow'
+                                                 , 'color': "128,128,128,0"
+                                                 , 'offset': '0,-2'
+                                                 , 'angle':'0'
+                                                 , 'size':str(sSize-1)
+                                                })
+        rule = QgsRuleBasedRendererV2.Rule(symbol)
+        try:
+            rule.setLabel(QCoreApplication.translate('bblInit', 'FROM_LOWER_RESERVOIR'))
+        except:
+            rule.setLabel("FROM_LOWER_RESERVOIR")
+        rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_LOWER_RESERVOIR'")) 
+        root_rule.appendChild(rule)
+        
+        symbol = QgsMarkerSymbolV2.createSimple({ 
+                                                   'name': 'arrow'
+                                                 , 'color': "128,128,128,0"
+                                                 , 'offset': '0,-2'
+                                                 , 'angle':'180'
+                                                 , 'size':str(sSize-1)
+                                                })
+        rule = QgsRuleBasedRendererV2.Rule(symbol)
+        try:
+            rule.setLabel(QCoreApplication.translate('bblInit', 'FROM_UPPER_RESERVOIR'))
+        except:
+            rule.setLabel('FROM_UPPER_RESERVOIR')
+        rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_UPPER_RESERVOIR'")) 
+        root_rule.appendChild(rule)
+
+
         renderer.setOrderByEnabled(True)
         orderByClause = QgsFeatureRequest.OrderByClause('BubbleSize', False)
         orderBy = QgsFeatureRequest.OrderBy([orderByClause])
@@ -764,7 +797,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         editLayer.triggerRepaint()
         self.mIface.layerTreeView().refreshLayerSymbology(editLayer.id())
-
         return
 
     def addLabels(self, templateStr, sum, fluids, feature, scaleType, multiplier):

@@ -1740,5 +1740,16 @@ Please set TIGDIR variable</source>
         <source>water absorbing exploration abandonment stock</source>
         <translation>Разведочная скважина для сброса технических вод ликвидированная</translation>
     </message>
+    <message>
+        <location line="+2"/>
+        <source>FROM_LOWER_RESERVOIR</source>
+        <translation>Перевод на вышележащий</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>FROM_UPPER_RESERVOIR</source>
+        <translation>Перевод на нижележащий</translation>
+    </message>    
+        
 </context>
 </TS>
