@@ -580,6 +580,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         is_rowwithprod=  lambda feature:feature.attribute(self.attrSymbol)!=71
         IS_DEBUG and QgsMessageLog.logMessage("is_layerfiltered={};is_needupdcoord={};is_needaddall={};".format(is_layerfiltered,is_needupdcoord,is_needaddall), tag="QgisPDS.readProduction")
         #Refresh or add feature
+        if self.layer.isEditable(): self.layer.commitChanges()
         with edit(self.layer):
             ############################
             ####### TEST BLOCK
@@ -708,6 +709,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         is_rowwithprod = lambda feature: feature.attribute(self.attrSymbol) != 71
 
         # Refresh or add feature
+        if self.layer.isEditable(): self.layer.commitChanges()
         with edit(self.layer):
             ############################
             ####### TEST BLOCK
@@ -1666,12 +1668,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         initialWellRole = self.getWellStrProperty(sldnid, self.mEndDate, "initial well role")
         wellRole =        self.getWellStrProperty(sldnid, self.mEndDate, "current well role")
         wellStatus =      self.getWellStrProperty(sldnid, self.mEndDate, "well status"      )
-        for conv in bblInit.bblConvertedSymbols:
-            if (conv.initialWellRole == initialWellRole and
-                conv.currentWellRole == wellRole and
-                conv.wellStatus == wellStatus
-                ):
-                return SYMBOL(initialWellRole + ' ' + wellRole + ' ' + wellStatus, conv.symbol),wellRole,wellStatus
+        #---not need cheeck initial well role at now
+        #for conv in bblInit.bblConvertedSymbols:
+        #    if (
+        #        conv.initialWellRole == initialWellRole and
+        #        conv.currentWellRole == wellRole and
+        #        conv.wellStatus == wellStatus
+        #        ):
+        #        return SYMBOL(wellRole + ' ' + wellStatus, conv.symbol),wellRole,wellStatus
         for sym in bblInit.bblSymbols:
             if sym.wellRole == wellRole and sym.wellStatus == wellStatus:
                 return SYMBOL(wellRole + ' '+ wellStatus, sym.symbol),wellRole,wellStatus

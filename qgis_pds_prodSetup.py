@@ -497,7 +497,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         uniqSymbols = {}
         prods = {}
 
-        editLayer.startEditing()
+        if not editLayer.isEditable():
+            editLayer.startEditing()
 
         idxOffX = editLayerProvider.fieldNameIndex('labloffx')
         idxOffY = editLayerProvider.fieldNameIndex('labloffy')

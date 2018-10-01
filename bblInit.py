@@ -400,6 +400,7 @@ class bblInit:
         provider = layer.dataProvider()
         newIdx = layer.fieldNameIndex(fieldName)
         if newIdx < 0:
+            if layer.isEditable(): layer.commitChanges()            
             with edit(layer):
                 provider.addAttributes([QgsField(fielName, fieldType, QString(""), fieldLen, fieldPrec)])
 
@@ -415,7 +416,8 @@ class bblInit:
                 if val:
                     layer.changeAttributeValue(feature.id(), idx, float(val))
                 layer.addAttributeAlias(idx, alias)
-
+                
+        if layer.isEditable(): layer.commitChanges() 
         with edit(layer):
             for fl in bblInit.fluidCodes:
                 #Check mass fields
@@ -463,6 +465,7 @@ class bblInit:
 
 
         if needCopyData:
+            if layer.isEditable(): layer.commitChanges()
             with edit(layer):
                 features = layer.getFeatures()
                 for feature in features:
