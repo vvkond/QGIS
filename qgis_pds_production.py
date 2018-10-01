@@ -383,6 +383,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 layerName = u"Cumulative production - " + ",".join(self.mSelectedReservoirs)
             elif self.mDynamicCheckBox.isChecked():
                 layerName = u"Dynamic production - " + ",".join(self.mSelectedReservoirs)
+            layerName=layerName[:220] #max f_name size
+            #layerName=u"kurovdag_m2_Cumulative production - PS01_zeh3,AP02_2_z2,Iob-AP02_z1, PS01_z2,IIa-AP02_z1,PS02z1,IIb-AP02_z1,IIb1-AP02_z1,IIc-AP02_z1,IIc1-AP02_z1,IIc2_AP02_z1,IIc3-AP02_z1,IIc4-AP02_z1,IId-AP02_z1,IIe-AP02_z1,IIob12.shp"
             self.layer = QgsVectorLayer(self.uri, layerName, "memory")
             if self.layer is None:
                 QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'Layer create error'), QtGui.QMessageBox.Ok)
@@ -1523,7 +1525,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         sql = ("SELECT db_sldnid FROM tig_well_history "
                 "WHERE rtrim(tig_latest_well_name) = '" + well_name + "' "
                 "AND (tig_only_proposal = 0 OR tig_only_proposal = 1) ")
-        
+
         IS_DEBUG and QgsMessageLog.logMessage(u"Execute loadWellByName: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
         for id in result:
