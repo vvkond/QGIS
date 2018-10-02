@@ -43,42 +43,102 @@ class ProductionWell(MyStruct):
     reservoirState = 'NO_MOVING'
     movingReservoir = ''
     maxDebits = []
+    wRole="unknown"
+    wStatus="unknown"
+    
 
 
+TableUnit = namedtuple('TableUnit', ['table', 'unit'])
 class bblInit:
+    
 
     fluidCodes = [  MyStruct(name= QCoreApplication.translate('bblInit', u'Crude oil'),
                                  code="oil", componentId="crude oil", alias=u'Сырая нефть',
                                  backColor=QColor(Qt.darkRed),   lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                                 inPercent=0),
+                                 inPercent=0
+                                 ,sourceTables=[
+                                    TableUnit(u"p_std_vol_lq",   u"Volume"), 
+                                    TableUnit(u"p_q_mass_basis", u"Mass")
+                                ]                                 
+                                ,subComponentIds=None 
+                    ),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Natural gas'),
                                  code="ngas", componentId="natural gas", alias=u'Природный газ',
                                  backColor=QColor(Qt.darkYellow), lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                                 inPercent=0),
+                                 inPercent=0
+                                 ,sourceTables=[
+                                    TableUnit(u"p_std_vol_gas",  u"Volume"), 
+                                ]                                 
+                                ,subComponentIds=None
+                    ),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Produced water'),
                                 code="pw", componentId="produced water", alias=u'Добыча вода',
                                 backColor=QColor(Qt.blue),      lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                                inPercent=0),
+                                inPercent=0
+                                 ,sourceTables=[
+                                    TableUnit(u"p_std_vol_lq",   u"Volume"), 
+                                    TableUnit(u"p_q_mass_basis", u"Mass")
+                                ]                                 
+                                ,subComponentIds=None
+                    ),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Condensate'),
                                 code="cond", componentId="condensate", alias=u'Конденсат',
                                 backColor=QColor(Qt.gray),      lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                                inPercent=0),
+                                inPercent=0
+                                 ,sourceTables=[
+                                    TableUnit(u"p_std_vol_lq",   u"Volume"), 
+                                    TableUnit(u"p_q_mass_basis", u"Mass")
+                                ]                                 
+                                ,subComponentIds=None   
+                    ),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Injected gas'),
                                 code="igas", componentId="injected gas", alias=u'Закачка газа',
                                 backColor=QColor(Qt.yellow),    lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                                inPercent=0),
+                                inPercent=0
+                                 ,sourceTables=[
+                                    TableUnit(u"p_std_vol_gas",  u"Volume"), 
+                                ]                                 
+                                ,subComponentIds=None    
+                    ),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Injected water'),
                                 code="iw", componentId="injected water", alias=u'Закачка воды',
                                 backColor=QColor(0, 160, 230),  lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                                inPercent=0),
+                                inPercent=0
+                                 ,sourceTables=[
+                                    TableUnit(u"p_std_vol_lq",   u"Volume"), 
+                                    TableUnit(u"p_q_mass_basis", u"Mass")
+                                ]                                 
+                                ,subComponentIds=None
+                    ),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Lift gas'),
                                 code="lgas", componentId="lift gas", alias=u'Газлифт',
                                 backColor=QColor(Qt.yellow),    lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                                inPercent=0),
+                                inPercent=0
+                                 ,sourceTables=[
+                                    TableUnit(u"p_std_vol_gas",  u"Volume"), 
+                                ]                                 
+                                ,subComponentIds=None
+                    ),
                     MyStruct(name=QCoreApplication.translate('bblInit', u'Free gas'),
                                 code="fgas", componentId="free gas", alias=u'Свободный газ',
                                 backColor=QColor(Qt.darkYellow), lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
-                                inPercent=0)]
+                                inPercent=0
+                                 ,sourceTables=[
+                                    TableUnit(u"p_std_vol_gas",  u"Volume"), 
+                                ]                                 
+                                ,subComponentIds=None
+                    ),
+                    MyStruct(name=QCoreApplication.translate('bblInit', u'Produced fluid'),
+                                code="pfl", componentId=None , alias=u'Добыча жидкости',
+                                backColor=QColor(Qt.blue),      lineColor=QColor(Qt.black), labelColor=QColor(Qt.black),
+                                inPercent=0
+                                 ,sourceTables=[
+                                    TableUnit(u"p_std_vol_lq",   u"Volume"), 
+                                    TableUnit(u"p_q_mass_basis", u"Mass")
+                                ]                                 
+                                ,subComponentIds=["produced water","crude oil"]
+                    ),
+                    ]
 
     bblLiftMethods =  {u"flowing": LiftMethod(True, False),
                             u"centrifugal pump": LiftMethod( False, True),
@@ -91,10 +151,10 @@ class bblInit:
                             u"RED pump": LiftMethod( False, True)}
 
     standardDiagramms = {
-                    "1LIQUID_PRODUCTION": StandardDiagram(name=u"Диаграмма жидкости", scale=300000, unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0]),
-                    "2LIQUID_INJECTION": StandardDiagram(name=u"Диаграмма закачки", scale=300000, unitsType=0, units=0, fluids=[0, 0, 0, 0, 1, 1, 0, 0]),
-                    "3GAS_PRODUCTION": StandardDiagram(name=u"Диагмамма газа", scale=3000000, unitsType=1, units=0, fluids=[0, 1, 0, 0, 0, 0, 0, 0]),
-                    "4CONDENSAT_PRODUCTION": StandardDiagram(name=u"Диаграмма конденсата", scale=3000000, unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0])
+                    "1LIQUID_PRODUCTION"     : StandardDiagram(name=u"Диаграмма жидкости",   scale=300000,  unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]),
+                    "2LIQUID_INJECTION"      : StandardDiagram(name=u"Диаграмма закачки",    scale=300000,  unitsType=0, units=0, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0]),
+                    "3GAS_PRODUCTION"        : StandardDiagram(name=u"Диагмамма газа",       scale=3000000, unitsType=1, units=0, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0]),
+                    "4CONDENSAT_PRODUCTION"  : StandardDiagram(name=u"Диаграмма конденсата", scale=3000000, unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0, 0])
                 }
 
     bblSymbols = [
@@ -340,6 +400,7 @@ class bblInit:
         provider = layer.dataProvider()
         newIdx = layer.fieldNameIndex(fieldName)
         if newIdx < 0:
+            if layer.isEditable(): layer.commitChanges()            
             with edit(layer):
                 provider.addAttributes([QgsField(fielName, fieldType, QString(""), fieldLen, fieldPrec)])
 
@@ -355,12 +416,15 @@ class bblInit:
                 if val:
                     layer.changeAttributeValue(feature.id(), idx, float(val))
                 layer.addAttributeAlias(idx, alias)
-
+                
+        if layer.isEditable(): layer.commitChanges() 
         with edit(layer):
             for fl in bblInit.fluidCodes:
                 #Check mass fields
                 newName = bblInit.attrFluidMass(fl.code)
-                oldName = bblInit.attrFluidMassOld(fl.componentId)
+                oldName =None
+                if fl.componentId is not None:
+                    oldName = bblInit.attrFluidMassOld(fl.componentId)
                 newIdx = layer.fieldNameIndex(newName)
                 if newIdx < 0:
                     provider.addAttributes([QgsField(newName, QVariant.Double, QString(""), 20, 5)])
@@ -368,7 +432,8 @@ class bblInit:
 
                 #Check volume fields
                 newName = bblInit.attrFluidVolume(fl.code)
-                oldName = bblInit.attrFluidVolumeOld(fl.componentId)
+                if fl.componentId is not None:                
+                    oldName = bblInit.attrFluidVolumeOld(fl.componentId)
                 newIdx = layer.fieldNameIndex(newName)
                 if newIdx < 0:
                     provider.addAttributes([QgsField(newName, QVariant.Double, QString(""), 20, 5)])
@@ -400,10 +465,12 @@ class bblInit:
 
 
         if needCopyData:
+            if layer.isEditable(): layer.commitChanges()
             with edit(layer):
                 features = layer.getFeatures()
                 for feature in features:
                     for fl in bblInit.fluidCodes:
+                        if fl.componentId is None:continue                        
                         #Copy mass fields
                         newName = bblInit.attrFluidMass(fl.code)
                         oldName = bblInit.attrFluidMassOld(fl.componentId)
