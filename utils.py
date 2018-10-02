@@ -67,6 +67,19 @@ def createLayerName(layerName):
         layerName = layerName + u'  ' + time.strftime('%d-%m-%Y %H:%M:%S', time.localtime())
     return layerName
 
+def makeShpFileName(scheme, layerName, makeUniq = True):
+    ln = layerName.replace('/', '-').replace('\\', '-')
+    if makeUniq:
+        layerFile = u'/{0}_{1}_{2}.shp'.format(scheme, ln, time.strftime('%d_%m_%Y_%H_%M_%S', time.localtime()))
+    else:
+        layerFile = u'/{0}_{1}.shp'.format(scheme, ln)
+
+    (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
+    if not os.path.exists(prjPath):
+        os.mkdir(prjPath)
+
+    return prjPath + layerFile
+
 def memoryToShp(layer, scheme, layerName):
     settings = QSettings()
     systemEncoding = settings.value('/UI/encoding', 'System')
