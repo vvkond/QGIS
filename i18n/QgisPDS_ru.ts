@@ -1361,6 +1361,11 @@ Please set TIGDIR variable</source>
         <translation>Свободный газ</translation>
     </message>
     <message>
+        <location line="+4"/>
+        <source>Produced fluid</source>
+        <translation>Жидкость</translation>
+    </message>
+    <message>
         <location line="+23"/>
         <source>unknown well</source>
         <translation>Неопределенный тип</translation>
@@ -1735,5 +1740,16 @@ Please set TIGDIR variable</source>
         <source>water absorbing exploration abandonment stock</source>
         <translation>Разведочная скважина для сброса технических вод ликвидированная</translation>
     </message>
+    <message>
+        <location line="+2"/>
+        <source>FROM_LOWER_RESERVOIR</source>
+        <translation>Перевод на вышележащий</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>FROM_UPPER_RESERVOIR</source>
+        <translation>Перевод на нижележащий</translation>
+    </message>    
+        
 </context>
 </TS>
