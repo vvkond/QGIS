@@ -10,7 +10,7 @@ import json
 
 class StrictInit(object):
     def __init__(self, **kw):
-        assert not set(kw).difference(dir(self.__class__)), u'{0} does not declare fields {1}'.format(self.__class__, list(set(kw).difference(dir(self.__class__))))
+        assert not set(kw).difference(dir(self.__class__)), '{0} does not declare fields {1}'.format(self.__class__, list(set(kw).difference(dir(self.__class__))))
         self.__dict__.update(kw)
 
 
@@ -64,7 +64,7 @@ def lonlat_add_list(lon, lat, x, y):
 def createLayerName(layerName):
     layerList = QgsMapLayerRegistry.instance().mapLayersByName(layerName)
     if len(layerList):
-        layerName = layerName + u'  ' + time.strftime('%d-%m-%Y %H:%M:%S', time.localtime())
+        layerName = layerName + '  ' + time.strftime('%d-%m-%Y %H:%M:%S', time.localtime())
     return layerName
 
 def memoryToShp(layer, scheme, layerName):
@@ -72,7 +72,7 @@ def memoryToShp(layer, scheme, layerName):
     systemEncoding = settings.value('/UI/encoding', 'System')
 
     ln = layerName.replace('/', '-').replace('\\', '-')
-    layerFile = u'/{0}_{1}_{2}.shp'.format(scheme, ln, time.strftime('%d_%m_%Y_%H_%M_%S', time.localtime()))
+    layerFile = '/{0}_{1}_{2}.shp'.format(scheme, ln, time.strftime('%d_%m_%Y_%H_%M_%S', time.localtime()))
 
     (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
     if not os.path.exists(prjPath):
