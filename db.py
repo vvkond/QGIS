@@ -1,13 +1,19 @@
 from datetime import datetime
 from functools import total_ordering
 from itertools import izip
-from os import environ
+from os import environ,path
 from os.path import abspath
 from time import sleep
 import logging
 import sqlite3
 
 environ['NLS_LANG'] = '.AL32UTF8'
+
+import sys
+sys.path.append(str(path.join(
+                                path.dirname(path.abspath(__file__))
+                                ,r"libs\x86_64" if sys.maxsize > 2**32 else r"libs\i386" 
+                            )))                            
 import cx_Oracle
 
 
