@@ -69,12 +69,12 @@ def createLayerName(layerName):
         layerName = layerName + u'  ' + time.strftime('%d-%m-%Y %H:%M:%S', time.localtime())
     return layerName
 
-def makeShpFileName(scheme, layerName, makeUniq = True):
-    ln = layerName.replace('/', '-').replace('\\', '-')[:MAX_FILE_NAME_SIZE-26]
+def makeShpFileName(scheme='', layerName='', makeUniq = True, ext=".shp"):
+    ln = layerName.replace('/', '-').replace('\\', '-')[:MAX_FILE_NAME_SIZE-22-len(ext)]
     if makeUniq:
-        layerFile = u'/{0}_{1}_{2}.shp'.format(scheme, ln, time.strftime('%d_%m_%Y_%H_%M_%S', time.localtime()))
+        layerFile = u'/{0}_{1}_{2}{ext}'.format(scheme, ln, time.strftime('%d_%m_%Y_%H_%M_%S', time.localtime()),ext=ext)
     else:
-        layerFile = u'/{0}_{1}.shp'.format(scheme, ln)
+        layerFile = u'/{0}_{1}{ext}'.format(scheme, ln ,ext=ext)
 
     (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
     if not os.path.exists(prjPath):

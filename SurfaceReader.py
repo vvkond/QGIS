@@ -33,13 +33,13 @@ class SurfaceReader(ReaderBase):
     def createLayer(self, layerName, pdsProject, groupSetId, defaultValue):
         layer = None
 
-        fileName, layerName = self.readData(groupSetId)
+        fileName, layerName = self.readData(groupSetId,prefix=pdsProject['project'])
 
         if fileName is not None:
 #            settings = QSettings()
 #            oldProjValue = settings.value( "/Projections/defaultBehaviour", "prompt", type=str )
 #            settings.setValue( "/Projections/defaultBehaviour", "useProject" )
-
+            
             layer = QgsRasterLayer(fileName, layerName)
             layer.setCustomProperty("pds_project", str(pdsProject))
             layer.setCustomProperty("qgis_pds_type", 'qgis_surface')
@@ -53,7 +53,7 @@ class SurfaceReader(ReaderBase):
         return layer
 
 
-    def readData(self, groupSetId):
+    def readData(self, groupSetId, prefix=''):
         sourceCrs = None
         fileName = None
         layerName = None
@@ -131,14 +131,10 @@ class SurfaceReader(ReaderBase):
                 driver.Register()
 
 #                fileName = u'%d_%d.tif' % (groupSetId[0], groupSetId[1])
-                fileName = u'%s_%s.tif' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
+                fileName = u'%s_%s' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
+                fileName=makeShpFileName(scheme=prefix, layerName=fileName, makeUniq=True ,ext=".tif" )
                 layerName = u'%s/%s' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
 
-                (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
-                if not os.path.exists(prjPath):
-                    os.mkdir(prjPath)
-
-                fileName = prjPath +'/' + fileName
                 output_raster = driver.Create(fileName, size_x, size_y, 1 ,gdal.GDT_Float32)
 
                 band = output_raster.GetRasterBand(1)
