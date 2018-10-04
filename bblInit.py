@@ -21,6 +21,15 @@ SYMBOL = namedtuple('SYMBOL', ['wellRole', 'symbol'])
 StandardDiagram = namedtuple('StandardDiagram', ['name', 'scale', 'unitsType', 'units', 'fluids'])
 OLD_NEW_FIELDNAMES = [u'BubbleFields', u'bubbleflds']
 
+
+STYLE_DIR='styles'
+USER_PROD_STYLE_DIR='user_prod_styles'
+USER_PROD_RENDER_STYLE_DIR='user_prod_render_styles'
+PROD_RENDER_STYLE='prod_render'
+PROD_STYLE='prod'
+
+
+
 class MyStruct(object):
     def __init__(self,**kwargs):
         self.__dict__.update(kwargs)

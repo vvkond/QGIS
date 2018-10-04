@@ -15,8 +15,6 @@ import time
 from utils import plugin_path
 
 
-PROD_DEFAULT_STYLE='prod_render'
-STYLE_DIR='styles'
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
 
@@ -633,15 +631,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         editLayer.commitChanges()
         plugin_dir = plugin_path()
+        #---load user styles
+        load_styles_from_dir(layer=editLayer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_RENDER_STYLE_DIR))
         #--now check style for production
-        editLayerStyles=editLayer.styleManager()
-        PROD_DEFAULT_STYLE_TR=QCoreApplication.translate('bblInit', PROD_DEFAULT_STYLE)
-        if PROD_DEFAULT_STYLE_TR not in editLayerStyles.styles():
-            editLayerStyles.addStyle( PROD_DEFAULT_STYLE_TR,editLayerStyles.style(editLayerStyles.styles()[0]) )
-            editLayerStyles.setCurrentStyle(PROD_DEFAULT_STYLE_TR)
-            editLayer.loadNamedStyle( os.path.join(plugin_dir ,STYLE_DIR ,PROD_DEFAULT_STYLE+".qml") )
-        else:
-            editLayerStyles.setCurrentStyle(PROD_DEFAULT_STYLE_TR)
+        load_style(layer=editLayer, style_path=os.path.join(plugin_dir ,STYLE_DIR ,PROD_RENDER_STYLE+".qml"), name=QCoreApplication.translate('bblInit', PROD_RENDER_STYLE))
 
         registry = QgsSymbolLayerV2Registry.instance()
         #Collect fields for Data Defined props

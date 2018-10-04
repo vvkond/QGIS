@@ -7,6 +7,7 @@ import time
 from processing.tools.vector import VectorWriter
 import os
 import json
+import sys
 
 MAX_FILE_NAME_SIZE=224
 
@@ -40,10 +41,31 @@ class cached_property(object):
         return value
         
 
-def to_unicode(s):
+def to_unicode(s,codding='utf-8'):
     if isinstance(s, unicode):
         return s
-    return s.decode('utf-8')
+    return s.decode(codding)
+    
+
+def load_styles_from_dir(layer,styles_dir,switchActiveStyle=True):
+    editLayerStyles=layer.styleManager()
+    for user_style in os.listdir(styles_dir):
+        user_style=to_unicode(user_style, codding=sys.getfilesystemencoding() )
+        editLayerStyles.addStyle( user_style, editLayerStyles.style(editLayerStyles.styles()[0]) )
+        editLayerStyles.setCurrentStyle(user_style) if switchActiveStyle else None
+        layer.loadNamedStyle(os.path.join(styles_dir,user_style))        
+
+def load_style( layer,style_path,name=None ,rereadOnExist=False ):
+    editLayerStyles=layer.styleManager()
+    if rereadOnExist or name not in editLayerStyles.styles():
+        if name is not None:
+            editLayerStyles.addStyle( name, editLayerStyles.style(editLayerStyles.styles()[0]) ) 
+            editLayerStyles.setCurrentStyle(name)
+        layer.loadNamedStyle(os.path.join(style_path))        
+    else:
+        if name is not None:
+            editLayerStyles.setCurrentStyle(name)
+
     
 
 def lonlat_add_list(lon, lat, x, y):

@@ -19,6 +19,7 @@ from utils import *
 from bblInit import *
 from tig_projection import *
 import time
+import sys
 
 
 IS_DEBUG=False
@@ -430,6 +431,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'', self.attr_lably)
             palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
+            
+            #---load user styles
+            load_styles_from_dir(layer=self.layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_STYLE_DIR) ,switchActiveStyle=False)
+            #---load default style
+            load_style(layer=self.layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,PROD_STYLE+".qml"))
         else:
             bblInit.checkFieldExists(self.layer, self.attr_startDate, QVariant.Date, 50, 0)
             bblInit.updateOldProductionStructure(self.layer)
@@ -795,6 +801,114 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         self.layer.startEditing()  # --- and start edit again
             self.layer.setSubsetString(f_str)
 
+        self.writeSettings()
+
+    # ===========================================================================
+    # Create production layer
+    # ===========================================================================
+    def readDynamicProduction_bck(self):
+        time_start = time.time()
+
+        self.mPhaseFilterText = ""
+
+        if len(self.mSelectedReservoirs) < 1:
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'Reservoir is not selected'),
+                                       QtGui.QMessageBox.Ok)
+            return
+
+        self.productions = self.layer.dataProvider()
+
+        self.readWellsProduction(self.mProductionWells)
+        #for pdw in self.mProductionWells:     self.readWellProduction(pdw)
+
+        is_refreshed = False  # --- id that layer have refreshed records
+        is_layerfiltered = len(self.layer.subsetString().strip()) > 1  # --- if layer with filter provider allowed only update production/coordinates.
+        is_needupdcoord = self.mUpdateWellLocation.isChecked()
+        is_needaddall = self.mAddAllWells.isChecked()
+        is_rowwithprod = lambda feature: feature.attribute(self.attrSymbol) != 71
+
+        # Refresh or add feature
+        if self.layer.isEditable(): self.layer.commitChanges()
+        with edit(self.layer):
+            ############################
+            ####### TEST BLOCK
+            ############################
+            cDays =       self.layer.fieldNameIndex(  self.attrDays      )
+            cSymbol =     self.layer.fieldNameIndex(  self.attrSymbol    )
+            cSymbolId =   self.layer.fieldNameIndex(  self.attrSymbolId  )
+            cSymbolName = self.layer.fieldNameIndex(  self.attrSymbolName)
+            cResState =   self.layer.fieldNameIndex(  self.attr_resstate )
+            cMovingRes =  self.layer.fieldNameIndex(  self.attr_movingres)
+            cMultiProd =  self.layer.fieldNameIndex(  self.attr_multiprod)
+            cStartDate =  self.layer.fieldNameIndex(  self.attr_startDate)
+            cRole      =  self.layer.fieldNameIndex(  self.attrWellRole  )
+            cStatus    =  self.layer.fieldNameIndex(  self.attrWellStatus)
+            attr_2_upd = [  ###old column       old_col_id       new_col
+                  [self.attrDays,       cDays,       self.attrDays        ]
+                , [self.attrSymbol,     cSymbol,     self.attrSymbol      ]
+                , [self.attrSymbolId,   cSymbolId,   self.attrSymbolId    ]
+                , [self.attrSymbolName, cSymbolName, self.attrSymbolName  ]
+                , [self.attr_resstate,  cResState,   self.attr_resstate   ]
+                , [self.attr_movingres, cMovingRes,  self.attr_movingres  ]
+                , [self.attr_multiprod, cMultiProd,  self.attr_multiprod  ]
+                , [self.attr_startDate, cStartDate,  self.attr_startDate  ]
+                , [self.attrWellRole   ,cRole     ,  self.attrWellRole    ]
+                , [self.attrWellStatus ,cStatus   ,  self.attrWellStatus  ]
+            ]
+            for prodWell in self.mProductionWells:
+                oldFeature = self.mWells[prodWell.name]
+                for prod in prodWell.prods:
+                    feature = QgsFeature(oldFeature)
+                    self.updateFeature(feature, prod)
+                    dateText = prod.stadat.toString(u'yyyy-MM-dd')
+                    args = (self.attrWellId, feature.attribute(self.attrWellId), self.attr_startDate, dateText)
+                    exprStr = '\"{0}\"=\'{1}\' and \"{2}\"=to_date(\'{3}\')'.format(*args)
+                    expr = QgsExpression(exprStr)
+                    searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
+                    num = 0
+                    for f in searchRes:  # --- iterate over each row in base layer for current well
+                        is_refreshed = True
+                        # --- update coord if checked
+                        if is_needupdcoord:  # --- update coord if checked
+                            self.layer.changeGeometry(f.id(), feature.geometry())
+                        # --- update well attribute if changed
+                        for (c_old_name, c_old_idx, c_new_name) in attr_2_upd:
+                            if f.attribute(c_old_name) != feature.attribute(c_new_name):
+                                self.layer.changeAttributeValue(f.id(), c_old_idx, feature.attribute(c_new_name))
+                        for fl in bblInit.fluidCodes:  # --- update production attributes
+                            attrMass = bblInit.attrFluidMass(   fl.code )
+                            attrVol  = bblInit.attrFluidVolume( fl.code )
+                            self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass),
+                                                            feature.attribute(attrMass))
+                            self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol),
+                                                            feature.attribute(attrVol))
+                        num += 1
+                    # --- add new well if need
+                    if not num:  # --- well not present in base layer
+                        if not is_layerfiltered:  # --- if layer without filter provider,than allow add new records
+                            if is_needaddall or is_rowwithprod(feature):  # --- Add All wells checked or new row have production
+                                self.layer.addFeatures([feature])
+                        else:
+                            pass
+                    self.layer.commitChanges()  # --- commit each row
+                    self.layer.startEditing()  # --- and start edit again
+
+        # --- if layer filtered and selected Add All remove filter,add all,set back filter
+        if is_layerfiltered and is_needaddall:
+            f_str = self.layer.subsetString()
+            self.layer.setSubsetString("")
+            with edit(self.layer):
+                for feature in self.mWells.values():
+                    args = (self.attrWellId, feature.attribute(self.attrWellId))
+                    expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))  # --- search in base layer record with that WELL_ID
+                    searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
+                    for f in searchRes:
+                        break
+                    else:
+                        self.layer.addFeatures([feature])
+                        self.layer.commitChanges()  # --- commit each row
+                        self.layer.startEditing()  # --- and start edit again
+            self.layer.setSubsetString(f_str)
         self.writeSettings()
 
     #===========================================================================
