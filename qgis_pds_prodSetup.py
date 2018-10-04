@@ -758,6 +758,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
 
         #--- add arrow FROM_LOWER_RESERVOIR/FROM_UPPER_RESERVOIR
+        rule = QgsRuleBasedRendererV2.Rule(None)
+        rule.setLabel(QCoreApplication.translate('bblInit', u'RESERVOIR_TRANSITION'))
+        #------FROM_LOWER_RESERVOIR
         symbol = QgsMarkerSymbolV2.createSimple({ 
                                                    'name': 'arrow'
                                                  , 'color': "128,128,128,0"
@@ -765,14 +768,14 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                                                  , 'angle':'0'
                                                  , 'size':str(sSize-1)
                                                 })
-        rule = QgsRuleBasedRendererV2.Rule(symbol)
+        sub_rule = QgsRuleBasedRendererV2.Rule(symbol)
         try:
-            rule.setLabel(QCoreApplication.translate('bblInit', 'FROM_LOWER_RESERVOIR'))
+            sub_rule.setLabel(QCoreApplication.translate('bblInit', u'FROM_LOWER_RESERVOIR'))
         except:
-            rule.setLabel("FROM_LOWER_RESERVOIR")
-        rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_LOWER_RESERVOIR'")) 
-        root_rule.appendChild(rule)
-        
+            sub_rule.setLabel(u"FROM_LOWER_RESERVOIR")
+        sub_rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_LOWER_RESERVOIR'")) 
+        rule.appendChild(sub_rule)
+        #------FROM_UPPER_RESERVOIR
         symbol = QgsMarkerSymbolV2.createSimple({ 
                                                    'name': 'arrow'
                                                  , 'color': "128,128,128,0"
@@ -780,15 +783,16 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                                                  , 'angle':'180'
                                                  , 'size':str(sSize-1)
                                                 })
-        rule = QgsRuleBasedRendererV2.Rule(symbol)
+        sub_rule = QgsRuleBasedRendererV2.Rule(symbol)
         try:
-            rule.setLabel(QCoreApplication.translate('bblInit', 'FROM_UPPER_RESERVOIR'))
+            sub_rule.setLabel(QCoreApplication.translate('bblInit', u'FROM_UPPER_RESERVOIR'))
         except:
-            rule.setLabel('FROM_UPPER_RESERVOIR')
-        rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_UPPER_RESERVOIR'")) 
+            sub_rule.setLabel(u'FROM_UPPER_RESERVOIR')
+        sub_rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_UPPER_RESERVOIR'")) 
+        rule.appendChild(sub_rule)
         root_rule.appendChild(rule)
 
-
+        #--- 
         renderer.setOrderByEnabled(True)
         orderByClause = QgsFeatureRequest.OrderByClause('BubbleSize', False)
         orderBy = QgsFeatureRequest.OrderBy([orderByClause])

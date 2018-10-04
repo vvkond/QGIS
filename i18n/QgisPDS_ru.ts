@@ -1750,6 +1750,11 @@ Please set TIGDIR variable</source>
         <source>FROM_UPPER_RESERVOIR</source>
         <translation>Перевод на нижележащий</translation>
     </message>    
+    <message>
+        <location line="+2"/>
+        <source>RESERVOIR_TRANSITION</source>
+        <translation>Переходы по резервуарам</translation>
+    </message>    
         
 </context>
 </TS>
