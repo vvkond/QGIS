@@ -76,6 +76,7 @@ def makeShpFileName(scheme='', layerName='', makeUniq = True, ext=".shp"):
     else:
         layerFile = u'/{0}_{1}{ext}'.format(scheme, ln ,ext=ext)
 
+
     (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
     if not os.path.exists(prjPath):
         os.mkdir(prjPath)
