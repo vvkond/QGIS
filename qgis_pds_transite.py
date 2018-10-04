@@ -171,18 +171,18 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         self.progress.setMaximum(100)
         progressMessageBar.pushWidget(self.progress)
 
-        # try:
-        if self.twoLayers:
-            selectedZonations, selectedZones = self.performOperationTwoLayers()
-        else:
-            selectedZonations, selectedZones = self.performOperation()
-
-        settings = QSettings()
-        settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
-        settings.setValue("/PDS/Zonations/selectedZones", selectedZones)
-        settings.setValue("/PDS/Zonations/TwoLayers", 'True' if self.twoLayers else 'False')
-        # except Exception as e:
-        #     QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
+        try:
+            if self.twoLayers:
+                selectedZonations, selectedZones = self.performOperationTwoLayers()
+            else:
+                selectedZonations, selectedZones = self.performOperation()
+    
+            settings = QSettings()
+            settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
+            settings.setValue("/PDS/Zonations/selectedZones", selectedZones)
+            settings.setValue("/PDS/Zonations/TwoLayers", 'True' if self.twoLayers else 'False')
+        except Exception as e:
+            QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
 
         self.iface.messageBar().clearWidgets()
 
