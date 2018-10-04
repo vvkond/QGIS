@@ -50,10 +50,11 @@ def to_unicode(s,codding='utf-8'):
 def load_styles_from_dir(layer,styles_dir,switchActiveStyle=True):
     editLayerStyles=layer.styleManager()
     for user_style in os.listdir(styles_dir):
-        user_style=to_unicode(user_style, codding=sys.getfilesystemencoding() )
-        editLayerStyles.addStyle( user_style, editLayerStyles.style(editLayerStyles.styles()[0]) )
-        editLayerStyles.setCurrentStyle(user_style) if switchActiveStyle else None
-        layer.loadNamedStyle(os.path.join(styles_dir,user_style))        
+        if user_style.endswith(".qml"):
+            user_style=to_unicode(user_style, codding=sys.getfilesystemencoding() )
+            editLayerStyles.addStyle( user_style, editLayerStyles.style(editLayerStyles.styles()[0]) )
+            editLayerStyles.setCurrentStyle(user_style) if switchActiveStyle else None
+            layer.loadNamedStyle(os.path.join(styles_dir,user_style))        
 
 def load_style( layer,style_path,name=None ,rereadOnExist=False ):
     editLayerStyles=layer.styleManager()
