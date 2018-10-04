@@ -1755,6 +1755,11 @@ Please set TIGDIR variable</source>
         <source>RESERVOIR_TRANSITION</source>
         <translation>Переходы по резервуарам</translation>
     </message>    
+    <message>
+        <location line="+2"/>
+        <source>prod_render</source>
+        <translation>диаграммы добычи</translation>
+    </message>    
         
 </context>
 </TS>

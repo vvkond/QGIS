@@ -12,8 +12,11 @@ import math
 import xml.etree.cElementTree as ET
 import re
 import time
+from utils import plugin_path
 
 
+PROD_DEFAULT_STYLE='prod_render'
+STYLE_DIR='styles'
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
 
@@ -629,11 +632,18 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('scaletype'), scaleType)
 
         editLayer.commitChanges()
-
-        plugin_dir = os.path.dirname(__file__)
+        plugin_dir = plugin_path()
+        #--now check style for production
+        editLayerStyles=editLayer.styleManager()
+        PROD_DEFAULT_STYLE_TR=QCoreApplication.translate('bblInit', PROD_DEFAULT_STYLE)
+        if PROD_DEFAULT_STYLE_TR not in editLayerStyles.styles():
+            editLayerStyles.addStyle( PROD_DEFAULT_STYLE_TR,editLayerStyles.style(editLayerStyles.styles()[0]) )
+            editLayerStyles.setCurrentStyle(PROD_DEFAULT_STYLE_TR)
+            editLayer.loadNamedStyle( os.path.join(plugin_dir ,STYLE_DIR ,PROD_DEFAULT_STYLE+".qml") )
+        else:
+            editLayerStyles.setCurrentStyle(PROD_DEFAULT_STYLE_TR)
 
         registry = QgsSymbolLayerV2Registry.instance()
-
         #Collect fields for Data Defined props
         allDiagramms = []
         templateStr = self.templateExpression.text()
@@ -755,7 +765,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 rule.setLabel(ff.name)
             rule.setFilterExpression(u'\"SymbolCode\"=-1')
             root_rule.appendChild(rule)
-
 
         #--- add arrow FROM_LOWER_RESERVOIR/FROM_UPPER_RESERVOIR
         rule = QgsRuleBasedRendererV2.Rule(None)

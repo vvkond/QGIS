@@ -116,6 +116,10 @@ def memoryToShp(layer, scheme, layerName):
 
     return QgsVectorLayer(layerFileName, layerName, 'ogr')
 
+def plugin_path():
+    return os.path.dirname(os.path.abspath(__file__))                
+    
+
 def createProjectString(args):
     projectName = args['project']
     options = json.loads(args['options'])
