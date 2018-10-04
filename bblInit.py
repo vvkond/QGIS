@@ -22,12 +22,16 @@ StandardDiagram = namedtuple('StandardDiagram', ['name', 'scale', 'unitsType', '
 OLD_NEW_FIELDNAMES = [u'BubbleFields', u'bubbleflds']
 
 
+
 STYLE_DIR='styles'
 USER_PROD_STYLE_DIR='user_prod_styles'
 USER_PROD_RENDER_STYLE_DIR='user_prod_render_styles'
+USER_DEVI_STYLE='user_devi_styles'
+USER_WELL_STYLE='user_well_styles'
 PROD_RENDER_STYLE='prod_render'
 PROD_STYLE='prod'
-
+DEVI_STYLE='devi'
+WELL_STYLE='well'
 
 
 class MyStruct(object):

@@ -15,6 +15,9 @@ import ast
 import os
 import time
 
+from bblInit import STYLE_DIR, USER_DEVI_STYLE,DEVI_STYLE
+from utils import load_styles_from_dir, load_style, plugin_path
+
 class QgisPDSDeviation(QObject):
     def __init__(self, iface, project):
         super(QgisPDSDeviation, self).__init__()
@@ -171,6 +174,11 @@ class QgisPDSDeviation(QObject):
         palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', self.attrLablX)
         palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', self.attrLablY)
         palyr.writeToLayer(layer)
+
+        #---load user styles
+        load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_DEVI_STYLE) ,switchActiveStyle=False)
+        #---load default style
+        load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,DEVI_STYLE+".qml"))
 
         line = QgsSymbolV2.defaultSymbol(layer.geometryType())
 

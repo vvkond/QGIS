@@ -13,6 +13,8 @@ import ast
 import os
 import time
 from processing.tools.vector import VectorWriter
+from bblInit import STYLE_DIR, USER_WELL_STYLE, WELL_STYLE
+from utils import plugin_path, load_styles_from_dir, load_style
 
 debuglevel = 4
 
@@ -80,6 +82,12 @@ class QgisPDSWells(QObject):
 
             return
 
+        #---load user styles
+        load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_WELL_STYLE) ,switchActiveStyle=False)
+        #---load default style
+        load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,WELL_STYLE+".qml"))
+
+        
         self.loadWells(layer, True, True, False, True, False)
         layer.commitChanges()
         self.db.disconnect()

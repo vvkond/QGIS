@@ -1,1 +1,1 @@
-copy in that dir qml aditional style for bubble layer
+copy in that dir qml additional style for bubble layer

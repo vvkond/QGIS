@@ -1,1 +1,1 @@
-copy in that dir qml aditional style for production layer
+copy in that dir qml additional style for production layer
