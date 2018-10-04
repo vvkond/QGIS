@@ -383,7 +383,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 layerName = u"Cumulative production - " + ",".join(self.mSelectedReservoirs)
             elif self.mDynamicCheckBox.isChecked():
                 layerName = u"Dynamic production - " + ",".join(self.mSelectedReservoirs)
-            layerName=layerName[:220] #max f_name size
+            #layerName=layerName[:220] #max f_name size
             #layerName=u"kurovdag_m2_Cumulative production - PS01_zeh3,AP02_2_z2,Iob-AP02_z1, PS01_z2,IIa-AP02_z1,PS02z1,IIb-AP02_z1,IIb1-AP02_z1,IIc-AP02_z1,IIc1-AP02_z1,IIc2_AP02_z1,IIc3-AP02_z1,IIc4-AP02_z1,IId-AP02_z1,IIe-AP02_z1,IIob12.shp"
             self.layer = QgsVectorLayer(self.uri, layerName, "memory")
             if self.layer is None:
@@ -1712,16 +1712,16 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 "  from tig_well_history where db_sldnid = " + str(sldnid))
         result = self.db.execute(sql)
 
-        well = QgsFeature (self.layer.fields())
+        well = QgsFeature(self.layer.fields())
         plugin_dir = os.path.dirname(__file__)
         for well_name, lat, lon in result:
             well.setAttribute (self.attrWellId,    well_name)
-            well.setAttribute (self.attrLatitude,  lat)
-            well.setAttribute (self.attrLongitude, lon)
+            well.setAttribute (self.attrLatitude,  lat      )
+            well.setAttribute (self.attrLongitude, lon      )
             if symbolId >= 0:
-                well.setAttribute (self.attrSymbolId, plugin_dir+"/svg/WellSymbol"+str(symbolId.symbol+1).zfill(3)+".svg")
-                well.setAttribute (self.attrSymbol, symbolId.symbol+1)
-                well.setAttribute (self.attrSymbolName, symbolId.wellRole)
+                well.setAttribute (self.attrSymbolId  , plugin_dir+"/svg/WellSymbol"+str(symbolId.symbol+1).zfill(3)+".svg")
+                well.setAttribute (self.attrSymbol    , symbolId.symbol+1                                                  )
+                well.setAttribute (self.attrSymbolName, symbolId.wellRole                                                  )
             pt = QgsPoint(lon, lat)
             if self.xform:
                 pt = self.xform.transform(pt)
