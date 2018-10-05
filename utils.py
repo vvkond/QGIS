@@ -52,6 +52,7 @@ def load_styles_from_dir(layer,styles_dir,switchActiveStyle=True):
     if os.path.exists(styles_dir):
         for user_style in os.listdir(styles_dir):
             if user_style.endswith(".qml"):
+                QgsMessageLog.logMessage(u"Loading style:{}".format(os.path.join(styles_dir,user_style)), tag="QgisPDS")
                 user_style=to_unicode(user_style, codding=sys.getfilesystemencoding() )
                 editLayerStyles.addStyle( user_style, editLayerStyles.style(editLayerStyles.styles()[0]) )
                 editLayerStyles.setCurrentStyle(user_style) if switchActiveStyle else None
@@ -63,6 +64,7 @@ def load_style( layer,style_path,name=None ,rereadOnExist=False ):
     if os.path.exists(style_path):    
         editLayerStyles=layer.styleManager()
         if rereadOnExist or name not in editLayerStyles.styles():
+            QgsMessageLog.logMessage(u"Loading style:{}".format(style_path), tag="QgisPDS")
             if name is not None:
                 editLayerStyles.addStyle( name, editLayerStyles.style(editLayerStyles.styles()[0]) ) 
                 editLayerStyles.setCurrentStyle(name)
