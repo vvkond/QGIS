@@ -12,10 +12,14 @@ from QgisPDS.connections import create_connection
 from QgisPDS.utils import *
 from tig_projection import *
 from ReaderBase import *
-
+from bblInit import STYLE_DIR
 
 class ContoursReader(ReaderBase):
-    def __init__(self, _dataType):
+    def __init__(self, _dataType
+                    ,styleName=None
+                    ,styleUserDir=None
+                    ,isShowSymbCategrized=False
+                  ):
         super(ContoursReader, self).__init__()
 
         self.plugin_dir = os.path.dirname(__file__)
@@ -28,6 +32,10 @@ class ContoursReader(ReaderBase):
         self.subsetNameAttr = u'subsetname'
         self.paramAttr = u'parameter'
         self.varNameAttr = u'var_name'
+        
+        self.styleName=styleName
+        self.styleUserDir=styleUserDir
+        self.isShowSymbCategrized=isShowSymbCategrized
 
         self.dataType = _dataType
         if self.dataType == 0:      #Contours
@@ -42,13 +50,13 @@ class ContoursReader(ReaderBase):
             self.dataFile = "Polygons.sql"
             self.geomType = "Polygon"
             self.pdsType = "pds_polygon"
+            
         else:                   #Faults
             self.groupFile = "Faults_group.sql"
             self.setFile = "Faults_set.sql"
             self.dataFile = "Faults.sql"
             self.geomType = "LineString"
             self.pdsType = "pds_faults"
-
 
     @cached_property
     def windowTitle(self):
@@ -104,15 +112,22 @@ class ContoursReader(ReaderBase):
         layer = self.memoryToShp(layer, pdsProject['project'], layerName)
         layer.setCustomProperty("pds_project", str(pdsProject))
         layer.setCustomProperty("qgis_pds_type", self.pdsType)
-
-        categories = []
-        for ss in uniqSymbols:
-            symbol = QgsSymbolV2.defaultSymbol(layer.geometryType())
-            category = QgsRendererCategoryV2(ss, symbol, ss)
-            categories.append(category)
-
-        renderer = QgsCategorizedSymbolRendererV2(self.subsetNameAttr, categories)
-        layer.setRendererV2(renderer)
+        
+        #---load user styles
+        if self.styleUserDir is not None:
+            load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
+        #---load default style
+        if self.styleName is not None:
+            load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
+        
+        if self.isShowSymbCategrized:
+            categories = []
+            for ss in uniqSymbols:
+                symbol = QgsSymbolV2.defaultSymbol(layer.geometryType())
+                category = QgsRendererCategoryV2(ss, symbol, ss)
+                categories.append(category)
+            renderer = QgsCategorizedSymbolRendererV2(self.subsetNameAttr, categories)
+            layer.setRendererV2(renderer)
 
         return layer
 

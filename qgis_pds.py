@@ -761,7 +761,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(0))
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(0 ,styleName=CONTOUR_STYLE,styleUserDir=USER_CONTOUR_STYLE_DIR ,isShowSymbCategrized=False ))
         dlg.exec_()
 
 
@@ -770,7 +770,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(1))
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(1 ,styleName=POLYGON_STYLE,styleUserDir=USER_POLYGON_STYLE_DIR ,isShowSymbCategrized=False ))
         dlg.exec_()
 
     def createSurfaceLayer(self):
@@ -778,7 +778,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr('Error'),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, SurfaceReader())
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, SurfaceReader(styleName=SURF_SYLE,styleUserDir=USER_SURF_STYLE_DIR  ))
         dlg.exec_()
         del dlg
 
@@ -788,7 +788,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(2))
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(2 ,styleName=FAULT_STYLE,styleUserDir=USER_FAULT_STYLE_DIR ,isShowSymbCategrized=False ))
         dlg.exec_()
       
 
@@ -800,7 +800,7 @@ class QgisPDS(QObject):
 
         dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
         if dlg.exec_():
-            wells = QgisPDSWells(self.iface, self.currentProject)
+            wells = QgisPDSWells(self.iface, self.currentProject ,styleName=WELL_STYLE,styleUserDir=USER_WELL_STYLE_DIR  )
             wells.setWellList(dlg.getWellIds())
             layer = wells.createWellLayer()
             if layer is not None:
@@ -816,7 +816,7 @@ class QgisPDS(QObject):
 
         dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
         if dlg.exec_():
-            wells = QgisPDSDeviation(self.iface, self.currentProject)
+            wells = QgisPDSDeviation(self.iface, self.currentProject ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
             wells.setWellList(dlg.getWellIds())
             layer = wells.createWellLayer()
 
@@ -830,7 +830,7 @@ class QgisPDS(QObject):
 
 
     def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
-        wells = QgisPDSDeviation(self.iface, project)
+        wells = QgisPDSDeviation(self.iface, project ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
         wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing)
 
 

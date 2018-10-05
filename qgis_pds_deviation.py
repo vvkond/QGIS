@@ -15,11 +15,11 @@ import ast
 import os
 import time
 
-from bblInit import STYLE_DIR, USER_DEVI_STYLE,DEVI_STYLE
+from bblInit import STYLE_DIR
 from utils import load_styles_from_dir, load_style, plugin_path
 
 class QgisPDSDeviation(QObject):
-    def __init__(self, iface, project):
+    def __init__(self, iface, project  ,styleName=None ,styleUserDir=None):
         super(QgisPDSDeviation, self).__init__()
 
         self.plugin_dir = os.path.dirname(__file__)
@@ -54,6 +54,10 @@ class QgisPDSDeviation(QObject):
         self.proj4String = 'epsg:4326'
         self.db = None
         self.wellIdList = []
+        
+        self.styleName=styleName
+        self.styleUserDir=styleUserDir
+        
 
     def initDb(self):
         if self.project is None:
@@ -176,9 +180,11 @@ class QgisPDSDeviation(QObject):
         palyr.writeToLayer(layer)
 
         #---load user styles
-        load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_DEVI_STYLE) ,switchActiveStyle=False)
+        if self.styleUserDir is not None:
+            load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
         #---load default style
-        load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,DEVI_STYLE+".qml"))
+        if self.styleName is not None:
+            load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
 
         line = QgsSymbolV2.defaultSymbol(layer.geometryType())
 

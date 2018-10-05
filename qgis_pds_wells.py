@@ -13,7 +13,7 @@ import ast
 import os
 import time
 from processing.tools.vector import VectorWriter
-from bblInit import STYLE_DIR, USER_WELL_STYLE, WELL_STYLE
+from bblInit import STYLE_DIR
 from utils import plugin_path, load_styles_from_dir, load_style
 
 debuglevel = 4
@@ -27,7 +27,7 @@ def debug(msg, verbosity=1):
 
 class QgisPDSWells(QObject):
 
-    def __init__(self, iface, project):
+    def __init__(self, iface, project ,styleName=None ,styleUserDir=None):
         super(QgisPDSWells, self).__init__()
 
         self.plugin_dir = os.path.dirname(__file__)
@@ -41,6 +41,10 @@ class QgisPDSWells(QObject):
         self.proj4String = 'epsg:4326'
         self.db = None
         self.wellIdList = []
+        
+        self.styleName=styleName
+        self.styleUserDir=styleUserDir
+        
 
     def setWellList(self, wellList):
         self.wellIdList = wellList
@@ -83,9 +87,11 @@ class QgisPDSWells(QObject):
             return
 
         #---load user styles
-        load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_WELL_STYLE) ,switchActiveStyle=False)
+        if self.styleUserDir is not None:
+            load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
         #---load default style
-        load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,WELL_STYLE+".qml"))
+        if self.styleName is not None:
+            load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
 
         
         self.loadWells(layer, True, True, False, True, False)
