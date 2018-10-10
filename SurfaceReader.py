@@ -143,9 +143,9 @@ class SurfaceReader(ReaderBase):
                 driver.Register()
 
 #                fileName = u'%d_%d.tif' % (groupSetId[0], groupSetId[1])
-                fileName = u'%s_%s' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
+                fileName = u'%s_%s' % (to_unicode(TIG_MAP_SET_NAME), to_unicode(TIG_PARAM_LONG_NAME))
                 fileName=makeShpFileName(scheme=prefix, layerName=fileName, makeUniq=True ,ext=".tif" )
-                layerName = u'%s/%s' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
+                layerName = u'%s/%s' % (to_unicode(TIG_MAP_SET_NAME), to_unicode(TIG_PARAM_LONG_NAME))
 
                 output_raster = driver.Create(fileName, size_x, size_y, 1 ,gdal.GDT_Float32)
 
