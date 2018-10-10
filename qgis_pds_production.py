@@ -1290,7 +1290,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 ,st_time_filter="AND START_TIME>="+self.to_oracle_date(self.mStartDate)
                 ,en_time_filter="AND END_TIME<="+self.to_oracle_date(self.mEndDate)
                 )
-        # ---3 now generate full QUERY   
+        # ---3 now generate full QUERY
         sql=u""
         for well_ids in well_ids_500:
             IS_DEBUG and QgsMessageLog.logMessage(u"Make sql for wells: {}\n\n".format(well_ids), tag="QgisPDS.debug")
@@ -1391,13 +1391,16 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 ,en_time_filter=u"AND pa.END_TIME<="+self.to_oracle_date(self.mEndDate)
                 ,reservoir_filter=u"AND grp.RESERVOIR_PART_CODE in ('" + u"','".join(self.mSelectedReservoirs) +u"')"
                 )
-        sql+="""
-            order by
-                TIG_WELL_ID
-                ,START_TIME
-                ,END_TIME
-                ,group_name            
-            """
+        if bool(sql):
+            sql+="""
+                order by
+                    TIG_WELL_ID
+                    ,START_TIME
+                    ,END_TIME
+                    ,group_name            
+                """
+        else:
+            return
         # ---4 execute QUERY
         IS_DEBUG and QgsMessageLog.logMessage(u"Execute readWellProduction: {}\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql)
