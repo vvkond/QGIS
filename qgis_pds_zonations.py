@@ -139,19 +139,21 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         well_ids = self.wellsBrowser.getSelectedWells()
         wellsWithoutElev = ''
+        wellsWithDeepStart = ''
         for id in well_ids:
             records = self.db.execute(sql, well_id=id, parameter_id=paramId, zonation_id=zoneDef[1], base_order=zoneOrder)
             hasRecords = False
             if records:
                 for input_row in records:
                     hasRecords = True
-                    x, y, value, intervalName, intervalId, topZoneValue = self.get_zone_coord_value(input_row, zoneDef[1], zoneDef[0])
+                    wellName = input_row[self.well_name_column_index]
+
+                    x, y, value, intervalName, intervalId, topZoneValue, depthOk = self.get_zone_coord_value(input_row, zoneDef[1], zoneDef[0])
                     if x is not None and y is not None:
                         if useErosion or intervalId == zone_id:
                             if topZoneValue and intervalId != zone_id:
                                 value = topZoneValue
                                 intervalName += ' erosion topTVD'
-                            wellName = input_row[self.well_name_column_index]
                             pt = QgsPoint(x, y)
                             l = QgsGeometry.fromPoint(pt)
                             feat = QgsFeature(self.layer.fields())
@@ -165,6 +167,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                                 feat.setAttributes([wellName, float(value), intervalName])
                             self.layer.addFeatures([feat])
                         break
+                    elif not depthOk:
+                        if len(wellsWithDeepStart) > 0:
+                            wellsWithDeepStart += ', '
+                        wellsWithDeepStart += wellName
             if not hasRecords and useErosion:
                 pt, wellName = self.getWellBottom(wellSql, id)
                 if pt:
@@ -178,6 +184,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             QtGui.QMessageBox.warning(None, self.tr(u'Warning'),
                                        self.tr(u'No elevation in wells:') + '\n' + wellsWithoutElev,
                                        QtGui.QMessageBox.Ok)
+        if len(wellsWithDeepStart):
+            QtGui.QMessageBox.warning(None, self.tr(u'Warning'),
+                                      self.tr(u'Deviation starts after zone in wells:') + '\n' + wellsWithDeepStart,
+                                      QtGui.QMessageBox.Ok)
 
 
     def getWellBottom(self, sql, wellId):
@@ -432,6 +442,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         jp = None
         jp1 = None
         lastIdx = len(x) - 1
+
+        if lastIdx > 0 and md[0] > depth:
+            return (None, None, None, None, None, None, False)
+
         for ip in xrange(lastIdx):
             if md[ip] <= depth <= md[ip + 1]:
                 jp = ip
@@ -453,9 +467,11 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             if parameter_name in ['TopTVD', 'BotTVD']:
                 value = tvd[jp] + rinterp * (tvd[jp + 1] - tvd[jp]) - elevation
 
-            if erosionDepth:
+            if erosionDepth and jp1:
                 rinterp = (erosionDepth - md[jp1]) / (md[jp1 + 1] - md[jp1])
                 erosionDepth = tvd[jp1] + rinterp * (tvd[jp1 + 1] - tvd[jp1]) - elevation
+            else:
+                erosionDepth = None
         elif depth >= md[lastIdx]:
             QgsMessageLog.logMessage(input_row[self.well_name_column_index] + ': short deviation ', 'QGisPDS')
             xPosition = x[lastIdx]
@@ -473,7 +489,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         ret_x = pt.x() + xPosition
         ret_y = pt.y() + yPosition
-        return (ret_x, ret_y, value, intervalName, intervalId, erosionDepth)
+        return (ret_x, ret_y, value, intervalName, intervalId, erosionDepth, True)
 
 
     def fillParameters(self):
