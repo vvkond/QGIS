@@ -167,7 +167,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                                 feat.setAttributes([wellName, float(value), intervalName])
                             self.layer.addFeatures([feat])
                         break
-                    elif not depthOk:
+                    elif not depthOk and intervalId == zone_id:
                         if len(wellsWithDeepStart) > 0:
                             wellsWithDeepStart += ', '
                         wellsWithDeepStart += wellName
@@ -444,7 +444,9 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         lastIdx = len(x) - 1
 
         if lastIdx >= 0 and md[0] > depth:
-            return (None, None, None, None, None, None, False)
+            QgsMessageLog.logMessage(input_row[self.well_name_column_index] +
+                                     ': deviation deeper than {0} {1}-{2}'.format(intervalName, md[0], depth), 'QGisPDS')
+            return (None, None, None, None, intervalId, None, False)
 
         for ip in xrange(lastIdx):
             if md[ip] <= depth <= md[ip + 1]:
