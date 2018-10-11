@@ -443,7 +443,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         jp1 = None
         lastIdx = len(x) - 1
 
-        if lastIdx > 0 and md[0] > depth:
+        if lastIdx >= 0 and md[0] > depth:
             return (None, None, None, None, None, None, False)
 
         for ip in xrange(lastIdx):
