@@ -424,7 +424,7 @@ class bblInit:
         if newIdx < 0:
             if layer.isEditable(): layer.commitChanges()            
             with edit(layer):
-                provider.addAttributes([QgsField(fielName, fieldType, QString(""), fieldLen, fieldPrec)])
+                provider.addAttributes([QgsField(fieldName, fieldType, QString(""), fieldLen, fieldPrec)])
 
     @staticmethod
     def updateOldProductionStructure(layer):
