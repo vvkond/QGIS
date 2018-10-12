@@ -485,6 +485,19 @@ class bblInit:
                 if newIdx < 0:
                     provider.addAttributes([QgsField(newName, QVariant.Date, QString(""), 50, 0)])
 
+            #Check wellrole fields
+            newName = u'wellrole'
+            oldName =None
+            newIdx = layer.fieldNameIndex(newName)
+            if newIdx < 0:
+                provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
+            #Check wellstatus fields
+            newName = u'wellstatus'
+            oldName =None
+            newIdx = layer.fieldNameIndex(newName)
+            if newIdx < 0:
+                provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
+
 
         if needCopyData:
             if layer.isEditable(): layer.commitChanges()
