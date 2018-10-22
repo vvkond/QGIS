@@ -167,10 +167,11 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                                 feat.setAttributes([wellName, float(value), intervalName])
                             self.layer.addFeatures([feat])
                         break
-                    elif not depthOk and intervalId == zone_id:
+                    elif not depthOk:
                         if len(wellsWithDeepStart) > 0:
                             wellsWithDeepStart += ', '
                         wellsWithDeepStart += wellName
+                        break
             if not hasRecords and useErosion:
                 pt, wellName = self.getWellBottom(wellSql, id)
                 if pt:
@@ -541,19 +542,22 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         records = self.db.execute(sql, zonation_id=zonation_id, zone_id=zone_id)
         if records:
             for rec in records:
-                well = []
-                well.append(int(rec[0]))                                    #id (not shown)
-                well.append(rec[1])                                         #wellName
-                well.append(rec[2])                                         #Full name
-                well.append(rec[3])                                         #Operator
-                well.append(rec[4])                                         #API number
-                well.append(rec[5])                                         #Location
-                well.append(float(rec[6]))                                  #Latitude
-                well.append(float(rec[7]))                                  #Longitude
-                well.append(rec[8])                                         #Slot number
-                well.append(rec[9])                                         #Owner
-                dt = QDateTime.fromTime_t(0).addSecs(int(rec[10]))          #Date
-                well.append(dt)
-                wellList.append(well)
+                try:
+                    well = []
+                    well.append(int(rec[0]))                                    #id (not shown)
+                    well.append(rec[1])                                         #wellName
+                    well.append(rec[2])                                         #Full name
+                    well.append(rec[3])                                         #Operator
+                    well.append(rec[4])                                         #API number
+                    well.append(rec[5])                                         #Location
+                    well.append(float(rec[6]))                                  #Latitude
+                    well.append(float(rec[7]))                                  #Longitude
+                    well.append(rec[8])                                         #Slot number
+                    well.append(rec[9])                                         #Owner
+                    dt = QDateTime.fromTime_t(0).addSecs(int(rec[10]))          #Date
+                    well.append(dt)
+                    wellList.append(well)
+                except:
+                    pass
 
         return wellList
