@@ -434,9 +434,13 @@ class bblInit:
         def copyValue(feature, newName, oldName, alias):
             idx = layer.fieldNameIndex(newName)
             if idx >= 0:
-                val = feature.attribute(oldName)
-                if val:
-                    layer.changeAttributeValue(feature.id(), idx, float(val))
+                val=None
+                try:
+                    val = feature.attribute(oldName)
+                    if val:
+                        layer.changeAttributeValue(feature.id(), idx, float(val))
+                except KeyError:
+                    pass
                 layer.addAttributeAlias(idx, alias)
                 
         if layer.isEditable(): layer.commitChanges() 
