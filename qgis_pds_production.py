@@ -1413,7 +1413,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         # ---5 read QUERY result
         # @TODO: not optimal code. Need change...
         for row in result:
-            useLiftMethod = False
             row_dict=dict(zip(query_fields,row))
             #QgsMessageLog.logMessage(u"result row: {}".format(row_dict), tag="QgisPDS.readWellProduction")
             #Max component debits for well
@@ -1434,7 +1433,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                             prodWell.maxDebits[fluid.idx].volValue = debit
                             prodWell.maxDebits[fluid.idx].volDebitDate = stadat
             if (stadat >= self.mStartDate and stadat <= self.mEndDate) or (enddat >= self.mStartDate and enddat <= self.mEndDate):
-                useLiftMethod = True
                 #init clear production record
                 product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, days)
                 prodWell.prods.append(product)
@@ -1443,10 +1441,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         product.massVals[fluid.idx] += row_dict[fluid.field]
                     else:
                         product.volumeVals[fluid.idx] += row_dict[fluid.field]
-            if useLiftMethod:
-                liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
-                if liftMethod in bblInit.bblLiftMethods.keys():
-                    prodWell.liftMethod = liftMethod
+        for id,prodwell in prodWells_dict.items():
+            liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
+            if liftMethod in bblInit.bblLiftMethods.keys():
+                prodWell.liftMethod = liftMethod
                 
          
          
