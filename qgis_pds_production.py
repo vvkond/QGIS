@@ -1411,11 +1411,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             return
     
         # ---5 read QUERY result
-        #fluids=[f.code for f in  bblInit.fluidCodes]
-        product = None
-        useLiftMethod = False
         # @TODO: not optimal code. Need change...
         for row in result:
+            useLiftMethod = False
             row_dict=dict(zip(query_fields,row))
             #QgsMessageLog.logMessage(u"result row: {}".format(row_dict), tag="QgisPDS.readWellProduction")
             #Max component debits for well
@@ -1437,26 +1435,19 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                             prodWell.maxDebits[fluid.idx].volDebitDate = stadat
             if (stadat >= self.mStartDate and stadat <= self.mEndDate) or (enddat >= self.mStartDate and enddat <= self.mEndDate):
                 useLiftMethod = True
-                NeedProd = True
-                if product is not None :
-                    NeedProd = product.stadat!=stadat or product.enddat!=enddat
-                if product is None or NeedProd:
-                    #init clear production record
-                    product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, days)
-                    prodWell.prods.append(product)
+                #init clear production record
+                product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, days)
+                prodWell.prods.append(product)
                 for fluid in fluid_fields:
                     if fluid.unit=="Mass":
                         product.massVals[fluid.idx] += row_dict[fluid.field]
                     else:
                         product.volumeVals[fluid.idx] += row_dict[fluid.field]
-        IS_DEBUG and QgsMessageLog.logMessage(u"row init in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
-        time_start=time.time()
-
-        if useLiftMethod:
-            liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
-            if liftMethod in bblInit.bblLiftMethods.keys():
-                prodWell.liftMethod = liftMethod
-            IS_DEBUG and QgsMessageLog.logMessage(u"lift method in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
+            if useLiftMethod:
+                liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
+                if liftMethod in bblInit.bblLiftMethods.keys():
+                    prodWell.liftMethod = liftMethod
+                
          
          
          
