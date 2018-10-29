@@ -593,7 +593,17 @@ class bblInit:
                 if idx >= 0:
                     layer.addAttributeAlias(idx, alias)
 
-
+            #other fields
+            for name,alias in [
+                                 [u'wellrole'  ,u'назначение'           ]
+                                ,[u'wellstatus',u'статус'               ]
+                                ,[u'wsinfo'    ,u'уточнение статуса'    ]
+                                ,[u'wsreason'  ,u'причина смены статуса']
+                                ]:
+                idx = layer.fieldNameIndex(name)
+                if idx >= 0:
+                    layer.addAttributeAlias(idx, alias)
+                
 
 
 
