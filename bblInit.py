@@ -67,6 +67,8 @@ class ProductionWell(MyStruct):
     maxDebits = []
     wRole="unknown"
     wStatus="unknown"
+    wStatusReason=""
+    wStatusInfo=""
     
 
 
@@ -497,6 +499,18 @@ class bblInit:
                 provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
             #Check wellstatus fields
             newName = u'wellstatus'
+            oldName =None
+            newIdx = layer.fieldNameIndex(newName)
+            if newIdx < 0:
+                provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
+            #Check wellstatusreason fields
+            newName = u'wsreason'
+            oldName =None
+            newIdx = layer.fieldNameIndex(newName)
+            if newIdx < 0:
+                provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
+            #Check wellstatusinfo fields
+            newName = u'wsinfo'
             oldName =None
             newIdx = layer.fieldNameIndex(newName)
             if newIdx < 0:
