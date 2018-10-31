@@ -6,8 +6,8 @@
  PDS link
                              -------------------
         begin                : 2016-11-05
-        copyright            : (C) 2016 by Viktor Kondrashov
-        email                : viktor@gmail.com
+        copyright            : (C) 2016 by SoyuzGeoService
+        email                : viktor@gmail.com, skylex72rus@gmail.com
         git sha              : $Format:%H$
  ***************************************************************************/
 
@@ -31,5 +31,17 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
+    from qgis.PyQt.QtCore import QSettings
+    import os
+    #settings = QSettings().allKeys()
+    #for setting in settings:
+    #    print setting
+    settings_svg_path=QSettings().value( 'svg/searchPathsForSVG').split("|")
+    svg_path=os.path.join(os.environ['USERPROFILE'],u'.qgis2',u'python',u'plugins',u'QgisPDS',u'svg')
+    if svg_path not in settings_svg_path:
+        QSettings().setValue('svg/searchPathsForSVG', QSettings().value( 'svg/searchPathsForSVG')+u'|'+svg_path)
+    #QSettings().setValue('svg/searchPathsForSVG',u'C:\\Users\\tig\\.qgis2\\python\\plugins\\QgisPDS\\svg')
+    #QSettings().setValue('svg/searchPathsForSVG', QSettings().value( 'svg/searchPathsForSVG')+u'|'+u'C:\\Users\\tig\\.qgis2\\python\\plugins\\QgisPDS\\svg')
+        
     from .qgis_pds import QgisPDS
     return QgisPDS(iface)
