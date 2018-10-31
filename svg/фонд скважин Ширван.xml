@@ -1,0 +1,2520 @@
+<!DOCTYPE qgis_style>
+<qgis_style version="1">
+  <symbols>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ABANDONED_ABSORB">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,176,240,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ABANDONED_DRILL_GEOLOGYREASON">
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="6"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ABANDONED_DRILL_TECHNICALREASON">
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="6"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ABANDONED_INJ">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="81,7,198,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ABANDONED_OBSERV">
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="6"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ABANDONED_PROD_GEOLOGYREASON">
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ABANDONED_PROD_TECHNICALREASON">
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ABANDONED_SUPPLY">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="191,144,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ABSORB">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,176,240,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="COMPLETION">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="45"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Sqare.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="ECN">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="124,222,63,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/ECN.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="FON">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="124,222,63,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/FON.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="GAS">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="255,255,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="INACTIVE_ABSORB">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,176,240,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/inactive.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="INACTIVE_GAS">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="255,255,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/inactive.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="INACTIVE_INJ">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="81,7,198,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/inactive.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="INACTIVE_OIL">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="124,222,63,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/inactive.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="INACTIVE_SUPPLY">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="191,144,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/inactive.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="INJ">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="81,7,198,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="OBSERV">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="4"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="PROJECT">
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="187,0,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="187,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="RESERVOIR_CHANGE_ABSORB">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="187,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,176,240,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,176,240,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="RESERVOIR_CHANGE_GASPROD">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="255,255,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="187,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="RESERVOIR_CHANGE_INJ">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="187,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="81,7,198,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="81,7,198,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="RESERVOIR_CHANGE_NOINFLOW">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="255,51,204,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="187,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="RESERVOIR_CHANGE_OILPROD">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="124,222,63,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="187,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="RESERVOIR_CHANGE_SUPPLY">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="187,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="191,144,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="RESERVOIR_CHANGE_WATERPROD">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,255,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="187,0,0,255"/>
+        <prop k="outline_width" v="0.4"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="SHGN">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/SHGN.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="124,222,63,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="SUPPLY">
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="270"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="191,144,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="1">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="191,144,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="TRANSITE">
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="WAITABANDONED_INJ">
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="120"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="60"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/Arrow.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="WAITABANDONED_PROD">
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/WellSymbol001.svg"/>
+        <prop k="offset" v="-0.10000000000000001,-0.10000000000000001"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="90"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus45.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+      <layer pass="0" class="SvgMarker" locked="0">
+        <prop k="angle" v="180"/>
+        <prop k="color" v="0,0,0,0"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="name" v="primitives/minus.svg"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_width" v="0.2"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="10"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
+  </symbols>
+  <colorramps/>
+</qgis_style>
