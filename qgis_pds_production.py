@@ -1457,7 +1457,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         product.massVals[fluid.idx] += row_dict[fluid.field]
                     else:
                         product.volumeVals[fluid.idx] += row_dict[fluid.field]
-        for id,prodwell in prodWells_dict.items():
+        for id,prodWell in prodWells_dict.items():
             liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
             if liftMethod in bblInit.bblLiftMethods.keys():
                 prodWell.liftMethod = liftMethod
