@@ -235,9 +235,6 @@
     <edittype widgetv2type="TextEdit" name="pflmaxd_v">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="transite">
-      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
-    </edittype>
   </edittypes>
   <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
     <rules key="{080e9a79-fc68-4be0-8d7a-ceb05b29c241}">
@@ -256,7 +253,7 @@
         <rule filter="&quot;wellrole&quot; ='water-supply'" key="{fb160cb4-0cef-4ccd-a137-434600018d7b}" symbol="7" label="водозаборный"/>
       </rule>
       <rule checkstate="0" filter="False" key="{65adee58-9940-4061-b0e9-7ba888fc333c}" symbol="8" label="наблюдательный"/>
-      <rule checkstate="0" filter="&quot;wellstatus&quot; ='completion stock'" key="{713d1c0f-6978-4608-bb8b-ada4357c16da}" symbol="9" label="в освоении"/>
+      <rule filter="&quot;wellstatus&quot; ='completion stock'" key="{713d1c0f-6978-4608-bb8b-ada4357c16da}" symbol="9" label="в освоении"/>
       <rule description="скважины действующего фонда" filter="&quot;wellstatus&quot; ='inactive stock' OR &quot;wellstatus&quot; ='suspended stock'" key="{2f4e1ada-1eef-46a0-95df-a931669d815c}" label="бездействующий">
         <rule key="{d00c9f8f-bd58-41e2-9949-f33d1474d37e}" label="из эксплуатации">
           <rule filter="&quot;wellrole&quot; ='oil producing'" key="{0f865b83-eb43-4c5f-ad5e-581981f0adb9}" symbol="10" label="нефтяные"/>
@@ -305,7 +302,7 @@
     </rules>
     <symbols>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="0">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="255,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -325,7 +322,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="1">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="174,110,61,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -345,7 +342,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="10">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="85,93,184,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -365,7 +362,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="11">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="137,46,131,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -385,7 +382,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="12">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="30,157,102,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -405,7 +402,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="13">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="25,74,219,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -425,7 +422,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="14">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="214,34,233,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -445,7 +442,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="15">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="201,120,54,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -465,7 +462,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="16">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="164,163,103,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -485,7 +482,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="17">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="173,112,216,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -505,7 +502,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="18">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="76,164,82,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -525,7 +522,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="19">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="68,35,190,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -545,7 +542,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="2">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="231,198,135,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -565,7 +562,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="20">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="1,133,107,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -585,7 +582,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="21">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="213,54,211,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -605,7 +602,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="22">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="125,171,131,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -625,7 +622,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="23">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="125,171,131,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -645,7 +642,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="24">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="38,156,15,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -665,7 +662,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="25">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="185,139,208,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -685,7 +682,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="26">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="145,63,16,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -705,7 +702,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="27">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="142,100,32,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -725,7 +722,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="28">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="121,156,44,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -745,7 +742,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="29">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="205,223,137,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -765,7 +762,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="3">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="51,160,44,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -785,7 +782,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="30">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="169,132,127,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -805,7 +802,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="31">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="181,175,86,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -825,7 +822,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="32">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="125,171,131,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -845,7 +842,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="33">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="141,99,63,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -865,7 +862,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="34">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="90,66,147,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -885,7 +882,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="35">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="133,181,192,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -915,7 +912,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="37">
-        <layer pass="0" class="BubbleDiagramm" locked="0">
+        <layer pass="1" class="BubbleDiagramm" locked="0">
           <prop k="diagrammStr" v="[{'scaleMaxRadius': 20.0, 'scaleMinRadius': 1.0, 'scale': 3262915.0, 'slices': [{'labelColor': u'#6b4f0e', 'expression': u'oilmas', 'inPercent': 0, 'lineColor': u'218,165,32,255', 'backColor': u'218,165,32,255'}, {'labelColor': u'#425614', 'expression': u'pwmas', 'inPercent': 0, 'lineColor': u'154,205,50,255', 'backColor': u'154,205,50,255'}], 'fixedSize': 20.0, 'multiplier': 1e-06, 'decimals': 2, 'dailyProduction': False, 'scaleType': 1}, {'scaleMaxRadius': 20.0, 'scaleMinRadius': 1.0, 'scale': 3262915.0, 'slices': [{'labelColor': u'#000000', 'expression': u'igasvol', 'inPercent': 0, 'lineColor': u'0,0,0,255', 'backColor': u'0,0,0,255'}, {'labelColor': u'#00adad', 'expression': u'iwvol', 'inPercent': 0, 'lineColor': u'0,255,255,255', 'backColor': u'0,255,255,255'}], 'fixedSize': 20.0, 'multiplier': 0.001, 'decimals': 2, 'dailyProduction': False, 'scaleType': 1}, {'scaleMaxRadius': 20.0, 'scaleMinRadius': 1.0, 'scale': 3262915.0, 'slices': [{'labelColor': u'#8f8f4a', 'expression': u'ngasvol', 'inPercent': 0, 'lineColor': u'228,228,118,255', 'backColor': u'228,228,118,255'}], 'fixedSize': 20.0, 'multiplier': 1e-06, 'decimals': 2, 'dailyProduction': False, 'scaleType': 1}]"/>
           <prop k="labelSize" v="7.0"/>
           <prop k="showDiagramms" v="False"/>
@@ -947,7 +944,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="4">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="224,155,226,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -967,7 +964,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="5">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="18,38,194,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -987,7 +984,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="6">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="175,91,178,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -1007,7 +1004,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="7">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="191,166,22,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -1027,7 +1024,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="8">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="6,173,15,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -1047,7 +1044,7 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="9">
-        <layer pass="0" class="SvgMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="138,26,30,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
@@ -1073,7 +1070,65 @@
   </renderer-v2>
   <labeling type="simple"/>
   <customproperties>
+    <property key="alwaysShowZero" value="0"/>
+    <property key="dailyProduction" value="0"/>
+    <property key="decimal" value="2"/>
+    <property key="defaultSymbolSize" value="4"/>
+    <property key="diagrammCount" value="3"/>
+    <property key="diagramm_fluids_1" value="1;0;1;0;0;0;0;0;0"/>
+    <property key="diagramm_fluids_2" value="0;0;0;0;1;1;0;0;0"/>
+    <property key="diagramm_fluids_3" value="0;1;0;0;0;0;0;0;0"/>
+    <property key="diagramm_name_1" value="Диаграмма жидкости"/>
+    <property key="diagramm_name_2" value="Диаграмма закачки"/>
+    <property key="diagramm_name_3" value="Диаграмма газа"/>
+    <property key="diagramm_scale_1" value="1"/>
+    <property key="diagramm_scale_2" value="1"/>
+    <property key="diagramm_scale_3" value="1"/>
+    <property key="diagramm_unitsType_1" value="0"/>
+    <property key="diagramm_unitsType_2" value="1"/>
+    <property key="diagramm_unitsType_3" value="1"/>
+    <property key="diagramm_units_1" value="3"/>
+    <property key="diagramm_units_2" value="14"/>
+    <property key="diagramm_units_3" value="15"/>
     <property key="embeddedWidgets/count" value="0"/>
+    <property key="fluid_background_cond" value="174,222,144,255"/>
+    <property key="fluid_background_fgas" value="0,160,160,255"/>
+    <property key="fluid_background_igas" value="0,0,0,255"/>
+    <property key="fluid_background_iw" value="0,255,255,255"/>
+    <property key="fluid_background_lgas" value="0,0,170,255"/>
+    <property key="fluid_background_ngas" value="228,228,118,255"/>
+    <property key="fluid_background_oil" value="218,165,32,255"/>
+    <property key="fluid_background_pfl" value="0,0,255,255"/>
+    <property key="fluid_background_pw" value="154,205,50,255"/>
+    <property key="fluid_inPercent_cond" value="0"/>
+    <property key="fluid_inPercent_fgas" value="0"/>
+    <property key="fluid_inPercent_igas" value="0"/>
+    <property key="fluid_inPercent_iw" value="0"/>
+    <property key="fluid_inPercent_lgas" value="0"/>
+    <property key="fluid_inPercent_ngas" value="0"/>
+    <property key="fluid_inPercent_oil" value="0"/>
+    <property key="fluid_inPercent_pfl" value="0"/>
+    <property key="fluid_inPercent_pw" value="0"/>
+    <property key="fluid_label_color_cond" value="124,222,63,255"/>
+    <property key="fluid_label_color_fgas" value="0,160,160,255"/>
+    <property key="fluid_label_color_igas" value="0,0,0,255"/>
+    <property key="fluid_label_color_iw" value="0,173,173,255"/>
+    <property key="fluid_label_color_lgas" value="0,0,170,255"/>
+    <property key="fluid_label_color_ngas" value="143,143,74,255"/>
+    <property key="fluid_label_color_oil" value="107,79,14,255"/>
+    <property key="fluid_label_color_pfl" value="0,0,0,255"/>
+    <property key="fluid_label_color_pw" value="66,86,20,255"/>
+    <property key="fluid_line_color_cond" value="174,222,144,255"/>
+    <property key="fluid_line_color_fgas" value="0,160,160,255"/>
+    <property key="fluid_line_color_igas" value="0,0,0,255"/>
+    <property key="fluid_line_color_iw" value="0,255,255,255"/>
+    <property key="fluid_line_color_lgas" value="0,0,170,255"/>
+    <property key="fluid_line_color_ngas" value="228,228,118,255"/>
+    <property key="fluid_line_color_oil" value="218,165,32,255"/>
+    <property key="fluid_line_color_pfl" value="0,0,0,255"/>
+    <property key="fluid_line_color_pw" value="154,205,50,255"/>
+    <property key="labelSize" value="7"/>
+    <property key="labelTemplate" value="%1-%3-%2/%6"/>
     <property key="labeling" value="pal"/>
     <property key="labeling/addDirectionSymbol" value="false"/>
     <property key="labeling/angleOffset" value="0"/>
@@ -1215,11 +1270,15 @@
     <property key="labeling/xOffset" value="0"/>
     <property key="labeling/yOffset" value="0"/>
     <property key="labeling/zIndex" value="0"/>
+    <property key="maxDiagrammSize" value="20"/>
+    <property key="minDiagrammSize" value="1"/>
     <property key="pds_prod_PhaseFilter" value="[]"/>
-    <property key="pds_prod_SelectedReservoirs" value="[u'PS01_zeh1']"/>
+    <property key="pds_prod_SelectedReservoirs" value="[u'PSIII']"/>
     <property key="pds_prod_endDate" value="30/09/2018 00:00:00"/>
-    <property key="pds_project" value="{u'project': u'kurovdag_m2', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;PDS252&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
-    <property key="qgis_pds_type" value="pds_current_production"/>
+    <property key="pds_project" value="{u'project': u'kelameddin', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;KARASU&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
+    <property key="qgis_pds_type" value="pds_cumulative_production"/>
+    <property key="showLineout" value="1"/>
+    <property key="useScaleGroupBox" value="0"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
   </customproperties>
@@ -1248,7 +1307,7 @@
     <multilineenabled fieldname="" on=""/>
     <selectedonly on=""/>
   </labelattributes>
-  <SingleCategoryDiagramRenderer diagramType="Histogram" sizeLegend="0" attributeLegend="1">
+  <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
     <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
       <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
       <attribute field="" color="#000000" label=""/>
@@ -1276,7 +1335,7 @@
       </layer>
     </symbol>
   </SingleCategoryDiagramRenderer>
-  <DiagramLayerSettings yPosColumn="-1" showColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+  <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
   <annotationform>.</annotationform>
   <aliases>
     <alias field="well_id" index="0" name=""/>
@@ -1357,7 +1416,6 @@
     <alias field="pflmaxd_m" index="75" name="Добыча жидкости (дата макс. дебита по массе)"/>
     <alias field="pflmax_v" index="76" name="Добыча жидкости (макс. дебит по объему)"/>
     <alias field="pflmaxd_v" index="77" name="Добыча жидкости (дата макс. дебита по объему)"/>
-    <alias field="transite" index="78" name=""/>
   </aliases>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
@@ -1443,7 +1501,6 @@
       <column width="-1" hidden="0" type="field" name="pflmax_v"/>
       <column width="-1" hidden="0" type="field" name="pflmaxd_v"/>
       <column width="-1" hidden="1" type="actions"/>
-      <column width="-1" hidden="0" type="field" name="transite"/>
     </columns>
   </attributetableconfig>
   <editform>.</editform>
@@ -1558,7 +1615,6 @@ def my_form_open(dialog, layer, feature):
     <default field="pflmaxd_m" expression=""/>
     <default field="pflmax_v" expression=""/>
     <default field="pflmaxd_v" expression=""/>
-    <default field="transite" expression=""/>
   </defaults>
   <previewExpression>COALESCE( "symbolname", '&lt;NULL>' )</previewExpression>
   <layerGeometryType>0</layerGeometryType>
