@@ -4,6 +4,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from QgisPDS.utils import *
 from collections import namedtuple
+from utils import edit_layer
 
 try:
     from PyQt4.QtCore import QString
@@ -425,7 +426,7 @@ class bblInit:
         newIdx = layer.fieldNameIndex(fieldName)
         if newIdx < 0:
             if layer.isEditable(): layer.commitChanges()            
-            with edit(layer):
+            with edit_layer(layer):
                 provider.addAttributes([QgsField(fieldName, fieldType, QString(""), fieldLen, fieldPrec)])
 
     @staticmethod
@@ -446,7 +447,7 @@ class bblInit:
                 layer.addAttributeAlias(idx, alias)
                 
         if layer.isEditable(): layer.commitChanges() 
-        with edit(layer):
+        with edit_layer(layer):
             for fl in bblInit.fluidCodes:
                 #Check mass fields
                 newName = bblInit.attrFluidMass(fl.code)
@@ -519,7 +520,7 @@ class bblInit:
 
         if needCopyData:
             if layer.isEditable(): layer.commitChanges()
-            with edit(layer):
+            with edit_layer(layer):
                 features = layer.getFeatures()
                 for feature in features:
                     for fl in bblInit.fluidCodes:

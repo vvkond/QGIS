@@ -591,7 +591,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         IS_DEBUG and QgsMessageLog.logMessage("is_layerfiltered={};is_needupdcoord={};is_needaddall={};".format(is_layerfiltered,is_needupdcoord,is_needaddall), tag="QgisPDS.readProduction")
         #Refresh or add feature
         if self.layer.isEditable(): self.layer.commitChanges()
-        with edit(self.layer):
+        with edit_layer(self.layer):
             ############################
             ####### TEST BLOCK
             ############################
@@ -665,9 +665,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         #--- if layer filtered and selected Add All remove filter,add all,set back filter
         if is_layerfiltered and is_needaddall:
-            f_str=self.layer.subsetString()
-            self.layer.setSubsetString("")
-            with edit(self.layer):
+            with edit_layer(self.layer):
                 for feature in self.mWells.values(): 
                     args = (self.attrWellId, feature.attribute(self.attrWellId))
                     expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in base layer record with that WELL_ID
@@ -678,7 +676,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         self.layer.addFeatures([feature])
                         self.layer.commitChanges()  #--- commit each row
                         self.layer.startEditing()   #--- and start edit again
-            self.layer.setSubsetString(f_str)
 
         IS_DEBUG and QgsMessageLog.logMessage(u"atr updated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
@@ -724,7 +721,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         # Refresh or add feature
         if self.layer.isEditable(): self.layer.commitChanges()
-        with edit(self.layer):
+        with edit_layer(self.layer):
             ############################
             ####### TEST BLOCK
             ############################
@@ -800,9 +797,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         # --- if layer filtered and selected Add All remove filter,add all,set back filter
         if is_layerfiltered and is_needaddall:
-            f_str = self.layer.subsetString()
-            self.layer.setSubsetString("")
-            with edit(self.layer):
+            with edit_layer(self.layer):
                 for feature in self.mWells.values():
                     args = (self.attrWellId, feature.attribute(self.attrWellId))
                     expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))  # --- search in base layer record with that WELL_ID
@@ -813,7 +808,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         self.layer.addFeatures([feature])
                         self.layer.commitChanges()  # --- commit each row
                         self.layer.startEditing()  # --- and start edit again
-            self.layer.setSubsetString(f_str)
 
         self.writeSettings()
 
@@ -843,7 +837,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         # Refresh or add feature
         if self.layer.isEditable(): self.layer.commitChanges()
-        with edit(self.layer):
+        with edit_layer(self.layer):
             ############################
             ####### TEST BLOCK
             ############################
@@ -909,9 +903,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         # --- if layer filtered and selected Add All remove filter,add all,set back filter
         if is_layerfiltered and is_needaddall:
-            f_str = self.layer.subsetString()
-            self.layer.setSubsetString("")
-            with edit(self.layer):
+            with edit_layer(self.layer):
                 for feature in self.mWells.values():
                     args = (self.attrWellId, feature.attribute(self.attrWellId))
                     expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))  # --- search in base layer record with that WELL_ID
@@ -922,7 +914,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         self.layer.addFeatures([feature])
                         self.layer.commitChanges()  # --- commit each row
                         self.layer.startEditing()  # --- and start edit again
-            self.layer.setSubsetString(f_str)
         self.writeSettings()
 
     #===========================================================================

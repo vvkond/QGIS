@@ -12,6 +12,7 @@ from QgisPDS.db import Oracle
 from connections import create_connection
 from QgisPDS.utils import to_unicode
 from QgisPDS.tig_projection import *
+from utils import edit_layer
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_zonations_base.ui'))
@@ -111,7 +112,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
         idx1 = dataProvider.fieldNameIndex('Well identifier')
 
         iter = self.editLayer.getFeatures()
-        with edit(self.editLayer):
+        with edit_layer(self.editLayer):
             for feature in iter:
                 if idx1 >= 0:
                     wellId = feature[u'Well identifier']

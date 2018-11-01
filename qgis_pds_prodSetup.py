@@ -12,7 +12,7 @@ import math
 import xml.etree.cElementTree as ET
 import re
 import time
-from utils import plugin_path
+from utils import plugin_path, start_edit_layer
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -498,8 +498,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         uniqSymbols = {}
         prods = {}
 
-        if not editLayer.isEditable():
-            editLayer.startEditing()
+        if not editLayer.isEditable(): start_edit_layer(editLayer)
 
         idxOffX = editLayerProvider.fieldNameIndex('labloffx')
         idxOffY = editLayerProvider.fieldNameIndex('labloffy')
@@ -629,7 +628,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             #
             # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('scaletype'), scaleType)
 
-        editLayer.commitChanges()
+        stop_edit_layer(editLayer)
         plugin_dir = plugin_path()
         #---load user styles
         load_styles_from_dir(layer=editLayer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_RENDER_STYLE_DIR))

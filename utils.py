@@ -45,7 +45,34 @@ def to_unicode(s,codding='utf-8'):
     if isinstance(s, unicode):
         return s
     return s.decode(codding)
-    
+
+def start_edit_layer(layer):
+    if not layer.isEditable():
+        filter_str=layer.subsetString()
+        layer.setCustomProperty("subsetStringBckp", filter_str)
+        layer.setSubsetString("")
+        layer.startEditing()
+
+def stop_edit_layer(layer):
+    layer.commitChanges()  
+    filter_str=layer.customProperty("subsetStringBckp")
+    layer.removeCustomProperty("subsetStringBckp")
+    layer.setSubsetString(filter_str)
+          
+class edit_layer:
+    """
+        @info: contruction for use edit layer in implemention: 
+            with edit_layer(layer):
+                Do something with layer
+    """
+    def __init__(self,layer):
+        self.layer=layer
+    def __enter__(self):
+        start_edit_layer(self.layer)
+    def __exit__(self, type, value, traceback):
+        stop_edit_layer(self.layer)
+
+        
 
 def load_styles_from_dir(layer,styles_dir,switchActiveStyle=True):
     editLayerStyles=layer.styleManager()

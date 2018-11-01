@@ -15,6 +15,7 @@ from .connections import create_connection
 from .utils import to_unicode, makeShpFileName
 from .tig_projection import *
 from .qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
+from utils import edit_layer
 
 class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
     def __init__(self, _project, _iface, _editLayer, parent=None):
@@ -49,11 +50,11 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
 
         fieldIdx = self.editLayer.dataProvider().fieldNameIndex('transite')
         if fieldIdx < 0:
-            with edit(self.editLayer):
+            with edit_layer(self.editLayer):
                 self.editLayer.dataProvider().addAttributes([QgsField("transite", QVariant.String)])
                 fieldIdx = self.editLayer.dataProvider().fieldNameIndex('transite')
 
-        with edit(self.editLayer):
+        with edit_layer(self.editLayer):
             self.editLayer.setSubsetString('')
 
             wellIdIdx = self.editLayer.dataProvider().fieldNameIndex('Well identifier')
@@ -118,7 +119,7 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
                           provider.geometryType(), provider.crs())
 
 
-        with edit(self.editLayer):
+        with edit_layer(self.editLayer):
             self.editLayer.setSubsetString('')
 
             wellIdIdx = self.editLayer.dataProvider().fieldNameIndex('Well identifier')

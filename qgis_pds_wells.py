@@ -14,7 +14,7 @@ import os
 import time
 from processing.tools.vector import VectorWriter
 from bblInit import STYLE_DIR
-from utils import plugin_path, load_styles_from_dir, load_style
+from utils import plugin_path, load_styles_from_dir, load_style, edit_layer
 
 debuglevel = 4
 
@@ -210,7 +210,7 @@ class QgisPDSWells(QObject):
 
         if isDeleteMissing:
             deletedWells = []
-            with edit(layer):
+            with edit_layer(layer):
                 for f in layer.getFeatures():
                     well_name = f.attribute(self.attrWellId)
                     if self.checkWell(well_name) < 1:
@@ -229,7 +229,7 @@ class QgisPDSWells(QObject):
         allWells = len(self.wellIdList) < 1
 
         refreshed = False
-        with edit(layer):
+        with edit_layer(layer):
             for row in dbWells:
                 name= row[0]
                 lng = row[20]

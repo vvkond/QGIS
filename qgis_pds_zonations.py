@@ -86,7 +86,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         zoneName = zoneName.replace('/', '_')
         if self.createLayer(layerName):
-            with edit(self.layer):
+            with edit_layer(self.layer):
                 self.execute(sel, paramId)
 
             self.layer = memoryToShp(self.layer, self.project['project'], layerName + '_' + zoneName)

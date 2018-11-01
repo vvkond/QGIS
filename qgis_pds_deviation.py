@@ -16,7 +16,7 @@ import os
 import time
 
 from bblInit import STYLE_DIR
-from utils import load_styles_from_dir, load_style, plugin_path
+from utils import load_styles_from_dir, load_style, plugin_path, edit_layer
 
 class QgisPDSDeviation(QObject):
     def __init__(self, iface, project  ,styleName=None ,styleUserDir=None):
@@ -225,7 +225,7 @@ class QgisPDSDeviation(QObject):
 
         if isDeleteMissing:
             deletedWells = []
-            with edit(layer):
+            with edit_layer(layer):
                 for f in layer.getFeatures():
                     well_name = f.attribute(self.attrWellId)
                     if self.checkWell(well_name) < 1:
@@ -243,7 +243,7 @@ class QgisPDSDeviation(QObject):
         allWells = len(self.wellIdList) < 1
 
         refreshed = False
-        with edit(layer):
+        with edit_layer(layer):
             for row in dbWells:
                 name = row[0]
                 lng = row[19]
