@@ -238,66 +238,66 @@
   </edittypes>
   <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
     <rules key="{080e9a79-fc68-4be0-8d7a-ceb05b29c241}">
-      <rule description="скважины действующего фонда" filter="&quot;wellstatus&quot; ='active stock'" key="{7389b039-1ba3-448a-9db3-14d8f333fb32}" label="действующий">
-        <rule key="{4a6a4f28-9c0e-4e52-804d-b9a675f772bb}" label="эксплуатационные">
-          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{1e51fa4b-a7ad-49c9-abe0-f530c559eae2}" label="нефтяные">
-            <rule filter=" &quot;liftmethod&quot; ='sucker-rod pump'" key="{46a371d4-e6a0-44d7-9169-ea1288099f3b}" symbol="0" label="ШГН"/>
-            <rule filter=" &quot;liftmethod&quot; ='centrifugal pump'" key="{942c9ca0-0dd2-43fa-9f34-99e4c6e6534b}" symbol="1" label="ЕЦН"/>
-            <rule filter=" &quot;liftmethod&quot; ='flowing'" key="{1da664b8-494b-4c9a-a09b-31419f6c25a9}" symbol="2" label="фонтан"/>
-            <rule filter=" &quot;liftmethod&quot; is not 'flowing' and &quot;liftmethod&quot; is not 'centrifugal pump' and &quot;liftmethod&quot; is not 'sucker-rod pump'" key="{3bae47c3-3d83-4a9b-af47-99a73e04a094}" symbol="3" label="остальные"/>
+      <rule description="скважины действующего фонда" filter="&quot;wellstatus&quot; ='active stock'" key="{b4b8d030-3a15-4aea-bc9f-ca905297c9f5}" label="действующий">
+        <rule key="{36eff1d2-0cd5-4252-ab7d-ab3af99a8412}" label="эксплуатационные">
+          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{7bdbacd9-e0c2-4574-a7bf-834e72d325c2}" label="нефтяные">
+            <rule filter=" &quot;liftmethod&quot; ='sucker-rod pump'" key="{7c30646d-3644-4d1a-ae33-3d0fc6338334}" symbol="0" label="ШГН"/>
+            <rule filter=" &quot;liftmethod&quot; ='centrifugal pump'" key="{aa53a643-c231-400c-928e-6b5bfa262466}" symbol="1" label="ЕЦН"/>
+            <rule filter=" &quot;liftmethod&quot; ='flowing'" key="{a6b2e780-da20-4b6e-873f-e5b62d870983}" symbol="2" label="фонтан"/>
+            <rule filter=" &quot;liftmethod&quot; is not 'flowing' and &quot;liftmethod&quot; is not 'centrifugal pump' and &quot;liftmethod&quot; is not 'sucker-rod pump'" key="{c0c5cb46-1eef-45be-8b77-6ecadf9a5ffc}" symbol="3" label="остальные"/>
           </rule>
-          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{9e08a2a6-e903-41df-a15d-4f9bd80d73fc}" symbol="4" label="газовые"/>
+          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{cc5ba0d1-7d37-4729-bc2c-f251e547a2de}" symbol="4" label="газовые"/>
         </rule>
-        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{d86294fb-db23-47a6-bd61-f62a0c18427e}" symbol="5" label="нагнетательный"/>
-        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{a20cdbe5-2b7d-489b-9ef0-a1bb21cd0584}" symbol="6" label="поглащающий"/>
-        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{fb160cb4-0cef-4ccd-a137-434600018d7b}" symbol="7" label="водозаборный"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{35a1c362-5641-4358-9c24-50380f80fda0}" symbol="5" label="нагнетательный"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{4bfe5dcb-d101-4c7b-926f-42467c701d9d}" symbol="6" label="поглащающий"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{34dca591-89a8-49f5-8737-7086d21295b2}" symbol="7" label="водозаборный"/>
       </rule>
-      <rule checkstate="0" filter="False" key="{65adee58-9940-4061-b0e9-7ba888fc333c}" symbol="8" label="наблюдательный"/>
-      <rule filter="&quot;wellstatus&quot; ='completion stock'" key="{713d1c0f-6978-4608-bb8b-ada4357c16da}" symbol="9" label="в освоении"/>
-      <rule description="скважины действующего фонда" filter="&quot;wellstatus&quot; ='inactive stock' OR &quot;wellstatus&quot; ='suspended stock'" key="{2f4e1ada-1eef-46a0-95df-a931669d815c}" label="бездействующий">
-        <rule key="{d00c9f8f-bd58-41e2-9949-f33d1474d37e}" label="из эксплуатации">
-          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{0f865b83-eb43-4c5f-ad5e-581981f0adb9}" symbol="10" label="нефтяные"/>
-          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{b554edca-890d-4a9d-b9db-c22d301bafd9}" symbol="11" label="газовыые"/>
+      <rule checkstate="0" filter="False" key="{2bf8de60-254a-4439-bbc4-653c6bb285bc}" symbol="8" label="наблюдательный"/>
+      <rule filter="&quot;wellstatus&quot; ='completion stock'" key="{20724455-3264-4a19-b890-b613c58b0772}" symbol="9" label="в освоении"/>
+      <rule description="скважины действующего фонда" filter="&quot;wellstatus&quot; ='inactive stock' OR &quot;wellstatus&quot; ='suspended stock'" key="{10ddd8fa-5818-4e83-8ad9-082be07db29b}" label="бездействующий">
+        <rule key="{96b9e58c-e0a3-4000-bc32-31f9f8b772f7}" label="из эксплуатации">
+          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{882da65f-fcd6-4261-9910-5a065eea78c6}" symbol="10" label="нефтяные"/>
+          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{dec0b1b9-2fdd-480b-8930-b4216668e54f}" symbol="11" label="газовыые"/>
         </rule>
-        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{ad62fcca-944a-4b30-a437-430515e8d1ed}" symbol="12" label="из нагнетания"/>
-        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{b3d27f69-1a56-475c-bbea-69b36e7374bb}" symbol="13" label="из поглащения"/>
-        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{8da6aedf-1c1f-4144-b8e9-cc0514a12951}" symbol="14" label="из водозабора"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{37f9a9f7-3921-4433-9d14-bcecf8e4ac2d}" symbol="12" label="из нагнетания"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{9608c93c-3337-427b-8bd5-096c901a3fdb}" symbol="13" label="из поглащения"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{3ac3e038-3f77-485b-ada9-dfbe42909ae8}" symbol="14" label="из водозабора"/>
       </rule>
-      <rule filter="&quot;wsinfo&quot; ='reservoir change'" key="{5f05b233-ff97-44cd-aa95-12ae1f028022}" label="перевод на другой горизонт">
-        <rule filter="&quot;wsreason&quot; ='oil prod'" key="{0d5d33a1-b6bc-4cc8-8432-b0f9ac2c8fd0}" symbol="15" label="получена нефть"/>
-        <rule filter="&quot;wsreason&quot; ='inj'" key="{1b9ccd37-fc81-4355-bdb2-3d0b6475a35d}" symbol="16" label="нагнетательный"/>
-        <rule filter="&quot;wsreason&quot; ='absorb'" key="{0347c11a-3a05-4af2-b29d-c1d6cfb699a3}" symbol="17" label="поглащающий"/>
-        <rule filter="&quot;wsreason&quot; ='supply'" key="{d60aa1d6-1b42-4be0-a6f7-ec4423211b94}" symbol="18" label="водозаборный"/>
-        <rule filter="&quot;wsreason&quot; ='gas prod'" key="{d184502e-20cf-4e1e-ae54-601c24d98752}" symbol="19" label="получен газ"/>
-        <rule filter="&quot;wsreason&quot; ='water prod'" key="{c4aa835c-bbf1-4516-8cf3-293097c0bb7f}" symbol="20" label="получена вода"/>
-        <rule filter="&quot;wsreason&quot; ='no prod'" key="{f78bb866-59a9-4597-b250-103cbeb4625b}" symbol="21" label="нет притока"/>
+      <rule filter="&quot;wsinfo&quot; ='reservoir change'" key="{6899e675-b456-4c2d-b7db-3554b27953f3}" label="перевод на другой горизонт">
+        <rule filter="&quot;wsreason&quot; ='oil prod'" key="{c56764f0-6cba-49fb-940e-bf5c4a414062}" symbol="15" label="получена нефть"/>
+        <rule filter="&quot;wsreason&quot; ='inj'" key="{81755a1c-6457-4f3c-9aec-dca17505869d}" symbol="16" label="нагнетательный"/>
+        <rule filter="&quot;wsreason&quot; ='absorb'" key="{e6ba43b4-4596-4fca-8c30-b7d9a9afeb05}" symbol="17" label="поглащающий"/>
+        <rule filter="&quot;wsreason&quot; ='supply'" key="{a2f113d4-eeb4-44e8-999c-5682ab437d21}" symbol="18" label="водозаборный"/>
+        <rule filter="&quot;wsreason&quot; ='gas prod'" key="{801045d0-ab81-4f3a-9caf-5021bee0f07c}" symbol="19" label="получен газ"/>
+        <rule filter="&quot;wsreason&quot; ='water prod'" key="{55f0fd14-a771-438a-ae26-a02e41d8d9ca}" symbol="20" label="получена вода"/>
+        <rule filter="&quot;wsreason&quot; ='no prod'" key="{e799dac0-491e-405b-be6b-6c305eb8aa0a}" symbol="21" label="нет притока"/>
       </rule>
-      <rule filter="&quot;transite&quot; is not NULL" key="{37b8b464-a92f-4ccd-b9f3-0faa18e2886b}" symbol="22" label="транзитный"/>
-      <rule description="Если есть символ на данном пласте,значит скважина целевая" filter=" &quot;symbolid&quot;  is not NULL AND &quot;transite&quot; is NULL" key="{0347c11a-3a05-4af2-b29d-c1d6cfb699a3}" symbol="23" label="целевой"/>
-      <rule filter="&quot;wellstatus&quot; ='abandonment stock'" key="{0347c11a-3a05-4af2-b29d-c1d6cfb699a3}" label="ликвидированный">
-        <rule filter="&quot;wsinfo&quot; ='abandonment expl'" key="{ab633954-e633-4d61-91d9-0ff3ab306c6b}" label="из эксплуатации">
-          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{d20b79b0-8c9e-466b-9cb2-91b3a7cff1a5}" symbol="24" label="технические причины"/>
-          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{d7cdce38-f536-41cd-9c19-51c41fe38dd2}" symbol="25" label="геологические причины"/>
+      <rule filter="&quot;transite&quot; is not NULL" key="{191151b6-bfd0-47b4-923d-3fe014fd1475}" symbol="22" label="транзитный"/>
+      <rule description="Если есть символ на данном пласте,значит скважина целевая" filter=" &quot;symbolid&quot;  is not NULL AND &quot;transite&quot; is NULL" key="{83ad7199-b728-4d98-98b1-7677894a440c}" symbol="23" label="целевой"/>
+      <rule filter="&quot;wellstatus&quot; ='abandonment stock'" key="{ca78033c-5cc2-42ea-933b-1e2fa943ceb6}" label="ликвидированный">
+        <rule filter="&quot;wsinfo&quot; ='abandonment expl'" key="{0ab147d5-87cf-47b6-89df-97902972ba75}" label="из эксплуатации">
+          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{05ea1f08-06f5-4266-92bb-a4ed327ee2dc}" symbol="24" label="технические причины"/>
+          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{95079071-1e20-4dac-bac1-e45db4516267}" symbol="25" label="геологические причины"/>
         </rule>
-        <rule filter="&quot;wsinfo&quot; ='abandonment drill'" key="{de9817da-0995-43b7-8751-c7bd4abf0434}" label="из бурения">
-          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{97c2a125-fd2f-4006-93b6-350f98f229b6}" symbol="26" label="технические причины"/>
-          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{e9993f3a-92ac-4ba9-9908-85f5296f523c}" symbol="27" label="геологические причины"/>
+        <rule filter="&quot;wsinfo&quot; ='abandonment drill'" key="{16c5ed84-d7d4-4952-bd3a-9d3a3bc255bd}" label="из бурения">
+          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{d718269a-c942-450c-b7e4-d486c6f5cbd5}" symbol="26" label="технические причины"/>
+          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{6fcc331e-84ed-4c30-ab21-38b7a002296c}" symbol="27" label="геологические причины"/>
         </rule>
-        <rule filter="&quot;wsinfo&quot; ='abandonment inj'" key="{00b9bd54-9c40-45e1-9768-575fed7d0d6f}" symbol="28" label="из нагнетания"/>
-        <rule filter="&quot;wsinfo&quot; ='abandonment wat-absorb'" key="{aff137fb-a50c-4429-b34d-009746290484}" symbol="29" label="из поглащения"/>
-        <rule filter="&quot;wsinfo&quot; ='abandonment wat-sup'" key="{d48598d8-f151-4514-854c-633f2a6c0381}" symbol="30" label="из водозабора"/>
-        <rule filter="&quot;wsinfo&quot; ='abandonment observ'" key="{d8ff0a9d-9ad8-4ea2-9c00-ca7fc30213a8}" symbol="31" label="из наблюдения"/>
-        <rule description="Если есть символ на данном пласте,значит скважина целевая" filter="&quot;wsinfo&quot; is NULL" key="{7496bb5b-cb44-41d6-9294-602d0beff9ca}" symbol="32" label="остальные"/>
+        <rule filter="&quot;wsinfo&quot; ='abandonment inj'" key="{1ab5fb67-b1f0-4f7a-9df1-feddd9ed2366}" symbol="28" label="из нагнетания"/>
+        <rule filter="&quot;wsinfo&quot; ='abandonment wat-absorb'" key="{0917a817-c46e-4751-9dfc-f36f732f7d45}" symbol="29" label="из поглащения"/>
+        <rule filter="&quot;wsinfo&quot; ='abandonment wat-sup'" key="{378b281c-c5f0-484f-9e52-52ba0b9b28a6}" symbol="30" label="из водозабора"/>
+        <rule filter="&quot;wsinfo&quot; ='abandonment observ'" key="{c50ae2d5-993a-440d-9461-92b5299582e3}" symbol="31" label="из наблюдения"/>
+        <rule description="Если есть символ на данном пласте,значит скважина целевая" filter="&quot;wsinfo&quot; is NULL" key="{a339e2c2-c9d7-4ae7-bf55-fabffc5dc5cc}" symbol="32" label="остальные"/>
       </rule>
-      <rule filter="&quot;wellstatus&quot; ='abandonment stock'" key="{ae43da41-926c-4d71-a0fc-feae0f6abfa0}" label="ожидающий ликвидации">
-        <rule filter="&quot;wsinfo&quot; ='wait abandonment expl'" key="{ce45e1fd-a9ef-46a6-b7fe-2b7858d473b0}" symbol="33" label="из эксплуатации"/>
-        <rule filter="&quot;wsinfo&quot; ='wait abandonment inj'" key="{3e36eb9f-40c9-4edb-8d72-11d9fc524873}" symbol="34" label="из нагнетания и поглащения"/>
+      <rule filter="&quot;wellstatus&quot; ='abandonment stock'" key="{38b0bfa2-b8f7-4f41-bb5f-efb1bf5eeb7b}" label="ожидающий ликвидации">
+        <rule filter="&quot;wsinfo&quot; ='wait abandonment expl'" key="{feef2fb8-d8be-42fa-90be-93b763d1d940}" symbol="33" label="из эксплуатации"/>
+        <rule filter="&quot;wsinfo&quot; ='wait abandonment inj'" key="{9e13d6e8-34ff-4f3f-ae83-95bd902fcc19}" symbol="34" label="из нагнетания и поглащения"/>
       </rule>
-      <rule filter="False" key="{9215bb6a-7eb3-4597-a222-dd347665cdc5}" symbol="35" label="проектные"/>
-      <rule key="{d47ac49e-c9f6-4ef9-8327-f73992b1d29e}" label="Системные настрйоки">
-        <rule checkstate="0" key="{ff1c5958-8d7c-4cfd-8267-50c942aad930}" symbol="36" label="Диаграммы"/>
-        <rule key="{863b4309-bbf9-488e-9060-a0022d0a1c5f}" symbol="37" label="сноски"/>
-        <rule description="Правило,чтоб всегда присутствовал какой-либо символ,иначе у элементов без символа не будет подписи" key="{8294d3f4-71a0-42c2-9415-669b29dccf87}" symbol="38" label="всегда вкл"/>
+      <rule filter="False" key="{9309deff-de94-4f9e-a283-81d968682b46}" symbol="35" label="проектные"/>
+      <rule key="{021764d6-19ac-4911-a95c-d189331e3389}" label="Системные настрйоки">
+        <rule checkstate="0" key="{76ad447c-6bd3-45bb-b241-2ab58af8408d}" symbol="36" label="Диаграммы"/>
+        <rule key="{8219d4cb-2b31-4319-ac0d-b2bd2807e0ab}" symbol="37" label="сноски"/>
+        <rule description="Правило,чтоб всегда присутствовал какой-либо символ,иначе у элементов без символа не будет подписи" key="{5f0bc44a-4cb5-406d-899f-75776cedea3c}" symbol="38" label="всегда вкл"/>
       </rule>
     </rules>
     <symbols>
