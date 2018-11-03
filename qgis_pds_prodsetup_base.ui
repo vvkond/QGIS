@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1016</width>
-    <height>541</height>
+    <height>586</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0" rowspan="2" colspan="2">
+   <item row="0" column="0" rowspan="3" colspan="2">
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
       <bool>true</bool>
@@ -38,7 +38,7 @@
         <x>0</x>
         <y>0</y>
         <width>996</width>
-        <height>492</height>
+        <height>537</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
@@ -251,16 +251,16 @@
                 <string>км3</string>
                </property>
               </item>
-            <item>
-             <property name="text">
-              <string>1000м3</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>1000000м3</string>
-             </property>
-            </item>
+              <item>
+               <property name="text">
+                <string>1000м3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1000000м3</string>
+               </property>
+              </item>
              </widget>
             </item>
             <item>
@@ -304,12 +304,24 @@
        </item>
        <item row="0" column="1">
         <widget class="QGroupBox" name="groupBox_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>5</verstretch>
+          </sizepolicy>
+         </property>
          <property name="title">
           <string>Компоненты</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
            <widget class="QListWidget" name="componentsList">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
             <property name="selectionBehavior">
              <enum>QAbstractItemView::SelectRows</enum>
             </property>
@@ -546,12 +558,19 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="2" column="0">
         <widget class="QGroupBox" name="groupBox_5">
          <property name="title">
           <string>Общее</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_8">
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="dailyProduction">
+            <property name="text">
+             <string>Среднесуточная добыча</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="showLineouts">
             <property name="text">
@@ -562,14 +581,78 @@
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
-           <widget class="QCheckBox" name="dailyProduction">
+          <item row="2" column="0" colspan="2">
+           <widget class="QLineEdit" name="resultRuleName">
+            <property name="toolTip">
+             <string>Имя создаваемого правила стиля</string>
+            </property>
             <property name="text">
-             <string>Среднесуточная добыча</string>
+             <string>Диаграммы добычи</string>
+            </property>
+            <property name="placeholderText">
+             <string>Диаграммы добычи</string>
             </property>
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Выбор стиля</string>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>14</y>
+            <width>471</width>
+            <height>65</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QRadioButton" name="isUseDefaultStyle">
+             <property name="text">
+              <string>Использовать стиль по умолчанию</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="isAppendToStyle">
+             <property name="text">
+              <string>Добавить к текущему стилю</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="isAppendToEachLastSymbol">
+             <property name="text">
+              <string>Добавить ко всем последним символам текущего стиля</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>
