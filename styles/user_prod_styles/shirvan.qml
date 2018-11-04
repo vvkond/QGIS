@@ -235,6 +235,9 @@
     <edittype widgetv2type="TextEdit" name="pflmaxd_v">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="transite">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
   </edittypes>
   <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
     <rules key="{080e9a79-fc68-4be0-8d7a-ceb05b29c241}">
@@ -293,11 +296,10 @@
         <rule filter="&quot;wsinfo&quot; ='wait abandonment expl'" key="{feef2fb8-d8be-42fa-90be-93b763d1d940}" symbol="33" label="из эксплуатации"/>
         <rule filter="&quot;wsinfo&quot; ='wait abandonment inj'" key="{9e13d6e8-34ff-4f3f-ae83-95bd902fcc19}" symbol="34" label="из нагнетания и поглащения"/>
       </rule>
-      <rule filter="False" key="{9309deff-de94-4f9e-a283-81d968682b46}" symbol="35" label="проектные"/>
-      <rule key="{021764d6-19ac-4911-a95c-d189331e3389}" label="Системные настрйоки">
-        <rule checkstate="0" key="{76ad447c-6bd3-45bb-b241-2ab58af8408d}" symbol="36" label="Диаграммы"/>
-        <rule key="{8219d4cb-2b31-4319-ac0d-b2bd2807e0ab}" symbol="37" label="сноски"/>
-        <rule description="Правило,чтоб всегда присутствовал какой-либо символ,иначе у элементов без символа не будет подписи" key="{5f0bc44a-4cb5-406d-899f-75776cedea3c}" symbol="38" label="всегда вкл"/>
+      <rule checkstate="0" filter="False" key="{9309deff-de94-4f9e-a283-81d968682b46}" symbol="35" label="проектные"/>
+      <rule key="{021764d6-19ac-4911-a95c-d189331e3389}" label="Общие параметры отображения">
+        <rule key="{8219d4cb-2b31-4319-ac0d-b2bd2807e0ab}" symbol="36" label="сноски"/>
+        <rule checkstate="0" description="Правило,чтоб всегда присутствовал какой-либо символ,иначе у элементов без символа не будет подписи" key="{5f0bc44a-4cb5-406d-899f-75776cedea3c}" symbol="37" label="всегда вкл"/>
       </rule>
     </rules>
     <symbols>
@@ -902,16 +904,6 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="36">
-        <layer pass="0" class="BubbleDiagramm" locked="0">
-          <prop k="diagrammStr" v="[{'scaleMaxRadius': 20.0, 'scaleMinRadius': 1.0, 'scale': 3262915.0, 'slices': [{'labelColor': u'#6b4f0e', 'expression': u'oilmas', 'inPercent': 0, 'lineColor': u'218,165,32,255', 'backColor': u'218,165,32,255'}, {'labelColor': u'#425614', 'expression': u'pwmas', 'inPercent': 0, 'lineColor': u'154,205,50,255', 'backColor': u'154,205,50,255'}], 'fixedSize': 20.0, 'multiplier': 1e-06, 'decimals': 2, 'dailyProduction': False, 'scaleType': 1}, {'scaleMaxRadius': 20.0, 'scaleMinRadius': 1.0, 'scale': 3262915.0, 'slices': [{'labelColor': u'#000000', 'expression': u'igasvol', 'inPercent': 0, 'lineColor': u'0,0,0,255', 'backColor': u'0,0,0,255'}, {'labelColor': u'#00adad', 'expression': u'iwvol', 'inPercent': 0, 'lineColor': u'0,255,255,255', 'backColor': u'0,255,255,255'}], 'fixedSize': 20.0, 'multiplier': 0.001, 'decimals': 2, 'dailyProduction': False, 'scaleType': 1}, {'scaleMaxRadius': 20.0, 'scaleMinRadius': 1.0, 'scale': 3262915.0, 'slices': [{'labelColor': u'#8f8f4a', 'expression': u'ngasvol', 'inPercent': 0, 'lineColor': u'228,228,118,255', 'backColor': u'228,228,118,255'}], 'fixedSize': 20.0, 'multiplier': 1e-06, 'decimals': 2, 'dailyProduction': False, 'scaleType': 1}]"/>
-          <prop k="labelSize" v="7.0"/>
-          <prop k="showDiagramms" v="True"/>
-          <prop k="showLabels" v="True"/>
-          <prop k="showLineouts" v="False"/>
-          <prop k="templateStr" v="&quot;oilmas&quot;-&quot;pwmas&quot;-&quot;ngasvol&quot;/&quot;iwvol&quot;"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="37">
         <layer pass="1" class="BubbleDiagramm" locked="0">
           <prop k="diagrammStr" v="[{'scaleMaxRadius': 20.0, 'scaleMinRadius': 1.0, 'scale': 3262915.0, 'slices': [{'labelColor': u'#6b4f0e', 'expression': u'oilmas', 'inPercent': 0, 'lineColor': u'218,165,32,255', 'backColor': u'218,165,32,255'}, {'labelColor': u'#425614', 'expression': u'pwmas', 'inPercent': 0, 'lineColor': u'154,205,50,255', 'backColor': u'154,205,50,255'}], 'fixedSize': 20.0, 'multiplier': 1e-06, 'decimals': 2, 'dailyProduction': False, 'scaleType': 1}, {'scaleMaxRadius': 20.0, 'scaleMinRadius': 1.0, 'scale': 3262915.0, 'slices': [{'labelColor': u'#000000', 'expression': u'igasvol', 'inPercent': 0, 'lineColor': u'0,0,0,255', 'backColor': u'0,0,0,255'}, {'labelColor': u'#00adad', 'expression': u'iwvol', 'inPercent': 0, 'lineColor': u'0,255,255,255', 'backColor': u'0,255,255,255'}], 'fixedSize': 20.0, 'multiplier': 0.001, 'decimals': 2, 'dailyProduction': False, 'scaleType': 1}, {'scaleMaxRadius': 20.0, 'scaleMinRadius': 1.0, 'scale': 3262915.0, 'slices': [{'labelColor': u'#8f8f4a', 'expression': u'ngasvol', 'inPercent': 0, 'lineColor': u'228,228,118,255', 'backColor': u'228,228,118,255'}], 'fixedSize': 20.0, 'multiplier': 1e-06, 'decimals': 2, 'dailyProduction': False, 'scaleType': 1}]"/>
           <prop k="labelSize" v="7.0"/>
@@ -921,7 +913,7 @@
           <prop k="templateStr" v="&quot;oilmas&quot;-&quot;pwmas&quot;-&quot;ngasvol&quot;/&quot;iwvol&quot;"/>
         </layer>
       </symbol>
-      <symbol alpha="0" clip_to_extent="1" type="marker" name="38">
+      <symbol alpha="0" clip_to_extent="1" type="marker" name="37">
         <layer pass="0" class="SimpleMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,0"/>
@@ -1087,9 +1079,9 @@
     <property key="diagramm_unitsType_1" value="0"/>
     <property key="diagramm_unitsType_2" value="1"/>
     <property key="diagramm_unitsType_3" value="1"/>
-    <property key="diagramm_units_1" value="3"/>
-    <property key="diagramm_units_2" value="14"/>
-    <property key="diagramm_units_3" value="15"/>
+    <property key="diagramm_units_1" value="2"/>
+    <property key="diagramm_units_2" value="10"/>
+    <property key="diagramm_units_3" value="14"/>
     <property key="embeddedWidgets/count" value="0"/>
     <property key="fluid_background_cond" value="174,222,144,255"/>
     <property key="fluid_background_fgas" value="0,160,160,255"/>
@@ -1108,7 +1100,7 @@
     <property key="fluid_inPercent_ngas" value="0"/>
     <property key="fluid_inPercent_oil" value="0"/>
     <property key="fluid_inPercent_pfl" value="0"/>
-    <property key="fluid_inPercent_pw" value="0"/>
+    <property key="fluid_inPercent_pw" value="1"/>
     <property key="fluid_label_color_cond" value="124,222,63,255"/>
     <property key="fluid_label_color_fgas" value="0,160,160,255"/>
     <property key="fluid_label_color_igas" value="0,0,0,255"/>
@@ -1273,10 +1265,10 @@
     <property key="maxDiagrammSize" value="20"/>
     <property key="minDiagrammSize" value="1"/>
     <property key="pds_prod_PhaseFilter" value="[]"/>
-    <property key="pds_prod_SelectedReservoirs" value="[u'PSIII']"/>
-    <property key="pds_prod_endDate" value="30/09/2018 00:00:00"/>
-    <property key="pds_project" value="{u'project': u'kelameddin', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;KARASU&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
-    <property key="qgis_pds_type" value="pds_cumulative_production"/>
+    <property key="pds_prod_SelectedReservoirs" value="[u'PS01_zeh1']"/>
+    <property key="pds_prod_endDate" value="31/07/2017 00:00:00"/>
+    <property key="pds_project" value="{u'project': u'kurovdag_m2', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;PDS252&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
+    <property key="qgis_pds_type" value="pds_current_production"/>
     <property key="showLineout" value="1"/>
     <property key="useScaleGroupBox" value="0"/>
     <property key="variableNames"/>
@@ -1416,6 +1408,7 @@
     <alias field="pflmaxd_m" index="75" name="Добыча жидкости (дата макс. дебита по массе)"/>
     <alias field="pflmax_v" index="76" name="Добыча жидкости (макс. дебит по объему)"/>
     <alias field="pflmaxd_v" index="77" name="Добыча жидкости (дата макс. дебита по объему)"/>
+    <alias field="transite" index="78" name=""/>
   </aliases>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
@@ -1501,6 +1494,7 @@
       <column width="-1" hidden="0" type="field" name="pflmax_v"/>
       <column width="-1" hidden="0" type="field" name="pflmaxd_v"/>
       <column width="-1" hidden="1" type="actions"/>
+      <column width="-1" hidden="0" type="field" name="transite"/>
     </columns>
   </attributetableconfig>
   <editform>.</editform>
@@ -1615,6 +1609,7 @@ def my_form_open(dialog, layer, feature):
     <default field="pflmaxd_m" expression=""/>
     <default field="pflmax_v" expression=""/>
     <default field="pflmaxd_v" expression=""/>
+    <default field="transite" expression=""/>
   </defaults>
   <previewExpression>COALESCE( "symbolname", '&lt;NULL>' )</previewExpression>
   <layerGeometryType>0</layerGeometryType>
