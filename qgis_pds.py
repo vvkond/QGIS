@@ -537,6 +537,13 @@ class QgisPDS(QObject):
             callback=self.createSummProductionlayer,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/Refresh.png'
+        self.actionRefreshLayer = self.add_action(
+            icon_path,
+            text=self.tr(u'Update layer'),
+            callback=self.refreshLayer,
+            parent=self.iface.mainWindow())
+
         icon_path = ':/plugins/QgisPDS/Pressure-50.png'
         self.actionLoadPressure = self.add_action(
             icon_path,
@@ -581,13 +588,6 @@ class QgisPDS(QObject):
             text=self.tr(u'Mark transite wells'),
             callback=self.transiteWells,
             enabled_flag=False,
-            parent=self.iface.mainWindow())
-
-        icon_path = ':/plugins/QgisPDS/Refresh.png'
-        self.actionRefreshLayer = self.add_action(
-            icon_path,
-            text=self.tr(u'Update layer'),
-            callback=self.refreshLayer,
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/water-drop.png'
