@@ -1,0 +1,41 @@
+<RCC>
+    <qresource prefix="/plugins/QgisPDS">
+        <file alias="icon.png">/icons/icon.png</file>
+        <file alias="splash_logo.png">/icons/splash_logo.png</file>
+        <file alias="GeoPROD24.png">/icons/GeoPROD24.png</file>
+        <file alias="GeoPROD24a.png">/icons/GeoPROD24a.png</file>
+        <file alias="GeoPROD24Sum.png">/icons/GeoPROD24Sum.png</file>
+        <file alias="ME002.png">/icons/ME002.png</file>
+        <file alias="piechart1.png">/icons/piechart1.png</file>
+        <file alias="piechart2.png">/icons/piechart2.png</file>
+        <file alias="Refresh.png">/icons/Refresh.png</file>
+        <file alias="DR014.png">/icons/DR014.png</file>
+        <file alias="DR028.png">/icons/DR028.png</file>
+        <file alias="DR012.png">/icons/DR012.png</file>
+        <file alias="DR029.png">/icons/DR029.png</file>
+        <file alias="DR030.png">/icons/DR030.png</file>
+        <file alias="CoordFromZonations.png">/icons/CoordFromZonations.png</file>
+        <file alias="water-drop.png">/icons/water-drop.png</file>
+        <file alias="label.png">/icons/label.png</file>
+        <file alias="Pressure-50.png">/icons/Pressure-50.png</file>
+        <file alias="statistics.png">/icons/statistics.png</file>
+        <file alias="deviations.png">/icons/deviations.png</file>
+        <file alias="zonation.png">/icons/zonation.png</file>
+        <file alias="mActionFileSave.png">/icons/mActionFileSave.png</file>
+        <file alias="new_sql_query.png">/icons/new_sql_query.png</file>
+        <file alias="ButtonPlayicon.png">/icons/ButtonPlayicon.png</file>
+        <file alias="openfileicon.png">/icons/openfileicon.png</file>
+        <file alias="GeoCART24.png">/icons/GeoCART24.png</file>
+        <file alias="mActionFilter.png">/icons/mActionFilter.png</file>
+        <file alias="symbologyRemove.png">/icons/symbologyRemove.png</file>
+        <file alias="play_24x24.png">/icons/play_24x24.png</file>
+        <file alias="sort_ascend.png">/icons/sort_ascend.png</file>
+        <file alias="sort_descend.png">/icons/sort_descend.png</file>
+        <file alias="list.png">/icons/list.png</file>
+        <file alias="checked_checkbox.png">/icons/checked_checkbox.png</file>
+        <file alias="unchecked_checkbox.png">/icons/unchecked_checkbox.png</file>
+        <file alias="toggle.png">/icons/toggle.png</file>
+        <file alias="database.png">/icons/database.png</file>
+        <file alias="pump-jack.png">/icons/pump-jack.png</file>
+    </qresource>
+</RCC>
