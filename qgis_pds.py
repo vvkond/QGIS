@@ -523,6 +523,13 @@ class QgisPDS(QObject):
             callback=self.createWellDeviationLayer,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/pump-jack.png'
+        self.actionRefreshLayer = self.add_action(
+            icon_path,
+            text=self.tr(u'Load wells status'),
+            callback=self.createFondlayer,
+            parent=self.iface.mainWindow())
+
         icon_path = ':/plugins/QgisPDS/GeoPROD24a.png'
         self.actionCurrentProduction = self.add_action(
             icon_path,
@@ -706,6 +713,31 @@ class QgisPDS(QObject):
             if dlg.getLayer() is not None:
                 dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
 
+    def createFondlayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+        currentLayer = self.iface.activeLayer()
+        dlg = QgisPDSProductionDialog(self.currentProject, self.iface, isOnlyFond=True)
+        if dlg.isInitialised():
+            result = dlg.exec_()
+            if dlg.getLayer() is not None:
+                dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
+        if self.iface.activeLayer()!=currentLayer:
+            currentLayer = self.iface.activeLayer()
+            if currentLayer is None:
+                return
+            #--- zonation move
+            dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, currentLayer)
+            dlg.exec_()
+    
+            #---transite
+            dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, currentLayer, allow_split_layer=False)
+            dlg.exec_()
+        
+
+
 
     def loadPressure(self):
         if not QgsProject.instance().homePath():
@@ -730,15 +762,15 @@ class QgisPDS(QObject):
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
 
-        dlg = QgisPDSProductionDialog(self.currentProject, self.iface, False)
+        dlg = QgisPDSProductionDialog(self.currentProject, self.iface, isCP=False)
         if dlg.isInitialised():
             result = dlg.exec_()
             if dlg.getLayer() is not None:
                 dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
 
 
-    def loadProduction(self, layer, project, isCurrentProd):
-        dlg = QgisPDSProductionDialog(project, self.iface, isCurrentProd, layer)
+    def refreshProduction(self, layer, project, isCurrentProd):
+        dlg = QgisPDSProductionDialog(project, self.iface, isCP=isCurrentProd, _layer=layer)
         if dlg.isInitialised():
             result = dlg.exec_()
             if result and layer:
@@ -903,9 +935,9 @@ class QgisPDS(QObject):
                 self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
                                   dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing)
         elif prop == "pds_current_production":
-            self.loadProduction(currentLayer, self.currentProject, True)
+            self.refreshProduction(currentLayer, self.currentProject, True)
         elif prop == "pds_cumulative_production":
-            self.loadProduction(currentLayer, self.currentProject, False)
+            self.refreshProduction(currentLayer, self.currentProject, False)
         elif prop == "pds_well_deviations":
             dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():

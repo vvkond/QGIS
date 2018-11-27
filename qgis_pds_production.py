@@ -43,6 +43,7 @@ class BBL_LIFT_METHOD:
     def isPump(self):
         return self.isPump 
 
+fondLoadConfig=namedtuple('fondLoadConfig',['isWell','isObject'])
 
 
 
@@ -67,14 +68,24 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     #===========================================================================
     # 
     #===========================================================================
-    def __init__(self, project, iface, isCP=True, _layer=None, parent=None):
+    def __init__(self, project, iface, isCP=True, isOnlyFond=False, _layer=None, parent=None):
         """Constructor."""
         super(QgisPDSProductionDialog, self).__init__(parent)       
-        
         self.setupUi(self)
-
-        if not isCP:
-            self.setWindowTitle(self.tr("Map of cumulative production"))
+        self.isCurrentProd = isCP # indicator that layer is with current prod
+        self.isFondLayer= isOnlyFond   # indicator that layer is Fond
+        self.fondLoadConfig = fondLoadConfig(isWell=False,isObject=False)
+        if self.isFondLayer:
+            self.setWindowTitle(self.tr("Map of well status"))
+            self.mAddAllWells.setChecked(True)
+        elif not self.isCurrentProd:
+                self.setWindowTitle(self.tr("Map of cumulative production"))
+        else:
+            pass
+        self.mUpdateWellLocation.setEnabled(not self.isFondLayer)
+        self.mDynamicCheckBox.setEnabled(  (not self.isFondLayer) and self.isCurrentProd)
+        self.startDateEdit.setEnabled(not self.isFondLayer and (not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked())))
+        self.firstDate.setEnabled(    not self.isFondLayer and (not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked())))
 
         self.initialised = False
         self.layer = _layer
@@ -113,7 +124,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
         self.iface = iface
         self.project = project
-        self.isCurrentProd = isCP
+        
         if self.project is None:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'No current PDS project'), QtGui.QMessageBox.Ok)
             return
@@ -122,7 +133,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             
         self.mSelectedReservoirs = []
         self.mPhaseFilter = []
-        self.mProductionWells = []
+        self.mProductionWells = [] # list of info about production wells. Updated when read production
         self.mWells = {}
         self.reservoirNumbers = []
         self.reservoirIds = []
@@ -135,9 +146,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.endDateEdit.setDateTime(self.mEndDate)
         self.startDateEdit.setDateTime(self.mStartDate)
 
-        self.mDynamicCheckBox.setEnabled(self.isCurrentProd)
-        self.startDateEdit.setEnabled(not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked()) )
-        self.firstDate.setEnabled(not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked()))
 
         self._getProjection()
 
@@ -158,8 +166,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     self.reservoirsListWidget.addItem(item)
 
 
-        self.realEndDate = QDate()
-        self.realStartDate = QDate()
+        self.realEndDate = self.realStartDate = QDate()  #temporary,used only in GUI
+        self.fondStartDate = self.fondEndDate = QDate()  #fond load date diapazon 
+
+        
+        
         self.bbl_getproduction_period(False)
 
         self.initialised = True
@@ -196,7 +207,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         scheme = self.project['project']
         try:           
             self.db = connection.get_db(scheme)
-            result = self.db.execute("select reservoir_part_code from reservoir_part where  entity_type_nm = 'RESERVOIR_ZONE'")
+            result = self.db.execute("select reservoir_part_code from reservoir_part where  entity_type_nm = 'RESERVOIR_ZONE' order by reservoir_part_code")
             # db.disconnect()
             return result
         except Exception as e:
@@ -299,14 +310,18 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     # 
     #===========================================================================
     def on_buttonBox_accepted(self):
-        if IS_DEBUG or IS_PROFILING:
+        global IS_DEBUG,IS_PROFILING
+        IS_DEBUG=     self.isDebugChkBox.isChecked() 
+        IS_PROFILING= self.isProfilingChkBox.isChecked()
+        
+        if IS_PROFILING:
             import cProfile
             _profiler = cProfile.Profile()
             _profiler.enable()
         #
         self.createProductionLayer()
         #
-        if IS_DEBUG or IS_PROFILING:
+        if IS_PROFILING:
             import pstats, io
             from os.path import expanduser
             home = expanduser("~")            
@@ -315,6 +330,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             ps=pstats.Stats(_profiler, stream=s).strip_dirs().sort_stats('cumulative').print_stats()
             s = open(os.path.join(home,'qgispds.prof.log'), 'r')            
             QgsMessageLog.logMessage(u"profile: \n{}".format(''.join(s.readlines())), tag="QgisPDS.profile")
+
 
         
 
@@ -342,9 +358,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     # 
     #===========================================================================
     def createProductionLayer(self):
-        self.mEndDate = self.endDateEdit.dateTime()
         self.mStartDate = self.startDateEdit.dateTime()
-
+        self.mEndDate = self.endDateEdit.dateTime()
+        
+        # --- READ SETTINGS 
         if self.layer is None:
             self.mSelectedReservoirs = self.getSelectedReservoirs()
             self.mPhaseFilter = self.getSelectedFluids()
@@ -384,7 +401,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitVol(     fl.code), "double" )
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitDateVol( fl.code), "date"   )
             layerName = u"Current production - " + ",".join(self.mSelectedReservoirs)
-            if not self.isCurrentProd:
+            if self.isFondLayer:
+                layerName = u"Fond - " + ",".join(self.mSelectedReservoirs)
+            elif not self.isCurrentProd:
                 layerName = u"Cumulative production - " + ",".join(self.mSelectedReservoirs)
             elif self.mDynamicCheckBox.isChecked():
                 layerName = u"Dynamic production - " + ",".join(self.mSelectedReservoirs)
@@ -395,7 +414,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(u'Layer create error'), QtGui.QMessageBox.Ok)
                 return
             self.layer = memoryToShp(self.layer, self.project['project'], layerName)
-            if self.isCurrentProd:
+            if self.isFondLayer:
+                #self.layer.setCustomProperty("qgis_pds_type", "pds_fond")
+                self.layer.setCustomProperty("qgis_pds_type", "pds_current_production")
+            elif self.isCurrentProd:
                 self.layer.setCustomProperty("qgis_pds_type", "pds_current_production")
             else:
                 self.layer.setCustomProperty("qgis_pds_type", "pds_cumulative_production")
@@ -436,14 +458,35 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
             
-            #---load user styles
-            load_styles_from_dir(layer=self.layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_STYLE_DIR) ,switchActiveStyle=False)
-            #---load default style
-            load_style(layer=self.layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,PROD_STYLE+".qml"))
+            #------load user styles
+            activeStyleName=load_styles_from_dir(layer=self.layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_STYLE_DIR) ,switchActiveStyle=False)
+            #------load default style
+            load_style(layer=self.layer, name='default', style_path=os.path.join(plugin_path() ,STYLE_DIR ,PROD_STYLE+".qml"), activeStyleName=activeStyleName)
         else:
             bblInit.checkFieldExists(self.layer, self.attr_startDate, QVariant.Date, 50, 0)
             bblInit.updateOldProductionStructure(self.layer)
-        self.loadProductionLayer(self.layer)
+
+        # ---
+        self.mSelectedReservoirs = ast.literal_eval(self.layer.customProperty("pds_prod_SelectedReservoirs"))
+        # --- FOND READ SETTINGS
+        self.fondLoadConfig = fondLoadConfig(
+                                            isWell=self.fondByWellRdBtn.isChecked()
+                                             ,isObject=self.fondByObjRdBtn.isChecked()
+                                             )
+        if self.fondLoadConfig.isObject :
+            self.fondStartDate,self.fondEndDate =self.bbl_getreservoir_period( reservoirs = self.mSelectedReservoirs                                
+                                                                               , st_date  = self.mStartDate
+                                                                               , end_date = self.mEndDate
+                                                                               )
+        elif self.fondLoadConfig.isWell:
+            self.fondStartDate,self.fondEndDate = self.mStartDate, self.mEndDate
+            
+        # --- LOAD PRODUCTION    
+        self.loadProductionLayer(layer=self.layer
+                                 , prodStartDate= self.mStartDate, prodEndDate=self.mEndDate
+                                 , fondStartDate= self.fondStartDate, fondEndDate=self.fondEndDate
+                                 , reservoirs=    self.mSelectedReservoirs
+                                  )
         QgsMapLayerRegistry.instance().addMapLayer(self.layer)
         bblInit.setAliases(self.layer)
         self.writeSettings()
@@ -455,9 +498,22 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     #===========================================================================
     # 
     #===========================================================================
-    def loadProductionLayer(self, layer):
-        self.layer = layer
+    def loadProductionLayer(self, layer, prodStartDate, prodEndDate, fondStartDate, fondEndDate, reservoirs):
+        """
+            @param layer:  layer to update/read production
+            @param prodStartDate,prodEndDate: min/max dates
+            @param fondStartDate,fondEndDate: min/max dates for fond
+            @param reservoirs: list of reservoir group names
+            @info: other user variables self.project,self.mPhaseFilter,self.isFondLayer , self.fondLoadConfig ...
 
+        """
+        #--- UPDATE SELF CONFIG VARIABLES
+        self.layer = layer
+        self.mStartDate,self.mEndDate = prodStartDate,prodEndDate
+        self.fondStartDate,self.fondEndDate = fondStartDate, fondEndDate
+        self.mSelectedReservoirs = reservoirs
+        
+        # #--- READ PROJECT FROM LAYER
         # prjStr = layer.customProperty("pds_project")
         # self.project = ast.literal_eval(prjStr)
 
@@ -469,24 +525,25 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
     #try:
         # self.mEndDate = QDateTime.fromString(layer.customProperty("pds_prod_endDate"), self.dateFormat)
-        self.mSelectedReservoirs = ast.literal_eval(layer.customProperty("pds_prod_SelectedReservoirs"))
+        #self.mSelectedReservoirs = ast.literal_eval(layer.customProperty("pds_prod_SelectedReservoirs"))
         self.mPhaseFilter =        ast.literal_eval(layer.customProperty("pds_prod_PhaseFilter")       )
         self.mProductionWells = []
         self.mWells = {}
+    
     
         connection = create_connection(self.project)
         scheme = self.project['project']
         self.db = connection.get_db(scheme)
 
-
-        self.mSelectedReservoirsText = self.getReservoirsFilter()
-
+        self.mSelectedReservoirsText = self.getReservoirsFilter(reservoir_names=self.mSelectedReservoirs)
+        #--- UPDATE DATE LIMITS
         self.mEndDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), self.mEndDate.date().daysInMonth()))
         if self.isCurrentProd and not self.mDynamicCheckBox.isChecked():
             self.mStartDate.setDate(QDate(self.mEndDate.date().year(), self.mEndDate.date().month(), 1))
         else:
             self.mStartDate.setDate(QDate(self.mStartDate.date().year(), self.mStartDate.date().month(), 1))
 
+        #--- READ PRODUCTION
         if self.mDynamicCheckBox.isChecked() and self.isCurrentProd:
             # progressMessageBar = self.iface.messageBar()
             # self.progress = QProgressBar()
@@ -533,8 +590,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.getWells(self.mSelectedReservoirsText)
             self.readProduction()
 
+        #--- END READ 
         self.db.disconnect()
-
         self.layer.updateExtents()
 
     # except Exception as e:
@@ -567,8 +624,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         IS_DEBUG and QgsMessageLog.logMessage(u"prod config read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
         
-        IS_DEBUG and QgsMessageLog.logMessage(u"read production for wells {}".format(lambda v:v.name,self.mProductionWells), tag="QgisPDS.readProduction")
-        self.readWellsProduction(self.mProductionWells)
+        IS_DEBUG and QgsMessageLog.logMessage(u"read production for wells {}".format(lambda v:v.name,self.mProductionWells), tag="QgisPDS.readProduction")\
+        #--- READ WELL WITH PRODUCTION AND UPDATE self.mProductionWells
+        self.readWellsProduction( prodWells = self.mProductionWells )
         IS_DEBUG and QgsMessageLog.logMessage(u"prod read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
 
@@ -576,9 +634,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.calcBubbles(pdw)
         IS_DEBUG and QgsMessageLog.logMessage(u"bubble calculated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
-
+        #--- READ NON PRODUCTION WELLS
         liftMethodIdx = self.layer.fieldNameIndex(self.attrLiftMethod)
-
         self._readAllWells()
         IS_DEBUG and QgsMessageLog.logMessage(u"well read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction")
         time_start=time.time()
@@ -1207,7 +1264,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         time_start=time.time()
 
         if useLiftMethod:
-            liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
+            liftMethod = self.getWellStrProperty(prodWell.sldnid, self.fondEndDate, "lift method")
             if liftMethod in bblInit.bblLiftMethods.keys():
                 prodWell.liftMethod = liftMethod
             IS_DEBUG and QgsMessageLog.logMessage(u"lift method in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction")
@@ -1215,6 +1272,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     # read production for selected wells from  BASE
     #==========================================================================
     def readWellsProduction(self, prodWells=[]):
+        """
+            @param prodWells: list of links to self.mProductionWells
+        """
         #TableUnit = namedtuple('TableUnit', ['table', 'unit'])
         #prodTables = [
         #                TableUnit("p_std_vol_lq",   "Volume"), 
@@ -1238,7 +1298,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         i = 0
         
         # ---1 generate query for all bblInit item  like 'oil_Volume,oil_Mass...'
-        prod_tables=set()
+        prod_tables=set() # set of table names with production DATA
         query_fields=[
                         "tig_well_id"
                         ,"start_time"
@@ -1250,53 +1310,62 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         ]
         FluidFields=namedtuple('FluidFields', ['code', 'idx','field','unit'])
         fluid_fields=[]
-        sql_1=""
-        for idx,fluidCode in enumerate(bblInit.fluidCodes):
-            for tu in fluidCode.sourceTables:
-                prod_tables.add(tu.table)
-                if sql_1:
-                    sql_1+=",\n"      
-                sql_1+=u" sum(case when tmp_prod.SOURCE_T='{tbl_name}'   and tmp_prod.BSASC_SOURCE in ('{source_fluids}') then tmp_prod.DATA_VALUE else 0 end) {field_name}_{tbl_unit}".format(
-                            tbl_name=tu.table
-                            ,source_fluids= fluidCode.componentId if  fluidCode.componentId is not None else "','".join(fluidCode.subComponentIds)    
-                            ,tbl_unit=tu.unit
-                            ,field_name=fluidCode.code
-                           )
-                fluid_fields.append(
-                            FluidFields(
-                                        code=fluidCode.code
-                                        ,idx=idx
-                                        ,field="{field_name}_{tbl_unit}".format( field_name=fluidCode.code,tbl_unit=tu.unit )
-                                        ,unit=tu.unit
+        sql_1="" # query line from prod_tables to add in SELECT WHAT. For example SELECT sum(...)
+        if not self.isFondLayer: 
+            for idx,fluidCode in enumerate(bblInit.fluidCodes):
+                for tu in fluidCode.sourceTables:
+                    prod_tables.add(tu.table)
+                    if sql_1:
+                        sql_1+=",\n"      
+                    sql_1+=u" sum(case when tmp_prod.SOURCE_T='{tbl_name}'   and tmp_prod.BSASC_SOURCE in ('{source_fluids}') then tmp_prod.DATA_VALUE else 0 end) {field_name}_{tbl_unit}".format(
+                                tbl_name=tu.table
+                                ,source_fluids= fluidCode.componentId if  fluidCode.componentId is not None else "','".join(fluidCode.subComponentIds)    
+                                ,tbl_unit=tu.unit
+                                ,field_name=fluidCode.code
+                               )
+                    fluid_fields.append(
+                                FluidFields(
+                                            code=fluidCode.code
+                                            ,idx=idx
+                                            ,field="{field_name}_{tbl_unit}".format( field_name=fluidCode.code,tbl_unit=tu.unit )
+                                            ,unit=tu.unit
+                                            )
                                         )
-                                    )
-        query_fields.extend(ff.field for ff in fluid_fields )
+            sql_1=",{}".format(sql_1)
+            query_fields.extend(ff.field for ff in fluid_fields )
         # ---2 now generate UNION table with prod 
-        sql_2 = ""
-        for tbl_name in prod_tables:            
-            if sql_2:
-                sql_2 += u" union all "
-            sql_2 +=u"""
-                select 
-                        '{tbl_name}' as SOURCE_T
-                        ,{tbl_name}_s as SOURCE_S
-                        ,DATA_VALUE
-                        ,DATA_VALUE_U
-                        ,ACTIVITY_S
-                        ,ACTIVITY_T
-                        ,BSASC_SOURCE
-                    FROM    {tbl_name} 
-                    WHERE DATA_VALUE is not Null
-                        AND (DATA_VALUE>0 or DATA_VALUE<0)
-                        AND ACTIVITY_T='PRODUCTION_ALOC'
-                        {st_time_filter}
-                        {en_time_filter}
-                        
-            """.format(
-                tbl_name=tbl_name
-                ,st_time_filter="AND START_TIME>="+self.to_oracle_date(self.mStartDate)
-                ,en_time_filter="AND END_TIME<="+self.to_oracle_date(self.mEndDate)
-                )
+        sql_2 = "" # query line from prod_tables  to add SELECT FROM
+        if not self.isFondLayer:
+            for tbl_name in prod_tables:            
+                if sql_2:
+                    sql_2 += u" union all "
+                sql_2 +=u"""
+                    select 
+                            '{tbl_name}' as SOURCE_T
+                            ,{tbl_name}_s as SOURCE_S
+                            ,DATA_VALUE
+                            ,DATA_VALUE_U
+                            ,ACTIVITY_S
+                            ,ACTIVITY_T
+                            ,BSASC_SOURCE
+                        FROM    {tbl_name} 
+                        WHERE DATA_VALUE is not Null
+                            AND (DATA_VALUE>0 or DATA_VALUE<0)
+                            AND ACTIVITY_T='PRODUCTION_ALOC'
+                            {st_time_filter}
+                            {en_time_filter}
+                """.format(
+                    tbl_name=tbl_name
+                    ,st_time_filter="AND START_TIME>="+self.to_oracle_date(self.mStartDate)
+                    ,en_time_filter="AND END_TIME<="+self.to_oracle_date(self.mEndDate)
+                    )
+            sql_2="""
+                     join ({prod_table}) tmp_prod 
+                        ON
+                            tmp_prod.ACTIVITY_S=pa.PRODUCTION_ALOC_S
+                            AND           
+                            tmp_prod.ACTIVITY_T='PRODUCTION_ALOC'
+                """.format(prod_table=sql_2)            
         # ---3 now generate full QUERY
         sql=u""
         for well_ids in well_ids_500:
@@ -1311,7 +1380,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     ,{en_time}
                     ,max(ppt.DATA_VALUE)/86400.0  WORK_DAYS 
                     ,reservoirs.group_name        
-                    ,{prod_select}
+                    {prod_select}
                 FROM
                     (
                         SELECT grp.RESERVOIR_PART_CODE group_name
@@ -1362,11 +1431,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                             pa.PRODUCTION_ALOC_S= ppax.PRODUCTION_ACT_S
                             AND
                             pa.bsasc_source = 'Reallocated Production'
-                     join   ({prod_table}) tmp_prod 
-                        ON
-                            tmp_prod.ACTIVITY_S=pa.PRODUCTION_ALOC_S
-                            AND           
-                            tmp_prod.ACTIVITY_T='PRODUCTION_ALOC'
+                    {prod_table_join}
                     left join p_pfnu_port_time ppt
                         ON 
                             ppt.activity_s = pa.production_aloc_s 
@@ -1388,8 +1453,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     ,reservoirs.group_name
                     ,reservoirs.TIG_WELL_ID
             """.format(
-                prod_select=sql_1
-                ,prod_table=sql_2
+                prod_select=      sql_1 
+                ,prod_table_join= sql_2 
                 ,st_time=self.to_oracle_char("pa.start_time")
                 ,en_time=self.to_oracle_char("pa.end_time")
                 ,phase_filter=u" AND tmp_prod.bsasc_source in ('" + "','".join(self.mPhaseFilter) + "')"  if  self.mPhaseFilter else  ""
@@ -1449,7 +1514,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     else:
                         product.volumeVals[fluid.idx] += row_dict[fluid.field]
         for id,prodWell in prodWells_dict.items():
-            liftMethod = self.getWellStrProperty(prodWell.sldnid, self.mEndDate, "lift method")
+            liftMethod = self.getWellStrProperty(prodWell.sldnid, self.fondEndDate, "lift method")
             if liftMethod in bblInit.bblLiftMethods.keys():
                 prodWell.liftMethod = liftMethod
                 
@@ -1506,7 +1571,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 #===============================================================================
         
     #===========================================================================
-    # Load production wells
+    # Load only production wells
     #===========================================================================
     def getWells(self, cmpl_id):
         if self.isCurrentProd:
@@ -1751,9 +1816,12 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
             for well_name, wId, lat, lon in result:
                 if well_name not in self.mWells:
-                    wellRole =        self.getWellStrProperty(wId, self.mEndDate, "current well role")
-                    wellStatus =      self.getWellStrProperty(wId, self.mEndDate, "well status"      )
-                    wellStatusDesc =  self.getWellStrProperty(wId, self.mEndDate, "well status",sqlColumn="description" )
+                    if self.fondLoadConfig.isWell:
+                        wellRole =        self.getWellStrProperty(wId, self.fondEndDate, "current well role")
+                        wellStatus =      self.getWellStrProperty(wId, self.fondEndDate, "well status"      )
+                        wellStatusDesc =  self.getWellStrProperty(wId, self.fondEndDate, "well status",sqlColumn="description" )
+                    elif self.fondLoadConfig.isObject:
+                        wellRole = wellStatus = wellStatusDesc = '' # fond only for well in selected reservoirs
                     wellStatusInfo=wellStatusReason=""
                     try:   wellStatusReason,wellStatusInfo = wellStatusDesc.split("|")
                     except:pass
@@ -1781,7 +1849,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                                              ,wStatus=wellStatus
                                              ,wStatusReason=wellStatusReason
                                              ,wStatusInfo=wellStatusInfo
-
                                              )
                         self.mProductionWells.append(pwp)
 
@@ -1792,10 +1859,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     # 
     #===============================================================================
     def bbl_wellsymbol(self, sldnid):
-        initialWellRole = self.getWellStrProperty(sldnid, self.mEndDate, "initial well role")
-        wellRole =        self.getWellStrProperty(sldnid, self.mEndDate, "current well role")
-        wellStatus =      self.getWellStrProperty(sldnid, self.mEndDate, "well status"      )
-        wellStatusDesc =  self.getWellStrProperty(sldnid, self.mEndDate, "well status",sqlColumn="description" )
+        initialWellRole = self.getWellStrProperty(sldnid, self.fondEndDate, "initial well role")
+        wellRole =        self.getWellStrProperty(sldnid, self.fondEndDate, "current well role")
+        wellStatus =      self.getWellStrProperty(sldnid, self.fondEndDate, "well status"      )
+        wellStatusDesc =  self.getWellStrProperty(sldnid, self.fondEndDate, "well status",sqlColumn="description" )
         wellStatusInfo=wellStatusReason=""
         try:   wellStatusReason, wellStatusInfo = wellStatusDesc.split("|")
         except:pass
@@ -1923,25 +1990,23 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     #===========================================================================
     def getSelectedReservoirs(self):
         selectedReservoirs = []
-            
         for item in self.reservoirsListWidget.selectedItems():
             selectedReservoirs.append(item.text())
-          
         return selectedReservoirs
-        
         
     #===========================================================================
     # Return comma separeted string of SLDNID`s of selected reservoirs
     #===========================================================================
-    def getReservoirsFilter(self):
+    def getReservoirsFilter(self,reservoir_names=[]):
         sql = ("select wellbore_intv.geologic_ftr_s "
                 "from earth_pos_rgn, wellbore_intv, topological_rel, reservoir_part "
                 "where earth_pos_rgn_s = topological_rel.prim_toplg_obj_s "
                 "and wellbore_intv_s = topological_rel.sec_toplg_obj_s "
                 "and earth_pos_rgn.geologic_ftr_s = reservoir_part_s "
                 "and entity_type_nm = 'RESERVOIR_ZONE' "
-                "and reservoir_part_code in ('" + "','".join(self.mSelectedReservoirs) +"')")
+                "and reservoir_part_code in ('" + "','".join(reservoir_names) +"')")
                 
+        IS_DEBUG and QgsMessageLog.logMessage(u"Execute getReservoirsFilter: {}\n\n".format(sql), tag="QgisPDS.sql")                
         result = self.db.execute(sql)     
 
         return ",".join([to_unicode("".join(p)) for p in result])
@@ -1949,7 +2014,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     #===========================================================================
     # 
     #===========================================================================
-    def bbl_getproduction_period(self, OnlyProduction):
+    def bbl_getproduction_period(self, OnlyProduction,reservoirs=[]):
         connection = create_connection(self.project)
         scheme = self.project['project']
 
@@ -1986,9 +2051,99 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 
             db.disconnect()
         except Exception as e:
-            QgsMessageLog.logMessage(u"Read production from project : {}".format(str(e)), tag="QgisPDS.Error")
+            QgsMessageLog.logMessage(u"Read bbl_getproduction_period from project : {}".format(str(e)), tag="QgisPDS.Error")
+    #===========================================================================
+    # 
+    #===========================================================================
+    def bbl_getreservoir_period(self
+                                , reservoirs = []
+                                , well_ids = []
+                                , st_date  = QDateTime.fromString('01/01/1900 00:00:00', u'dd/MM/yyyy HH:mm:ss')
+                                , end_date = QDateTime.fromString('01/01/3000 00:00:00', u'dd/MM/yyyy HH:mm:ss')
+                                ):
+        connection = create_connection(self.project)
+        scheme = self.project['project']
+        try:
+            db = connection.get_db(scheme)
+            
+            sql = """
+                    SELECT
+                        {minDt} start_time   ---min(pa.PROD_START_TIME) start_time
+                        ,{maxDt} end_time   ---max(pa.PROD_END_TIME) end_time     
+                    FROM
+                        (
+                            SELECT grp.RESERVOIR_PART_CODE group_name
+                                    ,wbi.GEOLOGIC_FTR_S reservoir_part_s
+                                    ,twh.TIG_LATEST_WELL_NAME
+                                    ,twh.DB_SLDNID  TIG_WELL_ID
+                            FROM 
+                                RESERVOIR_PART grp
+                                ,EARTH_POS_RGN epr
+                                ,TOPOLOGICAL_REL tr
+                                ,wellbore_intv wbi
+                                ,wellbore wb
+                                ,well w
+                                ,tig_well_history twh
+                            where 
+                                 epr.GEOLOGIC_FTR_S=grp.RESERVOIR_PART_S
+                                 AND
+                                 epr.GEOLOGIC_FTR_T='RESERVOIR_PART'
+                                 AND
+                                 tr.PRIM_TOPLG_OBJ_S =epr.EARTH_POS_RGN_S
+                                 AND
+                                 tr.PRIM_TOPLG_OBJ_T='EARTH_POS_RGN'
+                                 AND
+                                 tr.SEC_TOPLG_OBJ_T = 'WELLBORE_INTV'
+                                 AND
+                                 tr.SEC_TOPLG_OBJ_S = wbi.WELLBORE_INTV_S
+                                 AND
+                                 wbi.GEOLOGIC_FTR_T='RESERVOIR_PART'
+                                 AND 
+                                 wb.WELLBORE_S=wbi.WELLBORE_S
+                                 AND
+                                 w.WELL_S=wb.WELL_S
+                                 AND
+                                 twh.TIG_LATEST_WELL_NAME=w.WELL_ID
+                                 {twh_filter} 
+                                 {reservoir_filter}
+                        ) reservoirs
+                        left join PFNU_PROD_ACT_X ppax 
+                            ON
+                                ppax.PFNU_S=reservoirs.reservoir_part_s
+                                AND
+                                upper(ppax.PFNU_T)='RESERVOIR_PART'
+                                AND
+                                upper(ppax.PRODUCTION_ACT_T)='PRODUCTION_ALOC'
+                        left join PRODUCTION_ALOC pa
+                            ON
+                                pa.PRODUCTION_ALOC_S= ppax.PRODUCTION_ACT_S
+                                AND
+                                pa.bsasc_source = 'Reallocated Production'
+                    where
+                        pa.bsasc_source = 'Reallocated Production'
+                        {st_time_filter}
+                        {en_time_filter}            
+            """.format(
+                maxDt=db.formatDateField('max(pa.PROD_END_TIME)')
+                ,minDt=db.formatDateField('min(pa.PROD_START_TIME)')
+                ,twh_filter=u" AND twh.DB_SLDNID in ('{}')".format("','".join(well_ids)) if len(well_ids)>0 else '' 
+                ,st_time_filter=u"AND pa.START_TIME>="+self.to_oracle_date(st_date)
+                ,en_time_filter=u"AND pa.END_TIME<="+self.to_oracle_date(end_date)
+                ,reservoir_filter=u"AND grp.RESERVOIR_PART_CODE in ('" + u"','".join(reservoirs) +u"')"  if len(reservoirs)>0 else ''
+                )
+            
+            IS_DEBUG and QgsMessageLog.logMessage(u"Execute bbl_getreservoir_period: {}\n\n".format(sql), tag="QgisPDS.sql")
+            result = db.execute(sql)
 
-     
+            if result is not None:
+                for minD, maxD in result:
+                    IS_DEBUG and QgsMessageLog.logMessage(u"bbl_getreservoir_period: min{} - max{}".format(str(minD),str(maxD)), tag="QgisPDS.bbl_getreservoir_period")
+                    self.realStartDate = QDateTime.fromString(minD, self.dateFormat)
+                    self.realEndDate = QDateTime.fromString(maxD, self.dateFormat)
+            db.disconnect()
+            return self.realStartDate,self.realEndDate
+        except Exception as e:
+            QgsMessageLog.logMessage(u"Read bbl_getreservoir_period from project : {}".format(str(e)), tag="QgisPDS.Error")
     #===========================================================================
     # return selected in fluidsListWidget items   
     #===========================================================================
@@ -2009,7 +2164,21 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.endDateEdit.setDateTime(self.realEndDate)
         else:
             self.endDateEdit.setDateTime(self.mEndDate)
-
+        self.lastObjectDate.setEnabled(not checked)
+    #===========================================================================
+    # 
+    #===========================================================================
+    def lastObjectDateClicked(self, checked):
+        if checked:
+            self.bbl_getreservoir_period(self.getSelectedReservoirs())
+            self.endDateEdit.setDateTime(self.realEndDate)
+        else:
+            self.endDateEdit.setDateTime(self.mEndDate)
+        self.lastDate.setEnabled(not checked)            
+    def reservoirSelected(self):
+        self.lastObjectDate.setCheckState(False)
+        self.lastObjectDateClicked(False)
+        #self.lastObjectDateClicked(self.lastObjectDate.isChecked())
     #===========================================================================
     # 
     #===========================================================================
@@ -2024,7 +2193,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
     def on_mDynamicCheckBox_toggled(self, checked):
         self.startDateEdit.setEnabled(checked)
         self.firstDate.setEnabled(checked)
-
     #===========================================================================
     # 
     #===========================================================================

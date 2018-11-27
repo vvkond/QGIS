@@ -18,7 +18,7 @@ from .qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 from utils import edit_layer
 
 class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
-    def __init__(self, _project, _iface, _editLayer, parent=None):
+    def __init__(self, _project, _iface, _editLayer, parent=None, allow_split_layer=True):
         """Constructor."""
         super(QgisPDSTransitionsDialog, self).__init__(_project, _iface, _editLayer, parent)
 
@@ -28,7 +28,8 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         self.mTwoLayers.setVisible(True)
 
         settings = QSettings()
-        self.mTwoLayers.setChecked( settings.value("/PDS/Zonations/TwoLayers", 'True') == 'True')
+        self.mTwoLayers.setEnabled(allow_split_layer)
+        self.mTwoLayers.setChecked(settings.value("/PDS/Zonations/TwoLayers", 'True') == 'True')
 
     @property
     def twoLayers(self):

@@ -76,21 +76,26 @@ class edit_layer:
 
 def load_styles_from_dir(layer,styles_dir,switchActiveStyle=True):
     editLayerStyles=layer.styleManager()
+    currentStyleName=editLayerStyles.currentStyle()
     if os.path.exists(styles_dir):
-        currentStyleName=editLayerStyles.currentStyle()
-        for user_style in os.listdir(styles_dir):
-            if user_style.endswith(".qml"):
-                QgsMessageLog.logMessage(u"Loading style:{}".format(os.path.join(styles_dir,user_style)), tag="QgisPDS")
-                user_style=to_unicode(user_style, codding=sys.getfilesystemencoding() )
+        for user_style_file in os.listdir(styles_dir):
+            if user_style_file.endswith(".qml"):
+                user_style_file=to_unicode(user_style_file, codding=sys.getfilesystemencoding() )
+                QgsMessageLog.logMessage(u"Loading style:{}".format(os.path.join(styles_dir,user_style_file)), tag="QgisPDS")
+                user_style=user_style_file.replace(".qml","").replace(".default","")
+                if ".default." in user_style_file:
+                    currentStyleName= user_style
                 editLayerStyles.addStyle( user_style, editLayerStyles.style(editLayerStyles.styles()[0]) )
                 editLayerStyles.setCurrentStyle(user_style)
-                layer.loadNamedStyle(os.path.join(styles_dir,user_style))
+                layer.loadNamedStyle(os.path.join(styles_dir,user_style_file))
+                
         if not switchActiveStyle:
             editLayerStyles.setCurrentStyle(currentStyleName)    
     else:
-        QgsMessageLog.logMessage(u"Warning. Default user styles not loaded. Can't open style directory:{}".format(styles_dir), tag="QgisPDS")    
+        QgsMessageLog.logMessage(u"Warning. Default user styles not loaded. Can't open style directory:{}".format(styles_dir), tag="QgisPDS")
+    return currentStyleName    
 
-def load_style( layer,style_path,name=None ,rereadOnExist=False ):
+def load_style( layer,style_path,name=None ,rereadOnExist=False ,activeStyleName=None):
     if os.path.exists(style_path):    
         editLayerStyles=layer.styleManager()
         if rereadOnExist or name not in editLayerStyles.styles():
@@ -102,6 +107,8 @@ def load_style( layer,style_path,name=None ,rereadOnExist=False ):
         else:
             if name is not None:
                 editLayerStyles.setCurrentStyle(name)
+        if activeStyleName is not None:
+            editLayerStyles.setCurrentStyle(activeStyleName)
     else:
         QgsMessageLog.logMessage(u"Warning. Default style not loaded. Can't open style :{}".format(style_path), tag="QgisPDS")    
 
