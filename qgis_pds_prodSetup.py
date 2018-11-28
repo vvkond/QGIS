@@ -20,10 +20,15 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
 
 
-
+#===============================================================================
+# 
+#===============================================================================
 class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     
     
+    #===========================================================================
+    # 
+    #===========================================================================
     def __init__(self, iface, layer, parent=None):
         super(QgisPDSProdSetup, self).__init__(parent)
 
@@ -529,7 +534,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         iter = editLayerProvider.getFeatures()
 
-        maxSum = 0.0
+        # --- CALCULATE MAX BUUBL VALUE 
+        maxSum = 0.0 # max bubble value
         for feature in iter:
             for d in self.layerDiagramms:
                 vec = d.fluids
@@ -541,7 +547,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
 
                 sum = 0.0
-                multiplier = 1.0 #float(bblInit.unit_to_mult.get(d.units, 1.0))
+                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
                 for attrName in prodFields:
                     attr = attrName + scaleType
                     variant = feature.attribute(attr)
@@ -556,6 +562,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             maxSum = maxSum + 1
 
         iter = editLayerProvider.getFeatures()
+        # --- CALCULATE EACH FEATURE MAX BUBBLE SIZE FOR LABEL OFFSET
         for feature in iter:
             FeatureId = feature.id()
 
@@ -574,11 +581,11 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
                 selectedFluids = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
 
-                multiplier = 1.0
+                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
                 koef = (maxDiagrammSize - minDiagrammSize) / maxSum
                 if self.useScaleGroupBox.isChecked():
                     koef = (maxDiagrammSize - minDiagrammSize) / d.scale
-                    multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
+                    #multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
 
                 sum = 0.0
                 for fluid in selectedFluids:
@@ -641,9 +648,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         stop_edit_layer(editLayer)
         plugin_dir = plugin_path()
-        ########################################################
-        #------Collect fields for Data Defined props
-        ########################################################
+        # --- Collect fields for Data Defined props
         allDiagramms = []
         templateStr = self.templateExpression.text()
         sums = ''
@@ -662,7 +667,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             diagramm = {}
             diagramm['scaleMaxRadius'] = maxDiagrammSize
             diagramm['scaleMinRadius'] = minDiagrammSize
-            diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else maxSum
+            diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else d.scale * multiplier * maxSum
             diagramm['multiplier'] = mm
             diagramm['dailyProduction'] = self.dailyProduction.isChecked()
             diagramm['scaleType'] = 1
@@ -687,10 +692,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
             allDiagramms.append(diagramm)
         diagrammStr = str(allDiagramms)        
-        ########################################################
         #---load user styles
-        ########################################################
         load_styles_from_dir(layer=editLayer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_RENDER_STYLE_DIR),switchActiveStyle=False)
+        
         ########################################################
         #--If append to current style and current style QgsRuleBasedRendererV2
         ########################################################
