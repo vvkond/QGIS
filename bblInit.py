@@ -68,9 +68,9 @@ class ProductionWell(MyStruct):
     maxDebits = []
     wRole="unknown"
     wStatus="unknown"
-    wStatusReason=""
     wStatusInfo=""
-    
+    wStatusReason=""
+    wInitialRole="unknown"
 
 
 TableUnit = namedtuple('TableUnit', ['table', 'unit'])
@@ -504,18 +504,25 @@ class bblInit:
             newIdx = layer.fieldNameIndex(newName)
             if newIdx < 0:
                 provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
-            #Check wellstatusreason fields
-            newName = u'wsreason'
-            oldName =None
-            newIdx = layer.fieldNameIndex(newName)
-            if newIdx < 0:
-                provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
             #Check wellstatusinfo fields
             newName = u'wsinfo'
             oldName =None
             newIdx = layer.fieldNameIndex(newName)
             if newIdx < 0:
                 provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
+            #Check wellstatusreason fields
+            newName = u'wsreason'
+            oldName =None
+            newIdx = layer.fieldNameIndex(newName)
+            if newIdx < 0:
+                provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
+            #Check initrole fields
+            newName = u'initrole'
+            oldName =None
+            newIdx = layer.fieldNameIndex(newName)
+            if newIdx < 0:
+                provider.addAttributes([QgsField(newName, QVariant.String, QString(""), 20, 5)])
+
 
 
         if needCopyData:
@@ -600,6 +607,7 @@ class bblInit:
                                 ,[u'wellstatus',u'статус'               ]
                                 ,[u'wsinfo'    ,u'уточнение статуса'    ]
                                 ,[u'wsreason'  ,u'причина смены статуса']
+                                ,[u'initrole'  ,u'первоначальное назначение']
                                 ]:
                 idx = layer.fieldNameIndex(name)
                 if idx >= 0:

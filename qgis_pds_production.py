@@ -104,6 +104,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.attrWellStatus =   u'wellstatus'
         self.attrWellStatusReason =   u'wsreason'
         self.attrWellStatusInfo =     u'wsinfo'
+        self.attrWellInitRole =       u'initrole'
         self.attrLiftMethod =   u'liftmethod'
         self.attr_lablx =       u"lablx"
         self.attr_lably =       u"lably"
@@ -407,6 +408,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             self.uri += '&field={}:{}'.format(self.attrWellStatus,  "string" )
             self.uri += '&field={}:{}'.format(self.attrWellStatusReason,  "string" )
             self.uri += '&field={}:{}'.format(self.attrWellStatusInfo  ,  "string" )
+            self.uri += '&field={}:{}'.format(self.attrWellInitRole    ,  "string" )
             self.uri += '&field={}:{}'.format(self.attr_startDate,  "date"   )
             self.uri += '&field={}:{}'.format(self.attrDays,        "double" )
             self.uri += '&field={}:{}'.format(self.attrLiftMethod,  "string" )
@@ -684,20 +686,23 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             cRole      =        self.layer.fieldNameIndex(self.attrWellRole         )
             cStatus    =        self.layer.fieldNameIndex(self.attrWellStatus       )
             cStatusReason    =  self.layer.fieldNameIndex(self.attrWellStatusReason )
-            cStatusInfo       = self.layer.fieldNameIndex(self.attrWellStatusInfo   )            
+            cStatusInfo       = self.layer.fieldNameIndex(self.attrWellStatusInfo   )
+            cInitRole  =        self.layer.fieldNameIndex(self.attrWellInitRole     )
+                        
             attr_2_upd=[  ###old column             old_col_id       new_col    
-                         [self.attrDays             ,cDays             ,  self.attrDays              ]
-                        ,[self.attrSymbol           ,cSymbol           ,  self.attrSymbol            ]
-                        ,[self.attrSymbolId         ,cSymbolId         ,  self.attrSymbolId          ]
-                        ,[self.attrSymbolName       ,cSymbolName       ,  self.attrSymbolName        ]
-                        ,[self.attr_resstate        ,cResState         ,  self.attr_resstate         ]
-                        ,[self.attr_movingres       ,cMovingRes        ,  self.attr_movingres        ]
-                        ,[self.attr_multiprod       ,cMultiProd        ,  self.attr_multiprod        ]
-                        ,[self.attr_startDate       ,cStartDate        ,  self.attr_startDate        ]
-                        ,[self.attrWellRole         ,cRole             ,  self.attrWellRole          ]
-                        ,[self.attrWellStatus       ,cStatus           ,  self.attrWellStatus        ]
-                        ,[self.attrWellStatusReason ,cStatusReason     ,  self.attrWellStatusReason  ]
-                        ,[self.attrWellStatusInfo   ,cStatusInfo       ,  self.attrWellStatusInfo    ]
+                          [self.attrDays             ,cDays             ,  self.attrDays              ]
+                        , [self.attrSymbol           ,cSymbol           ,  self.attrSymbol            ]
+                        , [self.attrSymbolId         ,cSymbolId         ,  self.attrSymbolId          ]
+                        , [self.attrSymbolName       ,cSymbolName       ,  self.attrSymbolName        ]
+                        , [self.attr_resstate        ,cResState         ,  self.attr_resstate         ]
+                        , [self.attr_movingres       ,cMovingRes        ,  self.attr_movingres        ]
+                        , [self.attr_multiprod       ,cMultiProd        ,  self.attr_multiprod        ]
+                        , [self.attr_startDate       ,cStartDate        ,  self.attr_startDate        ]
+                        , [self.attrWellRole         ,cRole             ,  self.attrWellRole          ]
+                        , [self.attrWellStatus       ,cStatus           ,  self.attrWellStatus        ]
+                        , [self.attrWellStatusReason ,cStatusReason     ,  self.attrWellStatusReason  ]
+                        , [self.attrWellStatusInfo   ,cStatusInfo       ,  self.attrWellStatusInfo    ]
+                        , [self.attrWellInitRole     ,cInitRole         ,  self.attrWellInitRole      ]
                         ]
             for feature in self.mWells.values():                                 #--- iterate over each record in result
                 args = (self.attrWellId, feature.attribute(self.attrWellId))
@@ -814,7 +819,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
             cRole      =        self.layer.fieldNameIndex(self.attrWellRole         )
             cStatus    =        self.layer.fieldNameIndex(self.attrWellStatus       )
             cStatusReason    =  self.layer.fieldNameIndex(self.attrWellStatusReason )
-            cStatusInfo       = self.layer.fieldNameIndex(self.attrWellStatusInfo   )            
+            cStatusInfo       = self.layer.fieldNameIndex(self.attrWellStatusInfo   ) 
+            cInitRole  =        self.layer.fieldNameIndex(self.attrWellInitRole     )           
             
             attr_2_upd = [  ###old column       old_col_id       new_col
                   [self.attrDays,             cDays             ,  self.attrDays              ]
@@ -829,7 +835,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                 , [self.attrWellStatus ,      cStatus           ,  self.attrWellStatus        ]
                 , [self.attrWellStatusReason ,cStatusReason     ,  self.attrWellStatusReason  ]
                 , [self.attrWellStatusInfo   ,cStatusInfo       ,  self.attrWellStatusInfo    ]
-                
+                , [self.attrWellInitRole     ,cInitRole         ,  self.attrWellInitRole      ]
             ]
             
             for prodWell in self.mProductionWells:
@@ -1045,6 +1051,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         self.setWellAttribute(prodWell.name, self.attrWellStatus        , prodWell.wStatus        )
         self.setWellAttribute(prodWell.name, self.attrWellStatusReason  , prodWell.wStatusReason  )
         self.setWellAttribute(prodWell.name, self.attrWellStatusInfo    , prodWell.wStatusInfo    )
+        self.setWellAttribute(prodWell.name, self.attrWellInitRole      , prodWell.wInitialRole   )
+        
         if len(prodWell.liftMethod):
             self.setWellAttribute(prodWell.name, self.attrLiftMethod, prodWell.liftMethod)
         for i, fl in enumerate(bblInit.fluidCodes):
@@ -1761,7 +1769,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         for id in result:
             wId = id[0]
             #if wId!=682:continue # @DEBUG
-            symbolId,role,status,status_reason,status_info = self.bbl_wellsymbol(wId,maxDt=maxDt)
+            symbolId,role,status,status_reason,status_info,initial_role = self.bbl_wellsymbol(wId,maxDt=maxDt)
             self.loadWellFeature(wId, symbolId)
             pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
                                  maxDebits = [ProdDebit() for c in bblInit.fluidCodes]
@@ -1769,6 +1777,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                                  ,wStatus = status
                                  ,wStatusReason = status_reason 
                                  ,wStatusInfo = status_info
+                                 ,wInitialRole = initial_role
 
 
                                  )
@@ -1870,6 +1879,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                         wellRole =        self.getWellStrProperty(wId, self.fondEndDate, "current well role")
                         wellStatus =      self.getWellStrProperty(wId, self.fondEndDate, "well status"      )
                         wellStatusDesc =  self.getWellStrProperty(wId, self.fondEndDate, "well status",sqlColumn="description" )
+                        wellInitRole =    self.getWellStrProperty(wId, self.fondEndDate, "initial well role")
                     elif self.fondLoadConfig.isObject:
                         wellRole = wellStatus = wellStatusDesc = '' # fond only for well in selected reservoirs
                     wellStatusInfo=wellStatusReason=""
@@ -1886,6 +1896,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
                     well.setAttribute (self.attrWellStatus           , wellStatus             )
                     well.setAttribute (self.attrWellStatusInfo       , wellStatusInfo         )
                     well.setAttribute (self.attrWellStatusReason     , wellStatusReason       )
+                    well.setAttribute (self.attrWellInitRole         , wellInitRole           )
+                    
 
                     if lon and lat and lon != NULL and lat != NULL:
                         pt = QgsPoint(lon, lat)
@@ -1928,7 +1940,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
         #        return SYMBOL(wellRole + ' ' + wellStatus, conv.symbol),wellRole,wellStatus
         for sym in bblInit.bblSymbols:
             if sym.wellRole == wellRole and sym.wellStatus == wellStatus:
-                return SYMBOL(wellRole + ' '+ wellStatus, sym.symbol),wellRole,wellStatus,wellStatusReason,wellStatusInfo
+                return SYMBOL(wellRole + ' '+ wellStatus, sym.symbol),wellRole,wellStatus,wellStatusReason,wellStatusInfo,initialWellRole
 #        sql = (" SELECT P_ALLOC_FACTOR.DATA_VALUE, WELL.WELL_ID, PRODUCTION_ALOC.START_TIME"
 #                    " FROM ALOC_FLW_STRM ALOC_FLW_STRM, "
 #                    " FLW_STRM_ALOC_FCT FLW_STRM_ALOC_FCT, "
@@ -1951,7 +1963,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS):
 #        result = self.db.execute(sql)
 #        for id in result:
 #            data_val = id[0]
-        return SYMBOL('unknown well', 70),wellRole,wellStatus,wellStatusReason, wellStatusInfo
+        return SYMBOL('unknown well', 70),wellRole,wellStatus,wellStatusReason, wellStatusInfo, initialWellRole
 
     
     #===========================================================================
