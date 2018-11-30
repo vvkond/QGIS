@@ -144,7 +144,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         if self.layer:
             self.reservoirsListWidget.setEnabled(False)
             self.mSelectedReservoirs = ast.literal_eval(self.layer.customProperty("pds_prod_SelectedReservoirs"))
-            self.fondLoadConfig = fondLoadConfig(isWell=self.layer.customProperty("pds_fondLoad_isWell"),isObject=self.layer.customProperty("pds_fondLoad_isObject"))
+            try:
+                self.fondLoadConfig = fondLoadConfig(
+                                                     isWell=ast.literal_eval(self.layer.customProperty("pds_fondLoad_isWell"))
+                                                     ,isObject=ast.literal_eval(self.layer.customProperty("pds_fondLoad_isObject"))
+                                                     #isWell=self.layer.customProperty("pds_fondLoad_isWell")     in [u'True',u'true']
+                                                     #,isObject=self.layer.customProperty("pds_fondLoad_isObject") in [u'True',u'true']
+                                                     )
+            except:pass
             self.fondByWellRdBtn.setChecked(self.fondLoadConfig.isWell   or False)
             self.fondByObjRdBtn.setChecked( self.fondLoadConfig.isObject or False)
             
@@ -485,8 +492,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             self.layer.setCustomProperty("pds_prod_endDate",            self.mEndDate.toString(self.dateFormat))
             self.layer.setCustomProperty("pds_prod_SelectedReservoirs", str(self.mSelectedReservoirs)          )
             self.layer.setCustomProperty("pds_prod_PhaseFilter",        str(self.mPhaseFilter)                 )
-            self.layer.setCustomProperty("pds_fondLoad_isWell",         self.fondLoadConfig.isWell             )
-            self.layer.setCustomProperty("pds_fondLoad_isObject",       self.fondLoadConfig.isObject           )
+            self.layer.setCustomProperty("pds_fondLoad_isWell",         str(self.fondLoadConfig.isWell         ))
+            self.layer.setCustomProperty("pds_fondLoad_isObject",       str(self.fondLoadConfig.isObject       ))
 
             # symbolList = self.layer.rendererV2().symbols()
             # symbol = QgsSymbolV2.defaultSymbol(self.layer.geometryType())
