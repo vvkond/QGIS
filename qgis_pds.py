@@ -919,9 +919,17 @@ class QgisPDS(QObject):
         dlg.exec_()
         return
 
+    def refreshLayer(self):
+        threads = []
+        for currentLayer in self.iface.legendInterface().selectedLayers():
+            self.refreshcurrentLayer(currentLayer)
+#             process = Thread(target=self.refreshcurrentLayer, args=[currentLayer])
+#             process.start()
+#             threads.append(process)
         
-    def refreshLayer( self):
-        currentLayer = self.iface.activeLayer()
+        
+    def refreshcurrentLayer( self,currentLayer=None):
+        if currentLayer is None:  currentLayer = self.iface.activeLayer()
         if currentLayer.type() != QgsMapLayer.VectorLayer:
             return
         pr = currentLayer.dataProvider()

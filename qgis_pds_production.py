@@ -76,21 +76,24 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.isCurrentProd = isCP # indicator that layer is with current prod
         self.isFondLayer= isOnlyFond   # indicator that layer is Fond
         self.fondLoadConfig = fondLoadConfig(isWell=False,isObject=False)
-        if self.isFondLayer:
-            self.setWindowTitle(self.tr("Map of well status"))
-            self.mAddAllWells.setChecked(True)
-        elif not self.isCurrentProd:
-                self.setWindowTitle(self.tr("Map of cumulative production"))
+        self.layer = _layer
+        self._db = None
+        if self.layer is None:
+            if self.isFondLayer:
+                self.setWindowTitle(self.tr("Map of well status"))
+                self.mAddAllWells.setChecked(True)
+            elif not self.isCurrentProd:
+                    self.setWindowTitle(self.tr("Map of cumulative production"))
+            else:
+                pass
         else:
-            pass
+            self.setWindowTitle(self.layer.name())
         #self.mUpdateWellLocation.setEnabled(not self.isFondLayer)
         self.mDynamicCheckBox.setEnabled(  (not self.isFondLayer) and self.isCurrentProd)
         self.startDateEdit.setEnabled(not self.isFondLayer and (not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked())))
         self.firstDate.setEnabled(    not self.isFondLayer and (not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked())))
 
         self.initialised = False
-        self.layer = _layer
-        self._db = None
 
         
         self.attrWellId =       u'well_id'
@@ -467,7 +470,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             if self.isFondLayer:
                 layerName = u"Fond{}{} - {}".format("byObject" if self.fondLoadConfig.isObject else ""
                                                   ,"byWell"  if self.fondLoadConfig.isWell   else ""
-                                                  ,self.fondLoadConfig.isWell,",".join(self.mSelectedReservoirs)
+                                                  ,",".join(self.mSelectedReservoirs)
                                                   )
                 self.mStartDate=QDateTime.fromString('01/01/1900 00:00:00', u'dd/MM/yyyy HH:mm:ss')
             elif not self.isCurrentProd:
@@ -524,10 +527,17 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
             
-            #------load user styles
-            activeStyleName=load_styles_from_dir(layer=self.layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_STYLE_DIR) ,switchActiveStyle=False)
-            #------load default style
-            load_style(layer=self.layer, name='default', style_path=os.path.join(plugin_path() ,STYLE_DIR ,PROD_STYLE+".qml"), activeStyleName=activeStyleName)
+            if self.isFondLayer:
+                if self.fondLoadConfig.isWell:
+                    activeStyleName=load_styles_from_dir(layer=self.layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_FONDWELL_STYLE_DIR) ,switchActiveStyle=False)
+                elif self.fondLoadConfig.isObject:
+                    activeStyleName=load_styles_from_dir(layer=self.layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_FONDOBJ_STYLE_DIR) ,switchActiveStyle=False)
+                pass
+            else:
+                #------load user styles
+                activeStyleName=load_styles_from_dir(layer=self.layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_STYLE_DIR) ,switchActiveStyle=False)
+                #------load default style
+                load_style(layer=self.layer, name='default', style_path=os.path.join(plugin_path() ,STYLE_DIR ,PROD_STYLE+".qml"), activeStyleName=activeStyleName)
         # --- IF UPDATE LAYER
         else:
             bblInit.checkFieldExists(self.layer, self.attr_startDate, QVariant.Date, 50, 0)
@@ -1855,7 +1865,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 "WHERE rtrim(tig_latest_well_name) = '" + well_name + "' "
                 "AND (tig_only_proposal = 0 OR tig_only_proposal = 1) ")
 
-        IS_DEBUG and QgsMessageLog.logMessage(u"Execute loadWellByName: {}\\n\n".format(sql), tag="QgisPDS.sql")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Execute loadWellByName: {}\\n\n".format(sql), tag="QgisPDS.loadWellByName")
         result = self.db.execute(sql)
         for id in result:
             wId = id[0]

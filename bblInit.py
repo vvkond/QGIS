@@ -27,6 +27,9 @@ OLD_NEW_FIELDNAMES = [u'BubbleFields', u'bubbleflds']
 STYLE_DIR='styles'
 
 USER_PROD_STYLE_DIR='user_prod_styles'
+USER_FONDWELL_STYLE_DIR='user_fondwell_styles'
+USER_FONDOBJ_STYLE_DIR='user_fondobject_styles'
+USER_PROD_STYLE_DIR='user_prod_styles'
 USER_PROD_RENDER_STYLE_DIR='user_prod_render_styles'
 USER_DEVI_STYLE_DIR='user_devi_styles'
 USER_WELL_STYLE_DIR='user_well_styles'
