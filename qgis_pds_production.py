@@ -489,11 +489,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             else:
                 self.layer.setCustomProperty("qgis_pds_type", "pds_cumulative_production")
             self.layer.setCustomProperty("pds_project",                 str(self.project)                      )
-            self.layer.setCustomProperty("pds_prod_endDate",            self.mEndDate.toString(self.dateFormat))
             self.layer.setCustomProperty("pds_prod_SelectedReservoirs", str(self.mSelectedReservoirs)          )
             self.layer.setCustomProperty("pds_prod_PhaseFilter",        str(self.mPhaseFilter)                 )
-            self.layer.setCustomProperty("pds_fondLoad_isWell",         str(self.fondLoadConfig.isWell         ))
-            self.layer.setCustomProperty("pds_fondLoad_isObject",       str(self.fondLoadConfig.isObject       ))
 
             # symbolList = self.layer.rendererV2().symbols()
             # symbol = QgsSymbolV2.defaultSymbol(self.layer.geometryType())
@@ -535,6 +532,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         else:
             bblInit.checkFieldExists(self.layer, self.attr_startDate, QVariant.Date, 50, 0)
             bblInit.updateOldProductionStructure(self.layer)
+
+
+        self.layer.setCustomProperty("pds_prod_endDate",            self.mEndDate.toString(self.dateFormat))
+        self.layer.setCustomProperty("pds_fondLoad_isWell",         str(self.fondLoadConfig.isWell         ))
+        self.layer.setCustomProperty("pds_fondLoad_isObject",       str(self.fondLoadConfig.isObject       ))
 
         # ---
         self.mSelectedReservoirs = ast.literal_eval(self.layer.customProperty("pds_prod_SelectedReservoirs"))
