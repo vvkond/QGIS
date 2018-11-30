@@ -256,11 +256,13 @@ class QgisPDS(QObject):
         """Change action enable"""
         enabled = False
         enabledWell = False
+        enabledFond = False
         runAppEnabled = False
         try:
             if layer is not None:
                 enabled = bblInit.isProductionLayer(layer)
                 enabledWell = bblInit.isWellLayer(layer)
+                enabledFond= bblInit.isFondLayer(layer)
                 runAppEnabled = layer.fieldNameIndex(self.sldnidFieldName) >= 0
 
                 if self.iface.mapCanvas().mapTool() == self.selectMapTool:
@@ -273,8 +275,8 @@ class QgisPDS(QObject):
             pass
 
         self.actionProductionSetup.setEnabled(enabled)
-        self.actionCoordsFromZone.setEnabled(enabled or enabledWell)
-        self.actionTransiteWells.setEnabled(enabled or enabledWell)
+        self.actionCoordsFromZone.setEnabled(enabled or enabledWell or enabledFond)
+        self.actionTransiteWells.setEnabled(enabled or enabledWell or enabledFond)
 
         self.runAppAction.setEnabled(runAppEnabled)
 
@@ -769,11 +771,11 @@ class QgisPDS(QObject):
                 dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
 
 
-    def refreshProduction(self, layer, project, isCurrentProd):
-        dlg = QgisPDSProductionDialog(project, self.iface, isCP=isCurrentProd, _layer=layer)
+    def refreshProduction(self, layer, project, isCurrentProd=False ,isOnlyFond=False):
+        dlg = QgisPDSProductionDialog(project, self.iface, isCP=isCurrentProd, isOnlyFond=isOnlyFond, _layer=layer)
         if dlg.isInitialised():
             result = dlg.exec_()
-            if result and layer:
+            if result and layer and not isOnlyFond:
                 prodSetup = QgisPDSProdSetup(self.iface, layer)
                 prodSetup.setup(layer)
         del dlg
@@ -934,10 +936,12 @@ class QgisPDS(QObject):
             if dlg.exec_():
                 self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
                                   dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing)
+        elif prop == "pds_fond":
+            self.refreshProduction(currentLayer, self.currentProject, isOnlyFond=True)                
         elif prop == "pds_current_production":
-            self.refreshProduction(currentLayer, self.currentProject, True)
+            self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=True)
         elif prop == "pds_cumulative_production":
-            self.refreshProduction(currentLayer, self.currentProject, False)
+            self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=False)
         elif prop == "pds_well_deviations":
             dlg = QgisPDSRefreshSetup(self.currentProject)
             if dlg.exec_():

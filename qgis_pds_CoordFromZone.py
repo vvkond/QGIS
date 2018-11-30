@@ -2,22 +2,23 @@
 
 import os
 import numpy
+import time
 from qgis.core import *
 from qgis.gui import QgsMessageBar
 from PyQt4 import QtGui, uic
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from qgis.PyQt.QtGui  import *
+from qgis.PyQt.QtCore import *
 
 from QgisPDS.db import Oracle
 from connections import create_connection
 from QgisPDS.utils import to_unicode
 from QgisPDS.tig_projection import *
-from utils import edit_layer
+from utils import edit_layer,WithQtProgressBar
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_zonations_base.ui'))
 
-class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
+class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     def __init__(self, _project, _iface, _editLayer, parent=None):
         """Constructor."""
         super(QgisPDSCoordFromZoneDialog, self).__init__(parent)
@@ -111,9 +112,15 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS):
 
         idx1 = dataProvider.fieldNameIndex('Well identifier')
 
+        
         iter = self.editLayer.getFeatures()
+        self.showProgressBar(msg="Update well location", maximum=self.editLayer.featureCount())
+        now=time.time()
+        
         with edit_layer(self.editLayer):
-            for feature in iter:
+            for idx,feature in enumerate(iter):
+                self.progress.setValue(idx)
+                if time.time()-now>1:  QCoreApplication.processEvents();time.sleep(0.02);now=time.time() #refresh GUI
                 if idx1 >= 0:
                     wellId = feature[u'Well identifier']
                 else:

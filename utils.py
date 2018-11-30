@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from qgis.core import *
-from PyQt4.QtCore import *
+from qgis.PyQt.QtGui  import QProgressBar
+from qgis.PyQt.QtCore import *
+
 import numpy
 import time
 from processing.tools.vector import VectorWriter
@@ -40,6 +42,36 @@ class cached_property(object):
         setattr(obj, self.__name__, value)
         return value
         
+
+class WithQtProgressBar():
+    """
+        @info: in base class must be self.iface
+        @example:
+                # update progress bar
+                self.showProgressBar(msg="Progress bar message", maximum=100.0) 
+                # iterate over some elements
+                now=time.time()
+                for idx,(wl,max_dt) in enumerate(result):
+                    # change progress bar value
+                    self.progress.setValue(idx)
+                    # redraw GUI each 1 second          
+                    if time.time()-now>1 :  QCoreApplication.processEvents();time.sleep(0.02);now=time.time() #refresh GUI
+                    # run other operations
+                    ... 
+        
+    """
+    def showProgressBar(self,msg,maximum):
+        self.iface.messageBar().clearWidgets()
+        self.progressMessageBar = self.iface.messageBar().createMessage(msg)
+        self.progress = QProgressBar()
+        self.progress.setAlignment(Qt.AlignLeft|Qt.AlignVCenter)
+        self.progress.setMaximum(maximum)
+        self.progressMessageBar.layout().addWidget(self.progress)
+        self.iface.messageBar().pushWidget(self.progressMessageBar, self.iface.messageBar().INFO)
+        QCoreApplication.processEvents();time.sleep(0.02)        
+        return self.progress
+    def __del__(self):
+        self.iface.messageBar().clearWidgets()
 
 def to_unicode(s,codding='utf-8'):
     if isinstance(s, unicode):

@@ -358,6 +358,9 @@ class bblInit:
     def isProductionLayer(layer):
         return (layer.customProperty("qgis_pds_type") == "pds_current_production" or 
                 layer.customProperty("qgis_pds_type") == "pds_cumulative_production")
+    @staticmethod
+    def isFondLayer(layer):
+        return (layer.customProperty("qgis_pds_type") == "pds_fond")
 
     @staticmethod
     def isWellLayer(layer):
