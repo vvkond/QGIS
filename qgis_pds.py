@@ -51,6 +51,11 @@ from qgis_pds_createIsolines import QgisPDSCreateIsolines
 from qgis_pds_transite import QgisPDSTransitionsDialog
 from qgis_pds_SelectMapTool import QgisPDSSelectMapTool
 from qgis_pds_wellsBrowserDialog import *
+# Import both Processing and CommanderWindow 
+#   classes from the Processing framework. 
+from processing.core.Processing import Processing
+from processing.gui.CommanderWindow import CommanderWindow
+
 import os
 import os.path
 import ast
@@ -583,7 +588,7 @@ class QgisPDS(QObject):
             enabled_flag=True,
             parent=self.iface.mainWindow())
 
-        icon_path = ':/plugins/QgisPDS/CoordFromZonations.png'
+        icon_path = ':/plugins/QgisPDS/point_to_zonation.png'
         self.actionCoordsFromZone = self.add_action(
             icon_path,
             text=self.tr(u'Well coordinate from zone'),
@@ -633,6 +638,20 @@ class QgisPDS(QObject):
             text=self.tr(u'Create isolines'),
             callback=self.createIsolines,
             parent=self.iface.mainWindow())
+
+        #--- button for processing functions
+        # Instantiate the commander window and open the algorithm's interface 
+        cw = CommanderWindow(self.iface.mainWindow(), self.iface.mapCanvas())
+        # Then get the algorithm you're interested in (for instance, Join Attributes):
+        alg_mp = Processing.getAlgorithm("pumaplus:updatewelllocation")
+        if alg_mp is not None:
+            icon_path = ':/plugins/QgisPDS/move_point.png'
+            self.add_action(
+                icon_path,
+                text=self.tr(u'Move point'),
+                callback=lambda :cw.runAlgorithm(alg_mp),
+                parent=self.iface.mainWindow())
+
 
         applicationMenu = QMenu(self.iface.mainWindow())
         action = QAction(self.tr(u'Well Correlation && Zonation'), applicationMenu)

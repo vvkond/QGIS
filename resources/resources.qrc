@@ -37,5 +37,7 @@
         <file alias="toggle.png">/icons/toggle.png</file>
         <file alias="database.png">/icons/database.png</file>
         <file alias="pump-jack.png">/icons/pump-jack.png</file>
+        <file alias="point_to_zonation.png">/icons/point_to_zonation.png</file>
+        <file alias="move_point.png">/icons/move_point.png</file>
     </qresource>
 </RCC>
