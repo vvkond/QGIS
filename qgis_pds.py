@@ -596,7 +596,7 @@ class QgisPDS(QObject):
             enabled_flag=False,
             parent=self.iface.mainWindow())
 
-        icon_path = ':/plugins/QgisPDS/mActionFilter.png'
+        icon_path = ':/plugins/QgisPDS/filter.png'
         self.actionTransiteWells = self.add_action(
             icon_path,
             text=self.tr(u'Mark transite wells'),
