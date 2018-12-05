@@ -62,6 +62,76 @@ import ast
 import json
 
 
+
+
+#===============================================================================
+# --- REGISTER USER FUNCTIONS.CALL @qgsfunction MUST BE IN 1st level,not in def/class
+#===============================================================================
+from qgis.core import QgsMapLayerRegistry
+from qgis.utils import qgsfunction
+from qgis.core import QgsExpression
+    
+@qgsfunction(args='auto', group='PumaPlus')
+def activeLayerReservoirs(feature, parent):
+    """
+    <h4>Return</h4>Get list of reservoirs in checked pds production layers
+    <p><h4>Syntax</h4>getVisiblePDSProd()</p>
+    <p><h4>Argument</h4>-</p>
+    <p><h4>Example</h4>getVisiblePDSProd()</p><p>Return: String with selected reservoir names</p>
+    """
+    import qgis
+    #get iface
+    i =qgis.utils.iface
+    # get legend
+    legend = i.legendInterface()
+    result=[]
+    for layer in QgsMapLayerRegistry.instance().mapLayers().values():
+        # check current visibility
+        if legend.isLayerVisible(layer):
+            if layer.customProperty("qgis_pds_type") == "pds_current_production" or layer.customProperty("qgis_pds_type") == "pds_cumulative_production":
+                reservoir=layer.customProperty("pds_prod_SelectedReservoirs")
+                result.extend(ast.literal_eval(reservoir))
+            else:
+                continue
+    return u','.join(set(result))
+
+@qgsfunction(args='auto', group='PumaPlus')
+def activeLayerProductionType(feature, parent):
+    """
+    <h4>Return</h4>Get list of production type of selected pds layers
+    <p><h4>Warning!!! When add it from qgis python console it take incorrect encoding. After reopen qgis it loaded correct</h4>-</p>
+    <p><h4>Syntax</h4>getVisiblePDSProdType()</p>
+    <p><h4>Argument</h4>-</p>
+    <p><h4>Example</h4>getVisiblePDSProdType()</p><p>Return: String with selected production types</p>
+    """
+    import qgis
+    #get iface
+    i = qgis.utils.iface
+    # get legend
+    legend = i.legendInterface()
+    result=[]
+    for layer in QgsMapLayerRegistry.instance().mapLayers().values():
+        # check current visibility
+        if legend.isLayerVisible(layer):
+            if layer.customProperty("qgis_pds_type") == "pds_current_production":
+                #result.append("�������".decode('utf-8',errors='replace')) 
+                result.append("текуших".decode('utf-8',errors='replace'))
+                pass
+            elif layer.customProperty("qgis_pds_type") == "pds_cumulative_production":
+                #result.append("�����������".decode('utf-8',errors='replace'))
+                result.append("накопленных".decode('utf-8',errors='replace'))
+                pass
+            else:
+                continue
+    return " и ".decode('utf-8',errors='replace').join(set(result))
+
+
+
+
+
+#===============================================================================
+# 
+#===============================================================================
 class QgisPDS(QObject):
     """QGIS Plugin Implementation."""
     @property
@@ -697,7 +767,10 @@ class QgisPDS(QObject):
 
         self._metadata = BabbleSymbolLayerMetadata()
         QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
+        #---REGISTER USER EXPRESSIONS
 
+        QgsExpression.registerFunction(activeLayerReservoirs)
+        QgsExpression.registerFunction(activeLayerProductionType)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -706,6 +779,9 @@ class QgisPDS(QObject):
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
+        #---UNREGISTER USER EXPRESSIONS
+        QgsExpression.unregisterFunction('activeLayerReservoirs')
+        QgsExpression.unregisterFunction('activeLayerProductionType')
 
         # QgsPluginLayerRegistry.instance().removePluginLayerType(QgisPDSProductionLayer.LAYER_TYPE)
 
