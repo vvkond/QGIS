@@ -885,6 +885,10 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         orderByClause = QgsFeatureRequest.OrderByClause('BubbleSize', False)
         orderBy = QgsFeatureRequest.OrderBy([orderByClause])
         renderer.setOrderBy(orderBy)
+        editLayerStyles=editLayer.styleManager()
+        editLayerStyles.addStyle( 'diagrams', editLayerStyles.style(editLayerStyles.styles()[0]) ) 
+        editLayerStyles.setCurrentStyle('diagrams')
+
         editLayer.setRendererV2(renderer)
 
         editLayer.triggerRepaint()
