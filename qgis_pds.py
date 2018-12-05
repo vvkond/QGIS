@@ -632,16 +632,26 @@ class QgisPDS(QObject):
             callback=self.dataFromOracleSql,
             parent=self.iface.mainWindow())
 
-        icon_path = ':/plugins/QgisPDS/GeoCART24.png'
+        icon_path = ':/plugins/QgisPDS/contours.png'
         self.add_action(
             icon_path,
             text=self.tr(u'Create isolines'),
             callback=self.createIsolines,
             parent=self.iface.mainWindow())
 
+
         #--- button for processing functions
         # Instantiate the commander window and open the algorithm's interface 
         cw = CommanderWindow(self.iface.mainWindow(), self.iface.mapCanvas())
+        # Then get the algorithm you're interested in (for instance, Join Attributes):
+        alg_mesh = Processing.getAlgorithm("pumaplus:triangulate")
+        if alg_mesh is not None:
+            icon_path = ':/plugins/QgisPDS/surface.png'
+            self.add_action(
+                icon_path,
+                text=self.tr(u'Create mesh'),
+                callback=lambda :cw.runAlgorithm(alg_mesh),
+                parent=self.iface.mainWindow())
         # Then get the algorithm you're interested in (for instance, Join Attributes):
         alg_mp = Processing.getAlgorithm("pumaplus:updatewelllocation")
         if alg_mp is not None:

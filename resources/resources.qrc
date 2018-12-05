@@ -40,5 +40,7 @@
         <file alias="point_to_zonation.png">/icons/point_to_zonation.png</file>
         <file alias="move_point.png">/icons/move_point.png</file>
         <file alias="filter.png">/icons/filter.png</file>
+        <file alias="contours.png">/icons/contours.png</file>
+        <file alias="surface.png">/icons/surface.png</file>
     </qresource>
 </RCC>
