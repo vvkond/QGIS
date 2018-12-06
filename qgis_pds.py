@@ -70,14 +70,30 @@ import json
 from qgis.core import QgsMapLayerRegistry
 from qgis.utils import qgsfunction
 from qgis.core import QgsExpression
+
+
+@qgsfunction(args='auto', group='PumaPlus')
+def activeLayerCustomProperty(value1,feature, parent):
+    """
+    <h4>Return</h4>Read custom property of active layer. Most useful variants:qgis_pds_type, pds_prod_SelectedReservoirs, pds_project
+    <p><h4>Syntax</h4>activeLayerCustomProperty(%property_name%)</p>
+    <p><h4>Argument</h4>-</p>
+    <p><h4>Example</h4>activeLayerCustomProperty('qgis_pds_type')</p><p>Return: String with selected reservoir names</p>
+    """
+    import qgis
+    #get iface
+    i =qgis.utils.iface
+    # get legend
+    layer=i.activeLayer()
+    return layer.customProperty(value1)
     
 @qgsfunction(args='auto', group='PumaPlus')
 def activeLayerReservoirs(feature, parent):
     """
     <h4>Return</h4>Get list of reservoirs in checked pds production layers
-    <p><h4>Syntax</h4>getVisiblePDSProd()</p>
+    <p><h4>Syntax</h4>activeLayerReservoirs()</p>
     <p><h4>Argument</h4>-</p>
-    <p><h4>Example</h4>getVisiblePDSProd()</p><p>Return: String with selected reservoir names</p>
+    <p><h4>Example</h4>activeLayerReservoirs()</p><p>Return: String with selected reservoir names</p>
     """
     import qgis
     #get iface
@@ -100,9 +116,9 @@ def activeLayerProductionType(feature, parent):
     """
     <h4>Return</h4>Get list of production type of selected pds layers
     <p><h4>Warning!!! When add it from qgis python console it take incorrect encoding. After reopen qgis it loaded correct</h4>-</p>
-    <p><h4>Syntax</h4>getVisiblePDSProdType()</p>
+    <p><h4>Syntax</h4>activeLayerProductionType()</p>
     <p><h4>Argument</h4>-</p>
-    <p><h4>Example</h4>getVisiblePDSProdType()</p><p>Return: String with selected production types</p>
+    <p><h4>Example</h4>activeLayerProductionType()</p><p>Return: String with selected production types</p>
     """
     import qgis
     #get iface
@@ -198,7 +214,7 @@ class QgisPDS(QObject):
         # QObject.connect(self.timer, SIGNAL("timeout()"), self.onTimer)
 
         self.selectMapTool = None
-
+        
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -220,7 +236,7 @@ class QgisPDS(QObject):
 
         # QObject.disconnect(self.iface.mapCanvas(), SIGNAL("mapCanvasRefreshed ()"), self.renderComplete)
 
-
+        
     
     def loadData(self):
         layers = self.iface.legendInterface().layers()
@@ -354,7 +370,6 @@ class QgisPDS(QObject):
         self.actionTransiteWells.setEnabled(enabled or enabledWell or enabledFond)
 
         self.runAppAction.setEnabled(runAppEnabled)
-
 
     
     #Save label positions
@@ -768,9 +783,11 @@ class QgisPDS(QObject):
         self._metadata = BabbleSymbolLayerMetadata()
         QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
         #---REGISTER USER EXPRESSIONS
-
+        QgsExpression.registerFunction(activeLayerCustomProperty)        
         QgsExpression.registerFunction(activeLayerReservoirs)
         QgsExpression.registerFunction(activeLayerProductionType)
+        
+
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -780,6 +797,7 @@ class QgisPDS(QObject):
         # remove the toolbar
         del self.toolbar
         #---UNREGISTER USER EXPRESSIONS
+        QgsExpression.unregisterFunction('activeLayerCustomProperty')        
         QgsExpression.unregisterFunction('activeLayerReservoirs')
         QgsExpression.unregisterFunction('activeLayerProductionType')
 
