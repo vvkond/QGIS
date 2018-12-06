@@ -43,6 +43,32 @@ class cached_property(object):
         return value
         
 
+def set_layer_variable(layer,var,val):
+    """
+        @info: set variable for registered in MapLayerRegistry layer. Variable stored in current layer style!!!!
+    """
+    QgsExpressionContextUtils.setLayerVariable(layer,var,val)
+    pass
+def set_layer_property(layer,var,val):
+    """
+        @info: set property for layer. Layer can be not registered...
+    """
+    layer.setCustomProperty(var, str(val) )    
+    pass
+def read_layer_property(layer,var):
+    """
+        @info: read layer property
+    """
+    return layer.customProperty(var)    
+def read_layer_variable(layer,var):
+    """
+        @info: read layer variable
+    """
+    res=QgsExpressionContextUtils.layerScope(layer).variable(var)
+    if not res:
+        res=read_layer_property(layer, var)
+    return res
+
 class WithQtProgressBar():
     """
         @info: in base class must be self.iface
