@@ -714,7 +714,7 @@ class QgisPDS(QObject):
         # Instantiate the commander window and open the algorithm's interface 
         cw = CommanderWindow(self.iface.mainWindow(), self.iface.mapCanvas())
         # Then get the algorithm you're interested in (for instance, Join Attributes):
-        alg_mesh = Processing.getAlgorithm("pumaplus:triangulate")
+        alg_mesh = Processing.getAlgorithm("pumaplus:creategridwithfaults")
         if alg_mesh is not None:
             icon_path = ':/plugins/QgisPDS/surface.png'
             self.add_action(
