@@ -16,9 +16,10 @@ import os
 import time
 
 from bblInit import STYLE_DIR
-from utils import load_styles_from_dir, load_style, plugin_path, edit_layer
+from utils import load_styles_from_dir, load_style, plugin_path, edit_layer,\
+    WithQtProgressBar
 
-class QgisPDSDeviation(QObject):
+class QgisPDSDeviation(QObject, WithQtProgressBar):
     def __init__(self, iface, project  ,styleName=None ,styleUserDir=None):
         super(QgisPDSDeviation, self).__init__()
 
@@ -235,6 +236,7 @@ class QgisPDSDeviation(QObject):
                 s = self.tr('Deleted from layer') + ': ' + ','.join(str(s) for s in deletedWells)
                 QtGui.QMessageBox.warning(None, self.tr(u'Deleted from layer'), s, QtGui.QMessageBox.Ok)
 
+        self.showProgressBar(msg="Read wells from db", maximum=1)
         dbWells = self._readWells()
         if dbWells is None:
             return
@@ -243,8 +245,12 @@ class QgisPDSDeviation(QObject):
         allWells = len(self.wellIdList) < 1
 
         refreshed = False
+        self.showProgressBar(msg="Load wells to layer", maximum=len(self.wellIdList) )
+        now=time.time()
         with edit_layer(layer):
-            for row in dbWells:
+            for idx,row in enumerate(dbWells):
+                self.progress.setValue(idx)
+                if time.time()-now>2:  QCoreApplication.processEvents();time.sleep(0.02);now=time.time() #refresh GUI
                 name = row[0]
                 lng = row[19]
                 lat = row[20]
