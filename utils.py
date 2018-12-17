@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from qgis.core import *
+from qgis.utils import iface
 from qgis.PyQt.QtGui  import QProgressBar
 from qgis.PyQt.QtCore import *
 
@@ -125,10 +126,14 @@ class edit_layer:
     """
     def __init__(self,layer):
         self.layer=layer
+        self.isVisible=False
     def __enter__(self):
+        self.isVisible= iface.legendInterface().isLayerVisible(self.layer)
+        iface.legendInterface().setLayerVisible(self.layer, False)
         start_edit_layer(self.layer)
     def __exit__(self, type, value, traceback):
         stop_edit_layer(self.layer)
+        iface.legendInterface().setLayerVisible(self.layer, self.isVisible)        
 
         
 
