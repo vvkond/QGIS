@@ -38,7 +38,31 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         self.mTwoLayers.setChecked(settings.value("/PDS/Zonations/TwoLayers", 'True') == 'True')
         
         self.isOnlyPublicDeviChkBox.setVisible(False)
-
+        self.notUseLastZoneChkBox.setVisible(True)
+        self.notUseLastZoneNum.setVisible(True)
+        self.notUseLastZoneNum.setEnabled(self.notUseLastZoneChkBox.isChecked())
+        
+        #QObject.connect(self.notUseLastZoneChkBox, SIGNAL("stateChanged(int)"), self.notUseLastZoneChkBoxChecked)
+        self.notUseLastZoneChkBox.stateChanged.connect(self.notUseLastZoneChkBoxChecked)
+        self.notUseLastZoneNum.valueChanged.connect(self.notUseLastZoneNumChanged)
+        self.zonationListWidget.itemSelectionChanged.connect(self.notUseLastZoneNumChanged)
+    
+    def notUseLastZoneChkBoxChecked(self,state):
+        if state==Qt.Unchecked:
+            self.notUseLastZoneNum.setEnabled(False)
+            for pos in range(0,self.zoneListWidget.count()):
+                self.zoneListWidget.setItemHidden(self.zoneListWidget.item(pos), False)
+        elif state==Qt.Checked:
+            self.notUseLastZoneNum.setEnabled(True)
+            self.notUseLastZoneNumChanged()
+    def notUseLastZoneNumChanged(self):
+        if self.notUseLastZoneChkBox.isChecked():
+            first_pos=self.zoneListWidget.count()-self.notUseLastZoneNum.value()
+            for pos in range(first_pos,self.zoneListWidget.count()):
+                self.zoneListWidget.setItemHidden(self.zoneListWidget.item(pos), True)
+            for pos in range(0,first_pos):
+                self.zoneListWidget.setItemHidden(self.zoneListWidget.item(pos), False) 
+        pass
     #===========================================================================
     # 
     #===========================================================================
@@ -219,7 +243,9 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
                                   , zonation_id= zoneDef[1]
                                   , zone_id= zoneDef[0]
                                   , interval_order= None
+                                  , skeep_last_n_zone=self.notUseLastZoneNum.value() if self.notUseLastZoneChkBox.isChecked() else None
                                   )
+        
         result = []
         if records:
             for input_row in records:

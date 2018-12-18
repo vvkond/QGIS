@@ -34,6 +34,8 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
 
         self.mParameterFrame.setVisible(False)
         self.mTwoLayers.setVisible(False)
+        self.notUseLastZoneChkBox.setVisible(False)
+        self.notUseLastZoneNum.setVisible(False)
 
         self.plugin_dir = os.path.dirname(__file__)
         self.iface = _iface
