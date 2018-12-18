@@ -17,6 +17,12 @@ from .tig_projection import *
 from .qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 from utils import edit_layer
 
+
+IS_DEBUG=False
+
+#===============================================================================
+# 
+#===============================================================================
 class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
     def __init__(self, _project, _iface, _editLayer, parent=None, allow_split_layer=True):
         """Constructor."""
@@ -30,11 +36,18 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         settings = QSettings()
         self.mTwoLayers.setEnabled(allow_split_layer)
         self.mTwoLayers.setChecked(settings.value("/PDS/Zonations/TwoLayers", 'True') == 'True')
+        
+        self.isOnlyPublicDeviChkBox.setVisible(False)
 
+    #===========================================================================
+    # 
+    #===========================================================================
     @property
     def twoLayers(self):
         return self.mTwoLayers.isChecked()
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def performOperation(self):
         selectedZonations = []
         selectedZones = []
@@ -80,7 +93,9 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
 
         return selectedZonations, selectedZones
 
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def performOperationTwoLayers(self):
         selectedZonations = []
         selectedZones = []
@@ -142,7 +157,7 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
                     feat.setAttributes(f.attributes())
                     feat.setAttribute('transite', transites)
                     transiteWriter.addFeature(feat)
-                else:
+                elif self.isZoneTarget(wellId, sel):
                     feat = QgsFeature(f)
                     feat.setGeometry(l)
                     targetWriter.addFeature(feat)
@@ -166,8 +181,14 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
 
         return selectedZonations, selectedZones
 
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def process(self):
+
+        global IS_DEBUG
+        IS_DEBUG=     self.isDebugChkBox.isChecked()
+        
         progressMessageBar = self.iface.messageBar()
         self.progress = QProgressBar()
         self.progress.setMaximum(100)
@@ -188,13 +209,41 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
 
         self.iface.messageBar().clearWidgets()
 
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def getTransiteList(self, wellId, zoneDef):
         sql = self.get_sql('ZonationTransite.sql')
-        records = self.db.execute(sql, well_id=wellId, zonation_id=zoneDef[1], zone_id=zoneDef[0])
+        records = self.db.execute(sql
+                                  , well_id= wellId
+                                  , zonation_id= zoneDef[1]
+                                  , zone_id= zoneDef[0]
+                                  , interval_order= None
+                                  )
         result = []
         if records:
             for input_row in records:
                 result.append(input_row[3]);
-
         return ','.join(result)
+    
+    #===========================================================================
+    # 
+    #===========================================================================
+    def isZoneTarget(self, wellId, zoneDef):
+        sql = self.get_sql('ZonationTarget.sql')
+        records = self.db.execute(sql
+                                  , well_id= wellId
+                                  , zonation_id= zoneDef[1]
+                                  )
+        result = []
+        isTarget=False
+        if records:
+            for input_row in records:
+                if input_row[4]==zoneDef[0]:
+                    isTarget=True
+                    break
+        return isTarget
+    
+    
+    
+    
