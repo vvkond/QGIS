@@ -483,18 +483,24 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     #     editLayer.triggerRepaint()
     #
     #     return
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def getCoordinatesForPercent(self, percent):
         x = math.cos(2 * math.pi * percent)
         y = math.sin(2 * math.pi * percent)
         return (x, y)
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def fluidByCode(self, code):
         for f in bblInit.fluidCodes:
             if f.code == code:
                 return f
         return None
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def setup(self, editLayer):
         """
             @info: Function after press OK
@@ -883,6 +889,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             #------ add arrow FROM_LOWER_RESERVOIR/FROM_UPPER_RESERVOIR
             rule = QgsRuleBasedRendererV2.Rule(None)
             rule.setLabel(QCoreApplication.translate('bblInit', u'RESERVOIR_TRANSITION'))
+            rule.setActive(False)
             #---------FROM_LOWER_RESERVOIR
             symbol = QgsMarkerSymbolV2.createSimple({ 
                                                        'name': 'arrow'
@@ -927,7 +934,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         editLayer.triggerRepaint()
         self.mIface.layerTreeView().refreshLayerSymbology(editLayer.id())
         return
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def addLabels(self, templateStr, sum, fluids, feature, scaleType, multiplier):
         showZero = int(self.mShowZero.isChecked())
         formatString = "{:."+str(self.decimalEdit.value())+"f}"
