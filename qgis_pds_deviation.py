@@ -180,12 +180,6 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
         palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', self.attrLablY)
         palyr.writeToLayer(layer)
 
-        #---load user styles
-        if self.styleUserDir is not None:
-            load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
-        #---load default style
-        if self.styleName is not None:
-            load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
 
         line = QgsSymbolV2.defaultSymbol(layer.geometryType())
 
@@ -197,6 +191,14 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
         # Add the style to the line layer.
         renderer = QgsSingleSymbolRendererV2(line)
         layer.setRendererV2(renderer)
+
+        #---load user styles
+        if self.styleUserDir is not None:
+            load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
+        #---load default style
+        if self.styleName is not None:
+            load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
+
 
         return layer
 

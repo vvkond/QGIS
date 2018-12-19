@@ -1,77 +1,82 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.14.16-Essen" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.18.26" simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <edittypes>
     <edittype widgetv2type="TextEdit" name="well_id">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="latitude">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="longitude">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="sldnid">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="api">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="Operator">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="Country">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="depth">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="measure">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="elevation">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="datum">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="onoffshore">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="status">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="symbol">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="spud_date">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="glb_priv">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="owner">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="created">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="project">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="lablx">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="lably">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="labloffx">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="labloffy">
-      <widgetv2config IsMultiline="0" fieldEditable="1" UseHtml="0" labelOnTop="0"/>
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
   </edittypes>
-  <renderer-v2 forceraster="0" symbollevels="0" type="singleSymbol" enableorderby="0">
+  <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="0">
+    <rules key="{2ce80c21-4e87-4bb5-84c1-67c4715046cb}">
+      <rule key="{2d8e05e0-5640-4ecc-a17b-a6363073300e}" symbol="0" label="инклинометрия"/>
+      <rule key="{1e4a9653-54e8-49e8-af4f-7e5e2f6a459e}" symbol="1" label="устье"/>
+      <rule key="{ec4a3776-9dd0-4ed1-ad90-61525edd1137}" symbol="2" label="забой"/>
+    </rules>
     <symbols>
       <symbol alpha="1" clip_to_extent="1" type="line" name="0">
         <layer pass="0" class="SimpleLine" locked="0">
@@ -81,7 +86,7 @@
           <prop k="customdash_unit" v="MM"/>
           <prop k="draw_inside_polygon" v="0"/>
           <prop k="joinstyle" v="bevel"/>
-          <prop k="line_color" v="128,204,127,255"/>
+          <prop k="line_color" v="233,182,160,255"/>
           <prop k="line_style" v="solid"/>
           <prop k="line_width" v="0.26"/>
           <prop k="line_width_unit" v="MM"/>
@@ -91,6 +96,8 @@
           <prop k="use_custom_dash" v="0"/>
           <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
         </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="line" name="1">
         <layer pass="0" class="MarkerLine" locked="0">
           <prop k="interval" v="3"/>
           <prop k="interval_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -101,18 +108,19 @@
           <prop k="offset_along_line_unit" v="MM"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
-          <prop k="placement" v="lastvertex"/>
+          <prop k="placement" v="firstvertex"/>
           <prop k="rotate" v="1"/>
-          <symbol alpha="1" clip_to_extent="1" type="marker" name="@0@1">
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="@1@0">
             <layer pass="0" class="SimpleMarker" locked="0">
               <prop k="angle" v="0"/>
-              <prop k="color" v="255,0,0,255"/>
+              <prop k="color" v="255,0,0,0"/>
               <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
               <prop k="name" v="circle"/>
               <prop k="offset" v="0,0"/>
               <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="offset_unit" v="MM"/>
-              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_color" v="227,26,28,255"/>
               <prop k="outline_style" v="solid"/>
               <prop k="outline_width" v="0"/>
               <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
@@ -126,12 +134,48 @@
           </symbol>
         </layer>
       </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="line" name="2">
+        <layer pass="0" class="MarkerLine" locked="0">
+          <prop k="interval" v="3"/>
+          <prop k="interval_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="interval_unit" v="MM"/>
+          <prop k="offset" v="0"/>
+          <prop k="offset_along_line" v="0"/>
+          <prop k="offset_along_line_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_along_line_unit" v="MM"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="placement" v="lastvertex"/>
+          <prop k="rotate" v="1"/>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="@2@0">
+            <layer pass="0" class="SimpleMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="255,0,0,0"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="name" v="circle"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_style" v="solid"/>
+              <prop k="outline_width" v="0"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="1"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+        </layer>
+      </symbol>
     </symbols>
-    <rotation/>
-    <sizescale scalemethod="diameter"/>
   </renderer-v2>
   <labeling type="simple"/>
   <customproperties>
+    <property key="embeddedWidgets/count" value="0"/>
     <property key="labeling" value="pal"/>
     <property key="labeling/addDirectionSymbol" value="false"/>
     <property key="labeling/angleOffset" value="0"/>
@@ -273,7 +317,7 @@
     <property key="labeling/xOffset" value="0"/>
     <property key="labeling/yOffset" value="0"/>
     <property key="labeling/zIndex" value="0"/>
-    <property key="pds_project" value="{'project': u'mishovdag', 'type': u'tigress', 'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;KARASU&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
+    <property key="pds_project" value="{u'project': u'binagadi_north', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;BINAGADI&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
     <property key="qgis_pds_type" value="pds_well_deviations"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
@@ -303,41 +347,92 @@
     <multilineenabled fieldname="" on=""/>
     <selectedonly on=""/>
   </labelattributes>
-  <SingleCategoryDiagramRenderer diagramType="Pie">
-    <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" sizeType="MM" minScaleDenominator="-4.65661e-10">
+  <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+    <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="0">
       <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+      <attribute field="" color="#000000" label=""/>
     </DiagramCategory>
+    <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+      <layer pass="0" class="SimpleMarker" locked="0">
+        <prop k="angle" v="0"/>
+        <prop k="color" v="255,0,0,255"/>
+        <prop k="horizontal_anchor_point" v="1"/>
+        <prop k="joinstyle" v="bevel"/>
+        <prop k="name" v="circle"/>
+        <prop k="offset" v="0,0"/>
+        <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="offset_unit" v="MM"/>
+        <prop k="outline_color" v="0,0,0,255"/>
+        <prop k="outline_style" v="solid"/>
+        <prop k="outline_width" v="0"/>
+        <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="outline_width_unit" v="MM"/>
+        <prop k="scale_method" v="diameter"/>
+        <prop k="size" v="2"/>
+        <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+        <prop k="size_unit" v="MM"/>
+        <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+    </symbol>
   </SingleCategoryDiagramRenderer>
-  <DiagramLayerSettings yPosColumn="-1" linePlacementFlags="10" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+  <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
   <annotationform>.</annotationform>
   <aliases>
-    <alias field="Country" index="6" name=""/>
-    <alias field="Operator" index="5" name=""/>
-    <alias field="api" index="4" name=""/>
-    <alias field="created" index="17" name=""/>
-    <alias field="datum" index="10" name=""/>
-    <alias field="depth" index="7" name=""/>
-    <alias field="elevation" index="9" name=""/>
-    <alias field="glb_priv" index="15" name=""/>
-    <alias field="labloffx" index="21" name=""/>
-    <alias field="labloffy" index="22" name=""/>
-    <alias field="lablx" index="19" name=""/>
-    <alias field="lably" index="20" name=""/>
+    <alias field="well_id" index="0" name=""/>
     <alias field="latitude" index="1" name=""/>
     <alias field="longitude" index="2" name=""/>
-    <alias field="measure" index="8" name=""/>
-    <alias field="onoffshore" index="11" name=""/>
-    <alias field="owner" index="16" name=""/>
-    <alias field="project" index="18" name=""/>
     <alias field="sldnid" index="3" name=""/>
-    <alias field="spud_date" index="14" name=""/>
+    <alias field="api" index="4" name=""/>
+    <alias field="Operator" index="5" name=""/>
+    <alias field="Country" index="6" name=""/>
+    <alias field="depth" index="7" name=""/>
+    <alias field="measure" index="8" name=""/>
+    <alias field="elevation" index="9" name=""/>
+    <alias field="datum" index="10" name=""/>
+    <alias field="onoffshore" index="11" name=""/>
     <alias field="status" index="12" name=""/>
     <alias field="symbol" index="13" name=""/>
-    <alias field="well_id" index="0" name=""/>
+    <alias field="spud_date" index="14" name=""/>
+    <alias field="glb_priv" index="15" name=""/>
+    <alias field="owner" index="16" name=""/>
+    <alias field="created" index="17" name=""/>
+    <alias field="project" index="18" name=""/>
+    <alias field="lablx" index="19" name=""/>
+    <alias field="lably" index="20" name=""/>
+    <alias field="labloffx" index="21" name=""/>
+    <alias field="labloffy" index="22" name=""/>
   </aliases>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
-  <attributeactions/>
+  <attributeactions default="-1"/>
+  <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+    <columns>
+      <column width="-1" hidden="0" type="field" name="well_id"/>
+      <column width="-1" hidden="0" type="field" name="latitude"/>
+      <column width="-1" hidden="0" type="field" name="longitude"/>
+      <column width="-1" hidden="0" type="field" name="sldnid"/>
+      <column width="-1" hidden="0" type="field" name="api"/>
+      <column width="-1" hidden="0" type="field" name="Operator"/>
+      <column width="-1" hidden="0" type="field" name="Country"/>
+      <column width="-1" hidden="0" type="field" name="depth"/>
+      <column width="-1" hidden="0" type="field" name="measure"/>
+      <column width="-1" hidden="0" type="field" name="elevation"/>
+      <column width="-1" hidden="0" type="field" name="datum"/>
+      <column width="-1" hidden="0" type="field" name="onoffshore"/>
+      <column width="-1" hidden="0" type="field" name="status"/>
+      <column width="-1" hidden="0" type="field" name="symbol"/>
+      <column width="-1" hidden="0" type="field" name="spud_date"/>
+      <column width="-1" hidden="0" type="field" name="glb_priv"/>
+      <column width="-1" hidden="0" type="field" name="owner"/>
+      <column width="-1" hidden="0" type="field" name="created"/>
+      <column width="-1" hidden="0" type="field" name="project"/>
+      <column width="-1" hidden="0" type="field" name="lablx"/>
+      <column width="-1" hidden="0" type="field" name="lably"/>
+      <column width="-1" hidden="0" type="field" name="labloffx"/>
+      <column width="-1" hidden="0" type="field" name="labloffy"/>
+      <column width="-1" hidden="1" type="actions"/>
+    </columns>
+  </attributetableconfig>
   <editform>.</editform>
   <editforminit/>
   <editforminitcodesource>0</editforminitcodesource>
@@ -364,5 +459,31 @@ def my_form_open(dialog, layer, feature):
     <rowstyles/>
     <fieldstyles/>
   </conditionalstyles>
+  <defaults>
+    <default field="well_id" expression=""/>
+    <default field="latitude" expression=""/>
+    <default field="longitude" expression=""/>
+    <default field="sldnid" expression=""/>
+    <default field="api" expression=""/>
+    <default field="Operator" expression=""/>
+    <default field="Country" expression=""/>
+    <default field="depth" expression=""/>
+    <default field="measure" expression=""/>
+    <default field="elevation" expression=""/>
+    <default field="datum" expression=""/>
+    <default field="onoffshore" expression=""/>
+    <default field="status" expression=""/>
+    <default field="symbol" expression=""/>
+    <default field="spud_date" expression=""/>
+    <default field="glb_priv" expression=""/>
+    <default field="owner" expression=""/>
+    <default field="created" expression=""/>
+    <default field="project" expression=""/>
+    <default field="lablx" expression=""/>
+    <default field="lably" expression=""/>
+    <default field="labloffx" expression=""/>
+    <default field="labloffy" expression=""/>
+  </defaults>
+  <previewExpression></previewExpression>
   <layerGeometryType>1</layerGeometryType>
 </qgis>
