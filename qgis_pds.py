@@ -746,6 +746,15 @@ class QgisPDS(QObject):
                 text=self.tr(u'Move point'),
                 callback=lambda :cw.runAlgorithm(alg_mp),
                 parent=self.iface.mainWindow())
+        # Then get the algorithm you're interested in (for instance, Join Attributes):
+        alg_ml = Processing.getAlgorithm("pumaplus:updatelabellocation")
+        if alg_ml is not None:
+            icon_path = ':/plugins/QgisPDS/move_label.png'
+            self.add_action(
+                icon_path,
+                text=self.tr(u'Move label'),
+                callback=lambda :cw.runAlgorithm(alg_ml),
+                parent=self.iface.mainWindow())
 
 
         applicationMenu = QMenu(self.iface.mainWindow())
