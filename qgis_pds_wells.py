@@ -13,7 +13,9 @@ import ast
 import os
 import time
 from processing.tools.vector import VectorWriter
-from bblInit import STYLE_DIR
+from bblInit import STYLE_DIR, Fields, FieldsWellLayer,\
+    FieldsForLabels,\
+    set_QgsPalLayerSettings_datadefproperty, layer_to_labeled
 from utils import plugin_path, load_styles_from_dir, load_style, edit_layer
 
 debuglevel = 4
@@ -35,9 +37,6 @@ class QgisPDSWells(QObject):
         self.project = project
         self.dateFormat = u'dd-MM-yyyy'
 
-        self.attrWellId = u'well_id'
-        self.attrLatitude = u'latitude'
-        self.attrLongitude = u'longitude'
         self.proj4String = 'epsg:4326'
         self.db = None
         self.wellIdList = []
@@ -54,31 +53,11 @@ class QgisPDSWells(QObject):
             return
 
         self.uri = "Point?crs={}".format(self.proj4String)
-        self.uri += '&field={}:{}'.format(self.attrWellId, "string")
-        self.uri += '&field={}:{}'.format(self.attrLatitude, "double")
-        self.uri += '&field={}:{}'.format(self.attrLongitude, "double")
+        for field in FieldsWellLayer:
+            self.uri += field.memoryfield
+        for field in FieldsForLabels:
+            self.uri += field.memoryfield
 
-        self.uri += '&field={}:{}'.format("sldnid", "int")
-        self.uri += '&field={}:{}'.format("api", "string")
-        self.uri += '&field={}:{}'.format("operator", "string")
-        self.uri += '&field={}:{}'.format("country", "string")
-        self.uri += '&field={}:{}'.format("depth", "double")
-        self.uri += '&field={}:{}'.format("measuremen", "string")
-        self.uri += '&field={}:{}'.format("elevation", "double")
-        self.uri += '&field={}:{}'.format("datum", "string")
-        self.uri += '&field={}:{}'.format("on_offshor", "string")
-        self.uri += '&field={}:{}'.format("status", "string")
-        self.uri += '&field={}:{}'.format("symbol", "string")
-        self.uri += '&field={}:{}'.format("spud_date", "string")
-        self.uri += '&field={}:{}'.format("global_pri", "string")
-        self.uri += '&field={}:{}'.format("owner", "string")
-        self.uri += '&field={}:{}'.format("created", "DateTime")
-        self.uri += '&field={}:{}'.format("project", "string")
-
-        self.uri += '&field={}:{}'.format("lablx", "double")
-        self.uri += '&field={}:{}'.format("lably", "double")
-        self.uri += '&field={}:{}'.format("labloffx", "double")
-        self.uri += '&field={}:{}'.format("labloffy", "double")
         layer = QgsVectorLayer(self.uri, "PDS Wells", "memory")
         if layer is None:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), self.tr(
@@ -140,16 +119,8 @@ class QgisPDSWells(QObject):
 
         palyr = QgsPalLayerSettings()
         palyr.readFromLayer(layer)
-        palyr.enabled = True
-        palyr.fieldName = self.attrWellId
-        palyr.placement = QgsPalLayerSettings.OverPoint
-        palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True,
-                                     'format(\'%1,%2\', "labloffx" , "labloffy")', '')
-        palyr.labelOffsetInMapUnits = False
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '8', '')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', 'lablx')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', 'lably')
+        palyr.fieldName = Fields.WellId.name
+        palyr=layer_to_labeled(palyr)  #---enable EasyLabel
         palyr.writeToLayer(layer)
 
         # layer.commitChanges()
@@ -212,7 +183,7 @@ class QgisPDSWells(QObject):
             deletedWells = []
             with edit_layer(layer):
                 for f in layer.getFeatures():
-                    well_name = f.attribute(self.attrWellId)
+                    well_name = f.attribute(Fields.WellId.name)
                     if self.checkWell(well_name) < 1:
                         deletedWells.append(well_name)
                         layer.deleteFeature(f.id())
@@ -248,7 +219,7 @@ class QgisPDSWells(QObject):
                     if isSelectedOnly:
                         searchRes = layer.selectedFeatures()
                         for f in searchRes:
-                            if f.attribute(self.attrWellId) == name:
+                            if f.attribute(Fields.WellId.name) == name:
                                 well = f
                                 if isRefreshKoords:
                                     layer.changeGeometry(f.id(), geom)
@@ -256,7 +227,7 @@ class QgisPDSWells(QObject):
                                 num = num + 1
                                 break
                     else:
-                        args = (self.attrWellId, name)
+                        args = (Fields.WellId.name, name)
                         expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))
                         searchRes = layer.getFeatures(QgsFeatureRequest(expr))
                         for f in searchRes:
@@ -271,35 +242,35 @@ class QgisPDSWells(QObject):
                         well = QgsFeature(layer.fields())
 
                     if well:
-                        well.setAttribute(self.attrWellId, name)
-                        well.setAttribute(self.attrLatitude, lat)
-                        well.setAttribute(self.attrLongitude, lng)
+                        well.setAttribute(Fields.WellId.name, name)
+                        well.setAttribute(Fields.Latitude.name, lat)
+                        well.setAttribute(Fields.Longitude.name, lng)
 
-                        well.setAttribute('sldnid', row[1])
-                        well.setAttribute('api', row[2])
-                        well.setAttribute('operator', row[3])
-                        well.setAttribute('country', row[4])
-                        well.setAttribute('depth', row[7])
+                        well.setAttribute(Fields.Sldnid.name, row[1])
+                        well.setAttribute(Fields.Api.name, row[2])
+                        well.setAttribute(Fields.Operator.name, row[3])
+                        well.setAttribute(Fields.Country.name, row[4])
+                        well.setAttribute(Fields.Depth.name, row[7])
                         try:
-                            well.setAttribute('measuremen', row[8])
+                            well.setAttribute(Fields.ElevationPoint.name, row[8])
                         except: #Format before shapes
                             well.setAttribute('measurement', row[8])
-                        well.setAttribute('elevation', row[9])
-                        well.setAttribute('datum', row[10])
+                        well.setAttribute(Fields.Elevation.name, row[9])
+                        well.setAttribute(Fields.EleationvDatum.name, row[10])
                         try:
-                            well.setAttribute('on_offshor', row[11])
+                            well.setAttribute(Fields.OnOffShor.name, row[11])
                         except: #Format before shapes
                             well.setAttribute('on_offshore', row[11])
-                        well.setAttribute('status', row[12])
-                        well.setAttribute('symbol', row[13])
-                        well.setAttribute('spud_date', str(row[14]))
+                        well.setAttribute(Fields.TigLatestWellState.name, row[12])
+                        well.setAttribute(Fields.TigWellSymbol.name, row[13])
+                        well.setAttribute(Fields.SpudDate.name, str(row[14]))
                         try:
-                            well.setAttribute('global_pri', row[15])
+                            well.setAttribute(Fields.IsGlobal.name, row[15])
                         except: #Format before shapes
                             well.setAttribute('global_private', row[15])
-                        well.setAttribute('owner', row[16])
-                        well.setAttribute('created', QDateTime.fromTime_t(0).addSecs(int(row[17])))
-                        well.setAttribute('project', projectName)
+                        well.setAttribute(Fields.Owner.name, row[16])
+                        well.setAttribute(Fields.CreatedDT.name, QDateTime.fromTime_t(0).addSecs(int(row[17])))
+                        well.setAttribute(Fields.Project.name, projectName)
 
                         if not num:
                             if not isSelectedOnly:
@@ -308,7 +279,6 @@ class QgisPDSWells(QObject):
                                     layer.addFeatures([well])
                         elif isRefreshData:
                             layer.updateFeature(well)
-
         if refreshed:
             self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(layer.name()), duration=10)
 
