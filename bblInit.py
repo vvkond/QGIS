@@ -3,8 +3,9 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from QgisPDS.utils import *
+from qgis.core import QgsField 
 from collections import namedtuple
-from utils import edit_layer
+from utils import edit_layer, cached_property
 
 try:
     from PyQt4.QtCore import QString
@@ -77,8 +78,232 @@ class ProductionWell(MyStruct):
 
 
 TableUnit = namedtuple('TableUnit', ['table', 'unit'])
-class bblInit:
+#===============================================================================
+# not used. Planed for QgsField.type association
+#===============================================================================
+FIELD_AND_TYPES={"string":QVariant.String
+             ,"int":QVariant.Int
+             ,"double":QVariant.Double
+             ,"date":QVariant.String
+             }
+#===============================================================================
+# 
+#===============================================================================
+class AttributeField():
+    """
+        @info: class for store one field info and return it as QgsField or as MemoryLayer field
+        @see: https://qgis.org/api/classQgsField.html#ac0290b01ad74bb167dd0170775b5be47
+    """
+    field=None
+    def __init__(self
+                        ,field_name=None
+                        ,field_type=None    # char, varchar, text, int, serial, double
+                        ,comment=None
+                        ,len=0
+                        ,prec=0
+                        ,alias=""
+                 ):
+        self.field=QgsField(name=field_name
+                        #, type= FIELD_TYPES[self.field_type]
+                        , typeName=field_type  # char, varchar, text, int, serial, double
+                        , len=len
+                        , prec=prec
+                        , comment=comment
+                        #, subType
+                        )
+        if alias is not None:self.field.setAlias(alias)        
+    @cached_property
+    def name(self):
+        return self.field.name()
+    @cached_property
+    def memoryfield(self):
+        return '&field={}:{}'.format(self.field.name(),self.field.typeName())
+#===============================================================================
+# 
+#===============================================================================
+class Fields:
+    """
+         @info: store all fields for layers. Import it when define fields/columns for layer
+    """
+    WellId =           AttributeField( field_name=u'well_id'    ,field_type="string" )
+    Latitude =         AttributeField( field_name=u'latitude'   ,field_type="double" )
+    Longitude =        AttributeField( field_name=u'longitude'  ,field_type="double" ) 
+    Days =             AttributeField( field_name=u'days'       ,field_type="double" )
+    Sldnid =           AttributeField( field_name=u'sldnid'     ,field_type="int"    )
+    Api =              AttributeField( field_name=u'api'        ,field_type="string" )
+    Operator =         AttributeField( field_name=u'operator'   ,field_type="string" )
+    Country =          AttributeField( field_name=u'country'    ,field_type="string" )
+    Depth =            AttributeField( field_name=u'depth'      ,field_type="double" )
+    ElevationPoint =   AttributeField( field_name=u'measuremen' ,field_type="string" )    
+    EleationvDatum =   AttributeField( field_name=u'datum'      ,field_type="string" )    
+    Elevation =        AttributeField( field_name=u'elevation'  ,field_type="double" )        
+    OnOffShor =        AttributeField( field_name=u'on_offshor' ,field_type="string" )    
+    SpudDate =         AttributeField( field_name=u'spud_date'  ,field_type="date"   )    
+        
+    SymbolId =         AttributeField( field_name=u'symbolid'   ,field_type="string" )
+    Symbol =           AttributeField( field_name=u'symbolcode' ,field_type="integer")
+    SymbolName =       AttributeField( field_name=u'symbolname' ,field_type="string" )
     
+    TigWellSymbol =    AttributeField( field_name=u'symbol'     ,field_type="string" )    
+    TigLatestWellState=AttributeField( field_name=u'status'     ,field_type="string" )
+
+    WellRole =         AttributeField( field_name=u'wellrole'   ,field_type="string" )
+    WellStatus =       AttributeField( field_name=u'wellstatus' ,field_type="string" )
+    WellStatusReason = AttributeField( field_name=u'wsreason'   ,field_type="string" )
+    WellStatusInfo =   AttributeField( field_name=u'wsinfo'     ,field_type="string" )
+    WellInitRole =     AttributeField( field_name=u'initrole'   ,field_type="string" )
+    LiftMethod =       AttributeField( field_name=u'liftmethod' ,field_type="string" )
+    
+    bubblesize =       AttributeField( field_name=u"bubblesize" ,field_type="double" )
+    #bubblefields =     AttributeField( field_name=u'bubbleflds' ,field_type="string" )
+    #labels =           AttributeField( field_name=u'bbllabels'  ,field_type="string" )
+    scaletype =        AttributeField( field_name=u"scaletype"  ,field_type="string" )
+    movingres =        AttributeField( field_name=u"movingres"  ,field_type="string" )
+    resstate =         AttributeField( field_name=u"resstate"   ,field_type="string" )
+    multiprod =        AttributeField( field_name=u"multiprod"  ,field_type="string" )
+    
+    startDate =        AttributeField( field_name=u'startdate'  ,field_type="date"   )
+
+    IsGlobal =         AttributeField( field_name=u'global_pri' ,field_type="string" )    
+    Owner    =         AttributeField( field_name=u'owner'      ,field_type="string" )    
+    CreatedDT =        AttributeField( field_name=u'created'    ,field_type="DateTime")
+    Project =          AttributeField( field_name=u'project'    ,field_type="string" )
+
+    lablx =            AttributeField( field_name=u"lablx"      ,field_type="double" )
+    lably =            AttributeField( field_name=u"lably"      ,field_type="double" )
+    labloffx =         AttributeField( field_name=u"labloffx"   ,field_type="double" )
+    labloffy =         AttributeField( field_name=u"labloffy"   ,field_type="double" )
+    labloffset =       AttributeField( field_name=u"labloffset" ,field_type="double" )
+    lablwidth =        AttributeField( field_name=u"lablwidth"  ,field_type="double" )
+    lablcolor =        AttributeField( field_name=u"lablcol"    ,field_type="string" )    
+    lablbuffcolor =    AttributeField( field_name=u"buflcol"    ,field_type="string" )    
+    lablbuffwidth  =   AttributeField( field_name=u"bufwidth"   ,field_type="double" )
+    lablfont =         AttributeField( field_name=u"font"       ,field_type="string" )    
+        
+
+
+    
+FieldsForLabels=[
+            Fields.lablx 
+            ,Fields.lably       
+            ,Fields.labloffx 
+            ,Fields.labloffy    
+            ,Fields.labloffset 
+            ,Fields.lablwidth       
+            ,Fields.lablcolor
+            ,Fields.lablbuffcolor
+            ,Fields.lablbuffwidth
+            ,Fields.lablfont
+            ]
+    
+FieldsWellLayer=[
+            Fields.WellId
+            ,Fields.Latitude
+            ,Fields.Longitude
+            ,Fields.Sldnid
+            ,Fields.Api
+            ,Fields.Operator
+            ,Fields.Country
+            ,Fields.Depth
+            ,Fields.ElevationPoint
+            ,Fields.Elevation
+            ,Fields.EleationvDatum
+            ,Fields.OnOffShor
+            ,Fields.TigLatestWellState
+            ,Fields.TigWellSymbol
+            ,Fields.SpudDate
+            ,Fields.IsGlobal
+            ,Fields.Owner
+            ,Fields.CreatedDT
+            ,Fields.Project
+            ]
+    
+#===============================================================================
+# 
+#===============================================================================
+def set_QgsPalLayerSettings_datadefproperty(
+                        palyr
+                        ,prop
+                       ,active=True
+                       ,useExpr=False
+                       ,expr=None
+                       ,field=None
+                       ):
+    palyr.setDataDefinedProperty(prop, active, useExpr, expr, field)    
+#===============================================================================
+# 
+#===============================================================================
+def layer_to_labeled(layer_QgsPalLayerSettings):
+    """
+        @info: set property QgsPalLayerSettings of layer to enable EasyLabel
+        @example:
+                palyr = QgsPalLayerSettings()
+                palyr.readFromLayer(layer)            #---read from layer
+                palyr.fieldName = Fields.WellId.name  #---enable label by column
+                palyr=layer_to_labeled(palyr)         #---enable EasyLabel
+                palyr.writeToLayer(layer)             #---store to layer
+        @see:
+            https://qgis.org/api/2.18/classQgsPalLayerSettings.html
+            https://qgis.org/api/2.18/classQgsRuleBasedRendererV2.html
+        
+    """
+    from qgis.core import QgsPalLayerSettings
+    palyr=layer_QgsPalLayerSettings    
+    palyr.enabled = True
+    palyr.placement = QgsPalLayerSettings.OverPoint
+    palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
+    set_QgsPalLayerSettings_datadefproperty(palyr, QgsPalLayerSettings.OffsetXY
+                                       , active=True, useExpr=True
+                                       , expr='format(\'%1,%2\', "{}" , "{}")'.format(Fields.labloffx.name,Fields.labloffy.name)
+                                       , field=None
+                                       )
+    set_QgsPalLayerSettings_datadefproperty(palyr, QgsPalLayerSettings.Size
+                                       , active=True, useExpr=False
+                                       , expr=None
+                                       , field=Fields.lablwidth.name
+                                       )
+    set_QgsPalLayerSettings_datadefproperty(palyr, QgsPalLayerSettings.PositionX
+                                       , active=True, useExpr=False
+                                       , expr=None
+                                       , field=Fields.lablx.name
+                                       )
+    set_QgsPalLayerSettings_datadefproperty(palyr, QgsPalLayerSettings.PositionY
+                                       , active=True, useExpr=False
+                                       , expr=None
+                                       , field=Fields.lably.name
+                                       )
+    set_QgsPalLayerSettings_datadefproperty(palyr, QgsPalLayerSettings.Color
+                                       , active=True, useExpr=False
+                                       , expr=None
+                                       , field=Fields.lablcolor.name
+                                       )
+    set_QgsPalLayerSettings_datadefproperty(palyr, QgsPalLayerSettings.Family
+                                       , active=True, useExpr=False
+                                       , expr=None
+                                       , field=Fields.lablfont.name
+                                       )
+    
+    set_QgsPalLayerSettings_datadefproperty(palyr, QgsPalLayerSettings.BufferDraw
+                                       , active=True, useExpr=True
+                                       , expr='"{}" is not Null'.format(Fields.lablbuffcolor.name)
+                                       , field=None
+                                       )
+    set_QgsPalLayerSettings_datadefproperty(palyr, QgsPalLayerSettings.BufferColor
+                                       , active=True, useExpr=False
+                                       , expr=None
+                                       , field=Fields.lablbuffcolor.name
+                                       )
+    set_QgsPalLayerSettings_datadefproperty(palyr, QgsPalLayerSettings.BufferSize
+                                       , active=True, useExpr=False
+                                       , expr=None
+                                       , field=Fields.lablbuffwidth.name
+                                       )
+    palyr.labelOffsetInMapUnits = False
+    return palyr    
+#===============================================================================
+# 
+#===============================================================================
+class bblInit:
 
     fluidCodes = [  MyStruct(name= QCoreApplication.translate('bblInit', u'Crude oil'),
                                  code="oil", componentId="crude oil", alias=u'Сырая нефть',
