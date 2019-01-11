@@ -95,6 +95,7 @@ class AttributeField():
         @see: https://qgis.org/api/classQgsField.html#ac0290b01ad74bb167dd0170775b5be47
     """
     field=None
+    _alias=""
     def __init__(self
                         ,field_name=None
                         ,field_type=None    # char, varchar, text, int, serial, double
@@ -111,13 +112,24 @@ class AttributeField():
                         , comment=comment
                         #, subType
                         )
-        if alias is not None:self.field.setAlias(alias)        
+        if alias is not None:
+            if hasattr(self.field,'setAlias'):self.field.setAlias(alias)
+            else: self._alias=alias        
     @cached_property
     def name(self):
         return self.field.name()
     @cached_property
     def memoryfield(self):
         return '&field={}:{}'.format(self.field.name(),self.field.typeName())
+    @cached_property
+    def alias(self):
+        if hasattr(self.field,'alias'):
+            return self.field.alias()
+        else: 
+            return self._alias        
+
+    
+    
 #===============================================================================
 # 
 #===============================================================================
@@ -125,20 +137,20 @@ class Fields:
     """
          @info: store all fields for layers. Import it when define fields/columns for layer
     """
-    WellId =           AttributeField( field_name=u'well_id'    ,field_type="string" )
-    Latitude =         AttributeField( field_name=u'latitude'   ,field_type="double" )
-    Longitude =        AttributeField( field_name=u'longitude'  ,field_type="double" ) 
-    Days =             AttributeField( field_name=u'days'       ,field_type="double" )
-    Sldnid =           AttributeField( field_name=u'sldnid'     ,field_type="int"    )
-    Api =              AttributeField( field_name=u'api'        ,field_type="string" )
-    Operator =         AttributeField( field_name=u'operator'   ,field_type="string" )
-    Country =          AttributeField( field_name=u'country'    ,field_type="string" )
-    Depth =            AttributeField( field_name=u'depth'      ,field_type="double" )
-    ElevationPoint =   AttributeField( field_name=u'measuremen' ,field_type="string" )    
-    EleationvDatum =   AttributeField( field_name=u'datum'      ,field_type="string" )    
-    Elevation =        AttributeField( field_name=u'elevation'  ,field_type="double" )        
-    OnOffShor =        AttributeField( field_name=u'on_offshor' ,field_type="string" )    
-    SpudDate =         AttributeField( field_name=u'spud_date'  ,field_type="date"   )    
+    WellId =           AttributeField( field_name=u'well_id'    ,field_type="string" ,alias=u"Скважина"          )
+    Latitude =         AttributeField( field_name=u'latitude'   ,field_type="double" ,alias=u"Широта"            )
+    Longitude =        AttributeField( field_name=u'longitude'  ,field_type="double" ,alias=u"Долгота"           ) 
+    Days =             AttributeField( field_name=u'days'       ,field_type="double" ,alias=u"Кол-во дней работы")
+    Sldnid =           AttributeField( field_name=u'sldnid'     ,field_type="int"    ,alias=u"ИД в БД"           )
+    Api =              AttributeField( field_name=u'api'        ,field_type="string" ,alias=u"Цех/Промысел"      )
+    Operator =         AttributeField( field_name=u'operator'   ,field_type="string" ,alias=u"Оператор"          )
+    Country =          AttributeField( field_name=u'country'    ,field_type="string" ,alias=u"Страна"            )
+    Depth =            AttributeField( field_name=u'depth'      ,field_type="double" ,alias=u"Глубина"           )
+    ElevationPoint =   AttributeField( field_name=u'measuremen' ,field_type="string" ,alias=u"Точка отсчета альтитуды")    
+    EleationvDatum =   AttributeField( field_name=u'datum'      ,field_type="string" ,alias=u"Датум"             )    
+    Elevation =        AttributeField( field_name=u'elevation'  ,field_type="double" ,alias=u"Альтитуда"         )        
+    OnOffShor =        AttributeField( field_name=u'on_offshor' ,field_type="string" ,alias=u"на суше/море"      )    
+    SpudDate =         AttributeField( field_name=u'spud_date'  ,field_type="date"   ,alias=u"дата бурения"      )    
         
     SymbolId =         AttributeField( field_name=u'symbolid'   ,field_type="string" )
     Symbol =           AttributeField( field_name=u'symbolcode' ,field_type="integer")
@@ -147,12 +159,12 @@ class Fields:
     TigWellSymbol =    AttributeField( field_name=u'symbol'     ,field_type="string" )    
     TigLatestWellState=AttributeField( field_name=u'status'     ,field_type="string" )
 
-    WellRole =         AttributeField( field_name=u'wellrole'   ,field_type="string" )
-    WellStatus =       AttributeField( field_name=u'wellstatus' ,field_type="string" )
-    WellStatusReason = AttributeField( field_name=u'wsreason'   ,field_type="string" )
-    WellStatusInfo =   AttributeField( field_name=u'wsinfo'     ,field_type="string" )
-    WellInitRole =     AttributeField( field_name=u'initrole'   ,field_type="string" )
-    LiftMethod =       AttributeField( field_name=u'liftmethod' ,field_type="string" )
+    WellRole =         AttributeField( field_name=u'wellrole'   ,field_type="string" ,alias=u'назначение'               )
+    WellStatus =       AttributeField( field_name=u'wellstatus' ,field_type="string" ,alias=u"статус"                   )
+    WellStatusReason = AttributeField( field_name=u'wsreason'   ,field_type="string" ,alias=u"причина смены статуса"    )
+    WellStatusInfo =   AttributeField( field_name=u'wsinfo'     ,field_type="string" ,alias=u"уточнение статуса"        )
+    WellInitRole =     AttributeField( field_name=u'initrole'   ,field_type="string" ,alias=u"первоначальное назначение")
+    LiftMethod =       AttributeField( field_name=u'liftmethod' ,field_type="string" ,alias=u"способ эксплуатации"      )
     
     bubblesize =       AttributeField( field_name=u"bubblesize" ,field_type="double" )
     #bubblefields =     AttributeField( field_name=u'bubbleflds' ,field_type="string" )
@@ -162,12 +174,12 @@ class Fields:
     resstate =         AttributeField( field_name=u"resstate"   ,field_type="string" )
     multiprod =        AttributeField( field_name=u"multiprod"  ,field_type="string" )
     
-    startDate =        AttributeField( field_name=u'startdate'  ,field_type="date"   )
+    startDate =        AttributeField( field_name=u'startdate'  ,field_type="date"   ,alias=u"дата начала"             )
 
     IsGlobal =         AttributeField( field_name=u'global_pri' ,field_type="string" )    
-    Owner    =         AttributeField( field_name=u'owner'      ,field_type="string" )    
-    CreatedDT =        AttributeField( field_name=u'created'    ,field_type="DateTime")
-    Project =          AttributeField( field_name=u'project'    ,field_type="string" )
+    Owner    =         AttributeField( field_name=u'owner'      ,field_type="string" ,alias=u"владелец данных"         )    
+    CreatedDT =        AttributeField( field_name=u'created'    ,field_type="DateTime",alias=u"дата создания"          )
+    Project =          AttributeField( field_name=u'project'    ,field_type="string"  ,alias=u"проект"                 )
 
     lablx =            AttributeField( field_name=u"lablx"      ,field_type="double" )
     lably =            AttributeField( field_name=u"lably"      ,field_type="double" )
@@ -181,7 +193,22 @@ class Fields:
     lablfont =         AttributeField( field_name=u"font"       ,field_type="string" )    
         
 
-
+def setLayerFieldsAliases(layer):
+    '''
+        @summary: for qgis 2.14 backward support. 
+    ''' 
+    if hasattr(QgsField, 'setAlias'):pass
+    else:
+        all_fields=Fields.__dict__
+        for _,field in all_fields.items():
+            if isinstance(field,AttributeField) and field.alias!="":
+                #QgsMessageLog.logMessage(u"{}  {}".format(str(field),type(field)), tag="QgisPDS.debug")
+                #QgsMessageLog.logMessage(u"\t{} {}".format(field.name,field.alias), tag="QgisPDS.debug")
+                idx = layer.fieldNameIndex(field.name)
+                if idx >= 0:
+                    layer.addAttributeAlias(idx, field.alias)
+                    #QgsMessageLog.logMessage(u"\t+{}".format(idx), tag="QgisPDS.debug")
+    
     
 FieldsForLabels=[
             Fields.lablx 
@@ -638,7 +665,7 @@ class bblInit:
     @staticmethod
     def aliasFluidMaxDebitMass(fluidCode):
         return fluidCode + u" (макс. дебит по массе)"
-
+    
     @staticmethod
     def aliasFluidMaxDebitDateMass(fluidCode):
         return fluidCode + u" (дата макс. дебита по массе)"
@@ -787,62 +814,67 @@ class bblInit:
 
     @staticmethod
     def setAliases(layer):
-        features = layer.getFeatures()
-        for feature in features:
-            for fl in bblInit.fluidCodes:
-                # mass fields
-                newName = bblInit.attrFluidMass(fl.code)
-                alias = bblInit.aliasFluidMass(fl.alias)
-                idx = layer.fieldNameIndex(newName)
-                if idx >= 0:
-                    layer.addAttributeAlias(idx, alias)
+        #features = layer.getFeatures()
+        #for feature in features:
+        for fl in bblInit.fluidCodes:
+            # mass fields
+            newName = bblInit.attrFluidMass(fl.code)
+            alias = bblInit.aliasFluidMass(fl.alias)
+            idx = layer.fieldNameIndex(newName)
+            if idx >= 0:
+                layer.addAttributeAlias(idx, alias)
 
-                # volume fields
-                newName = bblInit.attrFluidVolume(fl.code)
-                alias = bblInit.aliasFluidVolume(fl.alias)
-                idx = layer.fieldNameIndex(newName)
-                if idx >= 0:
-                    layer.addAttributeAlias(idx, alias)
+            # volume fields
+            newName = bblInit.attrFluidVolume(fl.code)
+            alias = bblInit.aliasFluidVolume(fl.alias)
+            idx = layer.fieldNameIndex(newName)
+            if idx >= 0:
+                layer.addAttributeAlias(idx, alias)
 
-                # Max debit fields mass
-                newName = bblInit.attrFluidMaxDebitMass(fl.code)
-                alias = bblInit.aliasFluidMaxDebitMass(fl.alias)
-                idx = layer.fieldNameIndex(newName)
-                if idx >= 0:
-                    layer.addAttributeAlias(idx, alias)
+            # Max debit fields mass
+            newName = bblInit.attrFluidMaxDebitMass(fl.code)
+            alias = bblInit.aliasFluidMaxDebitMass(fl.alias)
+            idx = layer.fieldNameIndex(newName)
+            if idx >= 0:
+                layer.addAttributeAlias(idx, alias)
 
-                # Max debit date fields mass
-                newName = bblInit.attrFluidMaxDebitDateMass(fl.code)
-                alias = bblInit.aliasFluidMaxDebitDateMass(fl.alias)
-                idx = layer.fieldNameIndex(newName)
-                if idx >= 0:
-                    layer.addAttributeAlias(idx, alias)
+            # Max debit date fields mass
+            newName = bblInit.attrFluidMaxDebitDateMass(fl.code)
+            alias = bblInit.aliasFluidMaxDebitDateMass(fl.alias)
+            idx = layer.fieldNameIndex(newName)
+            if idx >= 0:
+                layer.addAttributeAlias(idx, alias)
 
-                # Max debit fields volume
-                newName = bblInit.attrFluidMaxDebitVol(fl.code)
-                alias = bblInit.aliasFluidMaxDebitVol(fl.alias)
-                idx = layer.fieldNameIndex(newName)
-                if idx >= 0:
-                    layer.addAttributeAlias(idx, alias)
+            # Max debit fields volume
+            newName = bblInit.attrFluidMaxDebitVol(fl.code)
+            alias = bblInit.aliasFluidMaxDebitVol(fl.alias)
+            idx = layer.fieldNameIndex(newName)
+            if idx >= 0:
+                layer.addAttributeAlias(idx, alias)
 
-                # Max debit date fields volume
-                newName = bblInit.attrFluidMaxDebitDateVol(fl.code)
-                alias = bblInit.aliasFluidMaxDebitDateVol(fl.alias)
-                idx = layer.fieldNameIndex(newName)
-                if idx >= 0:
-                    layer.addAttributeAlias(idx, alias)
+            # Max debit date fields volume
+            newName = bblInit.attrFluidMaxDebitDateVol(fl.code)
+            alias = bblInit.aliasFluidMaxDebitDateVol(fl.alias)
+            idx = layer.fieldNameIndex(newName)
+            if idx >= 0:
+                layer.addAttributeAlias(idx, alias)
 
-            #other fields
-            for name,alias in [
-                                 [u'wellrole'  ,u'назначение'           ]
-                                ,[u'wellstatus',u'статус'               ]
-                                ,[u'wsinfo'    ,u'уточнение статуса'    ]
-                                ,[u'wsreason'  ,u'причина смены статуса']
-                                ,[u'initrole'  ,u'первоначальное назначение']
-                                ]:
-                idx = layer.fieldNameIndex(name)
-                if idx >= 0:
-                    layer.addAttributeAlias(idx, alias)
+        #other fields
+        for name,alias in [
+                            [Fields.WellRole.name,Fields.WellRole.alias              ]
+                            ,[Fields.WellStatus.name,Fields.WellStatus.alias         ]
+                            ,[Fields.WellStatusInfo.name,Fields.WellStatusInfo.alias ]
+                            ,[Fields.WellStatusReason.name,Fields.WellStatusReason.alias]
+                            ,[Fields.WellInitRole.name,Fields.WellInitRole.alias     ]
+                             #[u'wellrole'  ,u'назначение'           ]
+                            #,[u'wellstatus',u'статус'               ]
+                            #,[u'wsinfo'    ,u'уточнение статуса'    ]
+                            #,[u'wsreason'  ,u'причина смены статуса']
+                            #,[u'initrole'  ,u'первоначальное назначение']
+                            ]:
+            idx = layer.fieldNameIndex(name)
+            if idx >= 0:
+                layer.addAttributeAlias(idx, alias)
                 
 
 
