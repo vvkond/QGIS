@@ -29,7 +29,7 @@ from qgis.core import *
 from qgis.gui import *
 from bblInit import *
 import random
-import os
+import os,sys
 import xml.etree.cElementTree as ET
 import ast
 import re
@@ -53,6 +53,16 @@ class DiagrammDesc:
 
     def __repr__(self):
         return repr((self.mDiagrammSize, self.mSlices))
+
+
+def float_t(val):
+    if (type(val) is QPyNullVariant and val.isNull()) or val is None:   #PyQt4.QtCore.QPyNullVariant:
+        val=0.0
+    try:
+        return float(val)
+    except Exception as e:
+        QgsMessageLog.logMessage("incorrect val for float {}={}\n{}".format(type(val),val,str(e)), 'BubbleSymbolLayer')
+        #raise Exception("incorrect val for float {}={}\n{}".format(type(val),val,str(e)))
 
 class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
@@ -286,7 +296,8 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
         templateStr = re.sub('^[\,\:\;\.\-/\\_ ]+|[\,\:\;\.\-/\\_ ]+$', '', templateStr)
         return templateStr
-
+    
+    
 
     def renderPoint(self, point, context):
         feature = context.feature()
@@ -307,17 +318,17 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
         try:
             if self.diagrammProps > 0:
-                size = float(feature.attribute(BubbleSymbolLayer.BUBBLE_SIZE))
-                diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(size), QgsSymbolV2.MM)
+                size = float_t(feature.attribute(BubbleSymbolLayer.BUBBLE_SIZE))
+                diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, size, QgsSymbolV2.MM)
 
                 templateStr = self.templateStr
                 for d in self.diagrammProps:
                     slices = d['slices']
                     scaleType = int(d['scaleType'])
-                    scaleMaxRadius = float(d['scaleMaxRadius'])
-                    scaleMinRadius = float(d['scaleMinRadius'])
-                    scale = float(d['scale'])
-                    fixedSize = float(d['fixedSize'])
+                    scaleMaxRadius = float_t(d['scaleMaxRadius'])
+                    scaleMinRadius = float_t(d['scaleMinRadius'])
+                    scale = float_t(d['scale'])
+                    fixedSize = float_t(d['fixedSize'])
                     if slices and scale != 0.0:
                         koef = (scaleMaxRadius - scaleMinRadius) / scale
                         sum = 0.0
@@ -383,14 +394,14 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
                 for diag in root.findall('diagramm'):
                     size = str(diag.attrib['size'])
-                    diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(size), QgsSymbolV2.MM)
+                    diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float_t(size), QgsSymbolV2.MM)
 
                     if diagrammSize > 0:
                         slices = []
                         for values in diag.findall('value'):
                             bc = QgsSymbolLayerV2Utils.decodeColor(values.attrib['backColor'])
                             lc = QgsSymbolLayerV2Utils.decodeColor(values.attrib["lineColor"])
-                            prnc = float(values.text)
+                            prnc = float_t(values.text)
                             # fn = values.attrib["fieldName"]
                             # slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc, fieldName=fn)
                             slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc)
@@ -435,9 +446,9 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                 xVal = 0.0
                 yVal = 0.0
                 if attrs[self.mXIndex]:
-                    xVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(attrs[self.mXIndex]), QgsSymbolV2.MM)
+                    xVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float_t(attrs[self.mXIndex]), QgsSymbolV2.MM)
                 if attrs[self.mYIndex]:
-                    yVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float(attrs[self.mYIndex]), QgsSymbolV2.MM)
+                    yVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float_t(attrs[self.mYIndex]), QgsSymbolV2.MM)
                 widthVal = 10
 
                 if xVal != 0 or yVal != 0:
@@ -467,7 +478,10 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                         if labelTemplate and labelTemplate != NULL and self.showLabels:
                             p.drawStaticText(pt1.x(), pt1.y(), st)
         except Exception as e:
-            QgsMessageLog.logMessage('renderPoint: ' + str(e), 'BubbleSymbolLayer')
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            #QgsMessageLog.logMessage('renderPoint: ' + str(e), 'BubbleSymbolLayer')
+            QgsMessageLog.logMessage('renderPoint: {} {} {} {}'.format(str(e),exc_type, fname, exc_tb.tb_lineno), 'BubbleSymbolLayer')
 
 
     def startRender(self, context):
