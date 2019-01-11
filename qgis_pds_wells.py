@@ -15,7 +15,8 @@ import time
 from processing.tools.vector import VectorWriter
 from bblInit import STYLE_DIR, Fields, FieldsWellLayer,\
     FieldsForLabels,\
-    set_QgsPalLayerSettings_datadefproperty, layer_to_labeled
+    set_QgsPalLayerSettings_datadefproperty, layer_to_labeled,\
+    setLayerFieldsAliases
 from utils import plugin_path, load_styles_from_dir, load_style, edit_layer
 
 debuglevel = 4
@@ -64,7 +65,7 @@ class QgisPDSWells(QObject):
                 u'Error create wells layer'), QtGui.QMessageBox.Ok)
 
             return
-
+        
         #---load user styles
         if self.styleUserDir is not None:
             load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
@@ -124,7 +125,7 @@ class QgisPDSWells(QObject):
         palyr.writeToLayer(layer)
 
         # layer.commitChanges()
-
+        setLayerFieldsAliases(layer)
 
         return layer
 
@@ -280,7 +281,7 @@ class QgisPDSWells(QObject):
                         elif isRefreshData:
                             layer.updateFeature(well)
         if refreshed:
-            self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(layer.name()), duration=10)
+            self.iface.messageBar().pushMessage(self.tr(u'Layer: {0} refreshed').format(layer.name), duration=10)
 
         layer.updateExtents()
 
