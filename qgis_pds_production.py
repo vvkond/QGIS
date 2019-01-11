@@ -1084,6 +1084,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     # 
     #===========================================================================
     def calcBubbles(self, prodWell):
+        IS_DEBUG and QgsMessageLog.logMessage(u"calcBubbles  well={}".format(prodWell.name), tag="QgisPDS.calcBubbles")
+        
         sumMass = [0 for c in bblInit.fluidCodes]
         sumVols = [0 for c in bblInit.fluidCodes]
         sumDays = 0
@@ -1107,7 +1109,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMass(  fl.code), sumMass[i])
             self.setWellAttribute(prodWell.name, bblInit.attrFluidVolume(fl.code), sumVols[i])
 
+        QgsMessageLog.logMessage(u"\nwell {}".format(prodWell.name), tag="QgisPDS.info")
         for i, fl in enumerate(bblInit.fluidCodes):
+            QgsMessageLog.logMessage(u"\t{}".format(fl.name), tag="QgisPDS.info")
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitMass(    fl.code), prodWell.maxDebits[i].massValue)
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitDateMass(fl.code), prodWell.maxDebits[i].massDebitDate)
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitVol(     fl.code), prodWell.maxDebits[i].volValue)
@@ -1316,13 +1320,15 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 for fluid in fluid_fields:
                     debit=row_dict[fluid.field]/days
                     if fluid.unit=="Mass":
-                        if prodWell.maxDebits[fluid.idx].massValue < debit:
-                            prodWell.maxDebits[fluid.idx].massValue = debit
-                            prodWell.maxDebits[fluid.idx].massDebitDate = stadat
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat),debit_type=ProdDebit.DEBIT_TYPE_MASS)
+#                         if prodWell.maxDebits[fluid.idx].massValue < debit:
+#                             prodWell.maxDebits[fluid.idx].massValue = debit
+#                             prodWell.maxDebits[fluid.idx].massDebitDate = stadat
                     else:
-                        if prodWell.maxDebits[fluid.idx].volValue < debit:
-                            prodWell.maxDebits[fluid.idx].volValue = debit
-                            prodWell.maxDebits[fluid.idx].volDebitDate = stadat
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit,dt=stadat),debit_type=ProdDebit.DEBIT_TYPE_VOL)
+#                         if prodWell.maxDebits[fluid.idx].volValue < debit:
+#                             prodWell.maxDebits[fluid.idx].volValue = debit
+#                             prodWell.maxDebits[fluid.idx].volDebitDate = stadat
             if (stadat >= self.mStartDate and stadat <= self.mEndDate) or (enddat >= self.mStartDate and enddat <= self.mEndDate):
                 useLiftMethod = True
                 NeedProd = True
@@ -1564,6 +1570,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             self.progress.setValue(idx)
             if time.time()-now>1:  QCoreApplication.processEvents();time.sleep(0.02);now=time.time() #refresh GUI
             row_dict=dict(zip(query_fields,row))
+            IS_DEBUG and QgsMessageLog.logMessage(u"Well {} production row : {}\n\n".format(row_dict["tig_well_id"],str(row_dict)), tag="QgisPDS.readWellProduction")
+            
             #QgsMessageLog.logMessage(u"result row: {}".format(row_dict), tag="QgisPDS.readWellProduction")
             #Max component debits for well
             tig_well_id=row_dict["tig_well_id"]
@@ -1575,13 +1583,15 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 for fluid in fluid_fields:
                     debit=row_dict[fluid.field]/days
                     if fluid.unit=="Mass":
-                        if prodWell.maxDebits[fluid.idx].massValue < debit:
-                            prodWell.maxDebits[fluid.idx].massValue = debit
-                            prodWell.maxDebits[fluid.idx].massDebitDate = stadat
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat),debit_type=ProdDebit.DEBIT_TYPE_MASS)
+#                         if prodWell.maxDebits[fluid.idx].massValue < debit:
+#                             prodWell.maxDebits[fluid.idx].massValue = debit/1000
+#                             prodWell.maxDebits[fluid.idx].massDebitDate = stadat
                     else:
-                        if prodWell.maxDebits[fluid.idx].volValue < debit:
-                            prodWell.maxDebits[fluid.idx].volValue = debit
-                            prodWell.maxDebits[fluid.idx].volDebitDate = stadat
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit,dt=stadat),debit_type=ProdDebit.DEBIT_TYPE_VOL)
+#                         if prodWell.maxDebits[fluid.idx].volValue < debit:
+#                             prodWell.maxDebits[fluid.idx].volValue = debit
+#                             prodWell.maxDebits[fluid.idx].volDebitDate = stadat
             if (stadat >= self.mStartDate and stadat <= self.mEndDate) or (enddat >= self.mStartDate and enddat <= self.mEndDate):
                 #init clear production record
                 product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, days)

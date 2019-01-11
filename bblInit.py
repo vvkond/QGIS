@@ -7,6 +7,7 @@ from qgis.core import QgsField
 from collections import namedtuple
 from utils import edit_layer, cached_property
 
+
 try:
     from PyQt4.QtCore import QString
 except ImportError:
@@ -56,12 +57,122 @@ class NAMES(MyStruct):
     name = None
     selected = False
 
-class ProdDebit(MyStruct):
-    massValue = 0
-    volValue = 0
-    massDebitDate = ''
-    volDebitDate = ''
 
+#===============================================================================
+# 
+#===============================================================================
+class Debit(MyStruct):
+    value=0
+    dt=''
+    def __repr__(self):
+        return "{}:{}".format(self.dt,self.value)
+    def __str__(self):
+        return "{}:{}".format(self.dt,self.value)
+    
+
+#===============================================================================
+# 
+#===============================================================================
+class ProdDebit(object):
+    DEBIT_TYPE_MASS='mass'
+    DEBIT_TYPE_VOL='vol'
+    RECORDS_LIMIT=3          #limit of stored items
+    ENABLE_BAD_DATA_FILTER=True
+    debits=None
+    def __init__(self):
+        self.debits={
+                self.DEBIT_TYPE_MASS:[]
+                ,self.DEBIT_TYPE_VOL:[]
+                }
+        
+    def sorted_func(self,valueOld,valueNew):
+        #QgsMessageLog.logMessage(u"{}  {}".format(str(valueNew),str(valueOld)), tag="QgisPDS.debug")
+        return valueNew.value>valueOld.value #function applied to value for sorting item[0]-key,item[1]-value
+    
+    def addDebit(self
+                 ,debit # type: Debit
+                 ,debit_type
+                 ):
+        
+        if len(self.debits[debit_type])==0:
+            self.debits[debit_type].append(debit)
+        else:
+            for idx,debit_old in enumerate(self.debits[debit_type]):
+                if self.sorted_func(debit_old,debit):
+                    self.debits[debit_type].insert(idx, debit)
+                    break
+            self.debits[debit_type]=self.debits[debit_type][:self.RECORDS_LIMIT]
+        pass
+    
+    def bad_data_filter(self,items):
+        if len(items)>=2:
+            for idx in range(len(items)-1):
+                if items[idx+1].value>0 and items[idx].value/items[idx+1].value>=3:
+                    continue
+                else:
+                    #if idx>0: QgsMessageLog.logMessage(u"\t{}".format(str(items[idx:] )), tag="QgisPDS.info")
+                    return items[idx:]
+            #QgsMessageLog.logMessage(u"\t{}".format(str([items[-1]] )), tag="QgisPDS.info")
+            return [items[-1]]
+        else:
+            #QgsMessageLog.logMessage(u"\t{}".format(str([items[0]] )), tag="QgisPDS.debug")
+            return [items[0]] 
+     
+    @property
+    def massValue(self):
+        debit_type=self.DEBIT_TYPE_MASS
+        if len(self.debits[debit_type])>0:
+            if not self.ENABLE_BAD_DATA_FILTER:
+                return  self.debits[debit_type][0].value
+            else:
+                res=self.bad_data_filter([row for row in self.debits[debit_type]])
+                if len(res)!=len(self.debits[debit_type]):
+                    QgsMessageLog.logMessage(u"\tMass", tag="QgisPDS.info")
+                    QgsMessageLog.logMessage(u"\t\t {}".format(",".join(map(str, [self.debits[debit_type][i] for i in range(len(self.debits[debit_type]))] )) ), tag="QgisPDS.info")
+                    QgsMessageLog.logMessage(u"\t\t-> {}".format(str(res)), tag="QgisPDS.info")
+                return res[0].value
+        else: return None
+    @property
+    def massDebitDate(self):
+        debit_type=self.DEBIT_TYPE_MASS
+        if len(self.debits[debit_type])>0:
+            if not self.ENABLE_BAD_DATA_FILTER:
+                return  self.debits[debit_type][0].dt
+            else:
+                res=self.bad_data_filter([row for row in self.debits[debit_type]])
+                return res[0].dt
+        else: return None
+    @property
+    def volValue(self):
+        debit_type=self.DEBIT_TYPE_VOL
+        if len(self.debits[debit_type])>0:
+            if not self.ENABLE_BAD_DATA_FILTER:
+                return  self.debits[debit_type][0].value
+            else:
+                res=self.bad_data_filter([row for row in self.debits[debit_type]])
+                if len(res)!=len(self.debits[debit_type]):
+                    QgsMessageLog.logMessage(u"\tVolume", tag="QgisPDS.info")
+                    QgsMessageLog.logMessage(u"\t\t {}".format(",".join(map(str, [self.debits[debit_type][i] for i in range(len(self.debits[debit_type]))] )) ), tag="QgisPDS.info")
+                    QgsMessageLog.logMessage(u"\t\t-> {}".format(str(res)), tag="QgisPDS.info")
+                return res[0].value
+        else: return None
+ 
+    @property
+    def volDebitDate(self):
+        debit_type=self.DEBIT_TYPE_VOL
+        if len(self.debits[debit_type])>0:
+            if not self.ENABLE_BAD_DATA_FILTER:
+                return  self.debits[debit_type][0].dt
+            else:
+                res=self.bad_data_filter([row for row in self.debits[debit_type]])
+                return res[0].dt
+        else: return None
+
+    
+    
+#===============================================================================
+# 
+#===============================================================================
 class ProductionWell(MyStruct):
     sldnid = 0
     name = ''
