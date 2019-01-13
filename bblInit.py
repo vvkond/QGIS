@@ -7,7 +7,6 @@ from qgis.core import QgsField
 from collections import namedtuple
 from utils import edit_layer, cached_property
 
-
 try:
     from PyQt4.QtCore import QString
 except ImportError:
@@ -76,14 +75,18 @@ class Debit(MyStruct):
 class ProdDebit(object):
     DEBIT_TYPE_MASS='mass'
     DEBIT_TYPE_VOL='vol'
-    RECORDS_LIMIT=3          #limit of stored items
-    ENABLE_BAD_DATA_FILTER=True
+    records_limit=3          #limit of stored items
+    enable_bad_data_filter=False
+    filter_koef=3
     debits=None
-    def __init__(self):
+    def __init__(self,records_limit=3,enable_bad_data_filter=False,filter_koef=3):
         self.debits={
                 self.DEBIT_TYPE_MASS:[]
                 ,self.DEBIT_TYPE_VOL:[]
                 }
+        self.records_limit=records_limit
+        self.enable_bad_data_filter=enable_bad_data_filter
+        self.filter_koef=filter_koef
         
     def sorted_func(self,valueOld,valueNew):
         #QgsMessageLog.logMessage(u"{}  {}".format(str(valueNew),str(valueOld)), tag="QgisPDS.debug")
@@ -101,13 +104,13 @@ class ProdDebit(object):
                 if self.sorted_func(debit_old,debit):
                     self.debits[debit_type].insert(idx, debit)
                     break
-            self.debits[debit_type]=self.debits[debit_type][:self.RECORDS_LIMIT]
+            self.debits[debit_type]=self.debits[debit_type][:self.records_limit]
         pass
     
     def bad_data_filter(self,items):
         if len(items)>=2:
             for idx in range(len(items)-1):
-                if items[idx+1].value>0 and items[idx].value/items[idx+1].value>=3:
+                if items[idx+1].value>0 and items[idx].value/items[idx+1].value>=self.filter_koef:
                     continue
                 else:
                     #if idx>0: QgsMessageLog.logMessage(u"\t{}".format(str(items[idx:] )), tag="QgisPDS.info")
@@ -122,7 +125,7 @@ class ProdDebit(object):
     def massValue(self):
         debit_type=self.DEBIT_TYPE_MASS
         if len(self.debits[debit_type])>0:
-            if not self.ENABLE_BAD_DATA_FILTER:
+            if not self.enable_bad_data_filter:
                 return  self.debits[debit_type][0].value
             else:
                 res=self.bad_data_filter([row for row in self.debits[debit_type]])
@@ -136,7 +139,7 @@ class ProdDebit(object):
     def massDebitDate(self):
         debit_type=self.DEBIT_TYPE_MASS
         if len(self.debits[debit_type])>0:
-            if not self.ENABLE_BAD_DATA_FILTER:
+            if not self.enable_bad_data_filter:
                 return  self.debits[debit_type][0].dt
             else:
                 res=self.bad_data_filter([row for row in self.debits[debit_type]])
@@ -146,7 +149,7 @@ class ProdDebit(object):
     def volValue(self):
         debit_type=self.DEBIT_TYPE_VOL
         if len(self.debits[debit_type])>0:
-            if not self.ENABLE_BAD_DATA_FILTER:
+            if not self.enable_bad_data_filter:
                 return  self.debits[debit_type][0].value
             else:
                 res=self.bad_data_filter([row for row in self.debits[debit_type]])
@@ -161,7 +164,7 @@ class ProdDebit(object):
     def volDebitDate(self):
         debit_type=self.DEBIT_TYPE_VOL
         if len(self.debits[debit_type])>0:
-            if not self.ENABLE_BAD_DATA_FILTER:
+            if not self.enable_bad_data_filter:
                 return  self.debits[debit_type][0].dt
             else:
                 res=self.bad_data_filter([row for row in self.debits[debit_type]])
@@ -210,22 +213,23 @@ class AttributeField():
     def __init__(self
                         ,field_name=None
                         ,field_type=None    # char, varchar, text, int, serial, double
-                        ,comment=None
-                        ,len=0
-                        ,prec=0
-                        ,alias=""
+                        ,field_comment=None
+                        ,field_len=0
+                        ,field_prec=0
+                        ,field_alias=""
                  ):
         self.field=QgsField(name=field_name
                         #, type= FIELD_TYPES[self.field_type]
-                        , typeName=field_type  # char, varchar, text, int, serial, double
-                        , len=len
-                        , prec=prec
-                        , comment=comment
+                        , typeName=field_type  # char, varchar, text, int, serial, double. QVariant.Double,QVariant.Date,QVariant.String
+                        , len=field_len
+                        , prec=field_prec
+                        , comment=field_comment
                         #, subType
                         )
-        if alias is not None:
-            if hasattr(self.field,'setAlias'):self.field.setAlias(alias)
-            else: self._alias=alias        
+
+        if field_alias is not None:
+            if hasattr(self.field,'setAlias'):self.field.setAlias(field_alias)
+            else: self._alias=field_alias        
     @cached_property
     def name(self):
         return self.field.name()
@@ -237,10 +241,8 @@ class AttributeField():
         if hasattr(self.field,'alias'):
             return self.field.alias()
         else: 
-            return self._alias        
-
-    
-    
+            return self._alias    
+            
 #===============================================================================
 # 
 #===============================================================================
@@ -248,67 +250,67 @@ class Fields:
     """
          @info: store all fields for layers. Import it when define fields/columns for layer
     """
-    WellId =           AttributeField( field_name=u'well_id'    ,field_type="string" ,alias=u"Скважина"          )
-    Latitude =         AttributeField( field_name=u'latitude'   ,field_type="double" ,alias=u"Широта"            )
-    Longitude =        AttributeField( field_name=u'longitude'  ,field_type="double" ,alias=u"Долгота"           ) 
-    Days =             AttributeField( field_name=u'days'       ,field_type="double" ,alias=u"Кол-во дней работы")
-    Sldnid =           AttributeField( field_name=u'sldnid'     ,field_type="int"    ,alias=u"ИД в БД"           )
-    Api =              AttributeField( field_name=u'api'        ,field_type="string" ,alias=u"Цех/Промысел"      )
-    Operator =         AttributeField( field_name=u'operator'   ,field_type="string" ,alias=u"Оператор"          )
-    Country =          AttributeField( field_name=u'country'    ,field_type="string" ,alias=u"Страна"            )
-    Depth =            AttributeField( field_name=u'depth'      ,field_type="double" ,alias=u"Глубина"           )
-    ElevationPoint =   AttributeField( field_name=u'measuremen' ,field_type="string" ,alias=u"Точка отсчета альтитуды")    
-    EleationvDatum =   AttributeField( field_name=u'datum'      ,field_type="string" ,alias=u"Датум"             )    
-    Elevation =        AttributeField( field_name=u'elevation'  ,field_type="double" ,alias=u"Альтитуда"         )        
-    OnOffShor =        AttributeField( field_name=u'on_offshor' ,field_type="string" ,alias=u"на суше/море"      )    
-    SpudDate =         AttributeField( field_name=u'spud_date'  ,field_type="date"   ,alias=u"дата бурения"      )    
+    WellId =           AttributeField( field_name=u'well_id'    ,field_type="string" ,field_alias=u"Скважина"                  ,field_len=30 ,field_prec=0)
+    Latitude =         AttributeField( field_name=u'latitude'   ,field_type="double" ,field_alias=u"Широта"                    ,field_len=20 ,field_prec=6)
+    Longitude =        AttributeField( field_name=u'longitude'  ,field_type="double" ,field_alias=u"Долгота"                   ,field_len=20 ,field_prec=6) 
+    Days =             AttributeField( field_name=u'days'       ,field_type="double" ,field_alias=u"Кол-во дней работы"        ,field_len=20 ,field_prec=2)
+    Sldnid =           AttributeField( field_name=u'sldnid'     ,field_type="int"    ,field_alias=u"ИД в БД"                   ,field_len=40 ,field_prec=0)
+    Api =              AttributeField( field_name=u'api'        ,field_type="string" ,field_alias=u"Цех/Промысел"              ,field_len=20 ,field_prec=0)
+    Operator =         AttributeField( field_name=u'operator'   ,field_type="string" ,field_alias=u"Оператор"                  ,field_len=20 ,field_prec=0)
+    Country =          AttributeField( field_name=u'country'    ,field_type="string" ,field_alias=u"Страна"                    ,field_len=30 ,field_prec=0)
+    Depth =            AttributeField( field_name=u'depth'      ,field_type="double" ,field_alias=u"Глубина"                   ,field_len=20 ,field_prec=3)
+    ElevationPoint =   AttributeField( field_name=u'measuremen' ,field_type="string" ,field_alias=u"Точка отсчета альтитуды"   ,field_len=20 ,field_prec=0)    
+    EleationvDatum =   AttributeField( field_name=u'datum'      ,field_type="string" ,field_alias=u"Датум"                     ,field_len=20 ,field_prec=0)    
+    Elevation =        AttributeField( field_name=u'elevation'  ,field_type="double" ,field_alias=u"Альтитуда"                 ,field_len=20 ,field_prec=3)        
+    OnOffShor =        AttributeField( field_name=u'on_offshor' ,field_type="string" ,field_alias=u"на суше/море"              ,field_len=20 ,field_prec=0)    
+    SpudDate =         AttributeField( field_name=u'spud_date'  ,field_type="date"   ,field_alias=u"дата бурения"              ,field_len=50 ,field_prec=0)    
+                                                                                                               
+    SymbolId =         AttributeField( field_name=u'symbolid'   ,field_type="string" ,field_alias=u""                          ,field_len=400 ,field_prec=0)
+    Symbol =           AttributeField( field_name=u'symbolcode' ,field_type="integer",field_alias=u""                          ,field_len=10 ,field_prec=0)
+    SymbolName =       AttributeField( field_name=u'symbolname' ,field_type="string" ,field_alias=u""                          ,field_len=100 ,field_prec=0)
+                                                                                                               
+    TigWellSymbol =    AttributeField( field_name=u'symbol'     ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)    
+    TigLatestWellState=AttributeField( field_name=u'status'     ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)
+                                                                                                               
+    WellRole =         AttributeField( field_name=u'wellrole'   ,field_type="string" ,field_alias=u'назначение'                ,field_len=50 ,field_prec=0)
+    WellStatus =       AttributeField( field_name=u'wellstatus' ,field_type="string" ,field_alias=u"статус"                    ,field_len=50 ,field_prec=0)
+    WellStatusReason = AttributeField( field_name=u'wsreason'   ,field_type="string" ,field_alias=u"причина смены статуса"     ,field_len=50 ,field_prec=0)
+    WellStatusInfo =   AttributeField( field_name=u'wsinfo'     ,field_type="string" ,field_alias=u"уточнение статуса"         ,field_len=50 ,field_prec=0)
+    WellInitRole =     AttributeField( field_name=u'initrole'   ,field_type="string" ,field_alias=u"первоначальное назначение" ,field_len=50 ,field_prec=0)
+    LiftMethod =       AttributeField( field_name=u'liftmethod' ,field_type="string" ,field_alias=u"способ эксплуатации"       ,field_len=50 ,field_prec=0)
+                                                                                                                          
+    bubblesize =       AttributeField( field_name=u"bubblesize" ,field_type="double" ,field_alias=u""                          ,field_len=20 ,field_prec=5)
+    #bubblefields =     AttributeField( field_name=u'bubbleflds' ,field_type="string",field_alias=u""                          ,field_len=20 ,field_prec=5)
+    #labels =           AttributeField( field_name=u'bbllabels'  ,field_type="string",field_alias=u""                          ,field_len=20 ,field_prec=5)
+    scaletype =        AttributeField( field_name=u"scaletype"  ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)
+    movingres =        AttributeField( field_name=u"movingres"  ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)
+    resstate =         AttributeField( field_name=u"resstate"   ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)
+    multiprod =        AttributeField( field_name=u"multiprod"  ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)
+                                                                                                                          
+    startDate =        AttributeField( field_name=u'startdate'  ,field_type="date"   ,field_alias=u"дата начала"               ,field_len=50 ,field_prec=0)
+                                                                                                                          
+    IsGlobal =         AttributeField( field_name=u'global_pri' ,field_type="string" ,field_alias=u""                          ,field_len=20 ,field_prec=0)    
+    Owner    =         AttributeField( field_name=u'owner'      ,field_type="string" ,field_alias=u"владелец данных"           ,field_len=20 ,field_prec=0)    
+    CreatedDT =        AttributeField( field_name=u'created'    ,field_type="DateTime",field_alias=u"дата создания"            ,field_len=50 ,field_prec=0)
+    Project =          AttributeField( field_name=u'project'    ,field_type="string"  ,field_alias=u"проект"                   ,field_len=30 ,field_prec=0)
+                                                                                                                          
+    lablx =            AttributeField( field_name=u"lablx"      ,field_type="double"  ,field_alias=u""                         ,field_len=20 ,field_prec=5)
+    lably =            AttributeField( field_name=u"lably"      ,field_type="double"  ,field_alias=u""                         ,field_len=20 ,field_prec=5)
+    labloffx =         AttributeField( field_name=u"labloffx"   ,field_type="double"  ,field_alias=u""                         ,field_len=20 ,field_prec=5)
+    labloffy =         AttributeField( field_name=u"labloffy"   ,field_type="double"  ,field_alias=u""                         ,field_len=20 ,field_prec=5)
+    labloffset =       AttributeField( field_name=u"labloffset" ,field_type="double"  ,field_alias=u""                         ,field_len=20 ,field_prec=5)
+    lablwidth =        AttributeField( field_name=u"lablwidth"  ,field_type="double"  ,field_alias=u""                         ,field_len=20 ,field_prec=5)
+    lablcolor =        AttributeField( field_name=u"lablcol"    ,field_type="string"  ,field_alias=u""                         ,field_len=20 ,field_prec=0)    
+    lablbuffcolor =    AttributeField( field_name=u"bufcol"     ,field_type="string"  ,field_alias=u""                         ,field_len=20 ,field_prec=0)    
+    lablbuffwidth  =   AttributeField( field_name=u"bufwidth"   ,field_type="double"  ,field_alias=u""                         ,field_len=20 ,field_prec=5)
+    lablfont =         AttributeField( field_name=u"font"       ,field_type="string"  ,field_alias=u""                         ,field_len=20 ,field_prec=0)    
         
-    SymbolId =         AttributeField( field_name=u'symbolid'   ,field_type="string" )
-    Symbol =           AttributeField( field_name=u'symbolcode' ,field_type="integer")
-    SymbolName =       AttributeField( field_name=u'symbolname' ,field_type="string" )
-    
-    TigWellSymbol =    AttributeField( field_name=u'symbol'     ,field_type="string" )    
-    TigLatestWellState=AttributeField( field_name=u'status'     ,field_type="string" )
 
-    WellRole =         AttributeField( field_name=u'wellrole'   ,field_type="string" ,alias=u'назначение'               )
-    WellStatus =       AttributeField( field_name=u'wellstatus' ,field_type="string" ,alias=u"статус"                   )
-    WellStatusReason = AttributeField( field_name=u'wsreason'   ,field_type="string" ,alias=u"причина смены статуса"    )
-    WellStatusInfo =   AttributeField( field_name=u'wsinfo'     ,field_type="string" ,alias=u"уточнение статуса"        )
-    WellInitRole =     AttributeField( field_name=u'initrole'   ,field_type="string" ,alias=u"первоначальное назначение")
-    LiftMethod =       AttributeField( field_name=u'liftmethod' ,field_type="string" ,alias=u"способ эксплуатации"      )
-    
-    bubblesize =       AttributeField( field_name=u"bubblesize" ,field_type="double" )
-    #bubblefields =     AttributeField( field_name=u'bubbleflds' ,field_type="string" )
-    #labels =           AttributeField( field_name=u'bbllabels'  ,field_type="string" )
-    scaletype =        AttributeField( field_name=u"scaletype"  ,field_type="string" )
-    movingres =        AttributeField( field_name=u"movingres"  ,field_type="string" )
-    resstate =         AttributeField( field_name=u"resstate"   ,field_type="string" )
-    multiprod =        AttributeField( field_name=u"multiprod"  ,field_type="string" )
-    
-    startDate =        AttributeField( field_name=u'startdate'  ,field_type="date"   ,alias=u"дата начала"             )
-
-    IsGlobal =         AttributeField( field_name=u'global_pri' ,field_type="string" )    
-    Owner    =         AttributeField( field_name=u'owner'      ,field_type="string" ,alias=u"владелец данных"         )    
-    CreatedDT =        AttributeField( field_name=u'created'    ,field_type="DateTime",alias=u"дата создания"          )
-    Project =          AttributeField( field_name=u'project'    ,field_type="string"  ,alias=u"проект"                 )
-
-    lablx =            AttributeField( field_name=u"lablx"      ,field_type="double" )
-    lably =            AttributeField( field_name=u"lably"      ,field_type="double" )
-    labloffx =         AttributeField( field_name=u"labloffx"   ,field_type="double" )
-    labloffy =         AttributeField( field_name=u"labloffy"   ,field_type="double" )
-    labloffset =       AttributeField( field_name=u"labloffset" ,field_type="double" )
-    lablwidth =        AttributeField( field_name=u"lablwidth"  ,field_type="double" )
-    lablcolor =        AttributeField( field_name=u"lablcol"    ,field_type="string" )    
-    lablbuffcolor =    AttributeField( field_name=u"buflcol"    ,field_type="string" )    
-    lablbuffwidth  =   AttributeField( field_name=u"bufwidth"   ,field_type="double" )
-    lablfont =         AttributeField( field_name=u"font"       ,field_type="string" )    
-        
-
-def setLayerFieldsAliases(layer):
+def setLayerFieldsAliases(layer,force=False):
     '''
         @summary: for qgis 2.14 backward support. 
     ''' 
-    if hasattr(QgsField, 'setAlias'):pass
+    if hasattr(QgsField, 'setAlias') and not force:pass
     else:
         all_fields=Fields.__dict__
         for _,field in all_fields.items():
@@ -356,6 +358,28 @@ FieldsWellLayer=[
             ,Fields.Project
             ]
     
+FieldsProdLayer=[
+            Fields.WellId
+            ,Fields.Latitude
+            ,Fields.Longitude
+            ,Fields.SymbolId
+            ,Fields.SymbolName
+            ,Fields.Symbol
+            ,Fields.WellRole
+            ,Fields.WellStatus
+            ,Fields.WellStatusReason
+            ,Fields.WellStatusInfo
+            ,Fields.WellInitRole
+            ,Fields.startDate
+            ,Fields.Days
+            ,Fields.LiftMethod
+            ,Fields.bubblesize
+            ,Fields.scaletype
+            ,Fields.movingres
+            ,Fields.resstate
+            ,Fields.multiprod
+            ]
+
 #===============================================================================
 # 
 #===============================================================================
@@ -775,7 +799,7 @@ class bblInit:
 
     @staticmethod
     def aliasFluidMaxDebitMass(fluidCode):
-        return fluidCode + u" (макс. дебит по массе)"
+        return fluidCode + u" (макс. дебит по массе тонн)"
     
     @staticmethod
     def aliasFluidMaxDebitDateMass(fluidCode):
@@ -783,12 +807,14 @@ class bblInit:
 
     @staticmethod
     def aliasFluidMaxDebitVol(fluidCode):
-        return fluidCode + u" (макс. дебит по объему)"
+        return fluidCode + u" (макс. дебит по объему м3)"
 
     @staticmethod
     def aliasFluidMaxDebitDateVol(fluidCode):
         return fluidCode + u" (дата макс. дебита по объему)"
-
+    #===========================================================================
+    # 
+    #===========================================================================
     @staticmethod
     def checkFieldExists(layer, fieldName, fieldType, fieldLen=20, fieldPrec=5):
         provider = layer.dataProvider()
@@ -797,7 +823,20 @@ class bblInit:
             if layer.isEditable(): layer.commitChanges()            
             with edit_layer(layer):
                 provider.addAttributes([QgsField(fieldName, fieldType, QString(""), fieldLen, fieldPrec)])
-
+    #===========================================================================
+    # 
+    #===========================================================================
+    @staticmethod
+    def checkQgsFieldExists(layer, qgsfield): 
+        provider = layer.dataProvider()
+        newIdx = layer.fieldNameIndex(qgsfield.name())
+        if newIdx < 0:
+            if layer.isEditable(): layer.commitChanges()            
+            with edit_layer(layer):
+                provider.addAttributes([field])                
+    #===========================================================================
+    # 
+    #===========================================================================
     @staticmethod
     def updateOldProductionStructure(layer):
         needCopyData = False
