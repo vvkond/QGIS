@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>543</width>
-    <height>484</height>
+    <height>497</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,10 +42,13 @@
    <property name="spacing">
     <number>6</number>
    </property>
-   <item row="4" column="0">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   <item row="0" column="1">
+    <widget class="QCheckBox" name="mUpdateWellLocation">
+     <property name="text">
+      <string>Обновить координаты скважин</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -56,13 +59,10 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QCheckBox" name="mUpdateWellLocation">
-     <property name="text">
-      <string>Обновить координаты скважин</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
+   <item row="4" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
@@ -76,6 +76,12 @@
      </property>
      <property name="title">
       <string>Настройка чтения фонда</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
      </property>
      <widget class="QWidget" name="horizontalLayoutWidget">
       <property name="geometry">
@@ -247,14 +253,76 @@
      </layout>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="6" column="0" rowspan="2">
+    <widget class="QGroupBox" name="maxDebitGrpBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Отсеивать выбросы максимальных дебитов</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="horizontalLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>311</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="maxDebitLayout">
+       <item>
+        <widget class="QLabel" name="maxDebitLabelRange">
+         <property name="text">
+          <string>Выборка:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="maxDebitRange">
+         <property name="value">
+          <number>3</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="maxDebitLabelKoef">
+         <property name="text">
+          <string>Граничный коэфф.:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="maxDebitKoef">
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <double>3.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="6" column="1">
     <widget class="QCheckBox" name="isProfilingChkBox">
      <property name="text">
       <string>Профайлинг</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
+   <item row="7" column="1">
     <widget class="QCheckBox" name="isDebugChkBox">
      <property name="text">
       <string>Полное логирование</string>

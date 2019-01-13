@@ -21,6 +21,7 @@ from bblInit import *
 from tig_projection import *
 import time
 import sys
+from itertools import chain
 
 
 IS_DEBUG=False
@@ -96,33 +97,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.initialised = False
 
         
-        self.attrWellId =       u'well_id'
-        self.attrLatitude =     u'latitude'
-        self.attrLongitude =    u'longitude'
-        self.attrDays =         u'days'
-        self.attrSymbolId =     u'symbolid'
-        self.attrSymbol =       u'symbolcode'
-        self.attrSymbolName =   u'symbolname'
-        self.attrWellRole =     u'wellrole'
-        self.attrWellStatus =   u'wellstatus'
-        self.attrWellStatusReason =   u'wsreason'
-        self.attrWellStatusInfo =     u'wsinfo'
-        self.attrWellInitRole =       u'initrole'
-        self.attrLiftMethod =   u'liftmethod'
-        self.attr_lablx =       u"lablx"
-        self.attr_lably =       u"lably"
-        self.attr_labloffx =    u"labloffx"
-        self.attr_labloffy =    u"labloffy"
-        self.attr_labloffset =  u"labloffset"
-        self.attr_lablwidth =   u"lablwidth"
-        self.attr_bubblesize =  u"bubblesize"
-        self.attr_bubblefields = OLD_NEW_FIELDNAMES[1] #"bubblefields"
-        self.attr_scaletype =   u"scaletype"
-        self.attr_movingres =   u"movingres"
-        self.attr_resstate =    u"resstate"
-        self.attr_multiprod =   u"multiprod"
-        self.attr_labels =      u'bbllabels'
-        self.attr_startDate =   u'startdate'
+        #self.attr_bubblefields = OLD_NEW_FIELDNAMES[1] #"bubblefields"
+        #self.attr_labels =      u'bbllabels'
 
         self.dateFormat = u'dd/MM/yyyy HH:mm:ss'
 
@@ -183,8 +159,6 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.realEndDate = self.realStartDate = QDate()  #temporary,used only in GUI
         self.fondStartDate = self.fondEndDate = QDate()  #fond load date diapazon 
 
-        
-        
         self.bbl_getproduction_period(False)
 
         self.initialised = True
@@ -423,41 +397,16 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                                             isWell=self.fondByWellRdBtn.isChecked()
                                              ,isObject=self.fondByObjRdBtn.isChecked()
                                              )
-
-        
         # --- IF NEW LAYER 
         if self.layer is None:
             self.mSelectedReservoirs = self.getSelectedReservoirs()
             self.mPhaseFilter = self.getSelectedFluids()
 
             self.uri = "Point?crs={}".format(self.proj4String)
-            self.uri += '&field={}:{}'.format(self.attrWellId,      "string" )
-            self.uri += '&field={}:{}'.format(self.attrLatitude,    "double" )
-            self.uri += '&field={}:{}'.format(self.attrLongitude,   "double" )
-            self.uri += '&field={}:{}'.format(self.attrSymbolId,    "string" )
-            self.uri += '&field={}:{}'.format(self.attrSymbolName,  "string" )
-            self.uri += '&field={}:{}'.format(self.attrSymbol,      "integer")
-            self.uri += '&field={}:{}'.format(self.attrWellRole,    "string" )
-            self.uri += '&field={}:{}'.format(self.attrWellStatus,  "string" )
-            self.uri += '&field={}:{}'.format(self.attrWellStatusReason,  "string" )
-            self.uri += '&field={}:{}'.format(self.attrWellStatusInfo  ,  "string" )
-            self.uri += '&field={}:{}'.format(self.attrWellInitRole    ,  "string" )
-            self.uri += '&field={}:{}'.format(self.attr_startDate,  "date"   )
-            self.uri += '&field={}:{}'.format(self.attrDays,        "double" )
-            self.uri += '&field={}:{}'.format(self.attrLiftMethod,  "string" )
-            self.uri += '&field={}:{}'.format(self.attr_lablx,      "double" )
-            self.uri += '&field={}:{}'.format(self.attr_lably,      "double" )
-            self.uri += '&field={}:{}'.format(self.attr_labloffx,   "double" )
-            self.uri += '&field={}:{}'.format(self.attr_labloffy,   "double" )
-            self.uri += '&field={}:{}'.format(self.attr_labloffset, "double" )
-            self.uri += '&field={}:{}'.format(self.attr_lablwidth,  "double" )
-            self.uri += '&field={}:{}'.format(self.attr_bubblesize, "double" )
-            # self.uri += '&field={}:{}'.format(self.attr_bubblefields, "string")
-            self.uri += '&field={}:{}'.format(self.attr_scaletype,  "string" )
-            self.uri += '&field={}:{}'.format(self.attr_movingres,  "string" )
-            self.uri += '&field={}:{}'.format(self.attr_resstate,   "string" )
-            self.uri += '&field={}:{}'.format(self.attr_multiprod,  "string" )
-            # self.uri += '&field={}:{}'.format(self.attr_labels, "string")
+            for field in FieldsProdLayer:
+                self.uri += field.memoryfield
+            for field in FieldsForLabels:
+                self.uri += field.memoryfield
             for fl in bblInit.fluidCodes:
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidVolume(          fl.code), "double" )
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMass(            fl.code), "double" )
@@ -512,7 +461,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             palyr = QgsPalLayerSettings()
             palyr.readFromLayer(self.layer)
             palyr.enabled = True
-            palyr.fieldName = self.attrWellId
+            palyr.fieldName = Fields.WellId.name
             palyr.placement= QgsPalLayerSettings.OverPoint
             palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
             palyr.labelOffsetInMapUnits = False
@@ -522,8 +471,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             palyr.fontSizeInMapUnits = False
             palyr.textFont.setPointSizeF(7)
 
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'', self.attr_lablx)
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'', self.attr_lably)
+            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'', Fields.lablx.name)
+            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'', Fields.lably.name)
             palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
             
@@ -538,9 +487,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 activeStyleName=load_styles_from_dir(layer=self.layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_STYLE_DIR) ,switchActiveStyle=False)
                 #------load default style
                 load_style(layer=self.layer, name='default', style_path=os.path.join(plugin_path() ,STYLE_DIR ,PROD_STYLE+".qml"), activeStyleName=activeStyleName)
-        # --- IF UPDATE LAYER
+        # --- IF UPDATE LAYER then check fields
         else:
-            bblInit.checkFieldExists(self.layer, self.attr_startDate, QVariant.Date, 50, 0)
+            for attrfield in chain(FieldsProdLayer,FieldsForLabels):
+                bblInit.checkQgsFieldExists(self.layer,attrfield.field)
             bblInit.updateOldProductionStructure(self.layer)
 
 
@@ -566,6 +516,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                                   )
         QgsMapLayerRegistry.instance().addMapLayer(self.layer)
         bblInit.setAliases(self.layer)
+        setLayerFieldsAliases(self.layer,force=True)
+        
         self.writeSettings()
     #===========================================================================
     # 
@@ -702,7 +654,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         IS_DEBUG and QgsMessageLog.logMessage(u"bubble calculated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction");time_start=time.time()
         
         #--- READ NON PRODUCTION WELLS(NOT SELECTED)
-        liftMethodIdx = self.layer.fieldNameIndex(self.attrLiftMethod)
+        liftMethodIdx = self.layer.fieldNameIndex(Fields.LiftMethod.name)
         self._readAllWells()
         IS_DEBUG and QgsMessageLog.logMessage(u"well read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction"); time_start=time.time()
 
@@ -710,7 +662,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         is_layerfiltered=len(self.layer.subsetString().strip())>1 #--- if layer with filter provider allowed only update production/coordinates.
         is_needupdcoord= self.mUpdateWellLocation.isChecked()
         is_needaddall=   self.mAddAllWells.isChecked()
-        is_rowwithprod=  lambda feature:feature.attribute(self.attrSymbol)!=71
+        is_rowwithprod=  lambda feature:feature.attribute(Fields.Symbol.name)!=71
         IS_DEBUG and QgsMessageLog.logMessage("is_layerfiltered={};is_needupdcoord={};is_needaddall={};".format(is_layerfiltered,is_needupdcoord,is_needaddall), tag="QgisPDS.readProduction")
         #Refresh or add feature
         if self.layer.isEditable(): self.layer.commitChanges()
@@ -718,34 +670,34 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             ############################
             ####### TEST BLOCK
             ############################
-            cDays      =        self.layer.fieldNameIndex(self.attrDays             )
-            cSymbol    =        self.layer.fieldNameIndex(self.attrSymbol           )
-            cSymbolId  =        self.layer.fieldNameIndex(self.attrSymbolId         )
-            cSymbolName=        self.layer.fieldNameIndex(self.attrSymbolName       )
-            cResState  =        self.layer.fieldNameIndex(self.attr_resstate        )
-            cMovingRes =        self.layer.fieldNameIndex(self.attr_movingres       )
-            cMultiProd =        self.layer.fieldNameIndex(self.attr_multiprod       )
-            cStartDate =        self.layer.fieldNameIndex(self.attr_startDate       )
-            cRole      =        self.layer.fieldNameIndex(self.attrWellRole         )
-            cStatus    =        self.layer.fieldNameIndex(self.attrWellStatus       )
-            cStatusReason    =  self.layer.fieldNameIndex(self.attrWellStatusReason )
-            cStatusInfo       = self.layer.fieldNameIndex(self.attrWellStatusInfo   )
-            cInitRole  =        self.layer.fieldNameIndex(self.attrWellInitRole     )
+            cDays      =        self.layer.fieldNameIndex(Fields.Days.name             )
+            cSymbol    =        self.layer.fieldNameIndex(Fields.Symbol.name           )
+            cSymbolId  =        self.layer.fieldNameIndex(Fields.SymbolId.name         )
+            cSymbolName=        self.layer.fieldNameIndex(Fields.SymbolName.name       )
+            cResState  =        self.layer.fieldNameIndex(Fields.resstate.name        )
+            cMovingRes =        self.layer.fieldNameIndex(Fields.movingres.name       )
+            cMultiProd =        self.layer.fieldNameIndex(Fields.multiprod.name       )
+            cStartDate =        self.layer.fieldNameIndex(Fields.startDate.name       )
+            cRole      =        self.layer.fieldNameIndex(Fields.WellRole.name         )
+            cStatus    =        self.layer.fieldNameIndex(Fields.WellStatus.name       )
+            cStatusReason    =  self.layer.fieldNameIndex(Fields.WellStatusReason.name )
+            cStatusInfo       = self.layer.fieldNameIndex(Fields.WellStatusInfo.name   )
+            cInitRole  =        self.layer.fieldNameIndex(Fields.WellInitRole.name     )
                         
             attr_2_upd=[  ###old column             old_col_id       new_col    
-                          [self.attrDays             ,cDays             ,  self.attrDays              ]
-                        , [self.attrSymbol           ,cSymbol           ,  self.attrSymbol            ]
-                        , [self.attrSymbolId         ,cSymbolId         ,  self.attrSymbolId          ]
-                        , [self.attrSymbolName       ,cSymbolName       ,  self.attrSymbolName        ]
-                        , [self.attr_resstate        ,cResState         ,  self.attr_resstate         ]
-                        , [self.attr_movingres       ,cMovingRes        ,  self.attr_movingres        ]
-                        , [self.attr_multiprod       ,cMultiProd        ,  self.attr_multiprod        ]
-                        , [self.attr_startDate       ,cStartDate        ,  self.attr_startDate        ]
-                        , [self.attrWellRole         ,cRole             ,  self.attrWellRole          ]
-                        , [self.attrWellStatus       ,cStatus           ,  self.attrWellStatus        ]
-                        , [self.attrWellStatusReason ,cStatusReason     ,  self.attrWellStatusReason  ]
-                        , [self.attrWellStatusInfo   ,cStatusInfo       ,  self.attrWellStatusInfo    ]
-                        , [self.attrWellInitRole     ,cInitRole         ,  self.attrWellInitRole      ]
+                          [Fields.Days.name             ,cDays             ,  Fields.Days.name              ]
+                        , [Fields.Symbol.name           ,cSymbol           ,  Fields.Symbol.name            ]
+                        , [Fields.SymbolId.name         ,cSymbolId         ,  Fields.SymbolId.name          ]
+                        , [Fields.SymbolName.name       ,cSymbolName       ,  Fields.SymbolName.name        ]
+                        , [Fields.resstate.name        ,cResState         ,  Fields.resstate.name         ]
+                        , [Fields.movingres.name       ,cMovingRes        ,  Fields.movingres.name        ]
+                        , [Fields.multiprod.name       ,cMultiProd        ,  Fields.multiprod.name        ]
+                        , [Fields.startDate.name       ,cStartDate        ,  Fields.startDate.name        ]
+                        , [Fields.WellRole.name         ,cRole             ,  Fields.WellRole.name          ]
+                        , [Fields.WellStatus.name       ,cStatus           ,  Fields.WellStatus.name        ]
+                        , [Fields.WellStatusReason.name ,cStatusReason     ,  Fields.WellStatusReason.name  ]
+                        , [Fields.WellStatusInfo.name   ,cStatusInfo       ,  Fields.WellStatusInfo.name    ]
+                        , [Fields.WellInitRole.name     ,cInitRole         ,  Fields.WellInitRole.name      ]
                         ]
             f_count=len(self.mWells.values())
             now=time.time()
@@ -753,11 +705,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             for idx,feature in enumerate(self.mWells.values()):                                 #--- iterate over each record in result
                 self.progress.setValue(idx)
                 if time.time()-now>2:  QCoreApplication.processEvents();time.sleep(0.02);now=time.time() #refresh GUI
-                args = (self.attrWellId, feature.attribute(self.attrWellId))
+                args = (Fields.WellId.name, feature.attribute(Fields.WellId.name))
                 expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in layer record with that WELL_ID
                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
                 num = 0
-                IS_DEBUG and QgsMessageLog.logMessage(u"update attribute of well {}".format(feature.attribute(self.attrWellId)), tag="QgisPDS.debug")
+                IS_DEBUG and QgsMessageLog.logMessage(u"update attribute of well {}".format(feature.attribute(Fields.WellId.name)), tag="QgisPDS.debug")
                 for f in searchRes:             #--- iterate over each row in base layer for current well
                     is_refreshed = True
                     #--- update coord if checked
@@ -768,7 +720,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                         if f.attribute(c_old_name)!=feature.attribute(c_new_name):
                             self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))  #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
                     if liftMethodIdx >= 0:                               #--- update liftmetho id
-                        self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(self.attrLiftMethod))
+                        self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(Fields.LiftMethod.name))
                     for fl in bblInit.fluidCodes:                        #--- update production attributes
                         attrMass             = bblInit.attrFluidMass(             fl.code)
                         attrVol              = bblInit.attrFluidVolume(           fl.code)
@@ -798,7 +750,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         if is_layerfiltered and is_needaddall:
             with edit_layer(self.layer):
                 for feature in self.mWells.values(): 
-                    args = (self.attrWellId, feature.attribute(self.attrWellId))
+                    args = (Fields.WellId.name, feature.attribute(Fields.WellId.name))
                     expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))            #--- search in base layer record with that WELL_ID
                     searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
                     for f in searchRes:
@@ -819,8 +771,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     # 
     #===========================================================================
     def updateFeature(self, feature, prod):
-        feature.setAttribute(self.attrDays, prod.days)
-        feature.setAttribute(self.attr_startDate, prod.stadat.date())
+        feature.setAttribute(Fields.Days.name, prod.days)
+        feature.setAttribute(Fields.startDate.name, prod.stadat.date())
 
         for i, fl in enumerate(bblInit.fluidCodes):
             feature.setAttribute(bblInit.attrFluidMass(fl.code), prod.massVals[i])
@@ -848,7 +800,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         is_layerfiltered = len(self.layer.subsetString().strip()) > 1  # --- if layer with filter provider allowed only update production/coordinates.
         is_needupdcoord = self.mUpdateWellLocation.isChecked()
         is_needaddall = self.mAddAllWells.isChecked()
-        is_rowwithprod = lambda feature: feature.attribute(self.attrSymbol) != 71
+        is_rowwithprod = lambda feature: feature.attribute(Fields.Symbol.name) != 71
 
         # Refresh or add feature
         if self.layer.isEditable(): self.layer.commitChanges()
@@ -856,34 +808,34 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             ############################
             ####### TEST BLOCK
             ############################
-            cDays =             self.layer.fieldNameIndex(self.attrDays             )
-            cSymbol =           self.layer.fieldNameIndex(self.attrSymbol           )
-            cSymbolId =         self.layer.fieldNameIndex(self.attrSymbolId         )
-            cSymbolName =       self.layer.fieldNameIndex(self.attrSymbolName       )
-            cResState =         self.layer.fieldNameIndex(self.attr_resstate        )
-            cMovingRes =        self.layer.fieldNameIndex(self.attr_movingres       )
-            cMultiProd =        self.layer.fieldNameIndex(self.attr_multiprod       )
-            cStartDate =        self.layer.fieldNameIndex(self.attr_startDate       )
-            cRole      =        self.layer.fieldNameIndex(self.attrWellRole         )
-            cStatus    =        self.layer.fieldNameIndex(self.attrWellStatus       )
-            cStatusReason    =  self.layer.fieldNameIndex(self.attrWellStatusReason )
-            cStatusInfo       = self.layer.fieldNameIndex(self.attrWellStatusInfo   ) 
-            cInitRole  =        self.layer.fieldNameIndex(self.attrWellInitRole     )           
+            cDays =             self.layer.fieldNameIndex(Fields.Days.name             )
+            cSymbol =           self.layer.fieldNameIndex(Fields.Symbol.name           )
+            cSymbolId =         self.layer.fieldNameIndex(Fields.SymbolId.name         )
+            cSymbolName =       self.layer.fieldNameIndex(Fields.SymbolName.name       )
+            cResState =         self.layer.fieldNameIndex(Fields.resstate.name        )
+            cMovingRes =        self.layer.fieldNameIndex(Fields.movingres.name       )
+            cMultiProd =        self.layer.fieldNameIndex(Fields.multiprod.name       )
+            cStartDate =        self.layer.fieldNameIndex(Fields.startDate.name       )
+            cRole      =        self.layer.fieldNameIndex(Fields.WellRole.name         )
+            cStatus    =        self.layer.fieldNameIndex(Fields.WellStatus.name       )
+            cStatusReason    =  self.layer.fieldNameIndex(Fields.WellStatusReason.name )
+            cStatusInfo       = self.layer.fieldNameIndex(Fields.WellStatusInfo.name   ) 
+            cInitRole  =        self.layer.fieldNameIndex(Fields.WellInitRole.name     )           
             
             attr_2_upd = [  ###old column       old_col_id       new_col
-                  [self.attrDays,             cDays             ,  self.attrDays              ]
-                , [self.attrSymbol,           cSymbol           ,  self.attrSymbol            ]
-                , [self.attrSymbolId,         cSymbolId         ,  self.attrSymbolId          ]
-                , [self.attrSymbolName,       cSymbolName       ,  self.attrSymbolName        ]
-                , [self.attr_resstate,        cResState         ,  self.attr_resstate         ]
-                , [self.attr_movingres,       cMovingRes        ,  self.attr_movingres        ]
-                , [self.attr_multiprod,       cMultiProd        ,  self.attr_multiprod        ]
-                , [self.attr_startDate,       cStartDate        ,  self.attr_startDate        ]
-                , [self.attrWellRole   ,      cRole             ,  self.attrWellRole          ]
-                , [self.attrWellStatus ,      cStatus           ,  self.attrWellStatus        ]
-                , [self.attrWellStatusReason ,cStatusReason     ,  self.attrWellStatusReason  ]
-                , [self.attrWellStatusInfo   ,cStatusInfo       ,  self.attrWellStatusInfo    ]
-                , [self.attrWellInitRole     ,cInitRole         ,  self.attrWellInitRole      ]
+                  [Fields.Days.name,             cDays             ,  Fields.Days.name              ]
+                , [Fields.Symbol.name,           cSymbol           ,  Fields.Symbol.name            ]
+                , [Fields.SymbolId.name,         cSymbolId         ,  Fields.SymbolId.name          ]
+                , [Fields.SymbolName.name,       cSymbolName       ,  Fields.SymbolName.name        ]
+                , [Fields.resstate.name,        cResState         ,  Fields.resstate.name         ]
+                , [Fields.movingres.name,       cMovingRes        ,  Fields.movingres.name        ]
+                , [Fields.multiprod.name,       cMultiProd        ,  Fields.multiprod.name        ]
+                , [Fields.startDate.name,       cStartDate        ,  Fields.startDate.name        ]
+                , [Fields.WellRole.name   ,      cRole             ,  Fields.WellRole.name          ]
+                , [Fields.WellStatus.name ,      cStatus           ,  Fields.WellStatus.name        ]
+                , [Fields.WellStatusReason.name ,cStatusReason     ,  Fields.WellStatusReason.name  ]
+                , [Fields.WellStatusInfo.name   ,cStatusInfo       ,  Fields.WellStatusInfo.name    ]
+                , [Fields.WellInitRole.name     ,cInitRole         ,  Fields.WellInitRole.name      ]
             ]
             
             for prodWell in self.mProductionWells:
@@ -892,7 +844,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                     feature = QgsFeature(oldFeature)
                     self.updateFeature(feature, prod)
                     dateText = prod.stadat.toString(u'yyyy-MM-dd')
-                    args = (self.attrWellId, feature.attribute(self.attrWellId), self.attr_startDate, dateText)
+                    args = (Fields.WellId.name, feature.attribute(Fields.WellId.name), Fields.startDate.name, dateText)
                     exprStr = '\"{0}\"=\'{1}\' and \"{2}\"=to_date(\'{3}\')'.format(*args)
                     num = 0
                     expr = QgsExpression(exprStr)
@@ -931,7 +883,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         if is_layerfiltered and is_needaddall:
             with edit_layer(self.layer):
                 for feature in self.mWells.values():
-                    args = (self.attrWellId, feature.attribute(self.attrWellId))
+                    args = (Fields.WellId.name, feature.attribute(Fields.WellId.name))
                     expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))  # --- search in base layer record with that WELL_ID
                     searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
                     for f in searchRes:
@@ -965,7 +917,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         is_layerfiltered = len(self.layer.subsetString().strip()) > 1  # --- if layer with filter provider allowed only update production/coordinates.
         is_needupdcoord = self.mUpdateWellLocation.isChecked()
         is_needaddall = self.mAddAllWells.isChecked()
-        is_rowwithprod = lambda feature: feature.attribute(self.attrSymbol) != 71
+        is_rowwithprod = lambda feature: feature.attribute(Fields.Symbol.name) != 71
 
         # Refresh or add feature
         if self.layer.isEditable(): self.layer.commitChanges()
@@ -973,27 +925,27 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             ############################
             ####### TEST BLOCK
             ############################
-            cDays =       self.layer.fieldNameIndex(  self.attrDays      )
-            cSymbol =     self.layer.fieldNameIndex(  self.attrSymbol    )
-            cSymbolId =   self.layer.fieldNameIndex(  self.attrSymbolId  )
-            cSymbolName = self.layer.fieldNameIndex(  self.attrSymbolName)
-            cResState =   self.layer.fieldNameIndex(  self.attr_resstate )
-            cMovingRes =  self.layer.fieldNameIndex(  self.attr_movingres)
-            cMultiProd =  self.layer.fieldNameIndex(  self.attr_multiprod)
-            cStartDate =  self.layer.fieldNameIndex(  self.attr_startDate)
-            cRole      =  self.layer.fieldNameIndex(  self.attrWellRole  )
-            cStatus    =  self.layer.fieldNameIndex(  self.attrWellStatus)
+            cDays =       self.layer.fieldNameIndex(  Fields.Days.name      )
+            cSymbol =     self.layer.fieldNameIndex(  Fields.Symbol.name    )
+            cSymbolId =   self.layer.fieldNameIndex(  Fields.SymbolId.name  )
+            cSymbolName = self.layer.fieldNameIndex(  Fields.SymbolName.name)
+            cResState =   self.layer.fieldNameIndex(  Fields.resstate.name )
+            cMovingRes =  self.layer.fieldNameIndex(  Fields.movingres.name)
+            cMultiProd =  self.layer.fieldNameIndex(  Fields.multiprod.name)
+            cStartDate =  self.layer.fieldNameIndex(  Fields.startDate.name)
+            cRole      =  self.layer.fieldNameIndex(  Fields.WellRole.name  )
+            cStatus    =  self.layer.fieldNameIndex(  Fields.WellStatus.name)
             attr_2_upd = [  ###old column       old_col_id       new_col
-                  [self.attrDays,       cDays,       self.attrDays        ]
-                , [self.attrSymbol,     cSymbol,     self.attrSymbol      ]
-                , [self.attrSymbolId,   cSymbolId,   self.attrSymbolId    ]
-                , [self.attrSymbolName, cSymbolName, self.attrSymbolName  ]
-                , [self.attr_resstate,  cResState,   self.attr_resstate   ]
-                , [self.attr_movingres, cMovingRes,  self.attr_movingres  ]
-                , [self.attr_multiprod, cMultiProd,  self.attr_multiprod  ]
-                , [self.attr_startDate, cStartDate,  self.attr_startDate  ]
-                , [self.attrWellRole   ,cRole     ,  self.attrWellRole    ]
-                , [self.attrWellStatus ,cStatus   ,  self.attrWellStatus  ]
+                  [Fields.Days.name,       cDays,       Fields.Days.name        ]
+                , [Fields.Symbol.name,     cSymbol,     Fields.Symbol.name      ]
+                , [Fields.SymbolId.name,   cSymbolId,   Fields.SymbolId.name    ]
+                , [Fields.SymbolName.name, cSymbolName, Fields.SymbolName.name  ]
+                , [Fields.resstate.name,  cResState,   Fields.resstate.name   ]
+                , [Fields.movingres.name, cMovingRes,  Fields.movingres.name  ]
+                , [Fields.multiprod.name, cMultiProd,  Fields.multiprod.name  ]
+                , [Fields.startDate.name, cStartDate,  Fields.startDate.name  ]
+                , [Fields.WellRole.name   ,cRole     ,  Fields.WellRole.name    ]
+                , [Fields.WellStatus.name ,cStatus   ,  Fields.WellStatus.name  ]
             ]
             for prodWell in self.mProductionWells:
                 oldFeature = self.mWells[prodWell.name]
@@ -1001,7 +953,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                     feature = QgsFeature(oldFeature)
                     self.updateFeature(feature, prod)
                     dateText = prod.stadat.toString(u'yyyy-MM-dd')
-                    args = (self.attrWellId, feature.attribute(self.attrWellId), self.attr_startDate, dateText)
+                    args = (Fields.WellId.name, feature.attribute(Fields.WellId.name), Fields.startDate.name, dateText)
                     exprStr = '\"{0}\"=\'{1}\' and \"{2}\"=to_date(\'{3}\')'.format(*args)
                     expr = QgsExpression(exprStr)
                     searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
@@ -1037,7 +989,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         if is_layerfiltered and is_needaddall:
             with edit_layer(self.layer):
                 for feature in self.mWells.values():
-                    args = (self.attrWellId, feature.attribute(self.attrWellId))
+                    args = (Fields.WellId.name, feature.attribute(Fields.WellId.name))
                     expr = QgsExpression('\"{0}\"=\'{1}\''.format(*args))  # --- search in base layer record with that WELL_ID
                     searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
                     for f in searchRes:
@@ -1077,7 +1029,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         if prod.enddat > self.mEndDate:
             days -= self.mEndDate.daysTo(prod.enddat)
 
-        # self.setWellAttribute(wellName, self.attrDays, days)
+        # self.setWellAttribute(wellName, Fields.Days.name, days)
         return days
 
     #===========================================================================
@@ -1092,19 +1044,19 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         for prod in prodWell.prods:
             sumDays = sumDays + self.calcProds(prod, prodWell.name, sumMass, sumVols)
 
-        self.setWellAttribute(prodWell.name, self.attrDays              , sumDays                 )
-        self.setWellAttribute(prodWell.name, self.attr_resstate         , prodWell.reservoirState )
-        self.setWellAttribute(prodWell.name, self.attr_movingres        , prodWell.movingReservoir)
-        self.setWellAttribute(prodWell.name, self.attr_multiprod        , prodWell.lastReservoirs )
-        self.setWellAttribute(prodWell.name, self.attr_startDate        , self.mStartDate.date()  )
-        self.setWellAttribute(prodWell.name, self.attrWellRole          , prodWell.wRole          )
-        self.setWellAttribute(prodWell.name, self.attrWellStatus        , prodWell.wStatus        )
-        self.setWellAttribute(prodWell.name, self.attrWellStatusReason  , prodWell.wStatusReason  )
-        self.setWellAttribute(prodWell.name, self.attrWellStatusInfo    , prodWell.wStatusInfo    )
-        self.setWellAttribute(prodWell.name, self.attrWellInitRole      , prodWell.wInitialRole   )
+        self.setWellAttribute(prodWell.name, Fields.Days.name              , sumDays                 )
+        self.setWellAttribute(prodWell.name, Fields.resstate.name         , prodWell.reservoirState )
+        self.setWellAttribute(prodWell.name, Fields.movingres.name        , prodWell.movingReservoir)
+        self.setWellAttribute(prodWell.name, Fields.multiprod.name        , prodWell.lastReservoirs )
+        self.setWellAttribute(prodWell.name, Fields.startDate.name        , self.mStartDate.date()  )
+        self.setWellAttribute(prodWell.name, Fields.WellRole.name          , prodWell.wRole          )
+        self.setWellAttribute(prodWell.name, Fields.WellStatus.name        , prodWell.wStatus        )
+        self.setWellAttribute(prodWell.name, Fields.WellStatusReason.name  , prodWell.wStatusReason  )
+        self.setWellAttribute(prodWell.name, Fields.WellStatusInfo.name    , prodWell.wStatusInfo    )
+        self.setWellAttribute(prodWell.name, Fields.WellInitRole.name      , prodWell.wInitialRole   )
         
         if len(prodWell.liftMethod):
-            self.setWellAttribute(prodWell.name, self.attrLiftMethod, prodWell.liftMethod)
+            self.setWellAttribute(prodWell.name, Fields.LiftMethod.name, prodWell.liftMethod)
         for i, fl in enumerate(bblInit.fluidCodes):
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMass(  fl.code), sumMass[i])
             self.setWellAttribute(prodWell.name, bblInit.attrFluidVolume(fl.code), sumVols[i])
@@ -1883,14 +1835,12 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             symbolId,role,status,status_reason,status_info,initial_role = self.bbl_wellsymbol(wId,maxDt=maxDt)
             self.loadWellFeature(wId, symbolId)
             pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
-                                 maxDebits = [ProdDebit() for c in bblInit.fluidCodes]
+                                 maxDebits = [ProdDebit(records_limit=self.maxDebitRange.value(), enable_bad_data_filter=self.maxDebitGrpBox.isChecked(), filter_koef=self.maxDebitKoef.value()) for c in bblInit.fluidCodes]
                                  ,wRole = role
                                  ,wStatus = status
                                  ,wStatusReason = status_reason 
                                  ,wStatusInfo = status_info
                                  ,wInitialRole = initial_role
-
-
                                  )
             self.mProductionWells.append(pwp)
 
@@ -1983,7 +1933,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         try:
             result = self.db.execute(
                 "select tig_latest_well_name, db_sldnid, tig_latitude, tig_longitude from tig_well_history")
-
+            wellRole=wellStatus=wellStatusDesc=wellInitRole=''
             for well_name, wId, lat, lon in result:
                 if well_name not in self.mWells:
                     if self.fondLoadConfig.isWell:
@@ -1998,16 +1948,16 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                     except:pass
 
                     well = QgsFeature (self.layer.fields()                                    )
-                    well.setAttribute (self.attrWellId               , well_name              )
-                    well.setAttribute (self.attrLatitude             , lat                    )
-                    well.setAttribute (self.attrLongitude            , lon                    )
-                    well.setAttribute (self.attrSymbol               , 71                     )
-                    well.setAttribute (self.attrSymbolName           , self.tr('unknown well'))
-                    well.setAttribute (self.attrWellRole             , wellRole               )
-                    well.setAttribute (self.attrWellStatus           , wellStatus             )
-                    well.setAttribute (self.attrWellStatusInfo       , wellStatusInfo         )
-                    well.setAttribute (self.attrWellStatusReason     , wellStatusReason       )
-                    well.setAttribute (self.attrWellInitRole         , wellInitRole           )
+                    well.setAttribute (Fields.WellId.name               , well_name              )
+                    well.setAttribute (Fields.Latitude.name             , lat                    )
+                    well.setAttribute (Fields.Longitude.name            , lon                    )
+                    well.setAttribute (Fields.Symbol.name               , 71                     )
+                    well.setAttribute (Fields.SymbolName.name           , self.tr('unknown well'))
+                    well.setAttribute (Fields.WellRole.name             , wellRole               )
+                    well.setAttribute (Fields.WellStatus.name           , wellStatus             )
+                    well.setAttribute (Fields.WellStatusInfo.name       , wellStatusInfo         )
+                    well.setAttribute (Fields.WellStatusReason.name     , wellStatusReason       )
+                    well.setAttribute (Fields.WellInitRole.name         , wellInitRole           )
                     
 
                     if lon and lat and lon != NULL and lat != NULL:
@@ -2017,7 +1967,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                         well.setGeometry(QgsGeometry.fromPoint(pt))
                         self.mWells[well_name] = well
                         pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
-                                             maxDebits=[ProdDebit() for c in bblInit.fluidCodes]
+                                             maxDebits=[ProdDebit(records_limit=self.maxDebitRange.value(), enable_bad_data_filter=self.maxDebitGrpBox.isChecked(), filter_koef=self.maxDebitKoef.value()) for c in bblInit.fluidCodes]
                                              ,wRole=wellRole
                                              ,wStatus=wellStatus
                                              ,wStatusReason=wellStatusReason
@@ -2088,13 +2038,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         well = QgsFeature(self.layer.fields())
         plugin_dir = os.path.dirname(__file__)
         for well_name, lat, lon in result:
-            well.setAttribute (self.attrWellId,    well_name)
-            well.setAttribute (self.attrLatitude,  lat      )
-            well.setAttribute (self.attrLongitude, lon      )
+            well.setAttribute (Fields.WellId.name,    well_name)
+            well.setAttribute (Fields.Latitude.name,  lat      )
+            well.setAttribute (Fields.Longitude.name, lon      )
             if symbolId >= 0:
-                well.setAttribute (self.attrSymbolId  , plugin_dir+"/svg/WellSymbol"+str(symbolId.symbol+1).zfill(3)+".svg")
-                well.setAttribute (self.attrSymbol    , symbolId.symbol+1                                                  )
-                well.setAttribute (self.attrSymbolName, symbolId.wellRole                                                  )
+                well.setAttribute (Fields.SymbolId.name  , plugin_dir+"/svg/WellSymbol"+str(symbolId.symbol+1).zfill(3)+".svg")
+                well.setAttribute (Fields.Symbol.name    , symbolId.symbol+1                                                  )
+                well.setAttribute (Fields.SymbolName.name, symbolId.wellRole                                                  )
             pt = QgsPoint(lon, lat)
             if self.xform:
                 pt = self.xform.transform(pt)
