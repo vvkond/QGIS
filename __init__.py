@@ -36,12 +36,14 @@ def classFactory(iface):  # pylint: disable=invalid-name
     #settings = QSettings().allKeys()
     #for setting in settings:
     #    print setting
-    settings_svg_path=QSettings().value( 'svg/searchPathsForSVG').split("|")
+    current_conf=QSettings().value( 'svg/searchPathsForSVG')
+    if current_conf is None: current_conf=u'' 
+    settings_svg_path=current_conf.split("|")
     #svg_path=os.path.join(os.environ['USERPROFILE'],u'.qgis2',u'python',u'plugins',u'QgisPDS',u'svg')
     svg_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),u'svg')
     
-    if svg_path not in settings_svg_path:
-        QSettings().setValue('svg/searchPathsForSVG', QSettings().value( 'svg/searchPathsForSVG')+u'|'+svg_path)
+    if svg_path not in settings_svg_path and svg_path is not None:
+        QSettings().setValue('svg/searchPathsForSVG', current_conf+u'|'+svg_path)
     #QSettings().setValue('svg/searchPathsForSVG',u'C:\\Users\\tig\\.qgis2\\python\\plugins\\QgisPDS\\svg')
     #QSettings().setValue('svg/searchPathsForSVG', QSettings().value( 'svg/searchPathsForSVG')+u'|'+u'C:\\Users\\tig\\.qgis2\\python\\plugins\\QgisPDS\\svg')
         
