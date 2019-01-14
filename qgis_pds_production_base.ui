@@ -290,7 +290,7 @@
        <item>
         <widget class="QSpinBox" name="maxDebitRange">
          <property name="value">
-          <number>3</number>
+          <number>5</number>
          </property>
         </widget>
        </item>

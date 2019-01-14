@@ -15,7 +15,39 @@ import os
 import tempfile
 
 
+#===============================================================================
+# 
+#===============================================================================
+def removeOutliers(x, outlierConstant):
+    """
+        @info: Remove outliers using numpy. 
+                    Normally, an minor outlier is outside 1.5 * the IQR and major outlier is outside 3 * the IQR 
+                    experimental analysis has shown that a higher/lower IQR might produce more accurate results. 
+                    Interestingly, after 1000 runs, removing outliers creates a larger standard deviation between test run results.
+            
+        @see: https://gist.github.com/vishalkuo/f4aec300cf6252ed28d3
+              https://ru.wikihow.com/%D0%B2%D1%8B%D1%87%D0%B8%D1%81%D0%BB%D0%B8%D1%82%D1%8C-%D0%B2%D1%8B%D0%B1%D1%80%D0%BE%D1%81%D1%8B 
+    """
+    a = np.array(x)
+    upper_quartile = np.percentile(a, 75)
+    lower_quartile = np.percentile(a, 25)
+    IQR = (upper_quartile - lower_quartile) * outlierConstant
+    quartileSet = (lower_quartile - IQR, upper_quartile + IQR)
+    resultList = []
+    for y in a.tolist():
+        if y >= quartileSet[0] and y <= quartileSet[1]:
+            resultList.append(y)
+    return resultList
 
+def removeOutliers2(x, m = 2.):
+    """
+        @see: https://stackoverflow.com/a/16562028/2285037
+    """
+    data = np.array(x)
+    d = np.abs(data - np.median(data))
+    mdev = np.median(d)
+    s = d/mdev if mdev else 0.
+    return data[s<m].tolist()
 #===============================================================================
 # 
 #===============================================================================

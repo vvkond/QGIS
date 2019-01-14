@@ -6,6 +6,7 @@ from QgisPDS.utils import *
 from qgis.core import QgsField 
 from collections import namedtuple
 from utils import edit_layer, cached_property
+from calc_statistics import removeOutliers, removeOutliers2
 
 try:
     from PyQt4.QtCore import QString
@@ -64,9 +65,9 @@ class Debit(MyStruct):
     value=0
     dt=''
     def __repr__(self):
-        return "{}:{}".format(self.dt,self.value)
+        return u"'{}:{}'".format(self.dt.toString('yyyy.M.d'),self.value)
     def __str__(self):
-        return "{}:{}".format(self.dt,self.value)
+        return self.__repr__()
     
 
 #===============================================================================
@@ -75,11 +76,11 @@ class Debit(MyStruct):
 class ProdDebit(object):
     DEBIT_TYPE_MASS='mass'
     DEBIT_TYPE_VOL='vol'
-    records_limit=3          #limit of stored items
+    records_limit=5          #limit of stored items
     enable_bad_data_filter=False
     filter_koef=3
     debits=None
-    def __init__(self,records_limit=3,enable_bad_data_filter=False,filter_koef=3):
+    def __init__(self,records_limit=3,enable_bad_data_filter=False,filter_koef=3,log_msg_on_bad_data_filtered=''):
         self.debits={
                 self.DEBIT_TYPE_MASS:[]
                 ,self.DEBIT_TYPE_VOL:[]
@@ -87,6 +88,7 @@ class ProdDebit(object):
         self.records_limit=records_limit
         self.enable_bad_data_filter=enable_bad_data_filter
         self.filter_koef=filter_koef
+        self.log_msg_on_bad_data_filtered=log_msg_on_bad_data_filtered
         
     def sorted_func(self,valueOld,valueNew):
         #QgsMessageLog.logMessage(u"{}  {}".format(str(valueNew),str(valueOld)), tag="QgisPDS.debug")
@@ -111,19 +113,32 @@ class ProdDebit(object):
         pass
     
     def bad_data_filter(self,items):
-        if len(items)>=2:
-            for idx in range(len(items)-1):
-                if items[idx+1].value>0 and items[idx].value/items[idx+1].value>=self.filter_koef:
-                    continue
-                else:
-                    #if idx>0: QgsMessageLog.logMessage(u"\t{}".format(str(items[idx:] )), tag="QgisPDS.info")
-                    return items[idx:]
-            #QgsMessageLog.logMessage(u"\t{}".format(str([items[-1]] )), tag="QgisPDS.info")
-            return [items[-1]]
-        else:
-            #QgsMessageLog.logMessage(u"\t{}".format(str([items[0]] )), tag="QgisPDS.debug")
-            return [items[0]] 
-     
+        res=removeOutliers([item.value for item in items],self.filter_koef)
+        return [item for item in items if item.value in res]
+#         if len(items)>=2:
+#             for idx in range(len(items)-1):
+#                 if items[idx+1].value>0 and items[idx].value/items[idx+1].value>=self.filter_koef:
+#                     continue
+#                 else:
+#                     #if idx>0: QgsMessageLog.logMessage(u"\t{}".format(str(items[idx:] )), tag="QgisPDS.info")
+#                     return items[idx:]
+#             #QgsMessageLog.logMessage(u"\t{}".format(str([items[-1]] )), tag="QgisPDS.info")
+#             return [items[-1]]
+#         else:
+#             #QgsMessageLog.logMessage(u"\t{}".format(str([items[0]] )), tag="QgisPDS.debug")
+#             return [items[0]] 
+
+    def bad_data_filter_and_print(self,debit_type,log_prefix):
+        res=self.bad_data_filter([row for row in self.debits[debit_type]])
+        if res[0].value!=self.debits[debit_type][0].value:
+            QgsMessageLog.logMessage(u"{}".format(self.log_msg_on_bad_data_filtered), tag="QgisPDS.info")
+            QgsMessageLog.logMessage(u"\t{}".format(log_prefix), tag="QgisPDS.info")
+            QgsMessageLog.logMessage(u"\t\t {}".format(", ".join(map(str, [self.debits[debit_type][i] for i in range(len(self.debits[debit_type]))] )) ), tag="QgisPDS.info")
+            QgsMessageLog.logMessage(u"\t\t-> {}".format(str(res)), tag="QgisPDS.info")
+            pass
+        return res
+         
+    
     @property
     def massValue(self):
         debit_type=self.DEBIT_TYPE_MASS
@@ -131,14 +146,10 @@ class ProdDebit(object):
             if not self.enable_bad_data_filter:
                 return  self.debits[debit_type][0].value
             else:
-                res=self.bad_data_filter([row for row in self.debits[debit_type]])
-                if len(res)!=len(self.debits[debit_type]):
-                    QgsMessageLog.logMessage(u"\tMass", tag="QgisPDS.info")
-                    QgsMessageLog.logMessage(u"\t\t {}".format(",".join(map(str, [self.debits[debit_type][i] for i in range(len(self.debits[debit_type]))] )) ), tag="QgisPDS.info")
-                    QgsMessageLog.logMessage(u"\t\t-> {}".format(str(res)), tag="QgisPDS.info")
-                    pass
+                res=self.bad_data_filter_and_print(debit_type,log_prefix="Mass")
                 return res[0].value
         else: return None
+                
     @property
     def massDebitDate(self):
         debit_type=self.DEBIT_TYPE_MASS
@@ -156,11 +167,7 @@ class ProdDebit(object):
             if not self.enable_bad_data_filter:
                 return  self.debits[debit_type][0].value
             else:
-                res=self.bad_data_filter([row for row in self.debits[debit_type]])
-                if len(res)!=len(self.debits[debit_type]):
-                    QgsMessageLog.logMessage(u"\tVolume", tag="QgisPDS.info")
-                    QgsMessageLog.logMessage(u"\t\t {}".format(",".join(map(str, [self.debits[debit_type][i] for i in range(len(self.debits[debit_type]))] )) ), tag="QgisPDS.info")
-                    QgsMessageLog.logMessage(u"\t\t-> {}".format(str(res)), tag="QgisPDS.info")
+                res=self.bad_data_filter_and_print(debit_type,log_prefix="Volume")
                 return res[0].value
         else: return None
  

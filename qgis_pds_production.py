@@ -1061,9 +1061,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMass(  fl.code), sumMass[i])
             self.setWellAttribute(prodWell.name, bblInit.attrFluidVolume(fl.code), sumVols[i])
 
-        QgsMessageLog.logMessage(u"\nwell {}".format(prodWell.name), tag="QgisPDS.info")
+        #QgsMessageLog.logMessage(u"\nwell {}".format(prodWell.name), tag="QgisPDS.info")
         for i, fl in enumerate(bblInit.fluidCodes):
-            QgsMessageLog.logMessage(u"\t{}".format(fl.name), tag="QgisPDS.info")
+            #QgsMessageLog.logMessage(u"\t{}".format(fl.name), tag="QgisPDS.info")
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitMass(    fl.code), prodWell.maxDebits[i].massValue)
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitDateMass(fl.code), prodWell.maxDebits[i].massDebitDate)
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitVol(     fl.code), prodWell.maxDebits[i].volValue)
@@ -1835,7 +1835,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             symbolId,role,status,status_reason,status_info,initial_role = self.bbl_wellsymbol(wId,maxDt=maxDt)
             self.loadWellFeature(wId, symbolId)
             pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
-                                 maxDebits = [ProdDebit(records_limit=self.maxDebitRange.value(), enable_bad_data_filter=self.maxDebitGrpBox.isChecked(), filter_koef=self.maxDebitKoef.value()) for c in bblInit.fluidCodes]
+                                 maxDebits = [ProdDebit(records_limit=self.maxDebitRange.value(), enable_bad_data_filter=self.maxDebitGrpBox.isChecked(), filter_koef=self.maxDebitKoef.value() ,log_msg_on_bad_data_filtered=u"Well: {}".format(well_name)  ) for c in bblInit.fluidCodes]
                                  ,wRole = role
                                  ,wStatus = status
                                  ,wStatusReason = status_reason 
@@ -1967,7 +1967,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                         well.setGeometry(QgsGeometry.fromPoint(pt))
                         self.mWells[well_name] = well
                         pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
-                                             maxDebits=[ProdDebit(records_limit=self.maxDebitRange.value(), enable_bad_data_filter=self.maxDebitGrpBox.isChecked(), filter_koef=self.maxDebitKoef.value()) for c in bblInit.fluidCodes]
+                                             maxDebits=[ProdDebit(records_limit=self.maxDebitRange.value(), enable_bad_data_filter=self.maxDebitGrpBox.isChecked(), filter_koef=self.maxDebitKoef.value(),log_msg_on_bad_data_filtered=u"Well: {}".format(well_name)   ) for c in bblInit.fluidCodes]
                                              ,wRole=wellRole
                                              ,wStatus=wellStatus
                                              ,wStatusReason=wellStatusReason
