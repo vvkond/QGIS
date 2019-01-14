@@ -7,6 +7,7 @@ from qgis.core import QgsField
 from collections import namedtuple
 from utils import edit_layer, cached_property
 from calc_statistics import removeOutliers, removeOutliers2
+import numpy as np
 
 try:
     from PyQt4.QtCore import QString
@@ -79,8 +80,13 @@ class ProdDebit(object):
     records_limit=5          #limit of stored items
     enable_bad_data_filter=False
     filter_koef=3
+    skeep_filter_koef=4
     debits=None
-    def __init__(self,records_limit=3,enable_bad_data_filter=False,filter_koef=3,log_msg_on_bad_data_filtered=''):
+    def __init__(self,records_limit=3,enable_bad_data_filter=False,filter_koef=3,skeep_filter_koef=3,log_msg_on_bad_data_filtered=''):
+        """
+            @param filter_koef: 
+            @param skeep_filter_koef: different betweenn max/min for skeep filter use
+        """
         self.debits={
                 self.DEBIT_TYPE_MASS:[]
                 ,self.DEBIT_TYPE_VOL:[]
@@ -89,6 +95,7 @@ class ProdDebit(object):
         self.enable_bad_data_filter=enable_bad_data_filter
         self.filter_koef=filter_koef
         self.log_msg_on_bad_data_filtered=log_msg_on_bad_data_filtered
+        self.skeep_filter_koef=skeep_filter_koef
         
     def sorted_func(self,valueOld,valueNew):
         #QgsMessageLog.logMessage(u"{}  {}".format(str(valueNew),str(valueOld)), tag="QgisPDS.debug")
@@ -98,23 +105,26 @@ class ProdDebit(object):
                  ,debit # type: Debit
                  ,debit_type
                  ):
-        
-        if len(self.debits[debit_type])==0:
-            self.debits[debit_type].append(debit)
-        else:
-            isInserted=False
-            for idx,debit_old in enumerate(self.debits[debit_type]):
-                if self.sorted_func(debit_old,debit):
-                    self.debits[debit_type].insert(idx, debit)
-                    isInserted=True
-                    break
-            if not isInserted and len(self.debits[debit_type])<self.records_limit: self.debits[debit_type].append(debit)
-            self.debits[debit_type]=self.debits[debit_type][:self.records_limit]
+        if debit.value>0:
+            if len(self.debits[debit_type])==0:
+                self.debits[debit_type].append(debit)
+            else:
+                isInserted=False
+                for idx,debit_old in enumerate(self.debits[debit_type]):
+                    if self.sorted_func(debit_old,debit):
+                        self.debits[debit_type].insert(idx, debit)
+                        isInserted=True
+                        break
+                if not isInserted and len(self.debits[debit_type])<self.records_limit: self.debits[debit_type].append(debit)
+                self.debits[debit_type]=self.debits[debit_type][:self.records_limit]
         pass
     
     def bad_data_filter(self,items):
-        res=removeOutliers([item.value for item in items],self.filter_koef)
-        return [item for item in items if item.value in res]
+        med=np.median(np.array([item.value for item in items]))
+        if items[0].value/med>=self.skeep_filter_koef:
+            res=removeOutliers([item.value for item in items],self.filter_koef)
+            return [item for item in items if item.value in res]
+        else: return items
 #         if len(items)>=2:
 #             for idx in range(len(items)-1):
 #                 if items[idx+1].value>0 and items[idx].value/items[idx+1].value>=self.filter_koef:

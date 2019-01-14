@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>543</width>
-    <height>497</height>
+    <width>574</width>
+    <height>496</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -275,39 +275,54 @@
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>311</width>
+        <width>358</width>
         <height>22</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="maxDebitLayout">
        <item>
         <widget class="QLabel" name="maxDebitLabelRange">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Выборка- размер используемого ряда для филтрации выбросов.&lt;/p&gt;&lt;p&gt;Коэффициент- коэффициент для расчета границ выбросов.&lt;/p&gt;&lt;p&gt;Макс. расхождение - допустимое расхождение между макс.значение/медиана  для исключения ряда из фильтрации выбросов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
-          <string>Выборка:</string>
+          <string>Выборка/Коэфф./Макс. расхождение</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QSpinBox" name="maxDebitRange">
-         <property name="value">
-          <number>5</number>
+         <property name="toolTip">
+          <string>Выборка- размер используемого ряда для филтрации выбросов</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="maxDebitLabelKoef">
-         <property name="text">
-          <string>Граничный коэфф.:</string>
+         <property name="value">
+          <number>15</number>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QDoubleSpinBox" name="maxDebitKoef">
+         <property name="toolTip">
+          <string>Коэффициент- коэффициент для расчета границ допустимых значений. Все за границами считается выбросом.</string>
+         </property>
          <property name="decimals">
           <number>1</number>
          </property>
          <property name="value">
-          <double>3.000000000000000</double>
+          <double>2.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="maxDebitFilterUseKoef">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Макс. расхождение - допустимое расхождение между &lt;/p&gt;&lt;p&gt;макс.значением/медианой  для исключения ряда из фильтрации выбросов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <double>8.000000000000000</double>
          </property>
         </widget>
        </item>

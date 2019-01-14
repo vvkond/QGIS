@@ -1835,7 +1835,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             symbolId,role,status,status_reason,status_info,initial_role = self.bbl_wellsymbol(wId,maxDt=maxDt)
             self.loadWellFeature(wId, symbolId)
             pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
-                                 maxDebits = [ProdDebit(records_limit=self.maxDebitRange.value(), enable_bad_data_filter=self.maxDebitGrpBox.isChecked(), filter_koef=self.maxDebitKoef.value() ,log_msg_on_bad_data_filtered=u"Well: {}".format(well_name)  ) for c in bblInit.fluidCodes]
+                                 maxDebits = [ProdDebit(
+                                                        records_limit=self.maxDebitRange.value()
+                                                        , enable_bad_data_filter=self.maxDebitGrpBox.isChecked()
+                                                        , filter_koef=self.maxDebitKoef.value() 
+                                                        , skeep_filter_koef=self.maxDebitFilterUseKoef.value()
+                                                        , log_msg_on_bad_data_filtered=u"Well: {}-> {}".format(well_name,c.alias)  
+                                                        ) for c in bblInit.fluidCodes]
                                  ,wRole = role
                                  ,wStatus = status
                                  ,wStatusReason = status_reason 
@@ -1967,7 +1973,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                         well.setGeometry(QgsGeometry.fromPoint(pt))
                         self.mWells[well_name] = well
                         pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
-                                             maxDebits=[ProdDebit(records_limit=self.maxDebitRange.value(), enable_bad_data_filter=self.maxDebitGrpBox.isChecked(), filter_koef=self.maxDebitKoef.value(),log_msg_on_bad_data_filtered=u"Well: {}".format(well_name)   ) for c in bblInit.fluidCodes]
+                                             maxDebits=[ProdDebit(
+                                                                records_limit=self.maxDebitRange.value()
+                                                                , enable_bad_data_filter=self.maxDebitGrpBox.isChecked()
+                                                                , filter_koef=self.maxDebitKoef.value() 
+                                                                , skeep_filter_koef=self.maxDebitFilterUseKoef.value()
+                                                                , log_msg_on_bad_data_filtered=u"Well: {}-> {}".format(well_name,c.alias)  
+                                                                 ) for c in bblInit.fluidCodes]
                                              ,wRole=wellRole
                                              ,wStatus=wellStatus
                                              ,wStatusReason=wellStatusReason
