@@ -32,7 +32,7 @@ def classFactory(iface):  # pylint: disable=invalid-name
     """
     #
     from qgis.PyQt.QtCore import QSettings
-    import os
+    import os,sys
     #settings = QSettings().allKeys()
     #for setting in settings:
     #    print setting
@@ -41,6 +41,9 @@ def classFactory(iface):  # pylint: disable=invalid-name
     settings_svg_path=current_conf.split("|")
     #svg_path=os.path.join(os.environ['USERPROFILE'],u'.qgis2',u'python',u'plugins',u'QgisPDS',u'svg')
     svg_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),u'svg')
+    utils_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),u'libs\\pds_opt_py')
+    sys.path.insert(0, utils_path)
+
     
     if svg_path not in settings_svg_path and svg_path is not None:
         QSettings().setValue('svg/searchPathsForSVG', current_conf+u'|'+svg_path)
