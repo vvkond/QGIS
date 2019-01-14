@@ -100,10 +100,13 @@ class ProdDebit(object):
         if len(self.debits[debit_type])==0:
             self.debits[debit_type].append(debit)
         else:
+            isInserted=False
             for idx,debit_old in enumerate(self.debits[debit_type]):
                 if self.sorted_func(debit_old,debit):
                     self.debits[debit_type].insert(idx, debit)
+                    isInserted=True
                     break
+            if not isInserted and len(self.debits[debit_type])<self.records_limit: self.debits[debit_type].append(debit)
             self.debits[debit_type]=self.debits[debit_type][:self.records_limit]
         pass
     
@@ -133,6 +136,7 @@ class ProdDebit(object):
                     QgsMessageLog.logMessage(u"\tMass", tag="QgisPDS.info")
                     QgsMessageLog.logMessage(u"\t\t {}".format(",".join(map(str, [self.debits[debit_type][i] for i in range(len(self.debits[debit_type]))] )) ), tag="QgisPDS.info")
                     QgsMessageLog.logMessage(u"\t\t-> {}".format(str(res)), tag="QgisPDS.info")
+                    pass
                 return res[0].value
         else: return None
     @property
