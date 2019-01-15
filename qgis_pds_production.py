@@ -93,6 +93,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.mDynamicCheckBox.setEnabled(  (not self.isFondLayer) and self.isCurrentProd)
         self.startDateEdit.setEnabled(not self.isFondLayer and (not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked())))
         self.firstDate.setEnabled(    not self.isFondLayer and (not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked())))
+        self.maxDebitGrpBox.setVisible( not self.isCurrentProd and not self.isFondLayer )
+        self.maxDebitGrpBox.setEnabled( not self.isCurrentProd and not self.isFondLayer )
 
         self.initialised = False
 
