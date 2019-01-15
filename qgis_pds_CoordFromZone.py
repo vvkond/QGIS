@@ -78,12 +78,17 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
         settings = QSettings()
         selectedZonations = settings.value("/PDS/Zonations/SelectedZonations/v"+self.scheme, [])
         selectedZones = settings.value("/PDS/Zonations/selectedZones/v"+self.scheme, [])
-
+        
         self.selectedZonations = [int(z) for z in selectedZonations]
         self.selectedZones = [int(z) for z in selectedZones]
 
 
         self.fillZonations()
+        field = QgsField( 'x', QVariant.Double )
+        self.editLayer.addExpressionField( '  $x  ', field )
+        field = QgsField( 'y', QVariant.Double )
+        self.editLayer.addExpressionField( '  $y  ', field )
+        
     #===========================================================================
     # 
     #===========================================================================
