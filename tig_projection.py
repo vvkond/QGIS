@@ -3,6 +3,12 @@ from __future__ import division
 import struct
 
 #from pyproj import Proj
+WGS84='epsg:4326'
+PULKOVO='EPSG:4284'
+DEFAULT_LATLON_PRJ=PULKOVO  # default projection for lat/lon
+DEFAULT_LAYER_PRJ=WGS84     # default projection if no default config in base
+
+AUTO_LOAD_DEFAULT_PROJ_NAME='_qgis_'
 
 from QgisPDS.utils import StrictInit, cached_property
 
@@ -29,10 +35,6 @@ Grads of Arc
 Mils of Arc
 '''
 
-WGS84='epsg:4326'
-PULKOVO='EPSG:4284'
-DEFAULT_LATLON_PRJ=PULKOVO  # default projection for lat/lon
-DEFAULT_LAYER_PRJ=WGS84     # default projection if no default config in base
 
 def double_to_degrees(val):
     sign = 1
@@ -296,19 +298,39 @@ class TigProjections(StrictInit):
     def default_projection_id(self):
         return _get_default_proj_id(self.db)
 
-
+#===============================================================================
+# 
+#===============================================================================
 def _get_default_proj_id(db):
+    """
+        @info: if have projection with specifiying name then return it else return project default projection id
+    """
     sql = '''
-SELECT
-    cpd.DB_SLDNID
-FROM
-    db_carto_projection_defs cpd
-WHERE
-    cpd.DB_CARTO_TYPE <> 0
-'''
+SELECT 
+    ---*
+    db_sldnid
+FROM (
+    SELECT
+        *
+    FROM
+        db_carto_projection_defs cpd
+    WHERE
+        cpd.DB_CARTO_USER_NAME='{tig_proj_name}' ---by default _qgis_
+    union all     
+    SELECT
+        *
+    FROM
+        db_carto_projection_defs cpd
+    WHERE
+        cpd.DB_CARTO_TYPE <> 0
+    )
+where ROWNUM=1            
+'''.format(tig_proj_name=AUTO_LOAD_DEFAULT_PROJ_NAME)
     return db.fetch_scalar(sql)
 
-
+#===============================================================================
+# 
+#===============================================================================
 def _get_tig_projection(db, proj_id):
     sql = '''
 SELECT
@@ -347,7 +369,9 @@ WHERE
 
     return get_tig_projection(**row)
 
-
+#===============================================================================
+# 
+#===============================================================================
 def get_tig_projection(pj_ref, **kw):
     try:
         constructor = _proj_by_ref_code[pj_ref]
