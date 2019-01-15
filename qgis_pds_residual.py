@@ -24,7 +24,7 @@ import csv
 
 from db import Oracle, Sqlite
 from QgisPDS.connections import create_connection
-from QgisPDS.utils import to_unicode, StrictInit, lonlat_add_list
+from QgisPDS.utils import to_unicode, StrictInit
 from bblInit import *
 from qgis_processing import *
 from tig_projection import *
