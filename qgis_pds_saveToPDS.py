@@ -30,7 +30,7 @@ class QgisSaveWellsToPDS(QtGui.QDialog, FORM_CLASS):
             if prjStr:
                 self.project = ast.literal_eval(prjStr)
 
-            self.proj4String = 'epsg:4326'
+            self.proj4String = DEFAULT_LAYER_PRJ
             self.db = None
 
             if not self.initDb():
@@ -56,7 +56,7 @@ class QgisSaveWellsToPDS(QtGui.QDialog, FORM_CLASS):
             self.db = connection.get_db(scheme)
             sourceCrs = self.currentLayer.crs()
             if sourceCrs is not None:
-                destSrc = QgsCoordinateReferenceSystem('epsg:4326')
+                destSrc = QgsCoordinateReferenceSystem(DEFAULT_LATLON_PRJ)
                 self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),

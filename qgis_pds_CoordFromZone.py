@@ -14,6 +14,7 @@ from connections import create_connection
 from QgisPDS.utils import to_unicode
 from QgisPDS.tig_projection import *
 from utils import edit_layer,WithQtProgressBar
+from tig_projection import DEFAULT_LAYER_PRJ, DEFAULT_LATLON_PRJ
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_zonations_base.ui'))
@@ -59,7 +60,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
             self.errorMessage(self.tr(u'{0}').format(str(e)))
             return
 
-        self.proj4String = 'epsg:4326'
+        self.proj4String = DEFAULT_LAYER_PRJ
         try:
             self.tig_projections = TigProjections(db=self.db)
             proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
@@ -67,7 +68,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                 self.proj4String = 'PROJ4:'+proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                sourceCrs = QgsCoordinateReferenceSystem('epsg:4326')
+                sourceCrs = QgsCoordinateReferenceSystem(DEFAULT_LATLON_PRJ)
                 self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),
@@ -232,12 +233,12 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
 
         return newCoords
     #===========================================================================
-    # 
+    # ---not used
     #===========================================================================
     def lon_lat_add(self, lon, lat, x, y):
         meterCrs = QgsCoordinateReferenceSystem()
         meterCrs.createFromProj4('+proj=tmerc +lon_0={} +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs'.format(lon))
-        geoCrs = QgsCoordinateReferenceSystem('epsg:4326')
+        geoCrs = QgsCoordinateReferenceSystem(DEFAULT_LATLON_PRJ)
 
         toMeters = QgsCoordinateTransform(geoCrs, meterCrs)
         toGeo = QgsCoordinateTransform(meterCrs, geoCrs)

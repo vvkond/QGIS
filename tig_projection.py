@@ -29,6 +29,10 @@ Grads of Arc
 Mils of Arc
 '''
 
+WGS84='epsg:4326'
+PULKOVO='EPSG:4284'
+DEFAULT_LATLON_PRJ=PULKOVO  # default projection for lat/lon
+DEFAULT_LAYER_PRJ=WGS84     # default projection if no default config in base
 
 def double_to_degrees(val):
     sign = 1

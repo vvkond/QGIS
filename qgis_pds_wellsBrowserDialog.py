@@ -13,6 +13,7 @@ from QgisPDS.connections import create_connection
 from utils import *
 from QgisPDS.tig_projection import *
 from qgis_pds_wellsBrowserForm import *
+from tig_projection import DEFAULT_LATLON_PRJ
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'wellsBrowserDialog_base.ui'))
@@ -48,7 +49,7 @@ class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
                 self.proj4String = 'PROJ4:' + proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                sourceCrs = QgsCoordinateReferenceSystem('epsg:4326')
+                sourceCrs = QgsCoordinateReferenceSystem(DEFAULT_LATLON_PRJ)
                 self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),

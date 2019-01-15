@@ -47,7 +47,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.setWindowTitle(self.windowTitle() + ' - ' + self.project['project'])
         self.mEmptyValue.setValue(float(QSettings().value('PDS/SaveToPDS/EmptyValue', '-9999')))
 
-        self.proj4String = 'epsg:4326'
+        self.proj4String = DEFAULT_LAYER_PRJ
         self.db = None
 
         if not self.initDb():

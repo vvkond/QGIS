@@ -11,8 +11,9 @@ from processing.tools.vector import VectorWriter
 import os
 import json
 import sys
+from tig_projection import DEFAULT_LATLON_PRJ
 
-MAX_FILE_NAME_SIZE=224
+MAX_FILE_NAME_SIZE=224- 24# -24 in some clients can't copy 224 named files
 
 class StrictInit(object):
     def __init__(self, **kw):
@@ -180,7 +181,7 @@ def load_style( layer,style_path,name=None ,rereadOnExist=False ,activeStyleName
 def lonlat_add_list(lon, lat, x, y):
     meterCrs = QgsCoordinateReferenceSystem()
     meterCrs.createFromProj4('+proj=tmerc +lon_0={} +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs'.format(lon))
-    geoCrs = QgsCoordinateReferenceSystem('epsg:4326')
+    geoCrs = QgsCoordinateReferenceSystem(DEFAULT_LATLON_PRJ)
 
     toMeters = QgsCoordinateTransform(geoCrs, meterCrs)
     toGeo = QgsCoordinateTransform(meterCrs, geoCrs)

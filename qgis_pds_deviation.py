@@ -52,7 +52,7 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
         self.attrLablOffX = "labloffx"
         self.attrLablOffY = "labloffy"
 
-        self.proj4String = 'epsg:4326'
+        self.proj4String = DEFAULT_LAYER_PRJ
         self.db = None
         self.wellIdList = []
         
@@ -77,7 +77,7 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
                 self.proj4String = 'PROJ4:' + proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                sourceCrs = QgsCoordinateReferenceSystem('epsg:4326')
+                sourceCrs = QgsCoordinateReferenceSystem(DEFAULT_LATLON_PRJ)
                 self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),
