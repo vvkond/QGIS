@@ -3,7 +3,7 @@ from __future__ import division
 import struct
 
 #from pyproj import Proj
-WGS84='epsg:4326'
+WGS84='EPSG:4326'
 PULKOVO='EPSG:4284'
 DEFAULT_LATLON_PRJ=PULKOVO  # default projection for lat/lon
 DEFAULT_LAYER_PRJ=WGS84     # default projection if no default config in base
@@ -34,8 +34,36 @@ Packed Degrees|Minutes|Seconds
 Grads of Arc
 Mils of Arc
 '''
+class QgisProjectionConfig():
+    @classmethod
+    def get_default_latlon_prj_epsg(cls):
+        return DEFAULT_LATLON_PRJ
+    @classmethod
+    def get_default_layer_prj_epsg(cls):
+        return DEFAULT_LAYER_PRJ
+#===============================================================================
+# 
+#===============================================================================
+def get_qgis_prj_default_projection(db):
+    
+    tig_projections = TigProjections(db=db)
+    proj = tig_projections.get_projection(tig_projections.default_projection_id)
+    if proj is not None:
+        proj4String = 'PROJ4:'+proj.qgis_string
+
+    QgsCoordinateReferenceSystem('EPSG:..')
+    
+    proj4String = 'PROJ4:'+proj.qgis_string
+    destSrc = QgsCoordinateReferenceSystem()
+    destSrc.createFromProj4(proj.qgis_string)
+
+    
+    pass
 
 
+#===============================================================================
+# 
+#===============================================================================
 def double_to_degrees(val):
     sign = 1
     if val < 0:
@@ -45,6 +73,8 @@ def double_to_degrees(val):
     minutes = val // 100 % 100
     degrees = val // 10000
     return sign * (degrees + minutes / 60 + seconds / 3600)
+
+
 
 
 class UnsupportedProjection(Exception):

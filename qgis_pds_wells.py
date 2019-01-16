@@ -38,7 +38,7 @@ class QgisPDSWells(QObject):
         self.project = project
         self.dateFormat = u'dd-MM-yyyy'
 
-        self.proj4String = DEFAULT_LAYER_PRJ
+        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
         self.db = None
         self.wellIdList = []
         
@@ -146,7 +146,7 @@ class QgisPDSWells(QObject):
                 self.proj4String = 'PROJ4:' + proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                sourceCrs = QgsCoordinateReferenceSystem(DEFAULT_LATLON_PRJ)
+                sourceCrs = QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg())
                 self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),

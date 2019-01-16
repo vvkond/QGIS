@@ -129,7 +129,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         
         self.setupUi(self)
 
-        self.proj4String = DEFAULT_LAYER_PRJ
+        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
         try:
             self.tig_projections = TigProjections(db=self.db)
             proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
@@ -137,7 +137,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
                 self.proj4String = 'PROJ4:'+proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                sourceCrs = QgsCoordinateReferenceSystem(DEFAULT_LATLON_PRJ)
+                sourceCrs = QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg())
                 self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),

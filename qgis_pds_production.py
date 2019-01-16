@@ -168,7 +168,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     # 
     #===========================================================================
     def _getProjection(self):
-        self.proj4String = DEFAULT_LAYER_PRJ
+        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
         connection = create_connection(self.project)
         scheme = self.project['project']
         try:
@@ -179,7 +179,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 self.proj4String = 'PROJ4:'+proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                sourceCrs = QgsCoordinateReferenceSystem(DEFAULT_LATLON_PRJ)
+                sourceCrs = QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg())
                 self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
         except Exception as e:
             QgsMessageLog.logMessage(u"Project projection read error {0}: {1}".format(scheme, str(e)), tag="QgisPDS.Error")

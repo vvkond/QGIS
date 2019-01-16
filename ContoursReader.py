@@ -80,7 +80,7 @@ class ContoursReader(ReaderBase):
     def createLayer(self, layerName, pdsProject, groupSetId, defaultValue):
         self.defaultParameter = defaultValue
 
-        proj4String = DEFAULT_LAYER_PRJ
+        proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
         try:
             self.tig_projections = TigProjections(db=self.db)
             proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
