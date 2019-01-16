@@ -12,7 +12,9 @@ import os
 import json
 import sys
 
-MAX_FILE_NAME_SIZE=224- 24# -24 in some clients can't copy 224 named files
+
+MAX_FILE_NAME_SIZE=224- 24- 50# -24 in some clients can't copy 224 named files
+
 
 class StrictInit(object):
     def __init__(self, **kw):
