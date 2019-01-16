@@ -57,7 +57,8 @@ class QgisSaveWellsToPDS(QtGui.QDialog, FORM_CLASS):
             sourceCrs = self.currentLayer.crs()
             if sourceCrs is not None:
                 destSrc = QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg())
-                self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                #self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Project projection read error {0}: {1}').format(

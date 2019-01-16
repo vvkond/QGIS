@@ -4,9 +4,12 @@ import struct
 
 #from pyproj import Proj
 WGS84='EPSG:4326'
+WGS84_UTM_ZONE9N='EPSG:32639'
 PULKOVO='EPSG:4284'
-DEFAULT_LATLON_PRJ=PULKOVO  # default projection for lat/lon
+PULKOVO_GK_ZONE9N='EPSG:28409'
+DEFAULT_LATLON_PRJ=WGS84  # default projection for lat/lon
 DEFAULT_LAYER_PRJ=WGS84     # default projection if no default config in base
+CRS_FIX_IDX=0     #index of type fix crs conversion
 
 AUTO_LOAD_DEFAULT_PROJ_NAME='_qgis_'
 
@@ -34,6 +37,9 @@ Packed Degrees|Minutes|Seconds
 Grads of Arc
 Mils of Arc
 '''
+#===============================================================================
+# 
+#===============================================================================
 class QgisProjectionConfig():
     @classmethod
     def get_default_latlon_prj_epsg(cls):
@@ -41,6 +47,30 @@ class QgisProjectionConfig():
     @classmethod
     def get_default_layer_prj_epsg(cls):
         return DEFAULT_LAYER_PRJ
+#===============================================================================
+# 
+#===============================================================================
+def get_qgis_crs_transform(sourceCrs,destSrc):
+    """
+        @info: function for fix stored in incorrect projection data.  
+    """
+    from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsMessageLog
+    if CRS_FIX_IDX==0:
+        return QgsCoordinateTransform(sourceCrs ,destSrc)
+    elif CRS_FIX_IDX==1: #lat/lon entered in Pulkovo_GKZone9N as WGS84_Zone9N and converrted to WGS84. Need convert WGS84->WGS84_Zone9N and read as Pulkovo_GKZone9N X without 9
+        QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+        if sourceCrs.srsid()==QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg()).srsid():
+            sourceCrs=QgsCoordinateReferenceSystem(WGS84)
+            destSrc=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
+            QgsMessageLog.logMessage(u"changed to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+        elif destSrc.srsid()==QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg()).srsid():
+            sourceCrs=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
+            destSrc=QgsCoordinateReferenceSystem(WGS84)
+            QgsMessageLog.logMessage(u"changed to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            
+        return QgsCoordinateTransform(sourceCrs ,destSrc)
+    
+
 #===============================================================================
 # 
 #===============================================================================
