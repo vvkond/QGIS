@@ -2060,7 +2060,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 well.setAttribute (Fields.SymbolId.name  , plugin_dir+"/svg/WellSymbol"+str(symbolId.symbol+1).zfill(3)+".svg")
                 well.setAttribute (Fields.Symbol.name    , symbolId.symbol+1                                                  )
                 well.setAttribute (Fields.SymbolName.name, symbolId.wellRole                                                  )
-            pt = QgsPoint(lon, lat)
+            pt = QgsPoint(lon if lon is not None else 0, lat if lat is not None else 0)
             if self.xform:
                 pt = self.xform.transform(pt)
             well.setGeometry(QgsGeometry.fromPoint(pt))
