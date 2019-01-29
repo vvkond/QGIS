@@ -181,7 +181,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 destSrc.createFromProj4(proj.qgis_string)
                 sourceCrs = QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg())
                 #self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
-                self.xform=get_qgis_crs_transform(sourceCrs,destSrc)
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id)
         except Exception as e:
             QgsMessageLog.logMessage(u"Project projection read error {0}: {1}".format(scheme, str(e)), tag="QgisPDS.Error")
 #             self.progressMessageBar.pushCritical(self.tr("Error"),
@@ -2046,7 +2046,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     # Load well geometry
     #===========================================================================
     def loadWellFeature(self, sldnid, symbolId):
-        sql = ("select tig_latest_well_name, tig_latitude, tig_longitude "
+        sql = ("select tig_latest_well_name,"
+               "  tig_latitude, tig_longitude "
                 "  from tig_well_history where db_sldnid = " + str(sldnid))
         result = self.db.execute(sql)
 

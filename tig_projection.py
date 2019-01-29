@@ -9,9 +9,9 @@ PULKOVO='EPSG:4284'
 PULKOVO_GK_ZONE9N='EPSG:28409'
 DEFAULT_LATLON_PRJ=WGS84  # default projection for lat/lon
 DEFAULT_LAYER_PRJ=WGS84     # default projection if no default config in base
-CRS_FIX_IDX=0     #index of type fix crs conversion
+#CRS_FIX_IDX=0     #index of type fix crs conversion
 
-AUTO_LOAD_DEFAULT_PROJ_NAME='_qgis_'
+AUTO_LOAD_DEFAULT_PROJ_NAME='_qgis_' # in projection comment use format: "fix_id:0:SomeText" "fix_id:1:SomeText"
 
 from QgisPDS.utils import StrictInit, cached_property
 
@@ -50,11 +50,12 @@ class QgisProjectionConfig():
 #===============================================================================
 # 
 #===============================================================================
-def get_qgis_crs_transform(sourceCrs,destSrc):
+def get_qgis_crs_transform(sourceCrs,destSrc,CRS_FIX_IDX=0):
     """
         @info: function for fix stored in incorrect projection data.  
     """
     from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsMessageLog
+    #QgsMessageLog.logMessage(u"CRS_FIX_IDX {0}".format(CRS_FIX_IDX), tag="QgisPDS.debug")
     if CRS_FIX_IDX==0:
         return QgsCoordinateTransform(sourceCrs ,destSrc)
     elif CRS_FIX_IDX==1: #lat/lon entered in Pulkovo_GKZone9N as WGS84_Zone9N and converrted to WGS84. Need convert WGS84->WGS84_Zone9N and read as Pulkovo_GKZone9N X without 9
@@ -357,18 +358,28 @@ class TigProjections(StrictInit):
     @cached_property
     def default_projection_id(self):
         return _get_default_proj_id(self.db)
-
+    @cached_property
+    def default_projection_comment(self):
+        return _get_default_proj_id(self.db,return_col='db_comment')
+    @cached_property
+    def fix_id(self):
+        result=None
+        try:
+            result=self.default_projection_comment.split("fix_id:")[1].split(":")[0]
+            result=int(result)
+        except:pass
+        return result
 #===============================================================================
 # 
 #===============================================================================
-def _get_default_proj_id(db):
+def _get_default_proj_id(db,return_col='db_sldnid'):
     """
         @info: if have projection with specifiying name then return it else return project default projection id
     """
     sql = '''
 SELECT 
     ---*
-    db_sldnid
+    {return_col}
 FROM (
     SELECT
         *
@@ -385,7 +396,9 @@ FROM (
         cpd.DB_CARTO_TYPE <> 0
     )
 where ROWNUM=1            
-'''.format(tig_proj_name=AUTO_LOAD_DEFAULT_PROJ_NAME)
+'''.format(tig_proj_name=AUTO_LOAD_DEFAULT_PROJ_NAME
+           ,return_col=return_col
+           )
     return db.fetch_scalar(sql)
 
 #===============================================================================
