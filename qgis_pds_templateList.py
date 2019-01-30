@@ -56,9 +56,10 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
         self.tableWidget.setSortingEnabled(False)
         for input_row in records:
             self.tableWidget.insertRow(row)
-
+            #QgsMessageLog.logMessage(u"template: {}".format(to_unicode(input_row[1])), tag="QgisPDS.debug")
+            
             sldnid = int(input_row[0])
-            item = QTableWidgetItem(input_row[1])
+            item = QTableWidgetItem(to_unicode(input_row[1]))
             item.setData(Qt.UserRole, sldnid)
             self.tableWidget.setItem(row, 0, item)
 
