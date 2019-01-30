@@ -122,9 +122,8 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             self.tig_projections = TigProjections(db=self.db)
             proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
             if proj and sourceCrs:
-                destSrc = QgsCoordinateReferenceSystem()
-                destSrc.createFromProj4(proj.qgis_string)
-                self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                destSrc = QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg())
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id,isSave=True)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Project projection read error {0}: {1}').format(

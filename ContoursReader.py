@@ -15,13 +15,15 @@ from ReaderBase import *
 from bblInit import STYLE_DIR
 
 class ContoursReader(ReaderBase):
-    def __init__(self, _dataType
+    def __init__(self
+                    ,iface
+                    , _dataType
                     ,styleName=None
                     ,styleUserDir=None
                     ,isShowSymbCategrized=False
                   ):
         super(ContoursReader, self).__init__()
-
+        self.iface=iface
         self.plugin_dir = os.path.dirname(__file__)
 
         self.setNoAttr = u'set_no'
@@ -80,23 +82,27 @@ class ContoursReader(ReaderBase):
     def createLayer(self, layerName, pdsProject, groupSetId, defaultValue):
         self.defaultParameter = defaultValue
 
-        proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
+        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
         try:
             self.tig_projections = TigProjections(db=self.db)
             proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
             if proj is not None:
-                proj4String = 'PROJ4:'+proj.qgis_string
+                self.proj4String = 'PROJ4:' + proj.qgis_string
+                destSrc = QgsCoordinateReferenceSystem()
+                destSrc.createFromProj4(proj.qgis_string)
+                sourceCrs = None
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr('Error'),
-                                                self.tr(u'Project projection read error {0}: {1}').format(
-                                                scheme, str(e)),
+                                                self.tr(u'Project projection read error {0}').format(
+                                                str(e)),
                                                 level=QgsMessageBar.CRITICAL)
             return
 
         if self.dataType == 1 and self.dialog.mLoadAsContourCheckBox.isChecked():
             self.geomType = "LineString"
 
-        self.uri = self.geomType + "?crs={}".format(proj4String)
+        self.uri = self.geomType + "?crs={}".format(self.proj4String)
         self.uri += '&field={}:{}'.format(self.setNoAttr, "double")
         self.uri += '&field={}:{}'.format(self.parameterNoAttr, "double")
         self.uri += '&field={}:{}'.format(self.subsetNoAttr, "double")
@@ -159,7 +165,8 @@ class ContoursReader(ReaderBase):
                     continue
 
                 i = 0
-                polyLine = []                
+                polyLine = []  
+                cPoint = QgsFeature(layer.fields())              
                 for x in xCoords:
                     y = yCoords[i]
                     # if self.dataType > 0 and i < paramLen:
@@ -167,10 +174,9 @@ class ContoursReader(ReaderBase):
                         param = zParams[i]
                     else:
                         param = self.defaultParameter
-
-                    cPoint = QgsFeature(layer.fields())
-
                     pt = QgsPoint(x, y)
+                    if self.xform:
+                        pt = self.xform.transform(pt)
                     polyLine.append(pt)
 
                     i = i + 1
@@ -180,7 +186,7 @@ class ContoursReader(ReaderBase):
                         cPoint.setGeometry(QgsGeometry.fromPolygon([polyLine]))
                     else:
                         cPoint.setGeometry(QgsGeometry.fromPolyline(polyLine))
-
+                    
                     cPoint.setAttribute(self.setNoAttr, raw[0])
                     cPoint.setAttribute(self.parameterNoAttr, raw[1])
                     cPoint.setAttribute(self.subsetNoAttr, raw[2])
@@ -192,7 +198,6 @@ class ContoursReader(ReaderBase):
                         cPoint.setAttribute(self.varNameAttr, raw[9])
 
                     uniqSymbols.add(raw[5])
-
                     layer.addFeatures([cPoint])
 
         # categories = []

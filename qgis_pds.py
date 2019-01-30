@@ -918,7 +918,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ControlPointReader())
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ControlPointReader(self.iface))
         dlg.exec_()
 
 
@@ -927,7 +927,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(0 ,styleName=CONTOUR_STYLE,styleUserDir=USER_CONTOUR_STYLE_DIR ,isShowSymbCategrized=False ))
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,0 ,styleName=CONTOUR_STYLE,styleUserDir=USER_CONTOUR_STYLE_DIR ,isShowSymbCategrized=False ))
         dlg.exec_()
 
 
@@ -936,7 +936,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(1 ,styleName=POLYGON_STYLE,styleUserDir=USER_POLYGON_STYLE_DIR ,isShowSymbCategrized=False ))
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,1 ,styleName=POLYGON_STYLE,styleUserDir=USER_POLYGON_STYLE_DIR ,isShowSymbCategrized=False ))
         dlg.exec_()
 
     def createSurfaceLayer(self):
@@ -954,7 +954,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(2 ,styleName=FAULT_STYLE,styleUserDir=USER_FAULT_STYLE_DIR ,isShowSymbCategrized=False ))
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,2 ,styleName=FAULT_STYLE,styleUserDir=USER_FAULT_STYLE_DIR ,isShowSymbCategrized=False ))
         dlg.exec_()
       
 

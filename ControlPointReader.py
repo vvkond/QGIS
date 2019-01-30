@@ -14,11 +14,12 @@ from ReaderBase import *
 
 
 class ControlPointReader(ReaderBase):
-    def __init__(self):
+    def __init__(self,iface):
         super(ControlPointReader, self).__init__()
 
         self.db = None
         self.layer = None
+        self.iface=iface
         self.plugin_dir = os.path.dirname(__file__)
 
         self.setNoAttr = u'set_no'
@@ -36,14 +37,25 @@ class ControlPointReader(ReaderBase):
 
 
     def createLayer(self, layerName, pdsProject, groupSetId, defaultValue):
-        proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
-        self.tig_projections = TigProjections(db=self.db)
-        proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
-        if proj is not None:
-            proj4String = 'PROJ4:'+proj.qgis_string
+        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
+        try:
+            self.tig_projections = TigProjections(db=self.db)
+            proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
+            if proj is not None:
+                self.proj4String = 'PROJ4:'+proj.qgis_string
+                destSrc = QgsCoordinateReferenceSystem()
+                destSrc.createFromProj4(proj.qgis_string)
+                sourceCrs = None
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id)
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr('Error'),
+                                                self.tr(u'Project projection read error {0}').format(
+                                                str(e)),
+                                                level=QgsMessageBar.CRITICAL)
+            return
 
 
-        self.uri = "Point?crs={}".format(proj4String)
+        self.uri = "Point?crs={}".format(self.proj4String)
         self.uri += '&field={}:{}'.format(self.setNoAttr, "double")
         self.uri += '&field={}:{}'.format(self.parameterNoAttr, "double")
         self.uri += '&field={}:{}'.format(self.subsetNoAttr, "double")
@@ -79,7 +91,6 @@ class ControlPointReader(ReaderBase):
         return layer
 
     def readData(self, layer, groupSetId):
-        sourceCrs = None
 
         # self.tig_projections = TigProjections(db=self.db)
         # proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
@@ -120,6 +131,9 @@ class ControlPointReader(ReaderBase):
                     cPoint = QgsFeature(layer.fields())
 
                     pt = QgsPoint(x, y)
+                    if self.xform:
+                        pt = self.xform.transform(pt)
+                    
                     # if sourceCrs is not None:
                     #     geom = QgsGeometry.fromPoint(xform.transform(pt))
                     # else:
