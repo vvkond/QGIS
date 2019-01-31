@@ -86,10 +86,11 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
 
 
         self.fillZonations()
-        field = QgsField( 'x', QVariant.Double )
-        self.editLayer.addExpressionField( '  $x  ', field )
-        field = QgsField( 'y', QVariant.Double )
-        self.editLayer.addExpressionField( '  $y  ', field )
+        if self.editLayer:
+            field = QgsField( 'x', QVariant.Double )
+            self.editLayer.addExpressionField( '  $x  ', field )
+            field = QgsField( 'y', QVariant.Double )
+            self.editLayer.addExpressionField( '  $y  ', field )
         
     #===========================================================================
     # 
