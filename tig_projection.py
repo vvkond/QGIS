@@ -58,7 +58,7 @@ def get_qgis_crs_transform(sourceCrs,destSrc,CRS_FIX_IDX=0,isSave=False,toLL=Fal
     from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsMessageLog
     QgsMessageLog.logMessage(u"CRS_FIX_IDX {0}".format(CRS_FIX_IDX), tag="QgisPDS.debug")
     #------------------------------------------------
-    if CRS_FIX_IDX==0:
+    if CRS_FIX_IDX==0 or CRS_FIX_IDX is None:
         #--- read XY  or source=dest
         if sourceCrs is None or destSrc is None or sourceCrs==destSrc:
             return None
