@@ -67,12 +67,12 @@ def get_qgis_crs_transform(sourceCrs,destSrc,CRS_FIX_IDX=0,isSave=False,toLL=Fal
             return QgsCoordinateTransform(sourceCrs ,destSrc)
     #------------------------------------------------
     elif CRS_FIX_IDX==1: #lat/lon entered in Pulkovo_GKZone9N as WGS84_Zone9N and converrted to WGS84. Need convert WGS84->WGS84_Zone9N and read as Pulkovo_GKZone9N X without 9
-        QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
         #--- read XY 
         if sourceCrs is None or destSrc is None:
             return None
         #---read LL
         elif not isSave and sourceCrs.srsid()==QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg()).srsid():
+            QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
             sourceCrs=QgsCoordinateReferenceSystem(WGS84)
             destSrc=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
             QgsMessageLog.logMessage(u"changed to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
@@ -84,17 +84,31 @@ def get_qgis_crs_transform(sourceCrs,destSrc,CRS_FIX_IDX=0,isSave=False,toLL=Fal
         elif isSave and toLL:
             raise "Not realized yet"
             # destSrc.srsid()==QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg()).srsid():
+            QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
             sourceCrs=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
             destSrc=QgsCoordinateReferenceSystem(WGS84)
             QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
             return QgsCoordinateTransform(sourceCrs ,destSrc)
-        #---save mapset
+        #---save mapset. Need convert to Pulkovo9N and then save as PDS projection!!!!!!
         elif isSave and not toLL:
             # destSrc.srsid()==QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg()).srsid():
             #sourceCrs=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
-            #destSrc=QgsCoordinateReferenceSystem(WGS84)
+            sourceCrs_1=sourceCrs
+            destSrc_1=QgsCoordinateReferenceSystem(PULKOVO_GK_ZONE9N)
+            sourceCrs_2=QgsCoordinateReferenceSystem(PULKOVO_GK_ZONE9N)
+            destSrc_2=destSrc
+            class fake_transform():
+                def __init__(self):
+                    QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(sourceCrs_1.srsid(),destSrc_2.srsid()), tag="QgisPDS.debug")
+                    self.trans1=QgsCoordinateTransform(sourceCrs_1 ,destSrc_1)
+                    QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs_1.srsid(),destSrc_1.srsid()), tag="QgisPDS.debug")
+                    self.trans2=QgsCoordinateTransform(sourceCrs_2 ,destSrc_2)
+                    QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs_2.srsid(),destSrc_2.srsid()), tag="QgisPDS.debug")
+                    pass
+                def transform(self,geom):
+                    return self.trans2.transform(self.trans1.transform(geom))
             #QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
-            return QgsCoordinateTransform(sourceCrs ,destSrc)
+            return fake_transform()
         
     #------------------------------------------------
     elif CRS_FIX_IDX==2: #Binagadi

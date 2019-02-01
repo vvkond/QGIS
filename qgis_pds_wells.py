@@ -131,6 +131,7 @@ class QgisPDSWells(QObject):
 
     def initDb(self):
         if self.project is None:
+            QgsMessageLog.logMessage(self.tr(u'No current PDS project'), tag="QgisPDS.error")
             self.iface.messageBar().pushMessage(self.tr("Error"),
                 self.tr(u'No current PDS project'), level=QgsMessageBar.CRITICAL)
 
@@ -150,10 +151,10 @@ class QgisPDSWells(QObject):
                 #self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
                 self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id)
         except Exception as e:
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                                                self.tr(u'Project projection read error {0}: {1}').format(
-                                                    scheme, str(e)),
-                                                level=QgsMessageBar.CRITICAL)
+            QgsMessageLog.logMessage(self.tr(u'Project projection read error {0}: {1}').format(scheme, str(e)), tag="QgisPDS.error")
+            self.iface.messageBar().pushMessage(self.tr("Error")
+                                                ,self.tr(u'Project projection read error {0}: {1}').format(scheme, str(e))
+                                                ,level=QgsMessageBar.CRITICAL)
             return False
         return True
 
