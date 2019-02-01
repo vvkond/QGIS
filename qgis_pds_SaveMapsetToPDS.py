@@ -51,6 +51,9 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.db = None
 
         if not self.initDb():
+            btnOK = self.buttonBox.button(self.buttonBox.Ok)
+            btnOK.setEnabled(False)
+            btnCancel = self.buttonBox.button(self.buttonBox.Cancel)
             return
 
         self.prop = self.currentLayer.customProperty("qgis_pds_type")
@@ -113,7 +116,9 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             QgsMessageLog.logMessage(self.tr(u'No current PDS project'), tag="QgisPDS.error")
             self.iface.messageBar().pushMessage(self.tr("Error")
                 ,self.tr(u'No current PDS project')
-                , level=QgsMessageBar.CRITICAL)
+                , level=QgsMessageBar.CRITICAL
+                , duration=10
+                )
             
             return False
 
@@ -133,7 +138,9 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             QgsMessageLog.logMessage(self.tr(u'Project projection read error {0}: {1}').format(scheme, str(e)), tag="QgisPDS.error")
             self.iface.messageBar().pushMessage(self.tr("Error")
                                                 ,self.tr(u'Project projection read error {0}: {1}').format(scheme, str(e))
-                                                ,level=QgsMessageBar.CRITICAL)
+                                                ,level=QgsMessageBar.CRITICAL
+                                                ,duration=10
+                                                )
             return False
         return True
 
