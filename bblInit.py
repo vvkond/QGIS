@@ -593,7 +593,7 @@ class bblInit:
                     "4CONDENSAT_PRODUCTION"  : StandardDiagram(name=u"Диаграмма конденсата", scale=3000000, unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0, 0])
                 }
 
-    bblSymbols = [
+    bblSymbols = [ # IN QGIS USE symbolcode+1. For example 70+1 ="unknown well" 
             BBL_SYMBOL("unknown well", "active stock", 70,
                        QCoreApplication.translate('bblInit', u'unknown well')),
             BBL_SYMBOL("oil producing", "active stock", 81,
