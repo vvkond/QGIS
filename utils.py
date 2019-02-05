@@ -262,3 +262,30 @@ def createProjectString(args):
     sid = options['sid']
 
     return u'{0}/{1}/{2}'.format(host, sid, projectName)
+
+
+#===============================================================================
+# 
+#===============================================================================
+import platform   # For getting the operating system name
+import subprocess  # For executing a shell command
+
+def ping(host,hidden=True):
+    """
+    Returns True if host (str) responds to a ping request.
+    Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
+    """
+
+    # Ping command count option as function of OS
+    param = '-n' if platform.system()=='Windows' else '-c'
+
+    # Building the command. Ex: "ping -c 1 google.com"
+    command = ['ping', param, '1', host]
+    
+    startupinfo = None
+    if hidden:
+        if os.name == 'nt':
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW#subprocess.STARTF_USESHOWWINDOW
+    #proc = subprocess.Popen(command, startupinfo=startupinfo)    
+    return subprocess.call(command, startupinfo=startupinfo) == 0
