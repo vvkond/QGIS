@@ -1,18 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from PyQt4.QtCore import *
 from qgis.core import *
-from PyQt4 import QtGui, uic, QtCore
-from PyQt4.QtGui import *
-from qgis import core, gui
+from qgis.gui import QgsMessageBar
+from qgis.PyQt.QtCore import *
+from qgis.PyQt import QtGui, uic
+from qgis.PyQt.QtGui import *
+from qgis_pds_wellsBrowserDialog import QgisPDSWellsBrowserDialog
+from qgis_pds_wells import QgisPDSWells
+import ast
 import os
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_refreshSetup_base.ui'))
-
+#===============================================================================
+# 
+#===============================================================================
 class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
-    def __init__(self, _project, parent=None):
+    def __init__(self, _iface, _project, parent=None, filterWellIds=None ):
         super(QgisPDSRefreshSetup, self).__init__(parent)
+        self.filterWellIds = filterWellIds # list of well ids for read from base. 
+        self.isNeedFilterWellIds = False   # need or not use self.filterWellIds
 
         self.setupUi(self)
 
@@ -23,9 +30,27 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
 
         self.restoreSettings()
 
+        self.project = _project
+        self.iface = _iface
+    #===========================================================================
+    # 
+    #===========================================================================
+    def on_button_OpenBrowser(self):
+        dlg = QgisPDSWellsBrowserDialog(self.iface, self.project, selectedIds=self.filterWellIds)
+        dlg
+        if dlg.exec_():
+            self.filterWellIds=dlg.getWellIds()
+            self.isNeedFilterWellIds=True
+        del dlg
+
+    #===========================================================================
+    # 
+    #===========================================================================
     def on_buttonBox_accepted(self):
         self.saveSettings()
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def saveSettings(self):
         sett = QSettings()
 
@@ -49,6 +74,11 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
             sett.setValue('PDS/refreshSetup/mDeleteMissingCheckBox', 'True')
         else:
             sett.setValue('PDS/refreshSetup/mDeleteMissingCheckBox', 'False')
+            
+        if self.isNeedFilterWellIds:
+            sett.setValue('PDS/refreshSetup/mFilterWellIds', str(self.filterWellIds))
+        else:
+            sett.setValue('PDS/refreshSetup/mFilterWellIds', str(None))
 
     def restoreSettings(self):
         sett = QSettings()
@@ -57,6 +87,10 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
         self.mSelectedCheckBox.setChecked(sett.value('PDS/refreshSetup/mSelectedCheckBox', 'False') == 'True')
         self.mAddMissingCheckBox.setChecked(sett.value('PDS/refreshSetup/mAddMissingCheckBox', 'False') == 'True')
         self.mDeleteMissingCheckBox.setChecked(sett.value('PDS/refreshSetup/mDeleteMissingCheckBox', 'False') == 'True')
+        #try:
+        #    self.filterWellIds = ast.literal_eval(sett.value('PDS/refreshSetup/mFilterWellIds'))
+        #except: 
+        #    self.filterWellIds =None
 
     @property
     def isRefreshKoords(self):

@@ -15,7 +15,7 @@ import ast
 import os
 import time
 
-from bblInit import STYLE_DIR
+from bblInit import STYLE_DIR, Fields
 from utils import load_styles_from_dir, load_style, plugin_path, edit_layer,\
     WithQtProgressBar
 
@@ -220,7 +220,7 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
         return num
 
 
-    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
+    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=None):
         if self.db is None and layer:
             # prjStr = layer.customProperty("pds_project")
             # self.project = ast.literal_eval(prjStr)
@@ -232,7 +232,11 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
             with edit_layer(layer):
                 for f in layer.getFeatures():
                     well_name = f.attribute(self.attrWellId)
-                    if self.checkWell(well_name) < 1:
+                    well_id = f.attribute(Fields.Sldnid.name)
+                    if (filterWellIds is not None) and (well_id not in filterWellIds):
+                        deletedWells.append(well_name)
+                        layer.deleteFeature(f.id())
+                    elif self.checkWell(well_name) < 1:
                         deletedWells.append(well_name)
                         layer.deleteFeature(f.id())
             if len(deletedWells):
@@ -258,7 +262,9 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
                 lng = row[19]
                 lat = row[20]
                 wellId = int(row[1])
-                if lng and lat and (allWells or wellId in self.wellIdList):
+                if (filterWellIds is not None) and (wellId not in filterWellIds):
+                    continue
+                elif lng and lat and (allWells or wellId in self.wellIdList):
                     pt = QgsPoint(lng, lat)
 
                     if self.xform:

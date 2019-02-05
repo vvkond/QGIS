@@ -8,18 +8,17 @@ from PyQt4 import QtGui, uic
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
 from utils import *
 from QgisPDS.tig_projection import *
-from qgis_pds_wellsBrowserForm import *
+from qgis_pds_wellsBrowserForm import QgisPDSWellsBrowserForm
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'wellsBrowserDialog_base.ui'))
 
 class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
     """Constructor."""
-    def __init__(self, _iface, _project, parent=None):
+    def __init__(self, _iface, _project, parent=None, selectedIds=None):
         super(QgisPDSWellsBrowserDialog, self).__init__(parent)
         self.setupUi(self)
 
@@ -28,7 +27,7 @@ class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
         self.iface = _iface
         self.initDb()
 
-        self.wellsBrowser = QgisPDSWellsBrowserForm(_iface, self.db, self.getAllWells, self.project, parent=self)
+        self.wellsBrowser = QgisPDSWellsBrowserForm(_iface, self.db, self.getAllWells, self.project, parent=self, selectedIds=selectedIds)
         self.verticalLayout.insertWidget(0, self.wellsBrowser)
 
     def initDb(self):

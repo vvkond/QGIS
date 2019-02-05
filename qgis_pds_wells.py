@@ -175,7 +175,7 @@ class QgisPDSWells(QObject):
         return num
 
 
-    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
+    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=None):
         if self.db is None and layer:
             # prjStr = layer.customProperty("pds_project")
             # self.project = ast.literal_eval(prjStr)
@@ -187,7 +187,11 @@ class QgisPDSWells(QObject):
             with edit_layer(layer):
                 for f in layer.getFeatures():
                     well_name = f.attribute(Fields.WellId.name)
-                    if self.checkWell(well_name) < 1:
+                    well_id = f.attribute(Fields.Sldnid.name)
+                    if (filterWellIds is not None) and (well_id not in filterWellIds):
+                        deletedWells.append(well_name)
+                        layer.deleteFeature(f.id())
+                    elif self.checkWell(well_name) < 1:
                         deletedWells.append(well_name)
                         layer.deleteFeature(f.id())
             if len(deletedWells):
@@ -209,7 +213,9 @@ class QgisPDSWells(QObject):
                 lng = row[20]
                 lat = row[19]
                 wellId = int(row[1])
-                if lng and lat and (allWells or wellId in self.wellIdList):
+                if (filterWellIds is not None) and (wellId not in filterWellIds):
+                    continue
+                elif lng and lat and (allWells or wellId in self.wellIdList):
                     pt = QgsPoint(lng, lat)
                     
                     if self.xform:

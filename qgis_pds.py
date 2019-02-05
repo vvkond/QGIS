@@ -990,14 +990,14 @@ class QgisPDS(QObject):
         #     layer.attributeValueChanged.connect(self.pdsLayerModified)
 
         
-    def refreshWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
+    def refreshWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=None):
         wells = QgisPDSWells(self.iface, project)
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing)
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=filterWellIds)
 
 
-    def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
+    def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=None):
         wells = QgisPDSDeviation(self.iface, project ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing)
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=filterWellIds)
 
 
     def productionSetup(self):
@@ -1052,7 +1052,7 @@ class QgisPDS(QObject):
         return
 
     def refreshLayer(self):
-        threads = []
+#        threads = []
         for currentLayer in self.iface.legendInterface().selectedLayers():
             self.refreshcurrentLayer(currentLayer)
 #             process = Thread(target=self.refreshcurrentLayer, args=[currentLayer])
@@ -1071,11 +1071,15 @@ class QgisPDS(QObject):
 
         currentLayer.blockSignals(True)
         prop = currentLayer.customProperty("qgis_pds_type")
+        layerWellIds,_=currentLayer.getValues(Fields.Sldnid.name)
+        
         if prop == "pds_wells":
-            dlg = QgisPDSRefreshSetup(self.currentProject)
+            dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
             if dlg.exec_():
                 self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                  dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing)
+                                  dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
+                                  ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
+                                  )
         elif prop == "pds_fond":
             self.refreshProduction(currentLayer, self.currentProject, isOnlyFond=True)                
         elif prop == "pds_current_production":
@@ -1083,10 +1087,12 @@ class QgisPDS(QObject):
         elif prop == "pds_cumulative_production":
             self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=False)
         elif prop == "pds_well_deviations":
-            dlg = QgisPDSRefreshSetup(self.currentProject)
+            dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
             if dlg.exec_():
                 self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                        dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing)
+                                        dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
+                                        ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
+                                        )
         currentLayer.blockSignals(False)
 
        

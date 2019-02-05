@@ -281,7 +281,29 @@ class WellsItemsModel(QAbstractItemModel):
         self.beginResetModel()
         self.checkStates = [checked for r in self.checkStates]
         self.endResetModel()
-
         # index1 = self.index(0, 0)
         # index2 = self.index(self.rowCount(), 0)
         # self.dataChanged.emit(index1, index2)
+        
+    def rowId(self,rowData):
+        row=None
+        try:
+            row=self.arraydata.index(rowData)
+        except:pass
+        return row
+        
+    def getDataFiltered(self,filter_func=lambda row:True): 
+        filterdata=filter(filter_func, self.arraydata)
+        return filterdata
+               
+    def setCheckState(self, checked, row):
+        if row >= 0 and row < len(self.arraydata):
+            self.beginResetModel()
+            self.checkStates[row]=checked
+            self.endResetModel()
+        
+        
+        
+        
+        
+        
