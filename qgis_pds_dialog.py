@@ -25,11 +25,13 @@ import os
 
 from PyQt4 import QtGui, uic
 from qgis.gui import QgsMessageBar
+from qgis.core import  QgsMessageLog
 from db import Sqlite
 from connections import create_connection
 from QgisPDS.utils import to_unicode
 from os.path import abspath
 import json
+from utils import ping
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_dialog_base.ui'))
@@ -170,8 +172,11 @@ class QgisPDSDialog(QtGui.QDialog, FORM_CLASS):
         }
  
     def _getPDSProjects(self, options):
-        connection = create_connection(options)
+        connection = create_connection(options)        
         try:
+            QgsMessageLog.logMessage('Try connect to : ' + str(options), 'QgisPDS.debug')
+            if not ping(connection.host):
+                raise Exception("Can't find host {}".format(connection.host))
             self.db = connection.get_db('global')
             result = self.db.execute('SELECT PROJECT_NAME, PROJECT_HOST, PROJECT_SERVER FROM project WHERE PROJECT_NAME <> \'global\' ')
             return result
