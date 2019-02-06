@@ -19,6 +19,7 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
     def __init__(self, _iface, _project, parent=None, filterWellIds=None ):
         super(QgisPDSRefreshSetup, self).__init__(parent)
         self.filterWellIds = filterWellIds # list of well ids for read from base. 
+        self.bckpfilterWellIds = filterWellIds 
         self.isNeedFilterWellIds = False   # need or not use self.filterWellIds
 
         self.setupUi(self)
@@ -33,14 +34,19 @@ class QgisPDSRefreshSetup(QtGui.QDialog, FORM_CLASS):
         self.project = _project
         self.iface = _iface
     #===========================================================================
-    # 
+    # btnOpenBrowser
     #===========================================================================
     def on_button_OpenBrowser(self):
         dlg = QgisPDSWellsBrowserDialog(self.iface, self.project, selectedIds=self.filterWellIds)
-        dlg
         if dlg.exec_():
+            self.btnOpenBrowser.setStyleSheet("background-color: red")
             self.filterWellIds=dlg.getWellIds()
             self.isNeedFilterWellIds=True
+        else:
+            self.btnOpenBrowser.setStyleSheet("")
+            self.filterWellIds=self.bckpfilterWellIds
+            self.isNeedFilterWellIds=False
+            
         del dlg
 
     #===========================================================================
