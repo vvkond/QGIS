@@ -470,13 +470,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             palyr.labelOffsetInMapUnits = False
             palyr.distInMapUnits = True
             palyr.displayAll = True
-            palyr.textColor = QtGui.QColor(255,0,0)
             palyr.fontSizeInMapUnits = False
-            palyr.textFont.setPointSizeF(7)
+            palyr=layer_to_labeled(palyr)  #---enable EasyLabel            
+            #palyr.textColor = QtGui.QColor(255,0,0)
+            #palyr.textFont.setPointSizeF(7)
+            #palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'', Fields.lablx.name)
+            #palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'', Fields.lably.name)
+            #palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
 
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX,True,False,'', Fields.lablx.name)
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY,True,False,'', Fields.lably.name)
-            palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True, 'format(\'%1,%2\', "labloffx" , "labloffy")', '')
             palyr.writeToLayer(self.layer)
             
             if self.isFondLayer:
