@@ -16,6 +16,7 @@ from .utils import to_unicode, makeShpFileName
 from .tig_projection import *
 from .qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 from utils import edit_layer
+from bblInit import layer_to_labeled
 
 
 IS_DEBUG=False
@@ -123,6 +124,7 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
     def performOperationTwoLayers(self):
         selectedZonations = []
         selectedZones = []
+        selectedZonesNames = []
         for si in self.zonationListWidget.selectedItems():
             selectedZonations.append(int(si.data(Qt.UserRole)))
 
@@ -130,6 +132,7 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         for zones in self.zoneListWidget.selectedItems():
             sel = zones.data(Qt.UserRole)
             selectedZones.append(sel[0])
+            selectedZonesNames.append(zones.text())
 
         if sel is None:
             return selectedZonations, selectedZones
@@ -137,8 +140,9 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         settings = QSettings()
         systemEncoding = settings.value('/UI/encoding', 'System')
 
-        transiteName = u'transite - ' + self.editLayer.name()
-        targetName = u'target - ' + self.editLayer.name()
+        transiteName = u'transite_' +"_".join(map(str,selectedZonesNames))+"_" +self.editLayer.name()
+        targetName = u'target_'+"_".join(map(str,selectedZonesNames))+"_" + self.editLayer.name()
+        
         reg = QgsMapLayerRegistry.instance()
         reg.removeMapLayers(reg.mapLayersByName(transiteName))
         reg.removeMapLayers(reg.mapLayersByName(targetName))
@@ -193,15 +197,20 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         del targetWriter
 
         pds_type = self.editLayer.customProperty("qgis_pds_type", "")
+        pds_prj = self.editLayer.customProperty("pds_project", "")
 
         targetLayer = QgsVectorLayer(targetFileName, targetName, 'ogr')
         transiteLayer = QgsVectorLayer(transiteFileName, transiteName, 'ogr')
 
-        targetLayer.setCustomProperty("qgis_pds_type", pds_type)
-        transiteLayer.setCustomProperty("qgis_pds_type", pds_type)
-
-        QgsMapLayerRegistry.instance().addMapLayer( targetLayer )
-        QgsMapLayerRegistry.instance().addMapLayer( transiteLayer )
+        for layer in [targetLayer, transiteLayer]:
+            palyr = QgsPalLayerSettings()
+            palyr.readFromLayer(layer)
+            palyr=layer_to_labeled(palyr)  #---enable EasyLabel
+            palyr.writeToLayer(layer)
+            layer.setCustomProperty("qgis_pds_type", pds_type)
+            layer.setCustomProperty("pds_project", pds_prj)
+            
+            QgsMapLayerRegistry.instance().addMapLayer( layer )
 
         return selectedZonations, selectedZones
 
