@@ -12,7 +12,7 @@ import math
 import xml.etree.cElementTree as ET
 import re
 import time
-from utils import plugin_path, start_edit_layer
+from utils import plugin_path, start_edit_layer, qgs_get_last_child_rules, qgs_set_symbol_render_level
 from qgis_pds_prodRenderer import BubbleSymbolLayer
 
 
@@ -77,8 +77,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.bubbleProps = None
         renderer = self.currentLayer.rendererV2()
         if renderer is not None and renderer.type() == 'RuleRenderer':
-            root_rule = renderer.rootRule()
-            for r in root_rule.children():
+            rootRule = renderer.rootRule()
+            for r in rootRule.children():
                 if r.symbol():
                     for l in r.symbol().symbolLayers():
                         if l.layerType() == 'BubbleDiagramm':
@@ -702,18 +702,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         load_styles_from_dir(layer=editLayer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_RENDER_STYLE_DIR),switchActiveStyle=False)
         
         ########################################################
-        #--If append to current style and current style QgsRuleBasedRendererV2
+        #--- If append to current style and current style QgsRuleBasedRendererV2
         ########################################################
-        def get_last_child_rules(rule):
-            childrenRules=rule.children()
-            res=[]
-            if len(childrenRules)>0:
-                for childrenRule in childrenRules:
-                    res.extend(get_last_child_rules(childrenRule))
-            else:
-                res=[rule]
-            return res
-
         layerCurrentStyleRendere=editLayer.rendererV2()
 
         if (not self.isUseDefaultStyle.isChecked()) and type(layerCurrentStyleRendere)==QgsRuleBasedRendererV2:
@@ -722,7 +712,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             rootRule=layerCurrentStyleRendere.rootRule()
             #rootRule.active()   rootRule.filterExpression()
             if self.isAppendToEachLastSymbol.isChecked():
-                for lastRule in get_last_child_rules(rootRule): 
+                for lastRule in qgs_get_last_child_rules(rootRule): 
                     #lastRule.label()
                     #lastRule.symbol()
                     #lastRule.symbol().symbolLayers()[0]
@@ -796,140 +786,182 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                     rule.setLabel(newName)
                 except:
                     rule.setLabel(ff.name)
-                rule.setFilterExpression(u'\"SymbolCode\"=-1')
+                rule.setFilterExpression(u'\"{}\"=-1'.format(Fields.Symbol.name))
                 rootRule.appendChild(rule)
                 
         ########################################################
-        #--If Use default production style 
+        #--- If Use default production style 
         ########################################################
         else:
             load_style(layer=editLayer, style_path=os.path.join(plugin_dir ,STYLE_DIR ,PROD_RENDER_STYLE+".qml"), name=QCoreApplication.translate('bblInit', PROD_RENDER_STYLE))
+            
+            rootRules=[] # list of root rules for append them symbology
+            renderer = QgsRuleBasedRendererV2(QgsRuleBasedRendererV2.Rule(None))
+            superRootRule = renderer.rootRule() #super Root Rule
+            
+            #--- group rootRule by days
+            if self.chkboxGroupByDays.isChecked():
+                for idx,(lbl,expr,isActive) in enumerate([
+                     [QCoreApplication.translate('bblInit', u'HAVE WORK DAYS and IN FOND') 
+                                                          , u'\"{}\">0 and \"{}\"<>71'.format(Fields.Days.name,Fields.Symbol.name)
+                                                          ,True
+                     ]
+                    ,[QCoreApplication.translate('bblInit', u'HAVE WORK DAYS and NOT IN FOND') 
+                                                          , u'\"{}\">0 and \"{}\"=71'.format(Fields.Days.name,Fields.Symbol.name)
+                                                          ,True
+                     ]
+                    ,[QCoreApplication.translate('bblInit', u'NO WORK DAYS and IN FOND') 
+                                                          , u'not \"{}\">0 and \"{}\"<>71'.format(Fields.Days.name,Fields.Symbol.name)
+                                                          ,True
+                     ]
+                    ,[QCoreApplication.translate('bblInit', u'NO WORK DAYS and NOT IN FOND') 
+                                                          , u'not \"{}\">0 and \"{}\"=71'.format(Fields.Days.name,Fields.Symbol.name)
+                                                          ,False
+                     ]
+                    
+                    ]):
+                    #------ RULE FOR DAYS>0
+                    rule = QgsRuleBasedRendererV2.Rule(None)
+                    rule.setLabel(lbl)
+                    rule.setFilterExpression(expr)
+                    rule.setActive(isActive)
+                    superRootRule.appendChild(rule)
+                    rootRules.append(superRootRule.children()[idx])
+
+            #--- not group rootRule by days
+            else:
+                rootRules=[superRootRule]
+            
             #---CREATE SYMBOLOGY for current style
             registry = QgsSymbolLayerV2Registry.instance()
-            
-            #------PDS CHART SYMBOL
-            symbol = QgsMarkerSymbolV2()
             bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
-            if bubbleMeta is not None:
-                bubbleProps = {}
-                bubbleProps['showLineouts'] = 'False' if self.showLineouts.isChecked() else 'True'
-                bubbleProps['showLabels'] = 'True'
-                bubbleProps['showDiagramms'] = 'True'
-                bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
-                bubbleProps['diagrammStr'] = diagrammStr
-                bubbleProps['templateStr'] = templateStr
-                bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
-                if bubbleLayer:
-                    bubbleLayer.setSize(3)
-                    bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
-                    symbol.changeSymbolLayer(0, bubbleLayer)
-            else:
-                symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
-    
-            renderer = QgsRuleBasedRendererV2(symbol) # Layer Symbol style rendere
-            root_rule = renderer.rootRule()
             
-            #------LINES
-            if bubbleMeta and self.showLineouts.isChecked():
-                bubbleProps = {}
-                bubbleProps['showLineouts'] = 'True' if self.showLineouts.isChecked() else 'False'
-                bubbleProps['showLabels'] = 'False'
-                bubbleProps['showDiagramms'] = 'False'
-                bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
-                bubbleProps['diagrammStr'] = diagrammStr
-                bubbleProps['templateStr'] = templateStr
-                bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
-                if bubbleLayer:
-                    bubbleLayer.setSize(3)
-                    bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
-                    symbol1 = QgsMarkerSymbolV2()
-                    symbol1.changeSymbolLayer(0, bubbleLayer)
-                    rule = QgsRuleBasedRendererV2.Rule(symbol1)
-                    rule.setLabel(u'Скважины')
-                    root_rule.appendChild(rule)
-    
-            # args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
-            sSize = self.mSymbolSize.value()
-            root_rule.children()[0].setLabel(diagLabel)
-            #------SVG SYMBOLS
-            for symId in uniqSymbols:
-                svg = QgsSvgMarkerSymbolLayerV2()
-                svg.setPath(plugin_dir + "/svg/WellSymbol" + str(symId).zfill(3) + ".svg")
-                svg.setSize(sSize)
-                svg.setSizeUnit(QgsSymbolV2.MM)
+            for rootRule in rootRules:
+                #------PDS CHART SYMBOL
                 symbol = QgsMarkerSymbolV2()
-                symbol.changeSymbolLayer(0, svg)
+                if bubbleMeta is not None:
+                    bubbleProps = {}
+                    bubbleProps['showLineouts'] = 'False' if self.showLineouts.isChecked() else 'True'
+                    bubbleProps['showLabels'] = 'True'
+                    bubbleProps['showDiagramms'] = 'True'
+                    bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                    bubbleProps['diagrammStr'] = diagrammStr
+                    bubbleProps['templateStr'] = templateStr
+                    bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                    if bubbleLayer:
+                        bubbleLayer.setSize(3)
+                        bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                        symbol.changeSymbolLayer(0, bubbleLayer)
+                else:
+                    symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
+                rule = QgsRuleBasedRendererV2.Rule(symbol) #
+                rootRule.appendChild(rule)
     
-                rule = QgsRuleBasedRendererV2.Rule(symbol)
+                
+                #------LINES
+                if bubbleMeta and self.showLineouts.isChecked():
+                    bubbleProps = {}
+                    bubbleProps['showLineouts'] = 'True' if self.showLineouts.isChecked() else 'False'
+                    bubbleProps['showLabels'] = 'False'
+                    bubbleProps['showDiagramms'] = 'False'
+                    bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                    bubbleProps['diagrammStr'] = diagrammStr
+                    bubbleProps['templateStr'] = templateStr
+                    bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                    if bubbleLayer:
+                        bubbleLayer.setSize(3)
+                        bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                        symbol1 = QgsMarkerSymbolV2()
+                        symbol1.changeSymbolLayer(0, bubbleLayer)
+                        qgs_set_symbol_render_level(symbol1, 10)
+                        rule = QgsRuleBasedRendererV2.Rule(symbol1)
+                        rule.setLabel(u'Скважины')
+                        
+                        rootRule.appendChild(rule)
+        
+                # args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
+                sSize = self.mSymbolSize.value()
+                rootRule.children()[0].setLabel(diagLabel)
+                #------SVG SYMBOLS
+                for symId in uniqSymbols:
+                    svg = QgsSvgMarkerSymbolLayerV2()
+                    svg.setPath(plugin_dir + "/svg/WellSymbol" + str(symId).zfill(3) + ".svg")
+                    svg.setSize(sSize)
+                    svg.setSizeUnit(QgsSymbolV2.MM)
+                    symbol = QgsMarkerSymbolV2()
+                    symbol.changeSymbolLayer(0, svg)
+                    qgs_set_symbol_render_level(symbol, 5)
+        
+                    rule = QgsRuleBasedRendererV2.Rule(symbol)
+                    try:
+                        rule.setLabel(QCoreApplication.translate('bblInit', uniqSymbols[symId]))
+                    except:
+                        rule.setLabel(uniqSymbols[symId])
+        
+                    rule.setFilterExpression(u'\"{0}\"={1}'.format("SymbolCode", symId))
+                    rootRule.appendChild(rule)
+                #------CIRCLE SYMBOLS
+                for key,ff in prods.iteritems():
+                    m = QgsSimpleMarkerSymbolLayerV2()
+                    m.setSize(4)
+                    m.setSizeUnit(QgsSymbolV2.MM)
+                    m.setColor(ff.backColor)
+                    symbol = QgsMarkerSymbolV2()
+                    symbol.changeSymbolLayer(0, m)
+        
+                    rule = QgsRuleBasedRendererV2.Rule(symbol)
+                    try:
+                        newName = QCoreApplication.translate('bblInit', ff.name)
+                        rule.setLabel(newName)
+                    except:
+                        rule.setLabel(ff.name)
+                    rule.setFilterExpression(u'\"SymbolCode\"=-1')
+                    rootRule.appendChild(rule)
+        
+                #------ add arrow FROM_LOWER_RESERVOIR/FROM_UPPER_RESERVOIR
+                rule = QgsRuleBasedRendererV2.Rule(None)
+                rule.setLabel(QCoreApplication.translate('bblInit', u'RESERVOIR_TRANSITION'))
+                rule.setActive(False)
+                #---------FROM_LOWER_RESERVOIR
+                symbol = QgsMarkerSymbolV2.createSimple({ 
+                                                           'name': 'arrow'
+                                                         , 'color': "128,128,128,0"
+                                                         , 'offset': '0,-2'
+                                                         , 'angle':'0'
+                                                         , 'size':str(sSize-1)
+                                                        })
+                sub_rule = QgsRuleBasedRendererV2.Rule(symbol)
                 try:
-                    rule.setLabel(QCoreApplication.translate('bblInit', uniqSymbols[symId]))
+                    sub_rule.setLabel(QCoreApplication.translate('bblInit', u'FROM_LOWER_RESERVOIR'))
                 except:
-                    rule.setLabel(uniqSymbols[symId])
-    
-                rule.setFilterExpression(u'\"{0}\"={1}'.format("SymbolCode", symId))
-                root_rule.appendChild(rule)
-            #------CIRCLE SYMBOLS
-            for key,ff in prods.iteritems():
-                m = QgsSimpleMarkerSymbolLayerV2()
-                m.setSize(4)
-                m.setSizeUnit(QgsSymbolV2.MM)
-                m.setColor(ff.backColor)
-                symbol = QgsMarkerSymbolV2()
-                symbol.changeSymbolLayer(0, m)
-    
-                rule = QgsRuleBasedRendererV2.Rule(symbol)
+                    sub_rule.setLabel(u"FROM_LOWER_RESERVOIR")
+                sub_rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_LOWER_RESERVOIR'")) 
+                rule.appendChild(sub_rule)
+                #---------FROM_UPPER_RESERVOIR
+                symbol = QgsMarkerSymbolV2.createSimple({ 
+                                                           'name': 'arrow'
+                                                         , 'color': "128,128,128,0"
+                                                         , 'offset': '0,-2'
+                                                         , 'angle':'180'
+                                                         , 'size':str(sSize-1)
+                                                        })
+                sub_rule = QgsRuleBasedRendererV2.Rule(symbol)
                 try:
-                    newName = QCoreApplication.translate('bblInit', ff.name)
-                    rule.setLabel(newName)
+                    sub_rule.setLabel(QCoreApplication.translate('bblInit', u'FROM_UPPER_RESERVOIR'))
                 except:
-                    rule.setLabel(ff.name)
-                rule.setFilterExpression(u'\"SymbolCode\"=-1')
-                root_rule.appendChild(rule)
-    
-            #------ add arrow FROM_LOWER_RESERVOIR/FROM_UPPER_RESERVOIR
-            rule = QgsRuleBasedRendererV2.Rule(None)
-            rule.setLabel(QCoreApplication.translate('bblInit', u'RESERVOIR_TRANSITION'))
-            rule.setActive(False)
-            #---------FROM_LOWER_RESERVOIR
-            symbol = QgsMarkerSymbolV2.createSimple({ 
-                                                       'name': 'arrow'
-                                                     , 'color': "128,128,128,0"
-                                                     , 'offset': '0,-2'
-                                                     , 'angle':'0'
-                                                     , 'size':str(sSize-1)
-                                                    })
-            sub_rule = QgsRuleBasedRendererV2.Rule(symbol)
-            try:
-                sub_rule.setLabel(QCoreApplication.translate('bblInit', u'FROM_LOWER_RESERVOIR'))
-            except:
-                sub_rule.setLabel(u"FROM_LOWER_RESERVOIR")
-            sub_rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_LOWER_RESERVOIR'")) 
-            rule.appendChild(sub_rule)
-            #---------FROM_UPPER_RESERVOIR
-            symbol = QgsMarkerSymbolV2.createSimple({ 
-                                                       'name': 'arrow'
-                                                     , 'color': "128,128,128,0"
-                                                     , 'offset': '0,-2'
-                                                     , 'angle':'180'
-                                                     , 'size':str(sSize-1)
-                                                    })
-            sub_rule = QgsRuleBasedRendererV2.Rule(symbol)
-            try:
-                sub_rule.setLabel(QCoreApplication.translate('bblInit', u'FROM_UPPER_RESERVOIR'))
-            except:
-                sub_rule.setLabel(u'FROM_UPPER_RESERVOIR')
-            sub_rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_UPPER_RESERVOIR'")) 
-            rule.appendChild(sub_rule)
-            root_rule.appendChild(rule)
-    
-            #--------- 
-            renderer.setOrderByEnabled(True)
-            orderByClause = QgsFeatureRequest.OrderByClause('BubbleSize', False)
-            orderBy = QgsFeatureRequest.OrderBy([orderByClause])
-            renderer.setOrderBy(orderBy)
-            editLayer.setRendererV2(renderer)
-            #---------
-            root_rule.children()[0].setLabel(self.resultRuleName.text())
+                    sub_rule.setLabel(u'FROM_UPPER_RESERVOIR')
+                sub_rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_UPPER_RESERVOIR'")) 
+                rule.appendChild(sub_rule)
+                rootRule.appendChild(rule)
+        
+                #--------- 
+                renderer.setOrderByEnabled(True)
+                orderByClause = QgsFeatureRequest.OrderByClause('BubbleSize', False)
+                orderBy = QgsFeatureRequest.OrderBy([orderByClause])
+                renderer.setOrderBy(orderBy)
+                editLayer.setRendererV2(renderer)
+                #---------
+                rootRule.children()[0].setLabel(self.resultRuleName.text())
     
         editLayer.triggerRepaint()
         self.mIface.layerTreeView().refreshLayerSymbology(editLayer.id())

@@ -263,6 +263,20 @@ def createProjectString(args):
 
     return u'{0}/{1}/{2}'.format(host, sid, projectName)
 
+def qgs_get_last_child_rules(rule):
+    childrenRules=rule.children()
+    res=[]
+    if len(childrenRules)>0:
+        for childrenRule in childrenRules:
+            res.extend(qgs_get_last_child_rules(childrenRule))
+    else:
+        res=[rule]
+    return res
+def qgs_set_symbol_render_level(symbol,level):
+    for symbollayer in symbol.symbolLayers():
+        symbollayer.setRenderingPass(level)
+
+
 
 #===============================================================================
 # 
