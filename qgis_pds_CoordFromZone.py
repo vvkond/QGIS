@@ -15,11 +15,15 @@ from QgisPDS.utils import to_unicode
 from QgisPDS.tig_projection import *
 from utils import edit_layer,WithQtProgressBar
 from tig_projection import QgisProjectionConfig
+from bblInit import Fields
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_zonations_base.ui'))
 IS_DEBUG=False
 IS_USE_PUBLIC_DEVI_ONLY=True
+
+USTJE=-1
+ZABOY=-2
 #===============================================================================
 # 
 #===============================================================================
@@ -86,11 +90,6 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
 
 
         self.fillZonations()
-        if self.editLayer:
-            field = QgsField( 'x', QVariant.Double )
-            self.editLayer.addExpressionField( '  $x  ', field )
-            field = QgsField( 'y', QVariant.Double )
-            self.editLayer.addExpressionField( '  $y  ', field )
         
     #===========================================================================
     # 
@@ -109,6 +108,13 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     #===========================================================================
     def on_buttonBox_accepted(self):
         self.process()
+        if self.editLayer:
+            field = QgsField( 'x', QVariant.Double )
+            self.editLayer.addExpressionField( '  $x  ', field )
+            field = QgsField( 'y', QVariant.Double )
+            self.editLayer.addExpressionField( '  $y  ', field )
+            
+        
     #===========================================================================
     # 
     #===========================================================================
@@ -140,8 +146,6 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
             dataProvider.addAttributes([QgsField("TVD", QVariant.Double)])
 
         idx1 = dataProvider.fieldNameIndex('Well identifier')
-
-        
         self.showProgressBar(msg="Update well location", maximum=self.editLayer.featureCount())
         now=time.time()
         
@@ -152,8 +156,14 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                 if idx1 >= 0:
                     tigWellId = feature[u'Well identifier']
                 else:
-                    tigWellId = feature['well_id']
-                coords = self._getCoords(sel, tigWellId)
+                    tigWellId = feature[Fields.WellId.name]
+                coords=None
+                if sel[0]==USTJE:
+                    coords = self._getCoordsFromDevi(tigWellId,point_idx=0)
+                elif sel[0]==ZABOY:
+                    coords = self._getCoordsFromDevi(tigWellId,point_idx=-1)
+                else:
+                    coords = self._getCoords(sel, tigWellId)
                 if coords is not None:
                     IS_DEBUG and QgsMessageLog.logMessage(u"\t move well {} to {}".format(tigWellId,coords), tag="QgisPDS.coordFromZone")
                     geom = QgsGeometry.fromPoint(coords)
@@ -171,10 +181,22 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     #===========================================================================
     def on_zonationListWidget_itemSelectionChanged(self):
         self.zoneListWidget.clear()
+        item = QListWidgetItem(u'Устье')
+        item.setData(Qt.UserRole, [USTJE, 0, 0, 0])
+        item.setTextColor(QtGui.QColor("red"))
+        self.zoneListWidget.addItem(item)
         for si in self.zonationListWidget.selectedItems():
             self._fillZones(int(si.data(Qt.UserRole)))
+        item = QListWidgetItem(u'Забой')
+        item.setData(Qt.UserRole, [ZABOY, 0, 0, 0])
+        item.setTextColor(QtGui.QColor("red"))
+        self.zoneListWidget.addItem(item)
+        #items = self.zoneListWidget.findItems(u'Устье',Qt.MatchExactly)
+        #if len(items) > 0:
+        #    for item in items:
+        #        item.setTextColor(QtGui.QColor("red"))            
         if len(self.zoneListWidget.selectedItems()) < 1:
-            self.zoneListWidget.setCurrentRow(0)
+            self.zoneListWidget.setCurrentRow(1)
     #===========================================================================
     # 
     #===========================================================================
@@ -210,6 +232,47 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                     IS_DEBUG and QgsMessageLog.logMessage(u"\t well {} zone {} tvd {}".format(wellId, zoneDef[0], tvd), tag="QgisPDS.coordFromZone")
                     newCoords = self._calcOffset(pt.x(), pt.y(), x, y, md, tvd, depth)
         return newCoords
+    #===========================================================================
+    # 
+    #===========================================================================
+    def _getCoordsFromDevi(self, wellId, point_idx):
+        def read_floats(index):
+            return numpy.frombuffer(self.db.blobToString(input_row[index]), dtype='>f')            
+            #return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d') # deprecated
+
+        newCoords = None
+        sql = self.get_sql('ComputedDevi.sql')
+        records = self.db.execute(sql
+                                  , well_id=wellId
+                                  , only_pub_devi=1 if IS_USE_PUBLIC_DEVI_ONLY else None
+                                  )  #zoneDef= i_id, zonationId, i_order, i_level
+        if records is not None:
+            for input_row in records:
+                devi_id=input_row[3]
+                if devi_id is None:
+                    self.no_devi_wells.append(wellId)
+                    lon = input_row[1]
+                    lat = input_row[2]
+                    pt = QgsPoint(lon, lat)
+                    if self.xform:
+                        pt = self.xform.transform(pt)
+                    IS_DEBUG and QgsMessageLog.logMessage(u"\t well {} no devi. Use lat/lon".format(wellId), tag="QgisPDS.coordFromZone")
+                    newCoords = pt
+                else:
+                    lon = input_row[1]
+                    lat = input_row[2]
+                    x = read_floats(4)
+                    y = read_floats(5)
+                    md = read_floats(6)
+                    tvd = read_floats(7)
+                    if point_idx>=len(tvd):return None 
+                    depth = tvd[point_idx]  
+                    pt = QgsPoint(lon, lat)
+                    if self.xform:
+                        pt = self.xform.transform(pt)
+                    IS_DEBUG and QgsMessageLog.logMessage(u"\t well {} tvd {}".format(wellId, tvd), tag="QgisPDS.coordFromZone")
+                    newCoords = self._calcOffset(pt.x(), pt.y(), x, y, md, tvd, depth)
+        return newCoords    
     #===========================================================================
     # 
     #===========================================================================
@@ -286,7 +349,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
             f.close()
 
             records = self.db.execute(sql, zonation_id=zonationId)
-
+            
             scrollToItem = None
             for i_id, i_desc, i_name, i_order, i_level in records:
                 item = QListWidgetItem(to_unicode(i_desc))
@@ -297,7 +360,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                     item.setSelected(True)
                     if scrollToItem is None:
                         scrollToItem = item
-
+                             
             self.zoneListWidget.scrollToItem(scrollToItem)
 
         return

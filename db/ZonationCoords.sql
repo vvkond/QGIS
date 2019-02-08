@@ -75,7 +75,6 @@ with well_interval_pos as
         , tig_well_history wh
     where 
         wh.TIG_LATEST_WELL_NAME = :well_id
-        AND(cd.TIG_GLOBAL_DATA_FLAG = 1   OR :only_pub_devi IS NULL) 
         AND
         cd.DB_SLDNID IN
         (
@@ -85,6 +84,7 @@ with well_interval_pos as
             tig_computed_deviation cd2
         WHERE
             cd2.TIG_WELL_SLDNID = wh.DB_SLDNID
+			AND(cd2.TIG_GLOBAL_DATA_FLAG = 1   OR :only_pub_devi IS NULL)            
         )
 ),
 ---INFO ABOUT VARIABLE 
