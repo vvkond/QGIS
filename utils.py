@@ -103,7 +103,9 @@ class WithQtProgressBar():
         self.iface.messageBar().clearWidgets()
 
 def to_unicode(s,codding='utf-8'):
-    if isinstance(s, unicode):
+    if s is None:
+        return None
+    elif isinstance(s, unicode):
         return s
     return s.decode(codding)
 
