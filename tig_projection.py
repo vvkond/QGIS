@@ -53,6 +53,7 @@ class QgisProjectionConfig():
 def get_qgis_crs_transform(sourceCrs,destSrc,CRS_FIX_IDX=0,isSave=False,toLL=False):
     """
         @info: function for fix stored in incorrect projection data.  
+            fix_id must be present in PDS projection comment like 'fix_id:1:SomeText'
                 Save for Well(LL) not WORK!!!! only for mapsets
                 Warning!!!!. On save data first you must convert projection to _qgis_ elipsoid(Pulkovo/WGS...)
                     For example to 'layer crs'->PulkovoGK9N->_qgis_
