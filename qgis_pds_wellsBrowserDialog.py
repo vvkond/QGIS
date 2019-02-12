@@ -78,7 +78,7 @@ class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
                     well.append(to_unicode(rec[21]))  # Full name
                     well.append(to_unicode(rec[3]))  # Operator
                     well.append(rec[2])  # API number
-                    well.append(rec[11])  # Location
+                    well.append(to_unicode(rec[11]))  # Location
                     well.append(float(rec[19]))  # Latitude
                     well.append(float(rec[20]))  # Longitude
                     well.append(rec[22])  # Slot number

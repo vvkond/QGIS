@@ -102,21 +102,21 @@ class WellsItemsProxyModel(QSortFilterProxyModel):
         num = 0
 
         # Well name
-        wn = str(row[1])
+        wn = row[1] #unicode
         if wn:
             wells = [wn for w in self.wellnameFilter if
                      fnmatch.fnmatchcase(wn, w) or (not self.caseSensitive and fnmatch.fnmatch(wn, w))]
             num = num + 1 if len(wells) else num
 
         # Fullname
-        wn = str(row[2])
+        wn = row[2] #unicode
         if wn:
             wells = [wn for w in self.fullnameFilter if
                      fnmatch.fnmatchcase(wn, w) or (not self.caseSensitive and fnmatch.fnmatch(wn, w))]
             num = num + 1 if len(wells) else num
 
         # Operator
-        wn = str(row[3])
+        wn = row[3]  #unicode
         if wn:
             wells = [wn for w in self.operatorFilter if
                      fnmatch.fnmatchcase(wn, w) or (not self.caseSensitive and fnmatch.fnmatch(wn, w))]
@@ -130,7 +130,7 @@ class WellsItemsProxyModel(QSortFilterProxyModel):
             num = num + 1 if len(wells) else num
 
         # Location
-        wn = str(row[5])
+        wn = row[5] #unicode
         if wn:
             wells = [wn for w in self.locationFilter if
                      fnmatch.fnmatchcase(wn, w) or (not self.caseSensitive and fnmatch.fnmatch(wn, w))]
@@ -158,7 +158,7 @@ class WellsItemsProxyModel(QSortFilterProxyModel):
             num = num + 1 if len(wells) else num
 
         # Author
-        wn = str(row[9])
+        wn = row[9] #unicode
         if wn:
             wells = [wn for w in self.authorFilter if
                      fnmatch.fnmatchcase(wn, w) or (not self.caseSensitive and fnmatch.fnmatch(wn, w))]
