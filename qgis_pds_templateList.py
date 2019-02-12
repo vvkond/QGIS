@@ -79,6 +79,9 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
 
             row += 1
 
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.horizontalHeader().setResizeMode(1,QHeaderView.ResizeToContents) #QT5 .setSectionResizeMode #resize column to content
+        self.tableWidget.resizeColumnsToContents()
         self.tableWidget.setSortingEnabled(True)
 
     def fillUsersWidget(self):
