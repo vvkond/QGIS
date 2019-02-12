@@ -128,25 +128,25 @@ class QgisPDSTemplateListDialog(QtGui.QDialog, FORM_CLASS):
         for id in well_ids:
             listStr += '{0}\n'.format(id)
 
-        listName = self.mListNameEdit.text()
+        listName = self.mListNameEdit.text()#.encode('utf-8') #.text() result in unicode
         if len(listName) < 1:
             return
 
         listName = listName.strip()
 
         updateSql = ''
-        sql = ("select db_sldnid from tig_template where TIG_TEMPLATE_DESCRIP='{0}'"
-               " and  TIG_APPLICATION_NAME='brwwel'".format(listName))
+        sql = (u"select db_sldnid from tig_template where TIG_TEMPLATE_DESCRIP='{0}'"
+               u" and  TIG_APPLICATION_NAME='brwwel'".format(listName))
         records = self.db.execute(sql)
         if records:
             for rec in records:
-                updateSql = 'update tig_template set TIG_TEMPLATE_DATA=:blob where db_sldnid=' + str(rec[0])
+                updateSql = u'update tig_template set TIG_TEMPLATE_DATA=:blob where db_sldnid=' + str(rec[0])
                 break
 
         if len(updateSql) < 2:
-            updateSql = ("insert into tig_template (db_sldnid, TIG_APPLICATION_NAME, TIG_TEMPLATE_DESCRIP, "
-               "TIG_GLOBAL_DATA_FLAG, tig_interpreter_sldnid, TIG_TEMPLATE_DATA) "
-               "values (TIG_TEMPLATE_SEQ.nextval, 'brwwel', '{0}', 0, {1}, :blob)"
+            updateSql = (u"insert into tig_template (db_sldnid, TIG_APPLICATION_NAME, TIG_TEMPLATE_DESCRIP, "
+               u"TIG_GLOBAL_DATA_FLAG, tig_interpreter_sldnid, TIG_TEMPLATE_DATA) "
+               u"values (TIG_TEMPLATE_SEQ.nextval, 'brwwel', '{0}', 0, {1}, :blob)"
                .format(listName, self.currentUserId))
 
         cursor = self.db.cursor()
