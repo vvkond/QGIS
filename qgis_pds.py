@@ -92,10 +92,11 @@ def makeMultilineFormatedLabel(label,label_row,row_count,feature, parent):
     """
     <h4>Return</h4>Make formated label for multiline labeled
     <p><h4>Syntax</h4>makeMultilineFormatedLabel(%label%,%row_number%, %row_count%)</p>
-    <p><h4>Argument</h4>-</p>
+    <p><h4>Argument</h4> %row_number%-position start from 0</p>
+    <p><h4>Argument</h4> %row_count%-count of rows</p>
     <p><h4>Example</h4>makeMultilineFormatedLabel("well_id",2,10)</p><p>Return: String with inserted new line symbols before and after field value</p>
     """
-    res="\n"*(label_row-1)+'{}\n'.format(label)+"\n"*(row_count-label_row-1)
+    res="\n"*(label_row)+'{}\n'.format(label)+"\n"*(row_count-label_row-1)
     return res
     
 @qgsfunction(args='auto', group='PumaPlus')
