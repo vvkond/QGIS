@@ -120,8 +120,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.reservoirNumbers = []
         self.reservoirIds = []
         
+        # --- read global settings
         self.readSettings()
 
+        # --- if layer exist read settings from it for 'refresh dialog'
         if self.layer:
             self.reservoirsListWidget.setEnabled(False)
             self.mSelectedReservoirs = ast.literal_eval(self.layer.customProperty("pds_prod_SelectedReservoirs"))
@@ -164,6 +166,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.bbl_getproduction_period(False)
 
         self.initialised = True
+        
     #=======================================================================
     # 
     #=======================================================================
@@ -2356,6 +2359,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.mAddAllWells.setChecked(       settings.value("/PDS/production/loadAllWells",      'False') == 'True')
         self.mUpdateWellLocation.setChecked(settings.value("/PDS/production/UpdateWellLocation", 'True') == 'True')
         self.mDynamicCheckBox.setChecked(   settings.value("/PDS/production/DynamicProduction", 'False') == 'True')
+        
+        
+        self.fondByWellRdBtn.setChecked(settings.value("/PDS/production/pds_fondLoad_isWell", 'True') == 'True')
+        self.fondByObjRdBtn.setChecked( settings.value("/PDS/production/pds_fondLoad_isObject", 'False') == 'True')
 
         self.currentDiagramm = settings.value("/PDS/production/currentDiagramm", "1LIQUID_PRODUCTION")
         
@@ -2378,6 +2385,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         settings.setValue("/PDS/production/currentDiagramm", self.currentDiagramm)
         settings.setValue("/PDS/production/UpdateWellLocation", 'True' if self.mUpdateWellLocation.isChecked() else 'False' )
         settings.setValue("/PDS/production/DynamicProduction",  'True' if self.mDynamicCheckBox.isChecked() else 'False')
+        
+        settings.setValue("/PDS/production/pds_fondLoad_isWell", 'True' if self.fondByWellRdBtn.isChecked() else 'False' )
+        settings.setValue("/PDS/production/pds_fondLoad_isObject ", 'True' if self.fondByObjRdBtn.isChecked() else 'False' )
+
 
 
 
