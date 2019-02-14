@@ -84,6 +84,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
         settings = QSettings()
         selectedZonations = settings.value("/PDS/Zonations/SelectedZonations/v"+self.scheme, [])
         selectedZones = settings.value("/PDS/Zonations/selectedZones/v"+self.scheme, [])
+        self.isOnlyPublicDeviChkBox.setChecked(settings.value("/PDS/Zonations/useOnlyPublicDevi ", 'True')== 'True')
         
         self.selectedZonations = [int(z) for z in selectedZonations]
         self.selectedZones = [int(z) for z in selectedZones]
@@ -174,6 +175,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
         settings = QSettings()
         settings.setValue("/PDS/Zonations/SelectedZonations/v"+self.scheme, selectedZonations)
         settings.setValue("/PDS/Zonations/selectedZones/v"+self.scheme, selectedZones)
+        settings.setValue("/PDS/Zonations/useOnlyPublicDevi ", 'True' if self.isOnlyPublicDeviChkBox.isChecked() else 'False' )
         
         QgsMessageLog.logMessage(self.tr(u"\t Deviation is private or no deviation in wells: {} ").format(",".join(self.no_devi_wells)), tag="QgisPDS.coordFromZone")
     #===========================================================================
