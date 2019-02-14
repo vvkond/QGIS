@@ -35,10 +35,17 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
 
         self.mTwoLayers.setVisible(True)
 
+
         settings = QSettings()
         self.mTwoLayers.setEnabled(allow_split_layer)
-        self.mTwoLayers.setChecked(settings.value("/PDS/Zonations/TwoLayers", 'True') == 'True')
-        
+
+        self.clearTargetFieldChkBox=QCheckBox(u'очистить столбец target')
+        self.clearTargetFieldChkBox.setChecked(True)
+        self.enableFilterChkBox=QCheckBox(u'вкл. фильтр')
+        self.enableFilterChkBox.setChecked(False)
+        self.horizontalLayout_2.addWidget(self.clearTargetFieldChkBox)
+        self.horizontalLayout_2.addWidget(self.enableFilterChkBox)
+       
         self.isOnlyPublicDeviChkBox.setVisible(False)
         self.notUseLastZoneChkBox.setVisible(True)
         self.notUseLastZoneNum.setVisible(True)
@@ -48,12 +55,14 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         self.notUseLastZoneChkBox.stateChanged.connect(self.notUseLastZoneChkBoxChecked)
         self.notUseLastZoneNum.valueChanged.connect(self.notUseLastZoneNumChanged)
         self.zonationListWidget.itemSelectionChanged.connect(self.notUseLastZoneNumChanged)
-        self.clearTargetFieldChkBox=QCheckBox(u'очистить столбец target')
-        self.clearTargetFieldChkBox.setCheckState(Qt.Checked)
-        self.enableFilterChkBox=QCheckBox(u'вкл. фильтр')
-        self.enableFilterChkBox.setCheckState(Qt.Unchecked)
-        self.horizontalLayout_2.addWidget(self.clearTargetFieldChkBox)
-        self.horizontalLayout_2.addWidget(self.enableFilterChkBox)
+
+        self.mTwoLayers.setChecked(             settings.value("/PDS/Zonations/TwoLayers", 'True') == 'True')
+        self.notUseLastZoneChkBox.setChecked(   settings.value("/PDS/Zonations/notUseLastZone", 'False') == 'True')
+        self.notUseLastZoneNum.setValue(int(    settings.value("/PDS/Zonations/notUseLastZoneNum", '0')))
+        self.clearTargetFieldChkBox.setChecked( settings.value("/PDS/Zonations/clearTargetField", 'True') == 'True')
+        self.enableFilterChkBox.setChecked(     settings.value("/PDS/Zonations/enableFilter", 'True') == 'True')
+
+        
     
     def notUseLastZoneChkBoxChecked(self,state):
         if state==Qt.Unchecked:
@@ -253,8 +262,13 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
     
             settings = QSettings()
             settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
-            settings.setValue("/PDS/Zonations/selectedZones", selectedZones)
-            settings.setValue("/PDS/Zonations/TwoLayers", 'True' if self.twoLayers else 'False')
+            settings.setValue("/PDS/Zonations/selectedZones",     selectedZones)
+            settings.setValue("/PDS/Zonations/TwoLayers",         'True' if self.twoLayers else 'False')
+            settings.setValue("/PDS/Zonations/notUseLastZone",    'True' if self.notUseLastZoneChkBox.isChecked() else 'False')
+            settings.setValue("/PDS/Zonations/notUseLastZoneNum", str(self.notUseLastZoneNum.value()))
+            settings.setValue("/PDS/Zonations/clearTargetField",  'True' if self.clearTargetFieldChkBox.isChecked() else 'False')
+            settings.setValue("/PDS/Zonations/enableFilter",      'True' if self.enableFilterChkBox.isChecked() else 'False')
+            
         except Exception as e:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
 

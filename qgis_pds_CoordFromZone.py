@@ -183,16 +183,19 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     #===========================================================================
     def on_zonationListWidget_itemSelectionChanged(self):
         self.zoneListWidget.clear()
-        item = QListWidgetItem(u'Устье')
-        item.setData(Qt.UserRole, [USTJE, 0, 0, 0])
-        item.setTextColor(QtGui.QColor("red"))
-        self.zoneListWidget.addItem(item)
+        if self.__class__.__name__==QgisPDSCoordFromZoneDialog.__name__: #only for QgisPDSCoordFromZoneDialog
+            item = QListWidgetItem(u'Устье')
+            item.setData(Qt.UserRole, [USTJE, 0, 0, 0])
+            item.setTextColor(QtGui.QColor("red"))
+            self.zoneListWidget.addItem(item)
         for si in self.zonationListWidget.selectedItems():
             self._fillZones(int(si.data(Qt.UserRole)))
-        item = QListWidgetItem(u'Забой')
-        item.setData(Qt.UserRole, [ZABOY, 0, 0, 0])
-        item.setTextColor(QtGui.QColor("red"))
-        self.zoneListWidget.addItem(item)
+        
+        if self.__class__.__name__==QgisPDSCoordFromZoneDialog.__name__: #only for QgisPDSCoordFromZoneDialog
+            item = QListWidgetItem(u'Забой')
+            item.setData(Qt.UserRole, [ZABOY, 0, 0, 0])
+            item.setTextColor(QtGui.QColor("red"))
+            self.zoneListWidget.addItem(item)
         #items = self.zoneListWidget.findItems(u'Устье',Qt.MatchExactly)
         #if len(items) > 0:
         #    for item in items:
