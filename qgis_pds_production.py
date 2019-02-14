@@ -141,12 +141,12 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
 
         self._getProjection()
 
-        self.readReservoirOrders()
+        self.readReservoirOrders() # USED FOR LOWWER-UPPER analis.... @TODO: change it to use self._getReservoirs() result 
 
         reservoirs = self._getReservoirs()
         self.reservoirs = []
         if reservoirs is not None:
-            for reservoir_part_code in reservoirs:
+            for reservoir_part_code,order_num in reservoirs:
                 reservoirName = to_unicode("".join(reservoir_part_code))
                 self.reservoirs.append(NAMES(name=reservoirName, selected=True))
                 item = QtGui.QListWidgetItem(reservoirName)
@@ -164,6 +164,15 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.bbl_getproduction_period(False)
 
         self.initialised = True
+    #=======================================================================
+    # 
+    #=======================================================================
+    def get_sql(self, value):
+        plugin_dir = os.path.dirname(__file__)
+        sql_file_path = os.path.join(plugin_dir, 'db', value)
+        with open(sql_file_path, 'rb') as f:
+            return f.read().decode('utf-8')
+        
     #===========================================================================
     # 
     #===========================================================================
@@ -198,9 +207,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         scheme = self.project['project']
         try:           
             self.db = connection.get_db(scheme)
-            result = self.db.execute("select reservoir_part_code from reservoir_part where  entity_type_nm = 'RESERVOIR_ZONE' order by reservoir_part_code")
+            sql = self.get_sql('ReservoirZones.sql')
+            result = self.db.execute(sql)
             # db.disconnect()
             return result
+            
         except Exception as e:
             QgsMessageLog.logMessage(u"Project production read error {0}: {1}".format(scheme, str(e)), tag="QgisPDS.Error")
 #             self.progressMessageBar.pushCritical(self.tr("Error"), 
@@ -208,7 +219,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
 #                                             )
             return None
     #===========================================================================
-    # 
+    # ---used for LOWWER-UPPER
     #===========================================================================
     def readReservoirOrders(self):
         sql = ("select reservoir_part.reservoir_part_code, "
