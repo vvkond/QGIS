@@ -254,7 +254,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.mDiagrammsListWidget.addItem(item)
 
 
+    #===========================================================================
     # SLOT
+    #===========================================================================
     def on_mDiagrammsListWidget_currentRowChanged(self, row):
         if row < 0:
             return
@@ -276,7 +278,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         vec = diagramm.fluids
         for idx, v in enumerate(vec):
             self.componentsList.item(idx).setCheckState(Qt.Checked if v else Qt.Unchecked)
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def mAddDiagramm_clicked(self):
         newName = u'Диаграмма {}'.format(len(self.layerDiagramms)+1)
         d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=self.defaultUnitNum,
@@ -287,7 +291,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         item.setData(Qt.UserRole, d)
         self.mDiagrammsListWidget.addItem(item)
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def mDeleteDiagramm_clicked(self):
         if len(self.layerDiagramms) < 2:
             return
@@ -298,7 +304,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             del self.layerDiagramms[idx]
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def mImportFromLayer_clicked(self):
         layers = self.mIface.legendInterface().layers()
 
@@ -323,9 +331,19 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             except:
                 pass
             self.currentLayer = saveLayer
-
-
+    #===========================================================================
+    # 
+    #===========================================================================
+    def mImportFromGlobalPB_clicked(self):
+        try:
+            self.copyGLobalSettingsToCustomProp()
+            if self.readSettingsNew(): self.updateWidgets()
+        except:
+            pass
+        pass
+    #===========================================================================
     # SLOT
+    #===========================================================================
     def on_titleEdit_editingFinished(self):
         idx = self.mDiagrammsListWidget.currentRow()
         if idx >= 0:
@@ -1238,14 +1256,23 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.minDiagrammSize.blockSignals(False)
 
 
-    #Read layer settings
+    #===========================================================================
+    # Read layer settings
+    #===========================================================================
     def readSettings(self):
+        #--- try read settings from layer or from global
         try:
             if self.readSettingsNew():
                 return
+            else:
+                self.copyGLobalSettingsToCustomProp()
+                if self.readSettingsNew():
+                    return
+                
         except:
             return
-
+        #--- create new default settings
+        
         self.currentDiagramm = self.bubbleProps['diagrammType'] if 'diagrammType' in self.bubbleProps else '1_liquidproduction'
         # self.maxDiagrammSize.setValue(float(self.bubbleProps["maxDiagrammSize"]) if 'maxDiagrammSize' in self.bubbleProps else 0.01)
         # self.minDiagrammSize.setValue(float(self.bubbleProps["minDiagrammSize"]) if 'minDiagrammSize' in self.bubbleProps else 0.0)
@@ -1282,7 +1309,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         return
 
-    #Write layer settings
+    #===========================================================================
+    # Write layer settings
+    #===========================================================================
     def applySettings(self):
         try:
             self.saveSettings()
@@ -1313,7 +1342,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         #     self.bubbleProps['fluid_inPercent_'+fl.code] = str(fl.inPercent)
 
         return
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def readSettingsNew(self):
         self.currentDiagramm = '1_liquidproduction'
         self.maxDiagrammSize.setValue(     float(self.currentLayer.customProperty('maxDiagrammSize', 15))                    )
@@ -1358,24 +1389,42 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             fl.inPercent = int(self.currentLayer.customProperty('fluid_inPercent_' + fl.code))
 
         return True
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def saveSettings(self):
+        all_prop=[] #list of names all stored properties. Used for store GLOBAL parameters
         self.currentLayer.setCustomProperty("diagrammCount",     len(self.layerDiagramms))
         self.currentLayer.setCustomProperty("maxDiagrammSize",   self.maxDiagrammSize.value())
         self.currentLayer.setCustomProperty("minDiagrammSize",   self.minDiagrammSize.value())
         self.currentLayer.setCustomProperty("alwaysShowZero",    int(self.mShowZero.isChecked()))
         self.currentLayer.setCustomProperty("defaultSymbolSize", self.mSymbolSize.value())
         self.currentLayer.setCustomProperty("useScaleGroupBox",  int(self.useScaleGroupBox.isChecked()))
+        all_prop.extend([
+                        "diagrammCount"    
+                        ,"maxDiagrammSize"  
+                        ,"minDiagrammSize"  
+                        ,"alwaysShowZero"   
+                        ,"defaultSymbolSize"
+                        ,"useScaleGroupBox"             
+                        ])
 
         num = 1
         for val in self.layerDiagramms:
             d = str(num)
-            self.currentLayer.setCustomProperty('diagramm_name_' + d, val.name)
-            self.currentLayer.setCustomProperty('diagramm_scale_' + d, val.scale)
+            self.currentLayer.setCustomProperty('diagramm_name_' + d, val.name          )
+            self.currentLayer.setCustomProperty('diagramm_scale_' + d, val.scale        )
             self.currentLayer.setCustomProperty('diagramm_unitsType_' + d, val.unitsType)
-            self.currentLayer.setCustomProperty('diagramm_units_' + d, val.units)
+            self.currentLayer.setCustomProperty('diagramm_units_' + d, val.units        )
             self.currentLayer.setCustomProperty('diagramm_fluids_' + d,
                                                 QgsSymbolLayerV2Utils.encodeRealVector(val.fluids))
+            all_prop.extend([
+                            'diagramm_name_' + d
+                            ,'diagramm_scale_' + d
+                            ,'diagramm_unitsType_' + d
+                            ,'diagramm_units_' + d
+                            ,'diagramm_fluids_' + d                   
+                            ])
             num = num + 1
 
         self.currentLayer.setCustomProperty('labelSize',                    self.labelSizeEdit.value())
@@ -1385,6 +1434,17 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.currentLayer.setCustomProperty('dailyProduction',              str(int(self.dailyProduction.isChecked())))
         self.currentLayer.setCustomProperty('pds_chart_groupByDaysAndFond', str(int(self.chkboxGroupByDays.isChecked())))
         self.currentLayer.setCustomProperty('pds_chart_name',               self.resultRuleName.text())
+
+        all_prop.extend([
+                        'labelSize'                   
+                        ,'decimal'                    
+                        ,'labelTemplate'               
+                        ,'showLineout'                
+                        ,'dailyProduction'             
+                        ,'pds_chart_groupByDaysAndFond'
+                        ,'pds_chart_name'                          
+                        ])
+        
         for fl in bblInit.fluidCodes:
             self.currentLayer.setCustomProperty('fluid_background_' + fl.code,
                                                 QgsSymbolLayerV2Utils.encodeColor(fl.backColor))
@@ -1393,3 +1453,30 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.currentLayer.setCustomProperty('fluid_label_color_' + fl.code,
                                                 QgsSymbolLayerV2Utils.encodeColor(fl.labelColor))
             self.currentLayer.setCustomProperty('fluid_inPercent_' + fl.code, str(fl.inPercent))
+            all_prop.extend([
+                            'fluid_background_' + fl.code
+                            ,'fluid_line_color_' + fl.code
+                            ,'fluid_label_color_' + fl.code
+                            ,'fluid_inPercent_' + fl.code
+                            ])            
+        #---SAVE GLOBAL SETTING    
+        settings = QSettings()
+        for name in all_prop:
+            settings.setValue("/PDS/production_chart/"+name, self.currentLayer.customProperty(name,''))
+        settings.setValue("/PDS/production_chart/all_prop" , str(all_prop))
+    #===========================================================================
+    # 
+    #===========================================================================
+    def copyGLobalSettingsToCustomProp(self):
+        settings = QSettings()
+        all_prop=ast.literal_eval(settings.value("/PDS/production_chart/all_prop", 'False'))
+        if all_prop:
+            for name in all_prop:
+                self.currentLayer.setCustomProperty( name, settings.value("/PDS/production_chart/"+name, '') )
+            return True
+        else :
+            return False
+        
+        
+        
+            
