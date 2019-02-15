@@ -1316,12 +1316,14 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
     def readSettingsNew(self):
         self.currentDiagramm = '1_liquidproduction'
-        self.maxDiagrammSize.setValue(float(self.currentLayer.customProperty('maxDiagrammSize', 15)))
-        self.minDiagrammSize.setValue(float(self.currentLayer.customProperty('minDiagrammSize', 3.0)))
-        self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
-        self.mSymbolSize.setValue(float(self.currentLayer.customProperty("defaultSymbolSize", 4.0)))
-        self.useScaleGroupBox.setChecked(int(self.currentLayer.customProperty("useScaleGroupBox", "0")) == 1)
-        self.templateExpression.setText(self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()))
+        self.maxDiagrammSize.setValue(     float(self.currentLayer.customProperty('maxDiagrammSize', 15))                    )
+        self.minDiagrammSize.setValue(     float(self.currentLayer.customProperty('minDiagrammSize', 3.0))                   )
+        self.mShowZero.setChecked(         int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1                 )
+        self.mSymbolSize.setValue(         float(self.currentLayer.customProperty("defaultSymbolSize", 4.0))                 )
+        self.useScaleGroupBox.setChecked(  int(self.currentLayer.customProperty("useScaleGroupBox", "0")) == 1               )
+        self.templateExpression.setText(   self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()) )
+        self.resultRuleName.setText(       self.currentLayer.customProperty('pds_chart_name',self.resultRuleName.text())     )
+        self.chkboxGroupByDays.setChecked( int(self.currentLayer.customProperty("pds_chart_groupByDaysAndFond", "0")) == 1   )
 
         count = int(self.currentLayer.customProperty("diagrammCount", 0))
         if count < 1:
@@ -1331,11 +1333,11 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         for num in xrange(count):
             d = str(num+1)
             val = MyStruct()
-            val.name = self.currentLayer.customProperty('diagramm_name_' + d, "--")
-            val.scale = float(self.currentLayer.customProperty('diagramm_scale_' + d, 300000))
-            val.unitsType = int(self.currentLayer.customProperty('diagramm_unitsType_' + d, 0))
-            val.units = int(self.currentLayer.customProperty('diagramm_units_' + d, 0))
-            val.fluids = QgsSymbolLayerV2Utils.decodeRealVector(self.currentLayer.customProperty('diagramm_fluids_' + d))
+            val.name =      self.currentLayer.customProperty(       'diagramm_name_' + d, "--"     )
+            val.scale =     float(self.currentLayer.customProperty( 'diagramm_scale_' + d, 300000  ))
+            val.unitsType = int(self.currentLayer.customProperty(   'diagramm_unitsType_' + d, 0   ))
+            val.units =     int(self.currentLayer.customProperty(   'diagramm_units_' + d, 0       ))
+            val.fluids =    QgsSymbolLayerV2Utils.decodeRealVector(self.currentLayer.customProperty('diagramm_fluids_' + d))
             self.layerDiagramms.append(val)
 
         self.labelSizeEdit.setValue(float(self.currentLayer.customProperty('labelSize', self.labelSizeEdit.value())))
@@ -1358,13 +1360,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         return True
 
     def saveSettings(self):
-        self.currentLayer.setCustomProperty("diagrammCount", len(self.layerDiagramms))
-
-        self.currentLayer.setCustomProperty("maxDiagrammSize", self.maxDiagrammSize.value())
-        self.currentLayer.setCustomProperty("minDiagrammSize", self.minDiagrammSize.value())
-        self.currentLayer.setCustomProperty("alwaysShowZero", int(self.mShowZero.isChecked()))
+        self.currentLayer.setCustomProperty("diagrammCount",     len(self.layerDiagramms))
+        self.currentLayer.setCustomProperty("maxDiagrammSize",   self.maxDiagrammSize.value())
+        self.currentLayer.setCustomProperty("minDiagrammSize",   self.minDiagrammSize.value())
+        self.currentLayer.setCustomProperty("alwaysShowZero",    int(self.mShowZero.isChecked()))
         self.currentLayer.setCustomProperty("defaultSymbolSize", self.mSymbolSize.value())
-        self.currentLayer.setCustomProperty("useScaleGroupBox", int(self.useScaleGroupBox.isChecked()))
+        self.currentLayer.setCustomProperty("useScaleGroupBox",  int(self.useScaleGroupBox.isChecked()))
 
         num = 1
         for val in self.layerDiagramms:
@@ -1377,11 +1378,13 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                                                 QgsSymbolLayerV2Utils.encodeRealVector(val.fluids))
             num = num + 1
 
-        self.currentLayer.setCustomProperty('labelSize', self.labelSizeEdit.value())
-        self.currentLayer.setCustomProperty('decimal', self.decimalEdit.value())
-        self.currentLayer.setCustomProperty('labelTemplate', self.templateExpression.text())
-        self.currentLayer.setCustomProperty('showLineout', str(int(self.showLineouts.isChecked())))
-        self.currentLayer.setCustomProperty('dailyProduction', str(int(self.dailyProduction.isChecked())))
+        self.currentLayer.setCustomProperty('labelSize',                    self.labelSizeEdit.value())
+        self.currentLayer.setCustomProperty('decimal',                      self.decimalEdit.value())
+        self.currentLayer.setCustomProperty('labelTemplate',                self.templateExpression.text())
+        self.currentLayer.setCustomProperty('showLineout',                  str(int(self.showLineouts.isChecked())))
+        self.currentLayer.setCustomProperty('dailyProduction',              str(int(self.dailyProduction.isChecked())))
+        self.currentLayer.setCustomProperty('pds_chart_groupByDaysAndFond', str(int(self.chkboxGroupByDays.isChecked())))
+        self.currentLayer.setCustomProperty('pds_chart_name',               self.resultRuleName.text())
         for fl in bblInit.fluidCodes:
             self.currentLayer.setCustomProperty('fluid_background_' + fl.code,
                                                 QgsSymbolLayerV2Utils.encodeColor(fl.backColor))
