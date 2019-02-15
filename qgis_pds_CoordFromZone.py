@@ -207,7 +207,8 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     #===========================================================================
     def _getCoords(self, zoneDef, wellId):
         def read_floats(index):
-            return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d')
+            return numpy.frombuffer(self.db.blobToString(input_row[index]), dtype='>f')
+            #return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d')#deprecated
 
         newCoords = None
         sql = self.get_sql('ZonationCoords.sql')
@@ -248,7 +249,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     def _getCoordsFromDevi(self, wellId, point_idx):
         def read_floats(index):
             return numpy.frombuffer(self.db.blobToString(input_row[index]), dtype='>f')            
-            #return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d') # deprecated
+            #return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d') #deprecated
 
         newCoords = None
         sql = self.get_sql('ComputedDevi.sql')
