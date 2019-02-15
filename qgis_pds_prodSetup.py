@@ -672,7 +672,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         stop_edit_layer(editLayer)
         plugin_dir = plugin_path()
-        # --- Collect fields for Data Defined props
+        # --- COLLECT FIELDS FOR DATA DEFINED PROPS
         allDiagramms = []
         templateStr = self.templateExpression.text()
         sums = ''
@@ -691,7 +691,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             diagramm = {}
             diagramm['scaleMaxRadius'] = maxDiagrammSize
             diagramm['scaleMinRadius'] = minDiagrammSize
-            diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else d.scale * multiplier * maxSum
+            diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else multiplier * maxSum
             diagramm['multiplier'] = mm
             diagramm['dailyProduction'] = self.dailyProduction.isChecked()
             diagramm['scaleType'] = 1
