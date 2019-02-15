@@ -176,8 +176,11 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
         settings.setValue("/PDS/Zonations/SelectedZonations/v"+self.scheme, selectedZonations)
         settings.setValue("/PDS/Zonations/selectedZones/v"+self.scheme, selectedZones)
         settings.setValue("/PDS/Zonations/useOnlyPublicDevi ", 'True' if self.isOnlyPublicDeviChkBox.isChecked() else 'False' )
-        
-        QgsMessageLog.logMessage(self.tr(u"\t Deviation is private or no deviation in wells: {} ").format(",".join(self.no_devi_wells)), tag="QgisPDS.coordFromZone")
+        if len(self.no_devi_wells)>0:
+            if self.isOnlyPublicDeviChkBox.isChecked():
+                QgsMessageLog.logMessage(self.tr(u"\t Deviation is private or no deviation in wells: {} ").format(",".join(self.no_devi_wells)), tag="QgisPDS.coordFromZone")
+            else:
+                QgsMessageLog.logMessage(self.tr(u"\t No deviation in wells: {} ").format(",".join(self.no_devi_wells)), tag="QgisPDS.coordFromZone")
     #===========================================================================
     # 
     #===========================================================================
