@@ -224,8 +224,8 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                 if devi_id is None:
                     self.no_devi_wells.append(wellId)
                 else:
-                    x = read_floats(16)
-                    y = read_floats(17)
+                    dx = read_floats(16)
+                    dy = read_floats(17)
                     md = read_floats(18)
                     tvd = read_floats(19)
                     depth = input_row[3]
@@ -235,7 +235,12 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                     if self.xform:
                         pt = self.xform.transform(pt)
                     IS_DEBUG and QgsMessageLog.logMessage(u"\t well {} zone {} tvd {}".format(wellId, zoneDef[0], tvd), tag="QgisPDS.coordFromZone")
-                    newCoords = self._calcOffset(pt.x(), pt.y(), x, y, md, tvd, depth)
+                    if md[0]>0: # ADD POINT WITH DEPTH 0 IF NEED
+                        dx=numpy.insert(dx,0,0)
+                        dy=numpy.insert(dy,0,0)
+                        md=numpy.insert(md,0,0)
+                        tvd=numpy.insert(tvd,0,0)
+                    newCoords = self._calcOffset(pt.x(), pt.y(), dx, dy, md, tvd, depth)
         return newCoords
     #===========================================================================
     # 
