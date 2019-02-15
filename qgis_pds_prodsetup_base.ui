@@ -37,276 +37,113 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>1112</width>
+        <width>1080</width>
         <height>520</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="groupBox">
+       <item row="2" column="0">
+        <widget class="QGroupBox" name="groupBox_5">
          <property name="title">
-          <string>Диаграммы</string>
+          <string>Общее</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="9" column="0" colspan="4">
-           <widget class="QGroupBox" name="groupBox_3">
-            <property name="title">
-             <string>Размер круга диаграммы</string>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="dailyProduction">
+            <property name="text">
+             <string>Среднесуточная добыча</string>
             </property>
-            <layout class="QGridLayout" name="gridLayout_4">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_4">
-               <property name="text">
-                <string>Минимальный диаметр</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_5">
-               <property name="text">
-                <string>Максимальный диаметр</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="minDiagrammSize">
-               <property name="suffix">
-                <string> мм</string>
-               </property>
-               <property name="decimals">
-                <number>2</number>
-               </property>
-               <property name="maximum">
-                <double>999999.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>1.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>3.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="maxDiagrammSize">
-               <property name="suffix">
-                <string> мм</string>
-               </property>
-               <property name="decimals">
-                <number>2</number>
-               </property>
-               <property name="maximum">
-                <double>999999999.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>1.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>15.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
-          <item row="5" column="0" colspan="2">
-           <widget class="QGroupBox" name="useScaleGroupBox">
-            <property name="title">
-             <string>Масштаб</string>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="showLineouts">
+            <property name="text">
+             <string>Сноски</string>
             </property>
-            <property name="checkable">
+            <property name="checked">
              <bool>true</bool>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QDoubleSpinBox" name="scaleEdit">
-               <property name="buttonSymbols">
-                <enum>QAbstractSpinBox::NoButtons</enum>
-               </property>
-               <property name="maximum">
-                <double>999999999.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>300000.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
-          <item row="2" column="1" colspan="3">
-           <widget class="QLineEdit" name="titleEdit"/>
-          </item>
-          <item row="10" column="0">
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="4" column="3">
-           <widget class="QComboBox" name="scaleUnitsType">
-            <item>
-             <property name="text">
-              <string>Масса</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Объем</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Заголовок</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="mDeleteDiagramm">
-            <property name="enabled">
-             <bool>false</bool>
+          <item row="2" column="0" colspan="2">
+           <widget class="QLineEdit" name="resultRuleName">
+            <property name="toolTip">
+             <string>Имя создаваемого правила стиля</string>
             </property>
             <property name="text">
-             <string>Удалить диаграмму</string>
+             <string>Диаграммы добычи</string>
+            </property>
+            <property name="placeholderText">
+             <string>Диаграммы добычи</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="3">
-           <widget class="QLineEdit" name="titleUnitsEdit"/>
-          </item>
-          <item row="0" column="0">
-           <widget class="QPushButton" name="mAddDiagramm">
+          <item row="1" column="2">
+           <widget class="QCheckBox" name="chkboxGroupByDays">
             <property name="text">
-             <string>Добавить диаграмму</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Размер символа</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QDoubleSpinBox" name="mSymbolSize">
-            <property name="suffix">
-             <string> мм</string>
-            </property>
-            <property name="maximum">
-             <double>9999.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>6.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QPushButton" name="mImportFromLayer">
-            <property name="text">
-             <string>Взять из слоя...</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="4">
-           <widget class="QListWidget" name="mDiagrammsListWidget"/>
-          </item>
-          <item row="5" column="3">
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QComboBox" name="scaleUnitsVolume">
-              <item>
-               <property name="text">
-                <string>м3</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>дм3</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>см3</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>км3</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>1000м3</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>1000000м3</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="scaleUnitsMass">
-              <item>
-               <property name="text">
-                <string>кг</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>г</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>тонн</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>тыс. тонн</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>UK ton (short)</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>UK ton (long)</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="mImportFromGlobalPB">
-            <property name="text">
-             <string>Взять последние настройки</string>
+             <string>Фильтр по дням работы и статусу</string>
             </property>
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>1</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Выбор стиля</string>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <widget class="QWidget" name="verticalLayoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>14</y>
+            <width>471</width>
+            <height>65</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QRadioButton" name="isUseDefaultStyle">
+             <property name="text">
+              <string>Использовать стиль по умолчанию</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="isAppendToStyle">
+             <property name="text">
+              <string>Добавить к текущему стилю</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="isAppendToEachLastSymbol">
+             <property name="text">
+              <string>Добавить ко всем последним символам текущего стиля</string>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
        <item row="0" column="1">
@@ -565,108 +402,274 @@
          </layout>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QGroupBox" name="groupBox_5">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Общее</string>
+          <string>Диаграммы</string>
          </property>
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="1" column="1">
-           <widget class="QCheckBox" name="dailyProduction">
-            <property name="text">
-             <string>Среднесуточная добыча</string>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="10" column="0" colspan="8">
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Размер круга диаграммы</string>
             </property>
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>Минимальный диаметр</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>Максимальный диаметр</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="minDiagrammSize">
+               <property name="suffix">
+                <string> мм</string>
+               </property>
+               <property name="decimals">
+                <number>2</number>
+               </property>
+               <property name="maximum">
+                <double>999999.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>1.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>3.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="maxDiagrammSize">
+               <property name="suffix">
+                <string> мм</string>
+               </property>
+               <property name="decimals">
+                <number>2</number>
+               </property>
+               <property name="maximum">
+                <double>999999999.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>1.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>15.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
-          <item row="1" column="0">
-           <widget class="QCheckBox" name="showLineouts">
-            <property name="text">
-             <string>Сноски</string>
+          <item row="6" column="0" colspan="2">
+           <widget class="QGroupBox" name="useScaleGroupBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Значение масштаба для диаграмм добычи.&lt;br/&gt;В 1м&lt;span style=&quot; vertical-align:super;&quot;&gt;2&lt;/span&gt; на бумаге будет указанное кол-во флюида.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
-            <property name="checked">
+            <property name="title">
+             <string>Масштаб</string>
+            </property>
+            <property name="checkable">
              <bool>true</bool>
             </property>
+            <layout class="QHBoxLayout" name="horizontalLayout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QDoubleSpinBox" name="scaleEdit">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="maximum">
+                <double>999999999.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>300000.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
-          <item row="2" column="0" colspan="2">
-           <widget class="QLineEdit" name="resultRuleName">
-            <property name="toolTip">
-             <string>Имя создаваемого правила стиля</string>
+          <item row="3" column="1" colspan="7">
+           <widget class="QLineEdit" name="titleEdit"/>
+          </item>
+          <item row="11" column="0">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
             </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="5" column="7">
+           <widget class="QComboBox" name="scaleUnitsType">
+            <item>
+             <property name="text">
+              <string>Масса</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Объем</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>Диаграммы добычи</string>
-            </property>
-            <property name="placeholderText">
-             <string>Диаграммы добычи</string>
+             <string>Заголовок</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="2">
-           <widget class="QCheckBox" name="chkboxGroupByDays">
+          <item row="0" column="1">
+           <widget class="QPushButton" name="mDeleteDiagramm">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
-             <string>Фильтр по дням работы и статусу</string>
+             <string>Удалить диаграмму</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="7">
+           <widget class="QLineEdit" name="titleUnitsEdit"/>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="mAddDiagramm">
+            <property name="text">
+             <string>Добавить диаграмму</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Размер символа</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QDoubleSpinBox" name="mSymbolSize">
+            <property name="suffix">
+             <string> мм</string>
+            </property>
+            <property name="maximum">
+             <double>9999.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>6.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="8">
+           <widget class="QListWidget" name="mDiagrammsListWidget"/>
+          </item>
+          <item row="6" column="7">
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QComboBox" name="scaleUnitsVolume">
+              <item>
+               <property name="text">
+                <string>м3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>дм3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>см3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>км3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1000м3</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>1000000м3</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="scaleUnitsMass">
+              <item>
+               <property name="text">
+                <string>кг</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>г</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>тонн</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>тыс. тонн</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>UK ton (short)</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>UK ton (long)</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="3" colspan="5">
+           <widget class="QPushButton" name="mImportFromLayer">
+            <property name="text">
+             <string>Взять из слоя...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="mImportFromGlobalPB">
+            <property name="text">
+             <string>Взять последние</string>
             </property>
            </widget>
           </item>
          </layout>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QGroupBox" name="groupBox_6">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>1</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="title">
-          <string>Выбор стиля</string>
-         </property>
-         <property name="checkable">
-          <bool>false</bool>
-         </property>
-         <property name="checked">
-          <bool>false</bool>
-         </property>
-         <widget class="QWidget" name="verticalLayoutWidget">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>14</y>
-            <width>471</width>
-            <height>65</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QRadioButton" name="isUseDefaultStyle">
-             <property name="text">
-              <string>Использовать стиль по умолчанию</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="isAppendToStyle">
-             <property name="text">
-              <string>Добавить к текущему стилю</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="isAppendToEachLastSymbol">
-             <property name="text">
-              <string>Добавить ко всем последним символам текущего стиля</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
         </widget>
        </item>
       </layout>
