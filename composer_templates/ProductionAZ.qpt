@@ -1,0 +1,243 @@
+<Composer title="карта отборов" visible="1">
+ <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" worldFileMap="{600b97ca-66a4-4b24-80b6-4c889488fb60}" alignmentSnap="1" printResolution="300" paperWidth="1400" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="5" printAsRaster="0" generateWorldFile="0" paperHeight="1300" numPages="1" snapGridResolution="10" resizeToContentsMarginBottom="0">
+  <symbol alpha="1" clip_to_extent="1" type="fill" name="">
+   <layer pass="0" class="SimpleFill" locked="0">
+    <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
+    <prop k="color" v="255,255,255,255"/>
+    <prop k="joinstyle" v="miter"/>
+    <prop k="offset" v="0,0"/>
+    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+    <prop k="offset_unit" v="MM"/>
+    <prop k="outline_color" v="0,0,0,255"/>
+    <prop k="outline_style" v="no"/>
+    <prop k="outline_width" v="0.26"/>
+    <prop k="outline_width_unit" v="MM"/>
+    <prop k="style" v="solid"/>
+   </layer>
+  </symbol>
+  <ComposerItemGroup>
+   <ComposerItemGroupElement uuid="{100a094d-b310-4d6d-8e99-1cb076247fa8}"/>
+   <ComposerItemGroupElement uuid="{02786e13-c127-4945-b2e5-a15ee5bc65de}"/>
+   <ComposerItemGroupElement uuid="{42db6302-578b-4713-a8c2-33bb50943e09}"/>
+   <ComposerItemGroupElement uuid="{d0beec65-d065-4787-aad2-1ea6d3f5d197}"/>
+   <ComposerItemGroupElement uuid="{a920da48-6c38-4ce3-8a6b-9b5c2a734b3f}"/>
+   <ComposerItemGroupElement uuid="{afda17cc-d891-4358-b1e7-7061cb963bd1}"/>
+   <ComposerItem pagey="1220.14" page="1" id="_Штамп_группа" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1239.17" y="1220.14" visibility="1" zValue="14" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="155.064" outlineWidth="0.3" excludeFromExports="0" uuid="{dabaae25-dbe1-489d-8792-966e823cebf6}" height="76.5436" itemRotation="0" frame="false" pagex="1239.17">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerItemGroup>
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Месторождение  [% @project %] : Карта [%CASE &#xa;&#x9;WHEN  @map_type ='GTM'  THEN   'планируемых ГТМ  '&#xa;&#x9;WHEN  @map_type ='PROD'  THEN  concat( getVisiblePDSProdType(),' отборов')&#xa;END%]&#xa;по горизонту [%getVisiblePDSProd()%] &#xa;на [% @map_date %]" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,36,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="255" green="0"/>
+   <ComposerItem pagey="9.12795" page="1" id="_Заголовок_вариант2" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="359.409" y="9.12795" visibility="1" zValue="13" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="681.182" outlineWidth="0.3" excludeFromExports="0" uuid="{a3818cfa-df5c-46fe-a8ec-d2d06ba3c7b2}" height="66.5095" itemRotation="0" frame="false" pagex="359.409">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="32" marginX="1" marginY="1" labelText="Карта [% activeLayerProductionType() %]  отборов  по [% activeLayerReservoirs() %] месторождения  [% @project %]" htmlState="0" halign="4">
+   <LabelFont description="Times New Roman,26,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="26.0772" page="1" id="_Заголовок_вариант1" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="195.579" y="26.0772" visibility="0" zValue="12" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="298.265" outlineWidth="0.3" excludeFromExports="0" uuid="{b39ad9d9-8c60-4574-bddd-307b1697b243}" height="16.3055" itemRotation="0" frame="false" pagex="195.579">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLegend symbolWidth="7" title="Легенда поверхности" rasterBorderWidth="0" titleAlignment="1" map="0" wmsLegendWidth="50" rasterBorderColor="0,0,0,255" wrapChar="" fontColor="#000000" legendFilterByAtlas="0" columnCount="1" wmsLegendHeight="25" columnSpace="2" symbolHeight="4" equalColumnWidth="0" resizeToContents="1" splitLayer="0" boxSpace="2" rasterBorder="1">
+   <styles>
+    <style marginBottom="2" name="title">
+     <styleFont description="MS Shell Dlg 2,16,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+    <style marginTop="2" name="group">
+     <styleFont description="MS Shell Dlg 2,14,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+    <style marginTop="2" name="subgroup">
+     <styleFont description="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+    <style marginTop="2" name="symbol">
+     <styleFont description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+    <style marginTop="2" marginLeft="2" name="symbolLabel">
+     <styleFont description="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+   </styles>
+   <layer-tree-group expanded="1" checked="Qt::Checked" name="">
+    <customproperties/>
+    <layer-tree-group expanded="1" checked="Qt::Checked" name="Легенда">
+     <customproperties>
+      <property key="legend/title-style" value="hidden"/>
+     </customproperties>
+     <layer-tree-layer expanded="1" providerKey="memory" checked="Qt::Checked" id="Контуры20190215190222902" source="memory?geometry=LineString&amp;field=set_no:(0,0)&amp;field=parameter_no:(0,0)&amp;field=subset_no:(0,0)&amp;field=set_name:(0,0)&amp;field=param_name:(0,0)&amp;field=subset_name:(0,0)&amp;field=parameter:(0,0)&amp;field=variable_name:(0,0)" name="Полигоны">
+      <customproperties/>
+     </layer-tree-layer>
+     <layer-tree-layer expanded="1" providerKey="memory" checked="Qt::Checked" id="Разломы20190215190159712" source="memory?geometry=LineString&amp;field=set_no:(0,0)&amp;field=parameter_no:(0,0)&amp;field=subset_no:(0,0)&amp;field=set_name:(0,0)&amp;field=param_name:(0,0)&amp;field=subset_name:(0,0)&amp;field=parameter:(0,0)&amp;field=variable_name:(0,0)" name="Контуры">
+      <customproperties/>
+     </layer-tree-layer>
+     <layer-tree-layer expanded="1" providerKey="memory" checked="Qt::Checked" id="faults_PSI20190215190120402" source="memory?geometry=LineString&amp;field=set_no:(0,0)&amp;field=parameter_no:(0,0)&amp;field=subset_no:(0,0)&amp;field=set_name:(0,0)&amp;field=param_name:(0,0)&amp;field=subset_name:(0,0)&amp;field=parameter:(0,0)&amp;field=variable_name:(0,0)" name="Разломы">
+      <customproperties/>
+     </layer-tree-layer>
+     <layer-tree-layer expanded="1" providerKey="memory" checked="Qt::Checked" id="Cumulative_production___Akch_Ap1_Ap2_PSI_PSII_PSIII_PSIV_PSV_PSXII20180123095212784" source="memory?geometry=MultiPoint&amp;crs=wkt:PROJCS%5B%22unnamed%22,GEOGCS%5B%22Krassovsky,%201942%22,DATUM%5B%22unknown%22,SPHEROID%5B%22krass%22,6378245,298.3%5D%5D,PRIMEM%5B%22Greenwich%22,0%5D,UNIT%5B%22degree%22,0.0174532925199433%5D%5D,PROJECTION%5B%22Transverse_Mercator%22%5D,PARAMETER%5B%22latitude_of_origin%22,0%5D,PARAMETER%5B%22central_meridian%22,51%5D,PARAMETER%5B%22scale_factor%22,1%5D,PARAMETER%5B%22false_easting%22,500000%5D,PARAMETER%5B%22false_northing%22,0%5D,UNIT%5B%22Meter%22,1%5D%5D&amp;field=well_id:string(255,0)&amp;field=Latitude:double(20,5)&amp;field=Longitude:double(20,5)&amp;field=SymbolID:string(255,0)&amp;field=SymbolName:string(255,0)&amp;field=SymbolCode:integer(-1,0)&amp;field=Days:double(20,5)&amp;field=LiftMethod:string(255,0)&amp;field=LablX:double(20,5)&amp;field=LablY:double(20,5)&amp;field=LablOffX:double(20,5)&amp;field=LablOffY:double(20,5)&amp;field=LablOffset:double(20,5)&amp;field=LablWidth:double(20,5)&amp;field=BubbleSize:double(20,5)&amp;field=BubbleFields:string(255,0)&amp;field=ScaleType:string(255,0)&amp;field=MovingRes:string(255,0)&amp;field=ResState:string(255,0)&amp;field=MultiProd:string(255,0)&amp;field=crude%20oil%20(volume):double(20,5)&amp;field=crude%20oil%20(mass):double(20,5)&amp;field=natural%20gas%20(volume):double(20,5)&amp;field=natural%20gas%20(mass):double(20,5)&amp;field=produced%20water%20(volume):double(20,5)&amp;field=produced%20water%20(mass):double(20,5)&amp;field=condensate%20(volume):double(20,5)&amp;field=condensate%20(mass):double(20,5)&amp;field=injected%20gas%20(volume):double(20,5)&amp;field=injected%20gas%20(mass):double(20,5)&amp;field=injected%20water%20(volume):double(20,5)&amp;field=injected%20water%20(mass):double(20,5)&amp;field=lift%20gas%20(volume):double(20,5)&amp;field=lift%20gas%20(mass):double(20,5)&amp;field=free%20gas%20(volume):double(20,5)&amp;field=free%20gas%20(mass):double(20,5)" name="Диаграммы">
+      <customproperties>
+       <property key="legend/title-style" value="hidden"/>
+      </customproperties>
+     </layer-tree-layer>
+    </layer-tree-group>
+   </layer-tree-group>
+   <ComposerItem pagey="1165.44" page="1" id="_Легенда" lastValidViewScaleFactor="-1" positionMode="6" positionLock="false" x="5.43268" y="1165.44" visibility="1" zValue="11" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="120.9" outlineWidth="0.3" excludeFromExports="0" uuid="{ebbc9611-6e1a-4e53-98a3-67a258d8ec3d}" height="131.1" itemRotation="0" frame="true" pagex="5.43268">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLegend>
+  <ComposerItemGroup>
+   <ComposerItemGroupElement uuid="{2fb747ad-116f-45d5-95d1-d39189048f0f}"/>
+   <ComposerItemGroupElement uuid="{fd5ce7b6-7213-4d14-95d2-e9174ffe9e38}"/>
+   <ComposerItem pagey="1271.93" page="1" id="_Штамп_группа_масштаб" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1239.17" y="1271.93" visibility="1" zValue="10" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="82.3922" outlineWidth="0.3" excludeFromExports="0" uuid="{a5508058-8e48-4753-9005-0693add847a0}" height="8.11842" itemRotation="0" frame="false" pagex="1239.17">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerItemGroup>
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Горизонт [% activeLayerReservoirs() %]" htmlState="0" halign="4">
+   <LabelFont description="Times New Roman,16,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="1252.47" page="1" id="_Штамп__горизонт" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1287.13" y="1252.47" visibility="1" zValue="9" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="59.1506" outlineWidth="0.3" excludeFromExports="0" uuid="{a920da48-6c38-4ce3-8a6b-9b5c2a734b3f}" height="16.0801" itemRotation="0" frame="false" pagex="1287.13">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="на [% @map_date %]" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,18,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="1268.55" page="1" id="_Штамп_дата" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1341.37" y="1268.55" visibility="1" zValue="8" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="52.864" outlineWidth="0.3" excludeFromExports="0" uuid="{02786e13-c127-4945-b2e5-a15ee5bc65de}" height="13.9863" itemRotation="0" frame="false" pagex="1341.37">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerScaleBar lineCapStyle="square" style="Single Box" numMapUnitsPerScaleBarUnit="1000" segmentSizeMode="0" alignment="0" numSegments="6" segmentMillimeters="10.0036" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="50" units="1" labelBarSpace="3" outlineWidth="0.3" numSegmentsLeft="5" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel="км">
+   <scaleBarFont description="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0" style=""/>
+   <fillColor alpha="255" red="0" blue="0" green="0"/>
+   <fillColor2 alpha="255" red="255" blue="255" green="255"/>
+   <strokeColor alpha="255" red="0" blue="0" green="0"/>
+   <textColor alpha="255" red="0" blue="0" green="0"/>
+   <ComposerItem pagey="1279.92" page="1" id="_Штамп_масштабная_линейка" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1239.17" y="1279.92" visibility="1" zValue="7" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="85.775" outlineWidth="0.3" excludeFromExports="0" uuid="{d0beec65-d065-4787-aad2-1ea6d3f5d197}" height="16.7636" itemRotation="0" frame="false" pagex="1239.17">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerScaleBar>
+  <ComposerScaleBar lineCapStyle="square" style="Numeric" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="0" alignment="0" numSegments="4" segmentMillimeters="50.0179" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="250" units="1" labelBarSpace="3" outlineWidth="0.3" numSegmentsLeft="2" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel="м">
+   <scaleBarFont description="MS Shell Dlg 2,16,-1,5,50,0,0,0,0,0" style=""/>
+   <fillColor alpha="255" red="0" blue="0" green="0"/>
+   <fillColor2 alpha="255" red="255" blue="255" green="255"/>
+   <strokeColor alpha="255" red="0" blue="0" green="0"/>
+   <textColor alpha="255" red="0" blue="0" green="0"/>
+   <ComposerItem pagey="1271.93" page="1" id="_Штамп_масштаб" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1269.73" y="1271.93" visibility="1" zValue="6" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="51.8322" outlineWidth="0.3" excludeFromExports="0" uuid="{fd5ce7b6-7213-4d14-95d2-e9174ffe9e38}" height="8.11842" itemRotation="0" frame="false" pagex="1269.73">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerScaleBar>
+  <ComposerLabel valign="32" marginX="1" marginY="1" labelText="Масштаб -" htmlState="0" halign="2">
+   <LabelFont description="MS Shell Dlg 2,16,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="1271.93" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1239.17" y="1271.93" visibility="1" zValue="5" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="30.5531" outlineWidth="0.3" excludeFromExports="0" uuid="{2fb747ad-116f-45d5-95d1-d39189048f0f}" height="8.11842" itemRotation="0" frame="false" pagex="1239.17">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="21.4403" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="emblem.png" northOffset="0" pictureHeight="24.2925" mapId="-1" anchorPoint="4">
+   <ComposerItem pagey="1220.14" page="1" id="_Эмблема" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1239.33" y="1220.14" visibility="1" zValue="4" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="25.3372" outlineWidth="0.3" excludeFromExports="0" uuid="{100a094d-b310-4d6d-8e99-1cb076247fa8}" height="24.2925" itemRotation="0" frame="true" pagex="1239.33">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <dataDefinedSource expr="concat(@project_folder,'\\', @emblem)" field="" active="true" useExpr="true"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerPicture>
+  <ComposerLabel valign="32" marginX="1" marginY="1" labelText="Карта [% activeLayerProductionType() %] отборов " htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,18,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="1244.77" page="1" id="_Штамп_блок_описание" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1239.33" y="1244.77" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="154.75" outlineWidth="0.3" excludeFromExports="0" uuid="{42db6302-578b-4713-a8c2-33bb50943e09}" height="51.7509" itemRotation="0" frame="true" pagex="1239.33">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="1" marginY="1" labelText="[% @company_name%]" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,26,-1,5,75,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="1220.14" page="1" id="_Штамп_блок_компания" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="1264.97" y="1220.14" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="129.103" outlineWidth="0.3" excludeFromExports="0" uuid="{afda17cc-d891-4358-b1e7-7061cb963bd1}" height="24.2925" itemRotation="0" frame="true" pagex="1264.97">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="false" followPresetName="" id="0" previewMode="Cache" drawCanvasItems="true">
+   <Extent ymin="4427624.20683399960398674" xmin="324148.88093392009614035" ymax="4434119.38547585159540176" xmax="331143.88094105495838448"/>
+   <LayerSet/>
+   <Grid/>
+   <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{2ddf3d46-76a9-43bb-8afd-f1ff190c9e09}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Сетка 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
+    <lineStyle>
+     <symbol alpha="1" clip_to_extent="1" type="line" name="">
+      <layer pass="0" class="SimpleLine" locked="0">
+       <prop k="capstyle" v="square"/>
+       <prop k="customdash" v="5;2"/>
+       <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="customdash_unit" v="MM"/>
+       <prop k="draw_inside_polygon" v="0"/>
+       <prop k="joinstyle" v="bevel"/>
+       <prop k="line_color" v="0,0,0,255"/>
+       <prop k="line_style" v="solid"/>
+       <prop k="line_width" v="0"/>
+       <prop k="line_width_unit" v="MM"/>
+       <prop k="offset" v="0"/>
+       <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="offset_unit" v="MM"/>
+       <prop k="use_custom_dash" v="0"/>
+       <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+      </layer>
+     </symbol>
+    </lineStyle>
+    <markerStyle>
+     <symbol alpha="1" clip_to_extent="1" type="marker" name="">
+      <layer pass="0" class="SimpleMarker" locked="0">
+       <prop k="angle" v="0"/>
+       <prop k="color" v="0,0,0,255"/>
+       <prop k="horizontal_anchor_point" v="1"/>
+       <prop k="joinstyle" v="bevel"/>
+       <prop k="name" v="circle"/>
+       <prop k="offset" v="0,0"/>
+       <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="offset_unit" v="MM"/>
+       <prop k="outline_color" v="0,0,0,255"/>
+       <prop k="outline_style" v="solid"/>
+       <prop k="outline_width" v="0"/>
+       <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="outline_width_unit" v="MM"/>
+       <prop k="scale_method" v="diameter"/>
+       <prop k="size" v="2"/>
+       <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="size_unit" v="MM"/>
+       <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+     </symbol>
+    </markerStyle>
+    <annotationFontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+   </ComposerMapGrid>
+   <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
+   <ComposerItem pagey="3.08555" page="1" id="" lastValidViewScaleFactor="0.331526" positionMode="0" positionLock="false" x="1.4448" y="3.08555" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="1399.5" outlineWidth="0.5" excludeFromExports="0" uuid="{ce8df00a-270d-4a88-8306-45123b4d42d1}" height="1299.5" itemRotation="0" frame="true" pagex="1.4448">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <dataDefinedMapScale expr="5000" field="" active="true" useExpr="true"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerMap>
+  <customproperties/>
+ </Composition>
+</Composer>
