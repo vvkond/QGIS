@@ -26,7 +26,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
     """Constructor."""
-    def __init__(self, _iface, _db, getWellsFunc, _project, parent=None):
+    def __init__(self, _iface, _db, getWellsFunc, _project, parent=None, selectedIds=None):
         super(QgisPDSWellsBrowserForm, self).__init__(parent)
         self.setupUi(self)
 
@@ -36,6 +36,7 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
         self.wellFilter = {}
         self.wellListId = -1
         self.wellList = []
+        self.selectedIds=selectedIds   # list of wellIds that must be Checked by default.
         # self.wellFilter = wellFilter
         # self.wellListId = wellListId
         self.getWellsFunc = getWellsFunc
@@ -84,13 +85,23 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
                       self.tr('Created by'), self.tr('Updated')]
         self.wellItemModel = WellsItemsModel(headerData, 1, self)
         self.wellItemModel.setModelData(self.wellList)
+        
+        self.updateRowCheckStates()
         #Setup proxy model
         self.wellItemProxyModel = WellsItemsProxyModel(self)
         self.wellItemProxyModel.setSourceModel(self.wellItemModel)
         self.wellItemProxyModel.setFilter(self.wellFilter)
         self.wellItemProxyModel.setFilterActive(self.mWellFilterToolButton.isChecked())
-
         self.mWellsTreeView.setModel(self.wellItemProxyModel)
+        
+
+    def updateRowCheckStates(self):
+        if self.selectedIds is not None:
+            self.wellItemModel.setCheckstateAll(checked=Qt.Unchecked)
+            for wellId in self.selectedIds:
+                for item in self.wellItemModel.getDataFiltered(filter_func=lambda row:row[0]==wellId):
+                    self.wellItemModel.setCheckState(checked=Qt.Checked, row=self.wellItemModel.rowId(item))
+        
 
 
     def getWells(self):
@@ -143,6 +154,7 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
     @pyqtSlot(bool)
     def on_mWellFilterToolButton_toggled(self, checked):
         self.wellItemProxyModel.setFilterActive(checked)
+        self.updateRowCheckStates()
 
     @pyqtSlot(bool)
     def on_mWellListToolButton_toggled(self, checked):
@@ -151,6 +163,7 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
             self.wellItemModel.setModelData(self.wellList)
         elif checked:
             self.selectWellList()
+        self.updateRowCheckStates()
 
     def selectWellFilter(self):
         dlg = QgisPDSWellFilterSetupDialog(self.iface, self)
@@ -175,10 +188,12 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
     @pyqtSlot()
     def on_mSelectAll_clicked(self):
         self.wellItemModel.setCheckstateAll(Qt.Checked)
+        self.selectedIds=None
 
     @pyqtSlot()
     def on_mUnselectAll_clicked(self):
         self.wellItemModel.setCheckstateAll(Qt.Unchecked)
+        self.selectedIds=None
 
     @pyqtSlot()
     def on_mToggleSelected_clicked(self):

@@ -193,7 +193,9 @@ class Oracle(Base):
         return connection
 
     def cursor(self):
-        return self.connection.cursor()
+        cur=self.connection.cursor()
+        cur.arraysize=1000
+        return cur
 
     def blobToString(self, blob, offset=1):
         return blob.read(offset)

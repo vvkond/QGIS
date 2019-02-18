@@ -24,7 +24,7 @@ import csv
 
 from db import Oracle, Sqlite
 from QgisPDS.connections import create_connection
-from QgisPDS.utils import to_unicode, StrictInit, lonlat_add_list
+from QgisPDS.utils import to_unicode, StrictInit
 from bblInit import *
 from qgis_processing import *
 from tig_projection import *
@@ -129,7 +129,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         
         self.setupUi(self)
 
-        self.proj4String = 'epsg:4326'
+        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
         try:
             self.tig_projections = TigProjections(db=self.db)
             proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
@@ -137,8 +137,9 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
                 self.proj4String = 'PROJ4:'+proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                sourceCrs = QgsCoordinateReferenceSystem('epsg:4326')
-                self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                sourceCrs = QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg())
+                #self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Project projection read error {0}: {1}').format(
@@ -214,7 +215,16 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         if idx < 0:
             return 0
         else:
-            return int(self.mZoneComboBox.itemData(idx))
+            return int(self.mZoneComboBox.itemData(idx)[0])
+
+    @property
+    def zoneOrder(self):
+        idx = self.mZoneComboBox.currentIndex()
+        if idx < 0:
+            return 0
+        else:
+            return int(self.mZoneComboBox.itemData(idx)[2])
+
 
     @property
     def input_raster(self):
@@ -319,18 +329,28 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
 
 
         sql = self.get_sql('ZonationCoords.sql')
-        records = self.db.execute(sql, well_id=wellId, zonation_id=idZonation, zone_id=idZone)
+        records = self.db.execute(sql
+                                  , well_id=wellId
+                                  , zonation_id=idZonation
+                                  , zone_id=idZone
+                                  , interval_order=None
+                                  , only_pub_devi=None
+                                  )
 
         newCoords = (lon, lat)
 
         if records:
             for input_row in records:
-                x = read_floats(12)
-                y = read_floats(13)
-                md = read_floats(14)
-                depth = input_row[4]
-
-                newCoords = self._calcOffset(lon, lat, x, y, md, depth)
+                devi_id=input_row[15]
+                if devi_id is None:
+                    self.no_devi_wells.append(wellId)
+                else:
+                    x = read_floats(16)
+                    y = read_floats(17)
+                    md = read_floats(18)
+                    depth = input_row[3]
+    
+                    newCoords = self._calcOffset(lon, lat, x, y, md, depth)
 
         return newCoords
 
@@ -962,9 +982,12 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         self.mZoneComboBox.clear()
         records = self.db.execute(self.get_sql(u'ZonationParams_zone.sql'), zonation_id=self.zonationId)
         if records:
-            for id, desc in records:
-                self.mZoneComboBox.addItem(to_unicode("".join(desc)), id)
-                if id == self.currentZone:
+            for i_id, i_desc, i_name, i_order, i_level in records:
+                item = QListWidgetItem(to_unicode(i_desc))
+                item.setData(Qt.UserRole, [i_id, i_name, i_order, i_level])
+                self.mZoneComboBox.addItem(item)
+                #self.mZoneComboBox.addItem(to_unicode("".join(i_desc)), id)
+                if i_id == self.currentZone:
                     self.mZoneComboBox.setCurrentIndex(self.mZoneComboBox.count() - 1)
             
 
@@ -1041,6 +1064,9 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
 
     #SLOTS
     def on_buttonBox_accepted(self):
+        
+        self.no_devi_wells=[]
+        
         self.iface.messageBar().clearWidgets() 
         progressMessageBar = self.iface.messageBar()
         self.progress = QProgressBar()
@@ -1054,6 +1080,8 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         self.execute()
 
         self.iface.messageBar().clearWidgets()
+        QgsMessageLog.logMessage(self.tr(u"\t Deviation is private or no deviation in wells: {} ").format(",".join(self.no_devi_wells)), tag="QgisPDS.coordFromZone")
+        
 
     def wellCoordComboBox_activated(self, index):
         self.setZoneWidgetVisible()

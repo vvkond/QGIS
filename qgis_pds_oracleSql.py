@@ -72,8 +72,9 @@ class QgisOracleSql(QtGui.QDialog, FORM_CLASS):
                 self.proj4String = 'PROJ4:' + proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                sourceCrs = QgsCoordinateReferenceSystem('epsg:4326')
-                self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                sourceCrs = QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg())
+                #self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Project projection read error {0}: {1}').format(

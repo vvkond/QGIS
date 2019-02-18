@@ -20,6 +20,11 @@ from qgis_pds_zoneparams import QgisPDSZoneparamsDialog
 from qgis_pds_templateList import QgisPDSTemplateListDialog
 from qgis_pds_wellsBrowserForm import *
 
+IS_DEBUG=False
+
+#===============================================================================
+# 
+#===============================================================================
 class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
     def __init__(self, _project, _iface, parent=None):
         self.scheme = ''
@@ -55,6 +60,12 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         self.wellsBrowser = QgisPDSWellsBrowserForm(_iface, self.db, self.getZoneWells, self.project, parent=self)
         self.gridLayout.addWidget(self.wellsBrowser, 2, 0, 1, 2)
 
+        self.mTwoLayers.setVisible(False)
+        self.notUseLastZoneChkBox.setVisible(False)
+        self.notUseLastZoneNum.setVisible(False)
+        self.isOnlyPublicDeviChkBox.setVisible(False)
+        self.isEnableFilterChkBox.setVisible(False)
+
 
     def zonationListWidget_itemSelectionChanged(self):
         if not self.isInitialized:
@@ -63,6 +74,9 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         self.wellsBrowser.refreshWells()
 
     def process(self):
+        global IS_DEBUG
+        IS_DEBUG=     self.isDebugChkBox.isChecked()
+        
         selectedZonations = []
         selectedZones = []
         for si in self.zonationListWidget.selectedItems():
@@ -86,7 +100,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         zoneName = zoneName.replace('/', '_')
         if self.createLayer(layerName):
-            with edit(self.layer):
+            with edit_layer(self.layer):
                 self.execute(sel, paramId)
 
             self.layer = memoryToShp(self.layer, self.project['project'], layerName + '_' + zoneName)

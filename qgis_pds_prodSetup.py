@@ -12,12 +12,23 @@ import math
 import xml.etree.cElementTree as ET
 import re
 import time
+from utils import plugin_path, start_edit_layer, qgs_get_last_child_rules, qgs_set_symbol_render_level
+from qgis_pds_prodRenderer import BubbleSymbolLayer
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
 
+
+#===============================================================================
+# 
+#===============================================================================
 class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
+    
+    
+    #===========================================================================
+    # 
+    #===========================================================================
     def __init__(self, iface, layer, parent=None):
         super(QgisPDSProdSetup, self).__init__(parent)
 
@@ -66,8 +77,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.bubbleProps = None
         renderer = self.currentLayer.rendererV2()
         if renderer is not None and renderer.type() == 'RuleRenderer':
-            root_rule = renderer.rootRule()
-            for r in root_rule.children():
+            rootRule = renderer.rootRule()
+            for r in rootRule.children():
                 if r.symbol():
                     for l in r.symbol().symbolLayers():
                         if l.layerType() == 'BubbleDiagramm':
@@ -222,6 +233,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         #     item.setData(Qt.UserRole, d)
         #     self.mDiagrammsListWidget.addItem(item)
 
+        if type(layer.rendererV2())!=QgsRuleBasedRendererV2:
+            self.isAppendToStyle.setEnabled(False)
+            self.isAppendToEachLastSymbol.setEnabled(False)
         return
 
     def updateWidgets(self):
@@ -240,7 +254,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.mDiagrammsListWidget.addItem(item)
 
 
+    #===========================================================================
     # SLOT
+    #===========================================================================
     def on_mDiagrammsListWidget_currentRowChanged(self, row):
         if row < 0:
             return
@@ -262,7 +278,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         vec = diagramm.fluids
         for idx, v in enumerate(vec):
             self.componentsList.item(idx).setCheckState(Qt.Checked if v else Qt.Unchecked)
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def mAddDiagramm_clicked(self):
         newName = u'Диаграмма {}'.format(len(self.layerDiagramms)+1)
         d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=self.defaultUnitNum,
@@ -273,7 +291,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         item.setData(Qt.UserRole, d)
         self.mDiagrammsListWidget.addItem(item)
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def mDeleteDiagramm_clicked(self):
         if len(self.layerDiagramms) < 2:
             return
@@ -284,7 +304,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             del self.layerDiagramms[idx]
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def mImportFromLayer_clicked(self):
         layers = self.mIface.legendInterface().layers()
 
@@ -309,9 +331,19 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             except:
                 pass
             self.currentLayer = saveLayer
-
-
+    #===========================================================================
+    # 
+    #===========================================================================
+    def mImportFromGlobalPB_clicked(self):
+        try:
+            self.copyGLobalSettingsToCustomProp()
+            if self.readSettingsNew(): self.updateWidgets()
+        except:
+            pass
+        pass
+    #===========================================================================
     # SLOT
+    #===========================================================================
     def on_titleEdit_editingFinished(self):
         idx = self.mDiagrammsListWidget.currentRow()
         if idx >= 0:
@@ -469,19 +501,28 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     #     editLayer.triggerRepaint()
     #
     #     return
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def getCoordinatesForPercent(self, percent):
         x = math.cos(2 * math.pi * percent)
         y = math.sin(2 * math.pi * percent)
         return (x, y)
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def fluidByCode(self, code):
         for f in bblInit.fluidCodes:
             if f.code == code:
                 return f
         return None
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def setup(self, editLayer):
+        """
+            @info: Function after press OK
+        """
 
         bblInit.updateOldProductionStructure(editLayer)
 
@@ -497,8 +538,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         uniqSymbols = {}
         prods = {}
 
-        if not editLayer.isEditable():
-            editLayer.startEditing()
+        if not editLayer.isEditable(): start_edit_layer(editLayer)
 
         idxOffX = editLayerProvider.fieldNameIndex('labloffx')
         idxOffY = editLayerProvider.fieldNameIndex('labloffy')
@@ -518,7 +558,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         iter = editLayerProvider.getFeatures()
 
-        maxSum = 0.0
+        # --- CALCULATE MAX BUUBL VALUE 
+        maxSum = 0.0 # max bubble value
         for feature in iter:
             for d in self.layerDiagramms:
                 vec = d.fluids
@@ -530,7 +571,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 prodFields = [bblInit.fluidCodes[idx].code for idx, v in enumerate(vec) if v]
 
                 sum = 0.0
-                multiplier = 1.0 #float(bblInit.unit_to_mult.get(d.units, 1.0))
+                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
                 for attrName in prodFields:
                     attr = attrName + scaleType
                     variant = feature.attribute(attr)
@@ -545,6 +586,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             maxSum = maxSum + 1
 
         iter = editLayerProvider.getFeatures()
+        # --- CALCULATE EACH FEATURE MAX BUBBLE SIZE FOR LABEL OFFSET
         for feature in iter:
             FeatureId = feature.id()
 
@@ -563,11 +605,11 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
                 selectedFluids = [bblInit.fluidCodes[idx] for idx, v in enumerate(vec) if v]
 
-                multiplier = 1.0
+                multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
                 koef = (maxDiagrammSize - minDiagrammSize) / maxSum
                 if self.useScaleGroupBox.isChecked():
                     koef = (maxDiagrammSize - minDiagrammSize) / d.scale
-                    multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
+                    #multiplier = float(bblInit.unit_to_mult.get(d.units, 1.0))
 
                 sum = 0.0
                 for fluid in selectedFluids:
@@ -628,13 +670,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             #
             # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('scaletype'), scaleType)
 
-        editLayer.commitChanges()
-
-        plugin_dir = os.path.dirname(__file__)
-
-        registry = QgsSymbolLayerV2Registry.instance()
-
-        #Collect fields for Data Defined props
+        stop_edit_layer(editLayer)
+        plugin_dir = plugin_path()
+        # --- COLLECT FIELDS FOR DATA DEFINED PROPS
         allDiagramms = []
         templateStr = self.templateExpression.text()
         sums = ''
@@ -653,7 +691,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             diagramm = {}
             diagramm['scaleMaxRadius'] = maxDiagrammSize
             diagramm['scaleMinRadius'] = minDiagrammSize
-            diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else maxSum
+            diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else multiplier * maxSum
             diagramm['multiplier'] = mm
             diagramm['dailyProduction'] = self.dailyProduction.isChecked()
             diagramm['scaleType'] = 1
@@ -677,128 +715,278 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             sums += ss
 
             allDiagramms.append(diagramm)
-
-        diagrammStr = str(allDiagramms)
-
-        symbol = QgsMarkerSymbolV2()
-        bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
-        if bubbleMeta is not None:
-            bubbleProps = {}
-            bubbleProps['showLineouts'] = 'False' if self.showLineouts.isChecked() else 'True'
-            bubbleProps['showLabels'] = 'True'
-            bubbleProps['showDiagramms'] = 'True'
-            bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
-            bubbleProps['diagrammStr'] = diagrammStr
-            bubbleProps['templateStr'] = templateStr
-            bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
-            if bubbleLayer:
-                bubbleLayer.setSize(3)
-                bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
-                symbol.changeSymbolLayer(0, bubbleLayer)
-        else:
-            symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
-
-        renderer = QgsRuleBasedRendererV2(symbol)
-        root_rule = renderer.rootRule()
-
-        if bubbleMeta and self.showLineouts.isChecked():
-            bubbleProps = {}
-            bubbleProps['showLineouts'] = 'True' if self.showLineouts.isChecked() else 'False'
-            bubbleProps['showLabels'] = 'False'
-            bubbleProps['showDiagramms'] = 'False'
-            bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
-            bubbleProps['diagrammStr'] = diagrammStr
-            bubbleProps['templateStr'] = templateStr
-            bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
-            if bubbleLayer:
-                bubbleLayer.setSize(3)
-                bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
-                symbol1 = QgsMarkerSymbolV2()
-                symbol1.changeSymbolLayer(0, bubbleLayer)
-                rule = QgsRuleBasedRendererV2.Rule(symbol1)
-                rule.setLabel(u'Скважины')
-                root_rule.appendChild(rule)
-
-        # args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
-        sSize = self.mSymbolSize.value()
-        root_rule.children()[0].setLabel(diagLabel)
-        for symId in uniqSymbols:
-            svg = QgsSvgMarkerSymbolLayerV2()
-            svg.setPath(plugin_dir + "/svg/WellSymbol" + str(symId).zfill(3) + ".svg")
-            svg.setSize(sSize)
-            svg.setSizeUnit(QgsSymbolV2.MM)
-            symbol = QgsMarkerSymbolV2()
-            symbol.changeSymbolLayer(0, svg)
-
-            rule = QgsRuleBasedRendererV2.Rule(symbol)
-            try:
-                rule.setLabel(QCoreApplication.translate('bblInit', uniqSymbols[symId]))
-            except:
-                rule.setLabel(uniqSymbols[symId])
-
-            rule.setFilterExpression(u'\"{0}\"={1}'.format("SymbolCode", symId))
-            root_rule.appendChild(rule)
-
-        for key,ff in prods.iteritems():
-            m = QgsSimpleMarkerSymbolLayerV2()
-            m.setSize(4)
-            m.setSizeUnit(QgsSymbolV2.MM)
-            m.setColor(ff.backColor)
-            symbol = QgsMarkerSymbolV2()
-            symbol.changeSymbolLayer(0, m)
-
-            rule = QgsRuleBasedRendererV2.Rule(symbol)
-            try:
-                newName = QCoreApplication.translate('bblInit', ff.name)
-                rule.setLabel(newName)
-            except:
-                rule.setLabel(ff.name)
-            rule.setFilterExpression(u'\"SymbolCode\"=-1')
-            root_rule.appendChild(rule)
-
-
-        #--- add arrow FROM_LOWER_RESERVOIR/FROM_UPPER_RESERVOIR
-        symbol = QgsMarkerSymbolV2.createSimple({ 
-                                                   'name': 'arrow'
-                                                 , 'color': "128,128,128,0"
-                                                 , 'offset': '0,-2'
-                                                 , 'angle':'0'
-                                                 , 'size':str(sSize-1)
-                                                })
-        rule = QgsRuleBasedRendererV2.Rule(symbol)
-        try:
-            rule.setLabel(QCoreApplication.translate('bblInit', 'FROM_LOWER_RESERVOIR'))
-        except:
-            rule.setLabel("FROM_LOWER_RESERVOIR")
-        rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_LOWER_RESERVOIR'")) 
-        root_rule.appendChild(rule)
+        diagrammStr = str(allDiagramms)        
+        #---load user styles
+        load_styles_from_dir(layer=editLayer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_RENDER_STYLE_DIR),switchActiveStyle=False)
         
-        symbol = QgsMarkerSymbolV2.createSimple({ 
-                                                   'name': 'arrow'
-                                                 , 'color': "128,128,128,0"
-                                                 , 'offset': '0,-2'
-                                                 , 'angle':'180'
-                                                 , 'size':str(sSize-1)
-                                                })
-        rule = QgsRuleBasedRendererV2.Rule(symbol)
-        try:
-            rule.setLabel(QCoreApplication.translate('bblInit', 'FROM_UPPER_RESERVOIR'))
-        except:
-            rule.setLabel('FROM_UPPER_RESERVOIR')
-        rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_UPPER_RESERVOIR'")) 
-        root_rule.appendChild(rule)
+        ########################################################
+        #--- If append to current style and current style QgsRuleBasedRendererV2
+        ########################################################
+        layerCurrentStyleRendere=editLayer.rendererV2()
 
+        if (not self.isUseDefaultStyle.isChecked()) and type(layerCurrentStyleRendere)==QgsRuleBasedRendererV2:
+                
+            #------ITERATE OVER LAYER STYLE-RULES                
+            rootRule=layerCurrentStyleRendere.rootRule()
+            #rootRule.active()   rootRule.filterExpression()
+            if self.isAppendToEachLastSymbol.isChecked():
+                for lastRule in qgs_get_last_child_rules(rootRule): 
+                    #lastRule.label()
+                    #lastRule.symbol()
+                    #lastRule.symbol().symbolLayers()[0]
+                    # if current rule is Bubble rule,then go to parent rule
+                    if type(lastRule.symbol().symbolLayers()[0])==BubbleSymbolLayer:
+                        symbolRule=lastRule.parent()
+                    else:
+                        symbolRule=lastRule
+                    #------PDS CHART STYLE SYMBOL
+                    symbol = QgsMarkerSymbolV2()
+                    bubbleMeta = QgsSymbolLayerV2Registry.instance().symbolLayerMetadata('BubbleDiagramm')
+                    if bubbleMeta is not None:
+                        bubbleProps = {}
+                        bubbleProps['showLineouts'] = self.showLineouts.isChecked()
+                        bubbleProps['showLabels'] = 'True'
+                        bubbleProps['showDiagramms'] = 'True'
+                        bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                        bubbleProps['diagrammStr'] = diagrammStr
+                        bubbleProps['templateStr'] = templateStr
+                        bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                        if bubbleLayer:
+                            bubbleLayer.setSize(3)
+                            bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                            symbol.changeSymbolLayer(0, bubbleLayer)
+                    else:
+                        symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
+                    rule = QgsRuleBasedRendererV2.Rule(symbol)
+                    rule.setLabel(self.resultRuleName.text())  #rule.label()                        
+                    symbolRule.appendChild(rule)
+                    #lastRule.symbol().changeSymbolLayer(0, bubbleLayer)
+                    pass
+                #layerCurrentStyleRendere.rootRule().children()[0].setIsElse(True)
+                #symbols = editLayer.rendererV2().symbols()
+                pass
+            elif self.isAppendToStyle.isChecked():
+                #------PDS CHART STYLE SYMBOL
+                symbol = QgsMarkerSymbolV2()
+                bubbleMeta = QgsSymbolLayerV2Registry.instance().symbolLayerMetadata('BubbleDiagramm')
+                if bubbleMeta is not None:
+                    bubbleProps = {}
+                    bubbleProps['showLineouts'] = self.showLineouts.isChecked()
+                    bubbleProps['showLabels'] = 'True'
+                    bubbleProps['showDiagramms'] = 'True'
+                    bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                    bubbleProps['diagrammStr'] = diagrammStr
+                    bubbleProps['templateStr'] = templateStr
+                    bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                    if bubbleLayer:
+                        bubbleLayer.setSize(3)
+                        bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                        symbol.changeSymbolLayer(0, bubbleLayer)
+                else:
+                    symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
+                rule = QgsRuleBasedRendererV2.Rule(symbol)
+                rule.setLabel(self.resultRuleName.text())  #rule.label()                     
+                rootRule.appendChild(rule)
+            else:
+                pass
+            #------ADD CIRCLE SYMBOLS
+            for key,ff in prods.iteritems():
+                m = QgsSimpleMarkerSymbolLayerV2()
+                m.setSize(4)
+                m.setSizeUnit(QgsSymbolV2.MM)
+                m.setColor(ff.backColor)
+                symbol = QgsMarkerSymbolV2()
+                symbol.changeSymbolLayer(0, m)
+    
+                rule = QgsRuleBasedRendererV2.Rule(symbol)
+                try:
+                    newName = QCoreApplication.translate('bblInit', ff.name)
+                    rule.setLabel(newName)
+                except:
+                    rule.setLabel(ff.name)
+                rule.setFilterExpression(u'\"{}\"=-1'.format(Fields.Symbol.name))
+                rootRule.appendChild(rule)
+                
+        ########################################################
+        #--- If Use default production style 
+        ########################################################
+        else:
+            load_style(layer=editLayer, style_path=os.path.join(plugin_dir ,STYLE_DIR ,PROD_RENDER_STYLE+".qml"), name=QCoreApplication.translate('bblInit', PROD_RENDER_STYLE))
+            
+            rootRules=[] # list of root rules for append them symbology
+            renderer = QgsRuleBasedRendererV2(QgsRuleBasedRendererV2.Rule(None))
+            superRootRule = renderer.rootRule() #super Root Rule
+            
+            #--- group rootRule by days
+            if self.chkboxGroupByDays.isChecked():
+                for idx,(lbl,expr,isActive) in enumerate([
+                     [QCoreApplication.translate('bblInit', u'HAVE WORK DAYS and IN FOND') 
+                                                          , u'\"{}\">0 and \"{}\"<>71'.format(Fields.Days.name,Fields.Symbol.name)
+                                                          ,True
+                     ]
+                    ,[QCoreApplication.translate('bblInit', u'HAVE WORK DAYS and NOT IN FOND') 
+                                                          , u'\"{}\">0 and \"{}\"=71'.format(Fields.Days.name,Fields.Symbol.name)
+                                                          ,True
+                     ]
+                    ,[QCoreApplication.translate('bblInit', u'NO WORK DAYS and IN FOND') 
+                                                          , u'not \"{}\">0 and \"{}\"<>71'.format(Fields.Days.name,Fields.Symbol.name)
+                                                          ,True
+                     ]
+                    ,[QCoreApplication.translate('bblInit', u'NO WORK DAYS and NOT IN FOND') 
+                                                          , u'not \"{}\">0 and \"{}\"=71'.format(Fields.Days.name,Fields.Symbol.name)
+                                                          ,False
+                     ]
+                    
+                    ]):
+                    #------ RULE FOR DAYS>0
+                    rule = QgsRuleBasedRendererV2.Rule(None)
+                    rule.setLabel(lbl)
+                    rule.setFilterExpression(expr)
+                    rule.setActive(isActive)
+                    superRootRule.appendChild(rule)
+                    rootRules.append(superRootRule.children()[idx])
 
-        renderer.setOrderByEnabled(True)
-        orderByClause = QgsFeatureRequest.OrderByClause('BubbleSize', False)
-        orderBy = QgsFeatureRequest.OrderBy([orderByClause])
-        renderer.setOrderBy(orderBy)
-        editLayer.setRendererV2(renderer)
-
+            #--- not group rootRule by days
+            else:
+                rootRules=[superRootRule]
+            
+            #---CREATE SYMBOLOGY for current style
+            registry = QgsSymbolLayerV2Registry.instance()
+            bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
+            
+            for rootRule in rootRules:
+                #------PDS CHART SYMBOL
+                symbol = QgsMarkerSymbolV2()
+                if bubbleMeta is not None:
+                    bubbleProps = {}
+                    bubbleProps['showLineouts'] = 'False' if self.showLineouts.isChecked() else 'True'
+                    bubbleProps['showLabels'] = 'True'
+                    bubbleProps['showDiagramms'] = 'True'
+                    bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                    bubbleProps['diagrammStr'] = diagrammStr
+                    bubbleProps['templateStr'] = templateStr
+                    bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                    if bubbleLayer:
+                        bubbleLayer.setSize(3)
+                        bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                        symbol.changeSymbolLayer(0, bubbleLayer)
+                else:
+                    symbol.changeSymbolLayer(0, QgsSvgMarkerSymbolLayerV2())
+                rule = QgsRuleBasedRendererV2.Rule(symbol) #
+                rootRule.appendChild(rule)
+    
+                
+                #------LINES
+                if bubbleMeta and self.showLineouts.isChecked():
+                    bubbleProps = {}
+                    bubbleProps['showLineouts'] = 'True' if self.showLineouts.isChecked() else 'False'
+                    bubbleProps['showLabels'] = 'False'
+                    bubbleProps['showDiagramms'] = 'False'
+                    bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                    bubbleProps['diagrammStr'] = diagrammStr
+                    bubbleProps['templateStr'] = templateStr
+                    bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                    if bubbleLayer:
+                        bubbleLayer.setSize(3)
+                        bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
+                        symbol1 = QgsMarkerSymbolV2()
+                        symbol1.changeSymbolLayer(0, bubbleLayer)
+                        qgs_set_symbol_render_level(symbol1, 10)
+                        rule = QgsRuleBasedRendererV2.Rule(symbol1)
+                        rule.setLabel(u'Скважины')
+                        
+                        rootRule.appendChild(rule)
+        
+                # args = (self.standardDiagramms[code].name, self.standardDiagramms[code].scale)
+                sSize = self.mSymbolSize.value()
+                rootRule.children()[0].setLabel(diagLabel)
+                #------SVG SYMBOLS
+                for symId in uniqSymbols:
+                    svg = QgsSvgMarkerSymbolLayerV2()
+                    svg.setPath(plugin_dir + "/svg/WellSymbol" + str(symId).zfill(3) + ".svg")
+                    svg.setSize(sSize)
+                    svg.setSizeUnit(QgsSymbolV2.MM)
+                    symbol = QgsMarkerSymbolV2()
+                    symbol.changeSymbolLayer(0, svg)
+                    qgs_set_symbol_render_level(symbol, 5)
+        
+                    rule = QgsRuleBasedRendererV2.Rule(symbol)
+                    try:
+                        rule.setLabel(QCoreApplication.translate('bblInit', uniqSymbols[symId]))
+                    except:
+                        rule.setLabel(uniqSymbols[symId])
+        
+                    rule.setFilterExpression(u'\"{0}\"={1}'.format("SymbolCode", symId))
+                    rootRule.appendChild(rule)
+                #------CIRCLE SYMBOLS
+                for key,ff in prods.iteritems():
+                    m = QgsSimpleMarkerSymbolLayerV2()
+                    m.setSize(4)
+                    m.setSizeUnit(QgsSymbolV2.MM)
+                    m.setColor(ff.backColor)
+                    symbol = QgsMarkerSymbolV2()
+                    symbol.changeSymbolLayer(0, m)
+        
+                    rule = QgsRuleBasedRendererV2.Rule(symbol)
+                    try:
+                        newName = QCoreApplication.translate('bblInit', ff.name)
+                        rule.setLabel(newName)
+                    except:
+                        rule.setLabel(ff.name)
+                    rule.setFilterExpression(u'\"SymbolCode\"=-1')
+                    rootRule.appendChild(rule)
+        
+                #------ add arrow FROM_LOWER_RESERVOIR/FROM_UPPER_RESERVOIR
+                rule = QgsRuleBasedRendererV2.Rule(None)
+                rule.setLabel(QCoreApplication.translate('bblInit', u'RESERVOIR_TRANSITION'))
+                rule.setActive(False)
+                #---------FROM_LOWER_RESERVOIR
+                symbol = QgsMarkerSymbolV2.createSimple({ 
+                                                           'name': 'arrow'
+                                                         , 'color': "128,128,128,0"
+                                                         , 'offset': '0,-2'
+                                                         , 'angle':'0'
+                                                         , 'size':str(sSize-1)
+                                                        })
+                sub_rule = QgsRuleBasedRendererV2.Rule(symbol)
+                try:
+                    sub_rule.setLabel(QCoreApplication.translate('bblInit', u'FROM_LOWER_RESERVOIR'))
+                except:
+                    sub_rule.setLabel(u"FROM_LOWER_RESERVOIR")
+                sub_rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_LOWER_RESERVOIR'")) 
+                rule.appendChild(sub_rule)
+                #---------FROM_UPPER_RESERVOIR
+                symbol = QgsMarkerSymbolV2.createSimple({ 
+                                                           'name': 'arrow'
+                                                         , 'color': "128,128,128,0"
+                                                         , 'offset': '0,-2'
+                                                         , 'angle':'180'
+                                                         , 'size':str(sSize-1)
+                                                        })
+                sub_rule = QgsRuleBasedRendererV2.Rule(symbol)
+                try:
+                    sub_rule.setLabel(QCoreApplication.translate('bblInit', u'FROM_UPPER_RESERVOIR'))
+                except:
+                    sub_rule.setLabel(u'FROM_UPPER_RESERVOIR')
+                sub_rule.setFilterExpression(u'\"{0}\"={1}'.format("resstate", "'FROM_UPPER_RESERVOIR'")) 
+                rule.appendChild(sub_rule)
+                rootRule.appendChild(rule)
+        
+                #--------- 
+                renderer.setOrderByEnabled(True)
+                orderByClause = QgsFeatureRequest.OrderByClause('BubbleSize', False)
+                orderBy = QgsFeatureRequest.OrderBy([orderByClause])
+                renderer.setOrderBy(orderBy)
+                editLayer.setRendererV2(renderer)
+                #---------
+                rootRule.children()[0].setLabel(self.resultRuleName.text())
+    
         editLayer.triggerRepaint()
         self.mIface.layerTreeView().refreshLayerSymbology(editLayer.id())
         return
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def addLabels(self, templateStr, sum, fluids, feature, scaleType, multiplier):
         showZero = int(self.mShowZero.isChecked())
         formatString = "{:."+str(self.decimalEdit.value())+"f}"
@@ -1068,14 +1256,23 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.minDiagrammSize.blockSignals(False)
 
 
-    #Read layer settings
+    #===========================================================================
+    # Read layer settings
+    #===========================================================================
     def readSettings(self):
+        #--- try read settings from layer or from global
         try:
             if self.readSettingsNew():
                 return
+            else:
+                self.copyGLobalSettingsToCustomProp()
+                if self.readSettingsNew():
+                    return
+                
         except:
             return
-
+        #--- create new default settings
+        
         self.currentDiagramm = self.bubbleProps['diagrammType'] if 'diagrammType' in self.bubbleProps else '1_liquidproduction'
         # self.maxDiagrammSize.setValue(float(self.bubbleProps["maxDiagrammSize"]) if 'maxDiagrammSize' in self.bubbleProps else 0.01)
         # self.minDiagrammSize.setValue(float(self.bubbleProps["minDiagrammSize"]) if 'minDiagrammSize' in self.bubbleProps else 0.0)
@@ -1112,7 +1309,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         return
 
-    #Write layer settings
+    #===========================================================================
+    # Write layer settings
+    #===========================================================================
     def applySettings(self):
         try:
             self.saveSettings()
@@ -1143,15 +1342,19 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         #     self.bubbleProps['fluid_inPercent_'+fl.code] = str(fl.inPercent)
 
         return
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def readSettingsNew(self):
         self.currentDiagramm = '1_liquidproduction'
-        self.maxDiagrammSize.setValue(float(self.currentLayer.customProperty('maxDiagrammSize', 15)))
-        self.minDiagrammSize.setValue(float(self.currentLayer.customProperty('minDiagrammSize', 3.0)))
-        self.mShowZero.setChecked(int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1)
-        self.mSymbolSize.setValue(float(self.currentLayer.customProperty("defaultSymbolSize", 4.0)))
-        self.useScaleGroupBox.setChecked(int(self.currentLayer.customProperty("useScaleGroupBox", "0")) == 1)
-        self.templateExpression.setText(self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()))
+        self.maxDiagrammSize.setValue(     float(self.currentLayer.customProperty('maxDiagrammSize', 15))                    )
+        self.minDiagrammSize.setValue(     float(self.currentLayer.customProperty('minDiagrammSize', 3.0))                   )
+        self.mShowZero.setChecked(         int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1                 )
+        self.mSymbolSize.setValue(         float(self.currentLayer.customProperty("defaultSymbolSize", 4.0))                 )
+        self.useScaleGroupBox.setChecked(  int(self.currentLayer.customProperty("useScaleGroupBox", "0")) == 1               )
+        self.templateExpression.setText(   self.currentLayer.customProperty('labelTemplate', self.templateExpression.text()) )
+        self.resultRuleName.setText(       self.currentLayer.customProperty('pds_chart_name',self.resultRuleName.text())     )
+        self.chkboxGroupByDays.setChecked( int(self.currentLayer.customProperty("pds_chart_groupByDaysAndFond", "0")) == 1   )
 
         count = int(self.currentLayer.customProperty("diagrammCount", 0))
         if count < 1:
@@ -1161,11 +1364,11 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         for num in xrange(count):
             d = str(num+1)
             val = MyStruct()
-            val.name = self.currentLayer.customProperty('diagramm_name_' + d, "--")
-            val.scale = float(self.currentLayer.customProperty('diagramm_scale_' + d, 300000))
-            val.unitsType = int(self.currentLayer.customProperty('diagramm_unitsType_' + d, 0))
-            val.units = int(self.currentLayer.customProperty('diagramm_units_' + d, 0))
-            val.fluids = QgsSymbolLayerV2Utils.decodeRealVector(self.currentLayer.customProperty('diagramm_fluids_' + d))
+            val.name =      self.currentLayer.customProperty(       'diagramm_name_' + d, "--"     )
+            val.scale =     float(self.currentLayer.customProperty( 'diagramm_scale_' + d, 300000  ))
+            val.unitsType = int(self.currentLayer.customProperty(   'diagramm_unitsType_' + d, 0   ))
+            val.units =     int(self.currentLayer.customProperty(   'diagramm_units_' + d, 0       ))
+            val.fluids =    QgsSymbolLayerV2Utils.decodeRealVector(self.currentLayer.customProperty('diagramm_fluids_' + d))
             self.layerDiagramms.append(val)
 
         self.labelSizeEdit.setValue(float(self.currentLayer.customProperty('labelSize', self.labelSizeEdit.value())))
@@ -1186,32 +1389,62 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             fl.inPercent = int(self.currentLayer.customProperty('fluid_inPercent_' + fl.code))
 
         return True
-
+    #===========================================================================
+    # 
+    #===========================================================================
     def saveSettings(self):
-        self.currentLayer.setCustomProperty("diagrammCount", len(self.layerDiagramms))
-
-        self.currentLayer.setCustomProperty("maxDiagrammSize", self.maxDiagrammSize.value())
-        self.currentLayer.setCustomProperty("minDiagrammSize", self.minDiagrammSize.value())
-        self.currentLayer.setCustomProperty("alwaysShowZero", int(self.mShowZero.isChecked()))
+        all_prop=[] #list of names all stored properties. Used for store GLOBAL parameters
+        self.currentLayer.setCustomProperty("diagrammCount",     len(self.layerDiagramms))
+        self.currentLayer.setCustomProperty("maxDiagrammSize",   self.maxDiagrammSize.value())
+        self.currentLayer.setCustomProperty("minDiagrammSize",   self.minDiagrammSize.value())
+        self.currentLayer.setCustomProperty("alwaysShowZero",    int(self.mShowZero.isChecked()))
         self.currentLayer.setCustomProperty("defaultSymbolSize", self.mSymbolSize.value())
-        self.currentLayer.setCustomProperty("useScaleGroupBox", int(self.useScaleGroupBox.isChecked()))
+        self.currentLayer.setCustomProperty("useScaleGroupBox",  int(self.useScaleGroupBox.isChecked()))
+        all_prop.extend([
+                        "diagrammCount"    
+                        ,"maxDiagrammSize"  
+                        ,"minDiagrammSize"  
+                        ,"alwaysShowZero"   
+                        ,"defaultSymbolSize"
+                        ,"useScaleGroupBox"             
+                        ])
 
         num = 1
         for val in self.layerDiagramms:
             d = str(num)
-            self.currentLayer.setCustomProperty('diagramm_name_' + d, val.name)
-            self.currentLayer.setCustomProperty('diagramm_scale_' + d, val.scale)
+            self.currentLayer.setCustomProperty('diagramm_name_' + d, val.name          )
+            self.currentLayer.setCustomProperty('diagramm_scale_' + d, val.scale        )
             self.currentLayer.setCustomProperty('diagramm_unitsType_' + d, val.unitsType)
-            self.currentLayer.setCustomProperty('diagramm_units_' + d, val.units)
+            self.currentLayer.setCustomProperty('diagramm_units_' + d, val.units        )
             self.currentLayer.setCustomProperty('diagramm_fluids_' + d,
                                                 QgsSymbolLayerV2Utils.encodeRealVector(val.fluids))
+            all_prop.extend([
+                            'diagramm_name_' + d
+                            ,'diagramm_scale_' + d
+                            ,'diagramm_unitsType_' + d
+                            ,'diagramm_units_' + d
+                            ,'diagramm_fluids_' + d                   
+                            ])
             num = num + 1
 
-        self.currentLayer.setCustomProperty('labelSize', self.labelSizeEdit.value())
-        self.currentLayer.setCustomProperty('decimal', self.decimalEdit.value())
-        self.currentLayer.setCustomProperty('labelTemplate', self.templateExpression.text())
-        self.currentLayer.setCustomProperty('showLineout', str(int(self.showLineouts.isChecked())))
-        self.currentLayer.setCustomProperty('dailyProduction', str(int(self.dailyProduction.isChecked())))
+        self.currentLayer.setCustomProperty('labelSize',                    self.labelSizeEdit.value())
+        self.currentLayer.setCustomProperty('decimal',                      self.decimalEdit.value())
+        self.currentLayer.setCustomProperty('labelTemplate',                self.templateExpression.text())
+        self.currentLayer.setCustomProperty('showLineout',                  str(int(self.showLineouts.isChecked())))
+        self.currentLayer.setCustomProperty('dailyProduction',              str(int(self.dailyProduction.isChecked())))
+        self.currentLayer.setCustomProperty('pds_chart_groupByDaysAndFond', str(int(self.chkboxGroupByDays.isChecked())))
+        self.currentLayer.setCustomProperty('pds_chart_name',               self.resultRuleName.text())
+
+        all_prop.extend([
+                        'labelSize'                   
+                        ,'decimal'                    
+                        ,'labelTemplate'               
+                        ,'showLineout'                
+                        ,'dailyProduction'             
+                        ,'pds_chart_groupByDaysAndFond'
+                        ,'pds_chart_name'                          
+                        ])
+        
         for fl in bblInit.fluidCodes:
             self.currentLayer.setCustomProperty('fluid_background_' + fl.code,
                                                 QgsSymbolLayerV2Utils.encodeColor(fl.backColor))
@@ -1220,3 +1453,30 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.currentLayer.setCustomProperty('fluid_label_color_' + fl.code,
                                                 QgsSymbolLayerV2Utils.encodeColor(fl.labelColor))
             self.currentLayer.setCustomProperty('fluid_inPercent_' + fl.code, str(fl.inPercent))
+            all_prop.extend([
+                            'fluid_background_' + fl.code
+                            ,'fluid_line_color_' + fl.code
+                            ,'fluid_label_color_' + fl.code
+                            ,'fluid_inPercent_' + fl.code
+                            ])            
+        #---SAVE GLOBAL SETTING    
+        settings = QSettings()
+        for name in all_prop:
+            settings.setValue("/PDS/production_chart/"+name, self.currentLayer.customProperty(name,''))
+        settings.setValue("/PDS/production_chart/all_prop" , str(all_prop))
+    #===========================================================================
+    # 
+    #===========================================================================
+    def copyGLobalSettingsToCustomProp(self):
+        settings = QSettings()
+        all_prop=ast.literal_eval(settings.value("/PDS/production_chart/all_prop", 'False'))
+        if all_prop:
+            for name in all_prop:
+                self.currentLayer.setCustomProperty( name, settings.value("/PDS/production_chart/"+name, '') )
+            return True
+        else :
+            return False
+        
+        
+        
+            

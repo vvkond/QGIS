@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>543</width>
-    <height>484</height>
+    <width>574</width>
+    <height>496</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,13 +27,39 @@
    <bool>true</bool>
   </property>
   <layout class="QGridLayout">
-   <property name="margin">
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <property name="topMargin">
+    <number>9</number>
+   </property>
+   <property name="rightMargin">
+    <number>9</number>
+   </property>
+   <property name="bottomMargin">
     <number>9</number>
    </property>
    <property name="spacing">
     <number>6</number>
    </property>
-   <item row="3" column="0">
+   <item row="0" column="1">
+    <widget class="QCheckBox" name="mUpdateWellLocation">
+     <property name="text">
+      <string>Обновить координаты скважин</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="mAddAllWells">
+     <property name="text">
+      <string>Добавить в слой все скважины</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
@@ -41,11 +67,62 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="fondGrpBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="title">
+      <string>Настройка чтения фонда</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="horizontalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>511</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="fondBoxLayout">
+       <item>
+        <widget class="QRadioButton" name="fondByWellRdBtn">
+         <property name="text">
+          <string>По скважине</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="fondByObjRdBtn">
+         <property name="text">
+          <string>По объекту</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="reservoirsPanel">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
+       <verstretch>8</verstretch>
       </sizepolicy>
      </property>
      <property name="minimumSize">
@@ -55,7 +132,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Пласты</string>
+      <string>Объекты</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <property name="spacing">
@@ -89,90 +166,181 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QGroupBox" name="datePeriodPanel">
+        <property name="title">
+         <string>Период</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="mDynamicCheckBox">
+           <property name="text">
+            <string>Динамика добычи</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QDateEdit" name="startDateEdit">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="displayFormat">
+            <string>dd.MM.yyyy</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="endDateLabel">
+           <property name="text">
+            <string>Конечная дата</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="startDateLabel">
+           <property name="text">
+            <string>Начальная дата</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QDateEdit" name="endDateEdit">
+           <property name="displayFormat">
+            <string>dd.MM.yyyy</string>
+           </property>
+           <property name="timeSpec">
+            <enum>Qt::LocalTime</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QCheckBox" name="firstDate">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>First date</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QCheckBox" name="lastDate">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Last date</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="lastObjectDate">
+             <property name="text">
+              <string>Последняя дата на объекте</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QGroupBox" name="datePeriodPanel">
+   <item row="6" column="0" rowspan="2">
+    <widget class="QGroupBox" name="maxDebitGrpBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
      <property name="title">
-      <string>Период</string>
+      <string>Отсеивать выбросы максимальных дебитов</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="2" column="3">
-       <widget class="QCheckBox" name="lastDate">
-        <property name="text">
-         <string>Last date</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="2">
-       <widget class="QDateEdit" name="endDateEdit">
-        <property name="displayFormat">
-         <string>dd.MM.yyyy</string>
-        </property>
-        <property name="timeSpec">
-         <enum>Qt::LocalTime</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLabel" name="startDateLabel">
-        <property name="text">
-         <string>Начальная дата</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="endDateLabel">
-        <property name="text">
-         <string>Конечная дата</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QDateEdit" name="startDateEdit">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="displayFormat">
-         <string>dd.MM.yyyy</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QCheckBox" name="firstDate">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>First date</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QCheckBox" name="mDynamicCheckBox">
-        <property name="text">
-         <string>Динамика добычи</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QCheckBox" name="mAddAllWells">
-     <property name="text">
-      <string>Добавить в слой все скважины</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QCheckBox" name="mUpdateWellLocation">
-     <property name="text">
-      <string>Обновить координаты скважин</string>
+     <property name="checkable">
+      <bool>true</bool>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="horizontalLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>358</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="maxDebitLayout">
+       <item>
+        <widget class="QLabel" name="maxDebitLabelRange">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Выборка- размер используемого ряда для филтрации выбросов.&lt;/p&gt;&lt;p&gt;Коэффициент- коэффициент для расчета границ выбросов.&lt;/p&gt;&lt;p&gt;Макс. расхождение - допустимое расхождение между макс.значение/медиана  для исключения ряда из фильтрации выбросов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Выборка/Коэфф./Макс. расхождение</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="maxDebitRange">
+         <property name="toolTip">
+          <string>Выборка- размер используемого ряда для филтрации выбросов</string>
+         </property>
+         <property name="value">
+          <number>15</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="maxDebitKoef">
+         <property name="toolTip">
+          <string>Коэффициент- коэффициент для расчета границ допустимых значений. Все за границами считается выбросом.</string>
+         </property>
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <double>2.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QDoubleSpinBox" name="maxDebitFilterUseKoef">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Макс. расхождение - допустимое расхождение между &lt;/p&gt;&lt;p&gt;макс.значением/медианой  для исключения ряда из фильтрации выбросов&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <double>8.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QCheckBox" name="isProfilingChkBox">
+     <property name="text">
+      <string>Профайлинг</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QCheckBox" name="isDebugChkBox">
+     <property name="text">
+      <string>Полное логирование</string>
      </property>
     </widget>
    </item>
@@ -249,10 +417,44 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>lastObjectDate</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>PDSProductionBase</receiver>
+   <slot>lastObjectDateClicked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>473</x>
+     <y>424</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>271</x>
+     <y>241</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reservoirsListWidget</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>PDSProductionBase</receiver>
+   <slot>reservoirSelected()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>271</x>
+     <y>198</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>271</x>
+     <y>241</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>diagrammTypeChanged(int)</slot>
   <slot>lastDateClicked(bool)</slot>
   <slot>firstDateClicked(bool)</slot>
+  <slot>lastObjectDateClicked(bool)</slot>
+  <slot>reservoirSelected()</slot>
  </slots>
 </ui>

@@ -13,16 +13,20 @@ import numpy
 import os
 import struct
 import tempfile
+from bblInit import STYLE_DIR
 
 
 class SurfaceReader(ReaderBase):
-    def __init__(self):
+    def __init__(self ,styleName=None ,styleUserDir=None):
         super(SurfaceReader, self).__init__()
 
         self.plugin_dir = os.path.dirname(__file__)
         self.tempdir = tempfile.gettempdir()
         self.groupFile = 'Surface_group.sql'
         self.setFile = 'Surface_set.sql'
+
+        self.styleName=styleName
+        self.styleUserDir=styleUserDir
 
 
     @cached_property
@@ -43,6 +47,14 @@ class SurfaceReader(ReaderBase):
             layer = QgsRasterLayer(fileName, layerName)
             layer.setCustomProperty("pds_project", str(pdsProject))
             layer.setCustomProperty("qgis_pds_type", 'qgis_surface')
+            
+            #---load user styles
+            if self.styleUserDir is not None:
+                load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
+            #---load default style
+            if self.styleName is not None:
+                load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
+            
             # if layer.isValid() is True:
             #     layer.setCrs( QgsCoordinateReferenceSystem(4326, QgsCoordinateReferenceSystem.EpsgCrsId) )
             # else:
@@ -131,9 +143,9 @@ class SurfaceReader(ReaderBase):
                 driver.Register()
 
 #                fileName = u'%d_%d.tif' % (groupSetId[0], groupSetId[1])
-                fileName = u'%s_%s' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
+                fileName = u'%s_%s' % (to_unicode(TIG_MAP_SET_NAME), to_unicode(TIG_PARAM_LONG_NAME))
                 fileName=makeShpFileName(scheme=prefix, layerName=fileName, makeUniq=True ,ext=".tif" )
-                layerName = u'%s/%s' % (TIG_MAP_SET_NAME, TIG_PARAM_LONG_NAME)
+                layerName = u'%s/%s' % (to_unicode(TIG_MAP_SET_NAME), to_unicode(TIG_PARAM_LONG_NAME))
 
                 output_raster = driver.Create(fileName, size_x, size_y, 1 ,gdal.GDT_Float32)
 

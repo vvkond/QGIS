@@ -47,10 +47,13 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         self.setWindowTitle(self.windowTitle() + ' - ' + self.project['project'])
         self.mEmptyValue.setValue(float(QSettings().value('PDS/SaveToPDS/EmptyValue', '-9999')))
 
-        self.proj4String = 'epsg:4326'
+        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
         self.db = None
 
         if not self.initDb():
+            btnOK = self.buttonBox.button(self.buttonBox.Ok)
+            btnOK.setEnabled(False)
+            btnCancel = self.buttonBox.button(self.buttonBox.Cancel)
             return
 
         self.prop = self.currentLayer.customProperty("qgis_pds_type")
@@ -88,6 +91,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
 
         name = self.currentLayer.name()
         self.mGroupLineEdit.setText(name)
+        self.mSetLineEdit.setText(name)
         names = name.split('/')
         if len(names) > 0:
             self.mGroupLineEdit.setText(names[0])
@@ -109,9 +113,13 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
 
     def initDb(self):
         if self.project is None:
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                self.tr(u'No current PDS project'), level=QgsMessageBar.CRITICAL)
-
+            QgsMessageLog.logMessage(self.tr(u'No current PDS project'), tag="QgisPDS.error")
+            self.iface.messageBar().pushMessage(self.tr("Error")
+                ,self.tr(u'No current PDS project')
+                , level=QgsMessageBar.CRITICAL
+                , duration=10
+                )
+            
             return False
 
         connection = create_connection(self.project)
@@ -122,14 +130,17 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             self.tig_projections = TigProjections(db=self.db)
             proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
             if proj and sourceCrs:
+                self.proj4String = 'PROJ4:' + proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id,isSave=True)
         except Exception as e:
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                                                self.tr(u'Project projection read error {0}: {1}').format(
-                                                    scheme, str(e)),
-                                                level=QgsMessageBar.CRITICAL)
+            QgsMessageLog.logMessage(self.tr(u'Project projection read error {0}: {1}').format(scheme, str(e)), tag="QgisPDS.error")
+            self.iface.messageBar().pushMessage(self.tr("Error")
+                                                ,self.tr(u'Project projection read error {0}: {1}').format(scheme, str(e))
+                                                ,level=QgsMessageBar.CRITICAL
+                                                ,duration=10
+                                                )
             return False
         return True
 

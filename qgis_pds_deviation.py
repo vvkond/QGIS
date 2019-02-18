@@ -15,8 +15,12 @@ import ast
 import os
 import time
 
-class QgisPDSDeviation(QObject):
-    def __init__(self, iface, project):
+from bblInit import STYLE_DIR, Fields
+from utils import load_styles_from_dir, load_style, plugin_path, edit_layer,\
+    WithQtProgressBar
+
+class QgisPDSDeviation(QObject, WithQtProgressBar):
+    def __init__(self, iface, project  ,styleName=None ,styleUserDir=None):
         super(QgisPDSDeviation, self).__init__()
 
         self.plugin_dir = os.path.dirname(__file__)
@@ -48,9 +52,13 @@ class QgisPDSDeviation(QObject):
         self.attrLablOffX = "labloffx"
         self.attrLablOffY = "labloffy"
 
-        self.proj4String = 'epsg:4326'
+        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
         self.db = None
         self.wellIdList = []
+        
+        self.styleName=styleName
+        self.styleUserDir=styleUserDir
+        
 
     def initDb(self):
         if self.project is None:
@@ -69,8 +77,9 @@ class QgisPDSDeviation(QObject):
                 self.proj4String = 'PROJ4:' + proj.qgis_string
                 destSrc = QgsCoordinateReferenceSystem()
                 destSrc.createFromProj4(proj.qgis_string)
-                sourceCrs = QgsCoordinateReferenceSystem('epsg:4326')
-                self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                sourceCrs = QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg())
+                #self.xform = QgsCoordinateTransform(sourceCrs, destSrc)
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Project projection read error {0}: {1}').format(
@@ -172,6 +181,7 @@ class QgisPDSDeviation(QObject):
         palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', self.attrLablY)
         palyr.writeToLayer(layer)
 
+
         line = QgsSymbolV2.defaultSymbol(layer.geometryType())
 
         # Create an marker line.
@@ -182,6 +192,14 @@ class QgisPDSDeviation(QObject):
         # Add the style to the line layer.
         renderer = QgsSingleSymbolRendererV2(line)
         layer.setRendererV2(renderer)
+
+        #---load user styles
+        if self.styleUserDir is not None:
+            load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
+        #---load default style
+        if self.styleName is not None:
+            load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
+
 
         return layer
 
@@ -202,7 +220,7 @@ class QgisPDSDeviation(QObject):
         return num
 
 
-    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
+    def loadWells(self, layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=None):
         if self.db is None and layer:
             # prjStr = layer.customProperty("pds_project")
             # self.project = ast.literal_eval(prjStr)
@@ -211,16 +229,21 @@ class QgisPDSDeviation(QObject):
 
         if isDeleteMissing:
             deletedWells = []
-            with edit(layer):
+            with edit_layer(layer):
                 for f in layer.getFeatures():
                     well_name = f.attribute(self.attrWellId)
-                    if self.checkWell(well_name) < 1:
+                    well_id = f.attribute(Fields.Sldnid.name)
+                    if (filterWellIds is not None) and (well_id not in filterWellIds):
+                        deletedWells.append(well_name)
+                        layer.deleteFeature(f.id())
+                    elif self.checkWell(well_name) < 1:
                         deletedWells.append(well_name)
                         layer.deleteFeature(f.id())
             if len(deletedWells):
                 s = self.tr('Deleted from layer') + ': ' + ','.join(str(s) for s in deletedWells)
                 QtGui.QMessageBox.warning(None, self.tr(u'Deleted from layer'), s, QtGui.QMessageBox.Ok)
 
+        self.showProgressBar(msg="Read wells from db", maximum=1)
         dbWells = self._readWells()
         if dbWells is None:
             return
@@ -229,13 +252,19 @@ class QgisPDSDeviation(QObject):
         allWells = len(self.wellIdList) < 1
 
         refreshed = False
-        with edit(layer):
-            for row in dbWells:
+        self.showProgressBar(msg="Load wells to layer", maximum=len(self.wellIdList) )
+        now=time.time()
+        with edit_layer(layer):
+            for idx,row in enumerate(dbWells):
+                self.progress.setValue(idx)
+                if time.time()-now>2:  QCoreApplication.processEvents();time.sleep(0.02);now=time.time() #refresh GUI
                 name = row[0]
                 lng = row[19]
                 lat = row[20]
                 wellId = int(row[1])
-                if lng and lat and (allWells or wellId in self.wellIdList):
+                if (filterWellIds is not None) and (wellId not in filterWellIds):
+                    continue
+                elif lng and lat and (allWells or wellId in self.wellIdList):
                     pt = QgsPoint(lng, lat)
 
                     if self.xform:

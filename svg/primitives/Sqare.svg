@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1in"
+   height="1in"
+   viewBox="0 0 90 90"
+   id="svg6989"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="Sqare.svg">
+  <metadata
+     id="metadata7005">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs7003" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1018"
+     id="namedview7001"
+     showgrid="false"
+     inkscape:zoom="10.488889"
+     inkscape:cx="17.391743"
+     inkscape:cy="44.54066"
+     inkscape:window-x="-8"
+     inkscape:window-y="32"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg6989" />
+  <rect
+     fill="param(fill) #000000"
+     fill-opacity="param(fill-opacity) 0"
+     stroke="param(outline) #000000"
+     stroke-opacity="param(outline-opacity) 1"
+     stroke-width="param(outline-width) 0.2"
+     id="rect9769"
+     width="39.088985"
+     height="38.802963"
+     x="25.360168"
+     y="25.550848" />
+</svg>

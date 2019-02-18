@@ -3,6 +3,15 @@ from __future__ import division
 import struct
 
 #from pyproj import Proj
+WGS84='EPSG:4326'
+WGS84_UTM_ZONE9N='EPSG:32639'
+PULKOVO='EPSG:4284'
+PULKOVO_GK_ZONE9N='EPSG:28409'
+DEFAULT_LATLON_PRJ=WGS84  # default projection for lat/lon
+DEFAULT_LAYER_PRJ=WGS84     # default projection if no default config in base
+#CRS_FIX_IDX=0     #index of type fix crs conversion
+
+AUTO_LOAD_DEFAULT_PROJ_NAME='_qgis_' # in projection comment use format: "fix_id:0:SomeText" "fix_id:1:SomeText"
 
 from QgisPDS.utils import StrictInit, cached_property
 
@@ -28,8 +37,175 @@ Packed Degrees|Minutes|Seconds
 Grads of Arc
 Mils of Arc
 '''
+#===============================================================================
+# 
+#===============================================================================
+class QgisProjectionConfig():
+    @classmethod
+    def get_default_latlon_prj_epsg(cls):
+        return DEFAULT_LATLON_PRJ
+    @classmethod
+    def get_default_layer_prj_epsg(cls):
+        return DEFAULT_LAYER_PRJ
+#===============================================================================
+# 
+#===============================================================================
+def get_qgis_crs_transform(sourceCrs,destSrc,CRS_FIX_IDX=0,isSave=False,toLL=False):
+    """
+        @info: function for fix stored in incorrect projection data.  
+            fix_id must be present in PDS projection comment like 'fix_id:1:SomeText'
+                Save for Well(LL) not WORK!!!! only for mapsets
+                Warning!!!!. On save data first you must convert projection to _qgis_ elipsoid(Pulkovo/WGS...)
+                    For example to 'layer crs'->PulkovoGK9N->_qgis_
+                For create user defined CRS can use:
+                    a=QgsCoordinateReferenceSystem()
+                    a.createFromSrsId(100005)    
+    """
+    from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsMessageLog
+    QgsMessageLog.logMessage(u"CRS_FIX_IDX {0}".format(CRS_FIX_IDX), tag="QgisPDS.debug")
+    #------------------------------------------------
+    if CRS_FIX_IDX==0 or CRS_FIX_IDX is None:
+        #--- read XY  or source=dest
+        if sourceCrs is None or destSrc is None or sourceCrs==destSrc:
+            return None
+        #---  save XY /save LL
+        elif isSave:
+            if sourceCrs.projectionAcronym()==destSrc.projectionAcronym():
+                return QgsCoordinateTransform(sourceCrs ,destSrc)
+            else:
+                QgsMessageLog.logMessage(u"Please convert layer to '{}' projection before save".format(destSrc.projectionAcronym()), tag="QgisPDS.error")
+                QgsMessageLog.logMessage(u"Warning!!!!.Need realized check of destSrc ellipsoid and conversion of data to it. For example to 'layer crs'->PulkovoGK9N->_qgis_", tag="QgisPDS.error")
+                raise Exception(u"Please convert layer to '{}' projection before save".format(destSrc.projectionAcronym()))
+        #--- read LL
+        else:
+            return QgsCoordinateTransform(sourceCrs ,destSrc)
+    #------------------------------------------------
+    elif CRS_FIX_IDX==1: #SHIR. lat/lon entered in Pulkovo_GKZone9N as WGS84_Zone9N and converrted to WGS84. Need convert WGS84->WGS84_Zone9N and read as Pulkovo_GKZone9N X without 9
+        #--- read XY 
+        if sourceCrs is None or destSrc is None:
+            return None
+        #---read LL
+        elif not isSave and sourceCrs.srsid()==QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg()).srsid():
+            QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            sourceCrs=QgsCoordinateReferenceSystem(WGS84)
+            destSrc=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
+            QgsMessageLog.logMessage(u"changed to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            return QgsCoordinateTransform(sourceCrs ,destSrc)
+        #---no need conversion
+        elif sourceCrs==destSrc:
+            return None
+        #---save LL
+        elif isSave and toLL:
+            raise "Not realized yet"
+            # destSrc.srsid()==QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg()).srsid():
+            QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            sourceCrs=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
+            destSrc=QgsCoordinateReferenceSystem(WGS84)
+            QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            return QgsCoordinateTransform(sourceCrs ,destSrc)
+        #---save mapset. Need convert to Pulkovo9N and then save as PDS projection!!!!!!
+        elif isSave and not toLL:
+            # destSrc.srsid()==QgsCoordinateReferenceSystem(QgisProjectionConfig.get_default_latlon_prj_epsg()).srsid():
+            #sourceCrs=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
+            sourceCrs_1=sourceCrs
+            destSrc_1=QgsCoordinateReferenceSystem(PULKOVO_GK_ZONE9N)
+            sourceCrs_2=QgsCoordinateReferenceSystem(PULKOVO_GK_ZONE9N)
+            destSrc_2=destSrc
+            class fake_transform():
+                def __init__(self):
+                    QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(sourceCrs_1.srsid(),destSrc_2.srsid()), tag="QgisPDS.debug")
+                    self.trans1=QgsCoordinateTransform(sourceCrs_1 ,destSrc_1)
+                    QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs_1.srsid(),destSrc_1.srsid()), tag="QgisPDS.debug")
+                    self.trans2=QgsCoordinateTransform(sourceCrs_2 ,destSrc_2)
+                    QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs_2.srsid(),destSrc_2.srsid()), tag="QgisPDS.debug")
+                    pass
+                def transform(self,geom):
+                    return self.trans2.transform(self.trans1.transform(geom))
+            #QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            return fake_transform()
+        
+    #------------------------------------------------
+    elif CRS_FIX_IDX==2: #BIN
+        #---read XY
+        if not isSave and sourceCrs is None:
+            QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(None,destSrc.srsid()), tag="QgisPDS.debug")
+            sourceCrs=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
+            destSrc=destSrc
+            QgsMessageLog.logMessage(u"changed to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            return QgsCoordinateTransform(sourceCrs ,destSrc)
+        #---save mapset
+        elif isSave and not toLL:
+            QgsMessageLog.logMessage(u"Save:\nsource->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            sourceCrs=sourceCrs
+            destSrc=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
+            QgsMessageLog.logMessage(u"changed to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            return QgsCoordinateTransform(sourceCrs ,destSrc)
+        #---save LL
+        elif isSave and toLL:
+            raise "Not realized yet"
+            sourceCrs=QgsCoordinateReferenceSystem(WGS84_UTM_ZONE9N)
+            destSrc=QgsCoordinateReferenceSystem(WGS84)
+            QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs.srsid(),destSrc.srsid()), tag="QgisPDS.debug")
+            return QgsCoordinateTransform(sourceCrs ,destSrc)
+        #---no need conversion
+        elif sourceCrs==destSrc:
+            return None
+        #---read LL
+        else:
+            return QgsCoordinateTransform(sourceCrs ,destSrc)
+    #------------------------------------------------
+    elif CRS_FIX_IDX==3: #KARAS
+        #--- read XY  or source=dest
+        if sourceCrs is None or destSrc is None or sourceCrs==destSrc:
+            return None
+        #---  save XY /save LL
+        elif isSave:
+            sourceCrs_1=sourceCrs
+            destSrc_1=QgsCoordinateReferenceSystem(PULKOVO_GK_ZONE9N)
+            sourceCrs_2=QgsCoordinateReferenceSystem(PULKOVO_GK_ZONE9N)
+            destSrc_2=destSrc
+            class fake_transform():
+                def __init__(self):
+                    QgsMessageLog.logMessage(u"source->dest crs {0}: {1}".format(sourceCrs_1.srsid(),destSrc_2.srsid()), tag="QgisPDS.debug")
+                    self.trans1=QgsCoordinateTransform(sourceCrs_1 ,destSrc_1)
+                    QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs_1.srsid(),destSrc_1.srsid()), tag="QgisPDS.debug")
+                    self.trans2=QgsCoordinateTransform(sourceCrs_2 ,destSrc_2)
+                    QgsMessageLog.logMessage(u"Save:\nchanged to source->dest crs {0}: {1}".format(sourceCrs_2.srsid(),destSrc_2.srsid()), tag="QgisPDS.debug")
+                    pass
+                def transform(self,geom):
+                    return self.trans2.transform(self.trans1.transform(geom))
+            return fake_transform()
+        #--- read LL
+        else:
+            return QgsCoordinateTransform(sourceCrs ,destSrc)
+    
+    else:
+        return None    
+    
+
+#===============================================================================
+# 
+#===============================================================================
+def get_qgis_prj_default_projection(db):
+    
+    tig_projections = TigProjections(db=db)
+    proj = tig_projections.get_projection(tig_projections.default_projection_id)
+    if proj is not None:
+        proj4String = 'PROJ4:'+proj.qgis_string
+
+    QgsCoordinateReferenceSystem('EPSG:..')
+    
+    proj4String = 'PROJ4:'+proj.qgis_string
+    destSrc = QgsCoordinateReferenceSystem()
+    destSrc.createFromProj4(proj.qgis_string)
+
+    
+    pass
 
 
+#===============================================================================
+# 
+#===============================================================================
 def double_to_degrees(val):
     sign = 1
     if val < 0:
@@ -39,6 +215,8 @@ def double_to_degrees(val):
     minutes = val // 100 % 100
     degrees = val // 10000
     return sign * (degrees + minutes / 60 + seconds / 3600)
+
+
 
 
 class UnsupportedProjection(Exception):
@@ -291,20 +469,52 @@ class TigProjections(StrictInit):
     @cached_property
     def default_projection_id(self):
         return _get_default_proj_id(self.db)
-
-
-def _get_default_proj_id(db):
+    @cached_property
+    def default_projection_comment(self):
+        return _get_default_proj_id(self.db,return_col='db_comment')
+    @cached_property
+    def fix_id(self):
+        result=None
+        try:
+            result=self.default_projection_comment.split("fix_id:")[1].split(":")[0]
+            result=int(result)
+        except:pass
+        return result
+#===============================================================================
+# 
+#===============================================================================
+def _get_default_proj_id(db,return_col='db_sldnid'):
+    """
+        @info: if have projection with specifiying name then return it else return project default projection id
+    """
     sql = '''
-SELECT
-    cpd.DB_SLDNID
-FROM
-    db_carto_projection_defs cpd
-WHERE
-    cpd.DB_CARTO_TYPE <> 0
-'''
+SELECT 
+    ---*
+    {return_col}
+FROM (
+    SELECT
+        *
+    FROM
+        db_carto_projection_defs cpd
+    WHERE
+        cpd.DB_CARTO_USER_NAME='{tig_proj_name}' ---by default _qgis_
+    union all     
+    SELECT
+        *
+    FROM
+        db_carto_projection_defs cpd
+    WHERE
+        cpd.DB_CARTO_TYPE <> 0
+    )
+where ROWNUM=1            
+'''.format(tig_proj_name=AUTO_LOAD_DEFAULT_PROJ_NAME
+           ,return_col=return_col
+           )
     return db.fetch_scalar(sql)
 
-
+#===============================================================================
+# 
+#===============================================================================
 def _get_tig_projection(db, proj_id):
     sql = '''
 SELECT
@@ -343,7 +553,9 @@ WHERE
 
     return get_tig_projection(**row)
 
-
+#===============================================================================
+# 
+#===============================================================================
 def get_tig_projection(pj_ref, **kw):
     try:
         constructor = _proj_by_ref_code[pj_ref]

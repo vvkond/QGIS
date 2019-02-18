@@ -1,0 +1,1 @@
+copy in that dir qml additional style for well layer

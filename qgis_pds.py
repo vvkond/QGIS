@@ -51,12 +51,115 @@ from qgis_pds_createIsolines import QgisPDSCreateIsolines
 from qgis_pds_transite import QgisPDSTransitionsDialog
 from qgis_pds_SelectMapTool import QgisPDSSelectMapTool
 from qgis_pds_wellsBrowserDialog import *
+# Import both Processing and CommanderWindow 
+#   classes from the Processing framework. 
+from processing.core.Processing import Processing
+from processing.gui.CommanderWindow import CommanderWindow
+
 import os
 import os.path
 import ast
 import json
 
 
+
+
+#===============================================================================
+# --- REGISTER USER FUNCTIONS.CALL @qgsfunction MUST BE IN 1st level,not in def/class
+#===============================================================================
+from qgis.core import QgsMapLayerRegistry
+from qgis.utils import qgsfunction
+from qgis.core import QgsExpression
+
+
+@qgsfunction(args='auto', group='PumaPlus')
+def activeLayerCustomProperty(value1,feature, parent):
+    """
+    <h4>Return</h4>Read custom property of active layer. Most useful variants:qgis_pds_type, pds_prod_SelectedReservoirs, pds_project
+    <p><h4>Syntax</h4>activeLayerCustomProperty(%property_name%)</p>
+    <p><h4>Argument</h4>-</p>
+    <p><h4>Example</h4>activeLayerCustomProperty('qgis_pds_type')</p><p>Return: String with selected reservoir names</p>
+    """
+    import qgis
+    #get iface
+    i =qgis.utils.iface
+    # get legend
+    layer=i.activeLayer()
+    return layer.customProperty(value1)
+
+@qgsfunction(args='auto', group='PumaPlus')
+def makeMultilineFormatedLabel(label,label_row,row_count,feature, parent):
+    """
+    <h4>Return</h4>Make formated label for multiline labeled
+    <p><h4>Syntax</h4>makeMultilineFormatedLabel(%label%,%row_number%, %row_count%)</p>
+    <p><h4>Argument</h4> %row_number%-position start from 0</p>
+    <p><h4>Argument</h4> %row_count%-count of rows</p>
+    <p><h4>Example</h4>makeMultilineFormatedLabel("well_id",2,10)</p><p>Return: String with inserted new line symbols before and after field value</p>
+    """
+    res="\n"*(label_row)+'{}\n'.format(label)+"\n"*(row_count-label_row-1)
+    return res
+    
+@qgsfunction(args='auto', group='PumaPlus')
+def activeLayerReservoirs(feature, parent):
+    """
+    <h4>Return</h4>Get list of reservoirs in checked pds production layers
+    <p><h4>Syntax</h4>activeLayerReservoirs()</p>
+    <p><h4>Argument</h4>-</p>
+    <p><h4>Example</h4>activeLayerReservoirs()</p><p>Return: String with selected reservoir names</p>
+    """
+    import qgis
+    #get iface
+    i =qgis.utils.iface
+    # get legend
+    legend = i.legendInterface()
+    result=[]
+    for layer in QgsMapLayerRegistry.instance().mapLayers().values():
+        # check current visibility
+        if legend.isLayerVisible(layer):
+            if layer.customProperty("qgis_pds_type") == "pds_current_production" or layer.customProperty("qgis_pds_type") == "pds_cumulative_production":
+                reservoir=layer.customProperty("pds_prod_SelectedReservoirs")
+                result.extend(ast.literal_eval(reservoir))
+            else:
+                continue
+    return u','.join(set(result))
+
+@qgsfunction(args='auto', group='PumaPlus')
+def activeLayerProductionType(feature, parent):
+    """
+    <h4>Return</h4>Get list of production type of selected pds layers
+    <p><h4>Warning!!! When add it from qgis python console it take incorrect encoding. After reopen qgis it loaded correct</h4>-</p>
+    <p><h4>Syntax</h4>activeLayerProductionType()</p>
+    <p><h4>Argument</h4>-</p>
+    <p><h4>Example</h4>activeLayerProductionType()</p><p>Return: String with selected production types</p>
+    """
+    import qgis
+    #get iface
+    i = qgis.utils.iface
+    # get legend
+    legend = i.legendInterface()
+    result=[]
+    for layer in QgsMapLayerRegistry.instance().mapLayers().values():
+        # check current visibility
+        if legend.isLayerVisible(layer):
+            if layer.customProperty("qgis_pds_type") == "pds_current_production":
+                #result.append("�������".decode('utf-8',errors='replace')) 
+                result.append("текуших".decode('utf-8',errors='replace'))
+                pass
+            elif layer.customProperty("qgis_pds_type") == "pds_cumulative_production":
+                #result.append("�����������".decode('utf-8',errors='replace'))
+                result.append("накопленных".decode('utf-8',errors='replace'))
+                pass
+            else:
+                continue
+    return " и ".decode('utf-8',errors='replace').join(set(result))
+
+
+
+
+
+#===============================================================================
+# 
+#===============================================================================
 class QgisPDS(QObject):
     """QGIS Plugin Implementation."""
     @property
@@ -123,7 +226,7 @@ class QgisPDS(QObject):
         # QObject.connect(self.timer, SIGNAL("timeout()"), self.onTimer)
 
         self.selectMapTool = None
-
+        
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -145,7 +248,7 @@ class QgisPDS(QObject):
 
         # QObject.disconnect(self.iface.mapCanvas(), SIGNAL("mapCanvasRefreshed ()"), self.renderComplete)
 
-
+        
     
     def loadData(self):
         layers = self.iface.legendInterface().layers()
@@ -256,11 +359,13 @@ class QgisPDS(QObject):
         """Change action enable"""
         enabled = False
         enabledWell = False
+        enabledFond = False
         runAppEnabled = False
         try:
             if layer is not None:
                 enabled = bblInit.isProductionLayer(layer)
                 enabledWell = bblInit.isWellLayer(layer)
+                enabledFond= bblInit.isFondLayer(layer)
                 runAppEnabled = layer.fieldNameIndex(self.sldnidFieldName) >= 0
 
                 if self.iface.mapCanvas().mapTool() == self.selectMapTool:
@@ -273,11 +378,10 @@ class QgisPDS(QObject):
             pass
 
         self.actionProductionSetup.setEnabled(enabled)
-        self.actionCoordsFromZone.setEnabled(enabled or enabledWell)
-        self.actionTransiteWells.setEnabled(enabled or enabledWell)
+        self.actionCoordsFromZone.setEnabled(enabled or enabledWell or enabledFond)
+        self.actionTransiteWells.setEnabled(enabled or enabledWell or enabledFond)
 
         self.runAppAction.setEnabled(runAppEnabled)
-
 
     
     #Save label positions
@@ -523,6 +627,13 @@ class QgisPDS(QObject):
             callback=self.createWellDeviationLayer,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/pump-jack.png'
+        self.actionRefreshLayer = self.add_action(
+            icon_path,
+            text=self.tr(u'Load wells status'),
+            callback=self.createFondlayer,
+            parent=self.iface.mainWindow())
+
         icon_path = ':/plugins/QgisPDS/GeoPROD24a.png'
         self.actionCurrentProduction = self.add_action(
             icon_path,
@@ -535,6 +646,13 @@ class QgisPDS(QObject):
             icon_path,
             text=self.tr(u'Load production'),
             callback=self.createSummProductionlayer,
+            parent=self.iface.mainWindow())
+
+        icon_path = ':/plugins/QgisPDS/Refresh.png'
+        self.actionRefreshLayer = self.add_action(
+            icon_path,
+            text=self.tr(u'Update layer'),
+            callback=self.refreshLayer,
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/Pressure-50.png'
@@ -567,7 +685,7 @@ class QgisPDS(QObject):
             enabled_flag=True,
             parent=self.iface.mainWindow())
 
-        icon_path = ':/plugins/QgisPDS/CoordFromZonations.png'
+        icon_path = ':/plugins/QgisPDS/point_to_zonation.png'
         self.actionCoordsFromZone = self.add_action(
             icon_path,
             text=self.tr(u'Well coordinate from zone'),
@@ -575,19 +693,12 @@ class QgisPDS(QObject):
             enabled_flag=False,
             parent=self.iface.mainWindow())
 
-        icon_path = ':/plugins/QgisPDS/mActionFilter.png'
+        icon_path = ':/plugins/QgisPDS/filter.png'
         self.actionTransiteWells = self.add_action(
             icon_path,
             text=self.tr(u'Mark transite wells'),
             callback=self.transiteWells,
             enabled_flag=False,
-            parent=self.iface.mainWindow())
-
-        icon_path = ':/plugins/QgisPDS/Refresh.png'
-        self.actionRefreshLayer = self.add_action(
-            icon_path,
-            text=self.tr(u'Update layer'),
-            callback=self.refreshLayer,
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/water-drop.png'
@@ -618,12 +729,45 @@ class QgisPDS(QObject):
             callback=self.dataFromOracleSql,
             parent=self.iface.mainWindow())
 
-        icon_path = ':/plugins/QgisPDS/GeoCART24.png'
+        icon_path = ':/plugins/QgisPDS/contours.png'
         self.add_action(
             icon_path,
             text=self.tr(u'Create isolines'),
             callback=self.createIsolines,
             parent=self.iface.mainWindow())
+
+
+        #--- button for processing functions
+        # Instantiate the commander window and open the algorithm's interface 
+        cw = CommanderWindow(self.iface.mainWindow(), self.iface.mapCanvas())
+        # Then get the algorithm you're interested in (for instance, Join Attributes):
+        alg_mesh = Processing.getAlgorithm("pumaplus:creategridwithfaults")
+        if alg_mesh is not None:
+            icon_path = ':/plugins/QgisPDS/surface.png'
+            self.add_action(
+                icon_path,
+                text=self.tr(u'Create mesh'),
+                callback=lambda :cw.runAlgorithm(alg_mesh),
+                parent=self.iface.mainWindow())
+        # Then get the algorithm you're interested in (for instance, Join Attributes):
+        alg_mp = Processing.getAlgorithm("pumaplus:updatewelllocation")
+        if alg_mp is not None:
+            icon_path = ':/plugins/QgisPDS/move_point.png'
+            self.add_action(
+                icon_path,
+                text=self.tr(u'Move point'),
+                callback=lambda :cw.runAlgorithm(alg_mp),
+                parent=self.iface.mainWindow())
+        # Then get the algorithm you're interested in (for instance, Join Attributes):
+        alg_ml = Processing.getAlgorithm("pumaplus:updatelabellocation")
+        if alg_ml is not None:
+            icon_path = ':/plugins/QgisPDS/move_label.png'
+            self.add_action(
+                icon_path,
+                text=self.tr(u'Move label'),
+                callback=lambda :cw.runAlgorithm(alg_ml),
+                parent=self.iface.mainWindow())
+
 
         applicationMenu = QMenu(self.iface.mainWindow())
         action = QAction(self.tr(u'Well Correlation && Zonation'), applicationMenu)
@@ -659,6 +803,12 @@ class QgisPDS(QObject):
 
         self._metadata = BabbleSymbolLayerMetadata()
         QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
+        #---REGISTER USER EXPRESSIONS
+        QgsExpression.registerFunction(activeLayerCustomProperty)        
+        QgsExpression.registerFunction(activeLayerReservoirs)
+        QgsExpression.registerFunction(activeLayerProductionType)
+        QgsExpression.registerFunction(makeMultilineFormatedLabel)
+        
 
 
     def unload(self):
@@ -668,6 +818,11 @@ class QgisPDS(QObject):
             self.iface.removeToolBarIcon(action)
         # remove the toolbar
         del self.toolbar
+        #---UNREGISTER USER EXPRESSIONS
+        QgsExpression.unregisterFunction('activeLayerCustomProperty')        
+        QgsExpression.unregisterFunction('activeLayerReservoirs')
+        QgsExpression.unregisterFunction('activeLayerProductionType')
+        QgsExpression.unregisterFunction('makeMultilineFormatedLabel')
 
         # QgsPluginLayerRegistry.instance().removePluginLayerType(QgisPDSProductionLayer.LAYER_TYPE)
 
@@ -706,6 +861,31 @@ class QgisPDS(QObject):
             if dlg.getLayer() is not None:
                 dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
 
+    def createFondlayer(self):
+        if not QgsProject.instance().homePath():
+            self.iface.messageBar().pushMessage(self.tr("Error"),
+                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+            return
+        currentLayer = self.iface.activeLayer()
+        dlg = QgisPDSProductionDialog(self.currentProject, self.iface, isOnlyFond=True)
+        if dlg.isInitialised():
+            result = dlg.exec_()
+            if dlg.getLayer() is not None:
+                dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
+        if self.iface.activeLayer()!=currentLayer:
+            currentLayer = self.iface.activeLayer()
+            if currentLayer is None:
+                return
+            #--- zonation move
+            dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, currentLayer)
+            dlg.exec_()
+    
+            #---transite
+            dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, currentLayer, allow_split_layer=False)
+            dlg.exec_()
+        
+
+
 
     def loadPressure(self):
         if not QgsProject.instance().homePath():
@@ -730,18 +910,18 @@ class QgisPDS(QObject):
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
 
-        dlg = QgisPDSProductionDialog(self.currentProject, self.iface, False)
+        dlg = QgisPDSProductionDialog(self.currentProject, self.iface, isCP=False)
         if dlg.isInitialised():
             result = dlg.exec_()
             if dlg.getLayer() is not None:
                 dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
 
 
-    def loadProduction(self, layer, project, isCurrentProd):
-        dlg = QgisPDSProductionDialog(project, self.iface, isCurrentProd, layer)
+    def refreshProduction(self, layer, project, isCurrentProd=False ,isOnlyFond=False):
+        dlg = QgisPDSProductionDialog(project, self.iface, isCP=isCurrentProd, isOnlyFond=isOnlyFond, _layer=layer)
         if dlg.isInitialised():
             result = dlg.exec_()
-            if result and layer:
+            if result and layer and not isOnlyFond:
                 prodSetup = QgisPDSProdSetup(self.iface, layer)
                 prodSetup.setup(layer)
         del dlg
@@ -752,7 +932,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ControlPointReader())
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ControlPointReader(self.iface))
         dlg.exec_()
 
 
@@ -761,7 +941,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(0))
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,0 ,styleName=CONTOUR_STYLE,styleUserDir=USER_CONTOUR_STYLE_DIR ,isShowSymbCategrized=False ))
         dlg.exec_()
 
 
@@ -770,7 +950,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(1))
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,1 ,styleName=POLYGON_STYLE,styleUserDir=USER_POLYGON_STYLE_DIR ,isShowSymbCategrized=False ))
         dlg.exec_()
 
     def createSurfaceLayer(self):
@@ -778,7 +958,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr('Error'),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, SurfaceReader())
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, SurfaceReader(styleName=SURF_SYLE,styleUserDir=USER_SURF_STYLE_DIR  ))
         dlg.exec_()
         del dlg
 
@@ -788,7 +968,7 @@ class QgisPDS(QObject):
             self.iface.messageBar().pushMessage(self.tr("Error"),
                         self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
             return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(2))
+        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,2 ,styleName=FAULT_STYLE,styleUserDir=USER_FAULT_STYLE_DIR ,isShowSymbCategrized=False ))
         dlg.exec_()
       
 
@@ -800,7 +980,7 @@ class QgisPDS(QObject):
 
         dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
         if dlg.exec_():
-            wells = QgisPDSWells(self.iface, self.currentProject)
+            wells = QgisPDSWells(self.iface, self.currentProject ,styleName=WELL_STYLE,styleUserDir=USER_WELL_STYLE_DIR  )
             wells.setWellList(dlg.getWellIds())
             layer = wells.createWellLayer()
             if layer is not None:
@@ -816,7 +996,7 @@ class QgisPDS(QObject):
 
         dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
         if dlg.exec_():
-            wells = QgisPDSDeviation(self.iface, self.currentProject)
+            wells = QgisPDSDeviation(self.iface, self.currentProject ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
             wells.setWellList(dlg.getWellIds())
             layer = wells.createWellLayer()
 
@@ -824,14 +1004,14 @@ class QgisPDS(QObject):
         #     layer.attributeValueChanged.connect(self.pdsLayerModified)
 
         
-    def refreshWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
+    def refreshWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=None):
         wells = QgisPDSWells(self.iface, project)
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing)
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=filterWellIds)
 
 
-    def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing):
-        wells = QgisPDSDeviation(self.iface, project)
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing)
+    def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=None):
+        wells = QgisPDSDeviation(self.iface, project ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
+        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=filterWellIds)
 
 
     def productionSetup(self):
@@ -885,9 +1065,17 @@ class QgisPDS(QObject):
         dlg.exec_()
         return
 
+    def refreshLayer(self):
+#        threads = []
+        for currentLayer in self.iface.legendInterface().selectedLayers():
+            self.refreshcurrentLayer(currentLayer)
+#             process = Thread(target=self.refreshcurrentLayer, args=[currentLayer])
+#             process.start()
+#             threads.append(process)
         
-    def refreshLayer( self):
-        currentLayer = self.iface.activeLayer()
+        
+    def refreshcurrentLayer( self,currentLayer=None):
+        if currentLayer is None:  currentLayer = self.iface.activeLayer()
         if currentLayer.type() != QgsMapLayer.VectorLayer:
             return
         pr = currentLayer.dataProvider()
@@ -897,20 +1085,28 @@ class QgisPDS(QObject):
 
         currentLayer.blockSignals(True)
         prop = currentLayer.customProperty("qgis_pds_type")
+        layerWellIds,_=currentLayer.getValues(Fields.Sldnid.name)
+        
         if prop == "pds_wells":
-            dlg = QgisPDSRefreshSetup(self.currentProject)
+            dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
             if dlg.exec_():
                 self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                  dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing)
+                                  dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
+                                  ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
+                                  )
+        elif prop == "pds_fond":
+            self.refreshProduction(currentLayer, self.currentProject, isOnlyFond=True)                
         elif prop == "pds_current_production":
-            self.loadProduction(currentLayer, self.currentProject, True)
+            self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=True)
         elif prop == "pds_cumulative_production":
-            self.loadProduction(currentLayer, self.currentProject, False)
+            self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=False)
         elif prop == "pds_well_deviations":
-            dlg = QgisPDSRefreshSetup(self.currentProject)
+            dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
             if dlg.exec_():
                 self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                        dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing)
+                                        dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
+                                        ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
+                                        )
         currentLayer.blockSignals(False)
 
        

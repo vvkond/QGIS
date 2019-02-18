@@ -6,8 +6,8 @@
  PDS link
                              -------------------
         begin                : 2016-11-05
-        copyright            : (C) 2016 by Viktor Kondrashov
-        email                : viktor@gmail.com
+        copyright            : (C) 2016 by SoyuzGeoService
+        email                : viktor@gmail.com, skylex72rus@gmail.com
         git sha              : $Format:%H$
  ***************************************************************************/
 
@@ -31,5 +31,24 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
+    from qgis.PyQt.QtCore import QSettings
+    import os,sys
+    #settings = QSettings().allKeys()
+    #for setting in settings:
+    #    print setting
+    current_conf=QSettings().value( 'svg/searchPathsForSVG')
+    if current_conf is None: current_conf=u'' 
+    settings_svg_path=current_conf.split("|")
+    #svg_path=os.path.join(os.environ['USERPROFILE'],u'.qgis2',u'python',u'plugins',u'QgisPDS',u'svg')
+    svg_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),u'svg')
+    utils_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),u'libs\\pds_opt_py')
+    sys.path.insert(0, utils_path)
+
+    
+    if svg_path not in settings_svg_path and svg_path is not None:
+        QSettings().setValue('svg/searchPathsForSVG', current_conf+u'|'+svg_path)
+    #QSettings().setValue('svg/searchPathsForSVG',u'C:\\Users\\tig\\.qgis2\\python\\plugins\\QgisPDS\\svg')
+    #QSettings().setValue('svg/searchPathsForSVG', QSettings().value( 'svg/searchPathsForSVG')+u'|'+u'C:\\Users\\tig\\.qgis2\\python\\plugins\\QgisPDS\\svg')
+        
     from .qgis_pds import QgisPDS
     return QgisPDS(iface)
