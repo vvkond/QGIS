@@ -103,17 +103,40 @@ def makeMultilineFormatedLabel(label,label_row,row_count,feature, parent):
 def isValueInInterval(value, limit_min, limit_max, step, feature, parent):
     """
     <h4>Return</h4>Return True if value in interval
-    <p><h4>Syntax</h4>isValueInInterval(%value%,%limit_min%, %limit_max%, %step%)</p>
-    <p><h4>Argument</h4> %value%-field with values</p>
-    <p><h4>Argument</h4> %limit_min%-left interval limit</p>
-    <p><h4>Argument</h4> %limit_max%-right interval limit</p>
-    <p><h4>Argument</h4> %step%-step from left to right</p>
+    <p><h4>Syntax</h4>isValueInInterval( %value%, %limit_min%, %limit_max%, %step% )</p>
+    <p><h4>Argument</h4> %value% - field with values           </p>
+    <p><h4>Argument</h4> %limit_min% - left interval limit     </p>
+    <p><h4>Argument</h4> %limit_max% - right interval limit    </p>
+    <p><h4>Argument</h4> %step% - step from left to right      </p>
     """
     if limit_min<value<limit_max:
         if (value-limit_min) % step>0:
             return False
         else:
             return True
+    else:
+        return False
+@qgsfunction(args='auto', group='PumaPlus')
+def isValueInIntervalWithSkeep(value, limit_min, limit_max, step, skeep_each, feature, parent):
+    """
+    <h4>Return</h4>Return True if value in interval
+    <p><h4>Syntax</h4>isValueInInterval( %value%, %limit_min%, %limit_max%, %step%, %skeep_each% )</p>
+    <p><h4>Argument</h4> %value% - field with values           </p>
+    <p><h4>Argument</h4> %limit_min% - left interval limit     </p>
+    <p><h4>Argument</h4> %limit_max% - right interval limit    </p>
+    <p><h4>Argument</h4> %step% - step from left to right      </p>
+    <p><h4>Argument</h4> %skeep_each% - return False for each %skeep_each% value </p>
+    """
+    if limit_min<value<limit_max:
+        if (value-limit_min) % step>0:
+            return False
+        else:
+            if skeep_each>0 and (value-limit_min) / step % skeep_each>0:
+                return True
+            elif (not skeep_each>0) and (not (value-limit_min) % step>0):
+                return True
+            else:
+                return False
     else:
         return False
 
@@ -828,9 +851,7 @@ class QgisPDS(QObject):
         QgsExpression.registerFunction(activeLayerProductionType)
         QgsExpression.registerFunction(makeMultilineFormatedLabel)
         QgsExpression.registerFunction(isValueInInterval)
-        
-        
-
+        QgsExpression.registerFunction(isValueInIntervalWithSkeep)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -845,6 +866,8 @@ class QgisPDS(QObject):
         QgsExpression.unregisterFunction('activeLayerProductionType')
         QgsExpression.unregisterFunction('makeMultilineFormatedLabel')
         QgsExpression.unregisterFunction('isValueInInterval')
+        QgsExpression.unregisterFunction('isValueInIntervalWithSkeep')
+        
         
 
         # QgsPluginLayerRegistry.instance().removePluginLayerType(QgisPDSProductionLayer.LAYER_TYPE)
