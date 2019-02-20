@@ -98,6 +98,25 @@ def makeMultilineFormatedLabel(label,label_row,row_count,feature, parent):
     """
     res="\n"*(label_row)+'{}\n'.format(label)+"\n"*(row_count-label_row-1)
     return res
+
+@qgsfunction(args='auto', group='PumaPlus')
+def isValueInInterval(value, limit_min, limit_max, step, feature, parent):
+    """
+    <h4>Return</h4>Return True if value in interval
+    <p><h4>Syntax</h4>isValueInInterval(%value%,%limit_min%, %limit_max%, %step%)</p>
+    <p><h4>Argument</h4> %value%-field with values</p>
+    <p><h4>Argument</h4> %limit_min%-left interval limit</p>
+    <p><h4>Argument</h4> %limit_max%-right interval limit</p>
+    <p><h4>Argument</h4> %step%-step from left to right</p>
+    """
+    if limit_min<value<limit_max:
+        if (value-limit_min) % step>0:
+            return False
+        else:
+            return True
+    else:
+        return False
+
     
 @qgsfunction(args='auto', group='PumaPlus')
 def activeLayerReservoirs(feature, parent):
@@ -808,6 +827,8 @@ class QgisPDS(QObject):
         QgsExpression.registerFunction(activeLayerReservoirs)
         QgsExpression.registerFunction(activeLayerProductionType)
         QgsExpression.registerFunction(makeMultilineFormatedLabel)
+        QgsExpression.registerFunction(isValueInInterval)
+        
         
 
 
@@ -823,6 +844,8 @@ class QgisPDS(QObject):
         QgsExpression.unregisterFunction('activeLayerReservoirs')
         QgsExpression.unregisterFunction('activeLayerProductionType')
         QgsExpression.unregisterFunction('makeMultilineFormatedLabel')
+        QgsExpression.unregisterFunction('isValueInInterval')
+        
 
         # QgsPluginLayerRegistry.instance().removePluginLayerType(QgisPDSProductionLayer.LAYER_TYPE)
 
