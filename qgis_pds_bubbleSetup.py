@@ -22,8 +22,9 @@ import inspect
 class AttributeTableModel(QAbstractTableModel):
     ExpressionColumn = 0
     ColorColumn = 1
-    DescrColumn = 2
-    FilterColumn = 3
+    ColorLineColumn = 2
+    DescrColumn = 3
+    FilterColumn = 4
     def __init__(self, headerData, parent=None, *args):
         QAbstractTableModel.__init__(self, parent, *args)
         self.arraydata = []
@@ -46,7 +47,7 @@ class AttributeTableModel(QAbstractTableModel):
 
         self.beginInsertRows(parent, row, count + row - 1)
         for i in xrange(0, count):
-            newRow = ['', QColor(255, 0, 0), '', '']
+            newRow = ['', QColor(255, 0, 0), QColor(255, 0, 0), '', '']
             self.arraydata.insert(i + row, newRow)
 
         self.endInsertRows()
@@ -68,6 +69,8 @@ class AttributeTableModel(QAbstractTableModel):
             return self.arraydata[index.row()][index.column()]
         elif role == Qt.DecorationRole and index.column() == AttributeTableModel.ColorColumn:
             return self.arraydata[index.row()][AttributeTableModel.ColorColumn]
+        elif role == Qt.DecorationRole and index.column() == AttributeTableModel.ColorLineColumn:
+            return self.arraydata[index.row()][AttributeTableModel.ColorLineColumn]
 
         return None
 
@@ -77,7 +80,7 @@ class AttributeTableModel(QAbstractTableModel):
 
 
     def diagramm(self, row):
-        if row >= 0 and row < len(self.arraydata):
+        if row >= 0 and row < len(self.arraydata) and len(self.arraydata[row])>self.getFilterColumn():
             return self.arraydata[row][self.getFilterColumn()]
         else:
             return 'No Diag ' + str(row)
@@ -272,7 +275,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.currentLayer = layer
 
         #Setup attributes tableView
-        self.attributeModel = AttributeTableModel([self.tr(u'Attribute'), self.tr(u'Color'), self.tr(u'Legend name')], self)
+        self.attributeModel = AttributeTableModel([self.tr(u'Attribute'), self.tr(u'Color'), self.tr(u'Line color'), self.tr(u'Legend name')], self)
         self.filteredModel = AttributeFilterProxy(self)
         self.filteredModel.setSourceModel(self.attributeModel)
 
@@ -284,6 +287,8 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         colorDelegate = ColorDelegate(layer, self)
         self.attributeTableView.setItemDelegateForColumn(AttributeTableModel.ColorColumn, colorDelegate)
+        colorDelegate2 = ColorDelegate(layer, self)
+        self.attributeTableView.setItemDelegateForColumn(AttributeTableModel.ColorLineColumn, colorDelegate2)
 
         #Setup Labels TableView
         self.labelAttributeModel = AttributeLabelTableModel([self.tr(u'Attribute'), self.tr(u'Color'),
@@ -737,10 +742,16 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                                 pass
 
                         percent = float(val) / sum
-                        index = self.attributeModel.index(row, AttributeTableModel.ColorColumn)
-                        backColor = QColor(self.attributeModel.data(index, Qt.DisplayRole))
+                        backColor = QColor(self.attributeModel.data(
+                                                                    self.attributeModel.index(row, AttributeTableModel.ColorColumn)
+                                                                    , Qt.DisplayRole)
+                                                                    )
+                        lineColor = QColor(self.attributeModel.data(
+                                                                    self.attributeModel.index(row, AttributeTableModel.ColorLineColumn)
+                                                                    , Qt.DisplayRole)
+                                                                    )
                         ET.SubElement(diag, 'value', backColor=QgsSymbolLayerV2Utils.encodeColor(backColor),
-                                      lineColor=QgsSymbolLayerV2Utils.encodeColor(backColor),
+                                      lineColor=QgsSymbolLayerV2Utils.encodeColor(lineColor),
                                       fieldName=expression).text = str(percent)
 
                         key = '{0}_{1}'.format(d.diagrammId, row)
@@ -793,12 +804,17 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             for row in rows:
                 index = self.attributeModel.index(row, AttributeTableModel.ExpressionColumn)
                 expression = self.attributeModel.data(index, Qt.DisplayRole)
-                index = self.attributeModel.index(row, AttributeTableModel.ColorColumn)
-                backColor = QColor(self.attributeModel.data(index, Qt.DisplayRole))
-
+                backColor = QColor(self.attributeModel.data(
+                                                            self.attributeModel.index(row, AttributeTableModel.ColorColumn)
+                                                            , Qt.DisplayRole)
+                                                            )
+                lineColor = QColor(self.attributeModel.data(
+                                                            self.attributeModel.index(row, AttributeTableModel.ColorLineColumn)
+                                                            , Qt.DisplayRole)
+                                                            )
                 slice = {}
                 slice['backColor'] = QgsSymbolLayerV2Utils.encodeColor(backColor)
-                slice['lineColor'] = QgsSymbolLayerV2Utils.encodeColor(backColor)
+                slice['lineColor'] = QgsSymbolLayerV2Utils.encodeColor(lineColor)
                 slice['expression'] = expression
                 # key = '{0}_{1}'.format(d.diagrammId, row)
                 slices.append(slice)
@@ -995,7 +1011,7 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             for col in xrange(self.attributeModel.columnCount()):
                 try:
                     idxStr = '{0}_{1}'.format(row, col)
-                    data = self.currentLayer.customProperty('PDS/diagramm_attribute_' + idxStr)
+                    data = self.currentLayer.customProperty('PDS/diagramm_attribute_' + idxStr,'')
                     index = self.attributeModel.index(row, col)
                     self.attributeModel.setData(index, data, Qt.EditRole)
                 except:
