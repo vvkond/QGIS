@@ -277,17 +277,17 @@
       <rule filter="  (&quot;days&quot; >0 &#xa;&#x9;or &quot;symbolcode&quot;-1 in &#xa;&#x9;(&#xa;&#x9; 89  ---&quot;piezometr&quot;, &quot;piezometric stock&quot;&#xa;&#x9;,181 ---&quot;oil producing&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,185 ---&quot;water injecting&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,225 ---&quot;gas producing&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,234 ---&quot;water-supply&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,243 ---&quot;water absorbing&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,181 ---&quot;oil producing&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,185 ---&quot;water injecting&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,225 ---&quot;gas producing&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,235 ---&quot;water-supply&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,244 ---&quot;water absorbing&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,188 ---&quot;oil producing&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,188 ---&quot;water injecting&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,188 ---&quot;gas producing&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,188 ---&quot;water-supply&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,188 ---&quot;water absorbing&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,202 ---&quot;oil producing&quot;, &quot;inactive stock&quot;&#xa;&#x9;,203 ---&quot;water injecting&quot;, &quot;inactive stock&quot;&#xa;&#x9;,227 ---&quot;gas producing&quot;, &quot;inactive stock&quot;&#xa;&#x9;,237 ---&quot;water-supply&quot;, &quot;inactive stock&quot;&#xa;    ,246 ---&quot;water absorbing&quot;, &quot;inactive stock&quot;&#xa;&#x9;,147 ---&quot;oil producing&quot;, &quot;suspended stock&quot;&#xa;&#x9;,152 ---&quot;water injecting&quot;, &quot;suspended stock&quot; &#xa;&#x9;,221 ---&quot;gas producing&quot;, &quot;suspended stock&quot;&#xa;    ,230 ---&quot;water-supply&quot;, &quot;suspended stock&quot;&#xa;&#x9;,239 ---&quot;water absorbing&quot;, &quot;suspended stock&quot;&#xa;&#x9;) &#xa;&#x9;or  &quot;wellstatus&quot;  in&#xa;&#x9;(&#xa;&#x9; 'abandonment stock' &#xa;&#x9;)&#xa;)" key="{f970b71f-f6d7-4eb4-ae26-32d72372d2e5}" label="действующие и диквидированные">
         <rule key="{28b2c25e-5478-46fe-af02-46572edc40a9}" symbol="0" label="Скважины"/>
         <rule filter="&quot;SymbolCode&quot;=71" key="{97d2d586-bcbd-4e8f-bbcb-d2bbf124928a}" symbol="1" label="Транзит"/>
-        <rule filter="&quot;SymbolCode&quot;=203" key="{d8afa648-29a2-4d66-9afb-84efd46b9c5d}" symbol="2" label="Добывающая скважина в бездействии"/>
-        <rule filter="&quot;SymbolCode&quot;=82" key="{227bedb7-8f28-42d5-9460-3521c5d00e6e}" symbol="3" label="Добывающая скважина"/>
-        <rule filter="&quot;SymbolCode&quot;=84" key="{e8b588a9-4681-4427-b4bd-ad3b29a9a125}" symbol="4" label="Нагнетательная скважина"/>
-        <rule filter="&quot;SymbolCode&quot;=204" key="{66f82bff-62f4-4de4-a8f6-567b419a3240}" symbol="5" label="Нагнетательная скважина в бездействии"/>
-        <rule filter="&quot;SymbolCode&quot;=186&#xd;&#xa;or&#xd;&#xa;( &quot;wellstatus&quot; = 'abandonment stock' &#xd;&#xa;and&#xd;&#xa; &quot;wellrole&quot; =  'water injecting' &#xd;&#xa;)" key="{9d5455f1-f8a0-4270-87d8-d0490b0a22f7}" symbol="6" label="Нагнетательная скважина ликвидированная"/>
-        <rule filter="&quot;SymbolCode&quot;=182&#xd;&#xa;or&#xd;&#xa;( &quot;wellstatus&quot; = 'abandonment stock' &#xd;&#xa;and&#xd;&#xa; &quot;wellrole&quot; = 'oil producing' &#xd;&#xa;)" key="{6fc9aaf9-ea8b-453d-86cf-69de36ae4693}" symbol="7" label="Добывающая скважина ликвидированная"/>
-        <rule filter="&quot;SymbolCode&quot;=148" key="{f7eee8d6-eb81-45fe-9ec6-245cfee10658}" symbol="8" label="Добывающая скважина простаивающая"/>
-        <rule filter="&quot;SymbolCode&quot;=90" key="{064f6b3b-4f21-4509-96f6-7fc2df86e9d3}" symbol="9" label="Пьезометрическая скважина"/>
-        <rule filter="&quot;SymbolCode&quot;=86" key="{bb978bc5-69c2-48b7-b512-359e0280b002}" symbol="10" label="Контрольная скважина"/>
-        <rule filter="&quot;SymbolCode&quot;=221" key="{e108fc92-d4a9-43bd-a15f-eaa8b77e134e}" symbol="11" label="Газовая скважина"/>
-        <rule filter="&quot;SymbolCode&quot;=119" key="{6348858d-38a3-4506-a4ed-0de6c3297b17}" symbol="12" label="Добывающая скважина в освоении"/>
+        <rule filter="&quot;SymbolCode&quot;=82" key="{227bedb7-8f28-42d5-9460-3521c5d00e6e}" symbol="2" label="Добывающая скважина"/>
+        <rule filter="&quot;SymbolCode&quot;=148" key="{49072cd7-0325-4a08-a5bb-0a194c090f2a}" symbol="3" label="Добывающая скважина простаивающая"/>
+        <rule filter="&quot;SymbolCode&quot;=203" key="{4b29d71c-61c3-46fa-a1bd-e40326f699cd}" symbol="4" label="Добывающая скважина в бездействии"/>
+        <rule filter="&quot;SymbolCode&quot;=119" key="{0ea1d014-ebbe-4fe7-b8b9-c20ca61baf1b}" symbol="5" label="Добывающая скважина в освоении"/>
+        <rule filter="&quot;SymbolCode&quot;=182&#xd;&#xa;or&#xd;&#xa;( &quot;wellstatus&quot; = 'abandonment stock' &#xd;&#xa;and&#xd;&#xa; &quot;wellrole&quot; = 'oil producing' &#xd;&#xa;)" key="{1ac5573c-7195-4864-8514-1f96cf531cb9}" symbol="6" label="Добывающая скважина ликвидированная"/>
+        <rule filter="&quot;SymbolCode&quot;=84" key="{e8b588a9-4681-4427-b4bd-ad3b29a9a125}" symbol="7" label="Нагнетательная скважина"/>
+        <rule filter="&quot;SymbolCode&quot;=204" key="{66f82bff-62f4-4de4-a8f6-567b419a3240}" symbol="8" label="Нагнетательная скважина в бездействии"/>
+        <rule filter="&quot;SymbolCode&quot;=186&#xd;&#xa;or&#xd;&#xa;( &quot;wellstatus&quot; = 'abandonment stock' &#xd;&#xa;and&#xd;&#xa; &quot;wellrole&quot; =  'water injecting' &#xd;&#xa;)" key="{9d5455f1-f8a0-4270-87d8-d0490b0a22f7}" symbol="9" label="Нагнетательная скважина ликвидированная"/>
+        <rule filter="&quot;SymbolCode&quot;=90" key="{064f6b3b-4f21-4509-96f6-7fc2df86e9d3}" symbol="10" label="Пьезометрическая скважина"/>
+        <rule filter="&quot;SymbolCode&quot;=86" key="{bb978bc5-69c2-48b7-b512-359e0280b002}" symbol="11" label="Контрольная скважина"/>
+        <rule filter="&quot;SymbolCode&quot;=221" key="{e108fc92-d4a9-43bd-a15f-eaa8b77e134e}" symbol="12" label="Газовая скважина"/>
         <rule filter="&quot;SymbolCode&quot;=189" key="{c1b3b372-c887-4414-af25-89a83993fe63}" symbol="13" label="Разведочная скважина ликвидированная"/>
         <rule checkstate="0" key="{67d0ae56-cf92-4321-ab73-7d83d1bfec31}" label="Переходы по резервуарам">
           <rule filter="&quot;resstate&quot;='FROM_LOWER_RESERVOIR'" key="{2f5cfdbe-3cf5-41db-8d97-07ec1df6b7eb}" symbol="14" label="Перевод на вышележащий"/>
@@ -331,7 +331,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol086.svg"/>
+          <prop k="name" v="WellSymbol090.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -351,7 +351,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol221.svg"/>
+          <prop k="name" v="WellSymbol086.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -371,7 +371,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol119.svg"/>
+          <prop k="name" v="WellSymbol221.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -455,7 +455,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol203.svg"/>
+          <prop k="name" v="WellSymbol082.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -475,7 +475,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol082.svg"/>
+          <prop k="name" v="WellSymbol148.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -495,7 +495,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol084.svg"/>
+          <prop k="name" v="WellSymbol203.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -515,7 +515,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol204.svg"/>
+          <prop k="name" v="WellSymbol119.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -535,7 +535,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol186.svg"/>
+          <prop k="name" v="WellSymbol182.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -555,7 +555,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol182.svg"/>
+          <prop k="name" v="WellSymbol084.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -575,7 +575,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol148.svg"/>
+          <prop k="name" v="WellSymbol204.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -595,7 +595,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol090.svg"/>
+          <prop k="name" v="WellSymbol186.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
