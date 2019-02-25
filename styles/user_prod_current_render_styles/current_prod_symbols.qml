@@ -259,6 +259,12 @@
     <edittype widgetv2type="TextEdit" name="transite">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="target">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="orig_ogc_fid">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
     <edittype widgetv2type="TextEdit" name="x">
       <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
@@ -268,7 +274,7 @@
   </edittypes>
   <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
     <rules key="{9966bf9d-607b-4a3d-b03f-d4e6ad6e0a70}">
-      <rule filter=" (&quot;transite&quot;  is not None or  &quot;symbolid&quot; &lt;>71) &#xd;&#xa; and  &#xd;&#xa; (&quot;days&quot; >0 &#xd;&#xa;&#x9;or &quot;symbolcode&quot;-1 in &#xd;&#xa;&#x9;(&#xd;&#xa;&#x9; 89  ---&quot;piezometr&quot;, &quot;piezometric stock&quot;&#xd;&#xa;&#x9;,181 ---&quot;oil producing&quot;, &quot;abandonment stock&quot;&#xd;&#xa;&#x9;,185 ---&quot;water injecting&quot;, &quot;abandonment stock&quot;&#xd;&#xa;&#x9;,225 ---&quot;gas producing&quot;, &quot;abandonment stock&quot;&#xd;&#xa;&#x9;,234 ---&quot;water-supply&quot;, &quot;abandonment stock&quot;&#xd;&#xa;&#x9;,243 ---&quot;water absorbing&quot;, &quot;abandonment stock&quot;&#xd;&#xa;&#x9;,181 ---&quot;oil producing&quot;, &quot;waiting abandonment stock&quot;&#xd;&#xa;&#x9;,185 ---&quot;water injecting&quot;, &quot;waiting abandonment stock&quot;&#xd;&#xa;&#x9;,225 ---&quot;gas producing&quot;, &quot;waiting abandonment stock&quot;&#xd;&#xa;&#x9;,235 ---&quot;water-supply&quot;, &quot;waiting abandonment stock&quot;&#xd;&#xa;&#x9;,244 ---&quot;water absorbing&quot;, &quot;waiting abandonment stock&quot;&#xd;&#xa;&#x9;,188 ---&quot;oil producing&quot;, &quot;exploration abandonment stock&quot;&#xd;&#xa;&#x9;,188 ---&quot;water injecting&quot;, &quot;exploration abandonment stock&quot;&#xd;&#xa;&#x9;,188 ---&quot;gas producing&quot;, &quot;exploration abandonment stock&quot;&#xd;&#xa;&#x9;,188 ---&quot;water-supply&quot;, &quot;exploration abandonment stock&quot;&#xd;&#xa;&#x9;,188 ---&quot;water absorbing&quot;, &quot;exploration abandonment stock&quot;&#xd;&#xa;&#x9;,202 ---&quot;oil producing&quot;, &quot;inactive stock&quot;&#xd;&#xa;&#x9;,203 ---&quot;water injecting&quot;, &quot;inactive stock&quot;&#xd;&#xa;&#x9;,227 ---&quot;gas producing&quot;, &quot;inactive stock&quot;&#xd;&#xa;&#x9;,237 ---&quot;water-supply&quot;, &quot;inactive stock&quot;&#xd;&#xa;    ,246 ---&quot;water absorbing&quot;, &quot;inactive stock&quot;&#xd;&#xa;&#x9;,147 ---&quot;oil producing&quot;, &quot;suspended stock&quot;&#xd;&#xa;&#x9;,152 ---&quot;water injecting&quot;, &quot;suspended stock&quot; &#xd;&#xa;&#x9;,221 ---&quot;gas producing&quot;, &quot;suspended stock&quot;&#xd;&#xa;    ,230 ---&quot;water-supply&quot;, &quot;suspended stock&quot;&#xd;&#xa;&#x9;,239 ---&quot;water absorbing&quot;, &quot;suspended stock&quot;&#xd;&#xa;&#x9;) &#xd;&#xa;&#x9;or  &quot;wellstatus&quot;  in&#xd;&#xa;&#x9;(&#xd;&#xa;&#x9; 'abandonment stock' &#xd;&#xa;&#x9;)&#xd;&#xa;&#xd;&#xa;&#xd;&#xa;)" key="{f970b71f-f6d7-4eb4-ae26-32d72372d2e5}" label="добуренные">
+      <rule filter="  (&quot;days&quot; >0 &#xa;&#x9;or &quot;symbolcode&quot;-1 in &#xa;&#x9;(&#xa;&#x9; 89  ---&quot;piezometr&quot;, &quot;piezometric stock&quot;&#xa;&#x9;,181 ---&quot;oil producing&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,185 ---&quot;water injecting&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,225 ---&quot;gas producing&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,234 ---&quot;water-supply&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,243 ---&quot;water absorbing&quot;, &quot;abandonment stock&quot;&#xa;&#x9;,181 ---&quot;oil producing&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,185 ---&quot;water injecting&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,225 ---&quot;gas producing&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,235 ---&quot;water-supply&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,244 ---&quot;water absorbing&quot;, &quot;waiting abandonment stock&quot;&#xa;&#x9;,188 ---&quot;oil producing&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,188 ---&quot;water injecting&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,188 ---&quot;gas producing&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,188 ---&quot;water-supply&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,188 ---&quot;water absorbing&quot;, &quot;exploration abandonment stock&quot;&#xa;&#x9;,202 ---&quot;oil producing&quot;, &quot;inactive stock&quot;&#xa;&#x9;,203 ---&quot;water injecting&quot;, &quot;inactive stock&quot;&#xa;&#x9;,227 ---&quot;gas producing&quot;, &quot;inactive stock&quot;&#xa;&#x9;,237 ---&quot;water-supply&quot;, &quot;inactive stock&quot;&#xa;    ,246 ---&quot;water absorbing&quot;, &quot;inactive stock&quot;&#xa;&#x9;,147 ---&quot;oil producing&quot;, &quot;suspended stock&quot;&#xa;&#x9;,152 ---&quot;water injecting&quot;, &quot;suspended stock&quot; &#xa;&#x9;,221 ---&quot;gas producing&quot;, &quot;suspended stock&quot;&#xa;    ,230 ---&quot;water-supply&quot;, &quot;suspended stock&quot;&#xa;&#x9;,239 ---&quot;water absorbing&quot;, &quot;suspended stock&quot;&#xa;&#x9;) &#xa;&#x9;or  &quot;wellstatus&quot;  in&#xa;&#x9;(&#xa;&#x9; 'abandonment stock' &#xa;&#x9;)&#xa;)" key="{f970b71f-f6d7-4eb4-ae26-32d72372d2e5}" label="действующие и диквидированные">
         <rule key="{28b2c25e-5478-46fe-af02-46572edc40a9}" symbol="0" label="Скважины"/>
         <rule filter="&quot;SymbolCode&quot;=71" key="{97d2d586-bcbd-4e8f-bbcb-d2bbf124928a}" symbol="1" label="Транзит"/>
         <rule filter="&quot;SymbolCode&quot;=203" key="{d8afa648-29a2-4d66-9afb-84efd46b9c5d}" symbol="2" label="Добывающая скважина в бездействии"/>
@@ -279,10 +285,13 @@
         <rule filter="&quot;SymbolCode&quot;=182&#xd;&#xa;or&#xd;&#xa;( &quot;wellstatus&quot; = 'abandonment stock' &#xd;&#xa;and&#xd;&#xa; &quot;wellrole&quot; = 'oil producing' &#xd;&#xa;)" key="{6fc9aaf9-ea8b-453d-86cf-69de36ae4693}" symbol="7" label="Добывающая скважина ликвидированная"/>
         <rule filter="&quot;SymbolCode&quot;=148" key="{f7eee8d6-eb81-45fe-9ec6-245cfee10658}" symbol="8" label="Добывающая скважина простаивающая"/>
         <rule filter="&quot;SymbolCode&quot;=90" key="{064f6b3b-4f21-4509-96f6-7fc2df86e9d3}" symbol="9" label="Пьезометрическая скважина"/>
-        <rule filter="&quot;SymbolCode&quot;=189" key="{c1b3b372-c887-4414-af25-89a83993fe63}" symbol="10" label="Разведочная скважина ликвидированная"/>
+        <rule filter="&quot;SymbolCode&quot;=86" key="{bb978bc5-69c2-48b7-b512-359e0280b002}" symbol="10" label="Контрольная скважина"/>
+        <rule filter="&quot;SymbolCode&quot;=221" key="{e108fc92-d4a9-43bd-a15f-eaa8b77e134e}" symbol="11" label="Газовая скважина"/>
+        <rule filter="&quot;SymbolCode&quot;=119" key="{6348858d-38a3-4506-a4ed-0de6c3297b17}" symbol="12" label="Добывающая скважина в освоении"/>
+        <rule filter="&quot;SymbolCode&quot;=189" key="{c1b3b372-c887-4414-af25-89a83993fe63}" symbol="13" label="Разведочная скважина ликвидированная"/>
         <rule checkstate="0" key="{67d0ae56-cf92-4321-ab73-7d83d1bfec31}" label="Переходы по резервуарам">
-          <rule filter="&quot;resstate&quot;='FROM_LOWER_RESERVOIR'" key="{2f5cfdbe-3cf5-41db-8d97-07ec1df6b7eb}" symbol="11" label="Перевод на вышележащий"/>
-          <rule filter="&quot;resstate&quot;='FROM_UPPER_RESERVOIR'" key="{ad4a6032-6604-4acd-af71-8ca200dabdb9}" symbol="12" label="Перевод на нижележащий"/>
+          <rule filter="&quot;resstate&quot;='FROM_LOWER_RESERVOIR'" key="{2f5cfdbe-3cf5-41db-8d97-07ec1df6b7eb}" symbol="14" label="Перевод на вышележащий"/>
+          <rule filter="&quot;resstate&quot;='FROM_UPPER_RESERVOIR'" key="{ad4a6032-6604-4acd-af71-8ca200dabdb9}" symbol="15" label="Перевод на нижележащий"/>
         </rule>
       </rule>
     </rules>
@@ -322,7 +331,7 @@
           <prop k="angle" v="0"/>
           <prop k="color" v="0,0,0,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="WellSymbol189.svg"/>
+          <prop k="name" v="WellSymbol086.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -338,6 +347,66 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="11">
+        <layer pass="5" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="WellSymbol221.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0.2"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="7"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="12">
+        <layer pass="5" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="WellSymbol119.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0.2"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="7"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="13">
+        <layer pass="5" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="0,0,0,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="WellSymbol189.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0.2"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="7"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="14">
         <layer pass="0" class="SimpleMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="128,128,128,0"/>
@@ -359,7 +428,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="12">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="15">
         <layer pass="0" class="SimpleMarker" locked="0">
           <prop k="angle" v="180"/>
           <prop k="color" v="128,128,128,0"/>
@@ -550,15 +619,15 @@
   <customproperties>
     <property key="alwaysShowZero" value="0"/>
     <property key="dailyProduction" value="1"/>
-    <property key="decimal" value="2"/>
+    <property key="decimal" value="3"/>
     <property key="defaultSymbolSize" value="7"/>
     <property key="diagrammCount" value="2"/>
     <property key="diagramm_fluids_1" value="1;0;1;0;0;0;0;0;0"/>
     <property key="diagramm_fluids_2" value="0;0;0;0;0;1;0;0;0"/>
     <property key="diagramm_name_1" value="Диаграмма жидкости"/>
     <property key="diagramm_name_2" value="Диаграмма закачки"/>
-    <property key="diagramm_scale_1" value="500"/>
-    <property key="diagramm_scale_2" value="500"/>
+    <property key="diagramm_scale_1" value="100"/>
+    <property key="diagramm_scale_2" value="100"/>
     <property key="diagramm_unitsType_1" value="0"/>
     <property key="diagramm_unitsType_2" value="1"/>
     <property key="diagramm_units_1" value="2"/>
@@ -571,8 +640,8 @@
     <property key="fluid_background_lgas" value="0,0,170,255"/>
     <property key="fluid_background_ngas" value="228,228,118,255"/>
     <property key="fluid_background_oil" value="218,165,32,255"/>
-    <property key="fluid_background_pfl" value="0,0,255,255"/>
-    <property key="fluid_background_pw" value="204,204,204,255"/>
+    <property key="fluid_background_pfl" value="11,250,31,255"/>
+    <property key="fluid_background_pw" value="132,183,219,255"/>
     <property key="fluid_inPercent_cond" value="0"/>
     <property key="fluid_inPercent_fgas" value="0"/>
     <property key="fluid_inPercent_igas" value="0"/>
@@ -581,7 +650,7 @@
     <property key="fluid_inPercent_ngas" value="0"/>
     <property key="fluid_inPercent_oil" value="0"/>
     <property key="fluid_inPercent_pfl" value="0"/>
-    <property key="fluid_inPercent_pw" value="0"/>
+    <property key="fluid_inPercent_pw" value="1"/>
     <property key="fluid_label_color_cond" value="124,222,63,255"/>
     <property key="fluid_label_color_fgas" value="0,160,160,255"/>
     <property key="fluid_label_color_igas" value="0,0,0,255"/>
@@ -589,19 +658,19 @@
     <property key="fluid_label_color_lgas" value="0,0,170,255"/>
     <property key="fluid_label_color_ngas" value="143,143,74,255"/>
     <property key="fluid_label_color_oil" value="178,34,34,255"/>
-    <property key="fluid_label_color_pfl" value="0,0,0,255"/>
-    <property key="fluid_label_color_pw" value="0,0,0,255"/>
+    <property key="fluid_label_color_pfl" value="22,241,48,255"/>
+    <property key="fluid_label_color_pw" value="132,183,219,255"/>
     <property key="fluid_line_color_cond" value="174,222,144,255"/>
     <property key="fluid_line_color_fgas" value="0,160,160,255"/>
     <property key="fluid_line_color_igas" value="0,0,0,255"/>
     <property key="fluid_line_color_iw" value="0,255,255,255"/>
     <property key="fluid_line_color_lgas" value="0,0,170,255"/>
     <property key="fluid_line_color_ngas" value="228,228,118,255"/>
-    <property key="fluid_line_color_oil" value="0,0,0,255"/>
+    <property key="fluid_line_color_oil" value="218,165,32,255"/>
     <property key="fluid_line_color_pfl" value="0,0,0,255"/>
-    <property key="fluid_line_color_pw" value="0,0,0,255"/>
+    <property key="fluid_line_color_pw" value="132,183,219,255"/>
     <property key="labelSize" value="9"/>
-    <property key="labelTemplate" value="%1-%3-%6"/>
+    <property key="labelTemplate" value="%1&lt;div>%3&lt;/div>&lt;div>%6&lt;/div>"/>
     <property key="labeling" value="pal"/>
     <property key="labeling/addDirectionSymbol" value="false"/>
     <property key="labeling/angleOffset" value="0"/>
@@ -746,13 +815,13 @@
     <property key="maxDiagrammSize" value="20"/>
     <property key="minDiagrammSize" value="4"/>
     <property key="pds_chart_groupByDaysAndFond" value="0"/>
-    <property key="pds_chart_name" value="Текущие отборы 500"/>
+    <property key="pds_chart_name" value="Текущие отборы 100"/>
     <property key="pds_fondLoad_isObject" value="False"/>
     <property key="pds_fondLoad_isWell" value="True"/>
     <property key="pds_prod_PhaseFilter" value="[]"/>
-    <property key="pds_prod_SelectedReservoirs" value="[u'KS']"/>
+    <property key="pds_prod_SelectedReservoirs" value="[u'NKP']"/>
     <property key="pds_prod_endDate" value="31/01/2019 00:00:00"/>
-    <property key="pds_project" value="{'project': u'sian_20190130', 'type': u'tigress', 'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;BINAGADI&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
+    <property key="pds_project" value="{'project': u'bin_n_20190221', 'type': u'tigress', 'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;BINAGADI&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
     <property key="qgis_pds_type" value="pds_current_production"/>
     <property key="showLineout" value="1"/>
     <property key="useScaleGroupBox" value="1"/>
@@ -901,8 +970,10 @@
     <alias field="MD" index="83" name=""/>
     <alias field="TVD" index="84" name=""/>
     <alias field="transite" index="85" name=""/>
-    <alias field="x" index="86" name=""/>
-    <alias field="y" index="87" name=""/>
+    <alias field="target" index="86" name=""/>
+    <alias field="orig_ogc_fid" index="87" name=""/>
+    <alias field="x" index="88" name=""/>
+    <alias field="y" index="89" name=""/>
   </aliases>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
@@ -998,6 +1069,8 @@
       <column width="-1" hidden="0" type="field" name="x"/>
       <column width="-1" hidden="0" type="field" name="y"/>
       <column width="-1" hidden="1" type="actions"/>
+      <column width="-1" hidden="0" type="field" name="target"/>
+      <column width="-1" hidden="0" type="field" name="orig_ogc_fid"/>
     </columns>
   </attributetableconfig>
   <editform>.</editform>
@@ -1021,14 +1094,7 @@ def my_form_open(dialog, layer, feature):
 ]]></editforminitcode>
   <featformsuppress>0</featformsuppress>
   <editorlayout>generatedlayout</editorlayout>
-  <widgets>
-    <widget name="orig_ogc_fid">
-      <config>
-        <option key="IsMultiline" value="false"/>
-        <option key="UseHtml" value="false"/>
-      </config>
-    </widget>
-  </widgets>
+  <widgets/>
   <conditionalstyles>
     <rowstyles/>
     <fieldstyles/>
@@ -1120,6 +1186,8 @@ def my_form_open(dialog, layer, feature):
     <default field="MD" expression=""/>
     <default field="TVD" expression=""/>
     <default field="transite" expression=""/>
+    <default field="target" expression=""/>
+    <default field="orig_ogc_fid" expression=""/>
     <default field="x" expression=""/>
     <default field="y" expression=""/>
   </defaults>
