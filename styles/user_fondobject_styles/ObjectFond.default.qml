@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.18.26" simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.18.28" simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <edittypes>
     <edittype widgetv2type="TextEdit" name="well_id">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
@@ -43,6 +43,21 @@
     <edittype widgetv2type="TextEdit" name="liftmethod">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="bubblesize">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="scaletype">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="movingres">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="resstate">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="multiprod">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
     <edittype widgetv2type="TextEdit" name="lablx">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
@@ -61,19 +76,16 @@
     <edittype widgetv2type="TextEdit" name="lablwidth">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="bubblesize">
+    <edittype widgetv2type="TextEdit" name="lablcol">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="scaletype">
+    <edittype widgetv2type="TextEdit" name="bufcol">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="movingres">
+    <edittype widgetv2type="TextEdit" name="bufwidth">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="resstate">
-      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
-    </edittype>
-    <edittype widgetv2type="TextEdit" name="multiprod">
+    <edittype widgetv2type="TextEdit" name="font">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="oilvol">
@@ -238,15 +250,6 @@
     <edittype widgetv2type="TextEdit" name="pflmaxd_v">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
-    <edittype widgetv2type="TextEdit" name="MD">
-      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
-    </edittype>
-    <edittype widgetv2type="TextEdit" name="TVD">
-      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
-    </edittype>
-    <edittype widgetv2type="TextEdit" name="transite">
-      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
-    </edittype>
   </edittypes>
   <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
     <rules key="{080e9a79-fc68-4be0-8d7a-ceb05b29c241}">
@@ -263,9 +266,9 @@
         <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{4bfe5dcb-d101-4c7b-926f-42467c701d9d}" symbol="5" label="поглащающий"/>
         <rule filter="&quot;wellrole&quot; ='water-supply'" key="{34dca591-89a8-49f5-8737-7086d21295b2}" symbol="6" label="водозаборный"/>
       </rule>
-      <rule description="Назначение по фонду-наблюдательная, состояние- наблюдательная" filter="&quot;initrole&quot; ='observation' AND &quot;wellstatus&quot; ='exploration QC stock'  and &quot;wsinfo&quot; is NULL" key="{2bf8de60-254a-4439-bbc4-653c6bb285bc}" symbol="7" label="наблюдательный"/>
+      <rule description="Назначение по фонду-наблюдательная, состояние- наблюдательная" filter="&quot;initrole&quot; ='observation' AND  &quot;wellstatus&quot; ='exploration active stock'   AND &quot;wsinfo&quot; is NULL" key="{2bf8de60-254a-4439-bbc4-653c6bb285bc}" symbol="7" label="наблюдательный"/>
       <rule filter="&quot;wellstatus&quot; ='completion stock'" key="{20724455-3264-4a19-b890-b613c58b0772}" symbol="8" label="в освоении"/>
-      <rule description="статус в простое или остановлена  без примечания к статусу" filter="&quot;wellstatus&quot; ='inactive stock' OR &quot;wellstatus&quot; ='suspended stock'  and &quot;wsinfo&quot; is NULL" key="{10ddd8fa-5818-4e83-8ad9-082be07db29b}" label="бездействующий">
+      <rule description="статус в простое или остановлена  без примечания к статусу" filter="(&quot;wellstatus&quot; ='inactive stock' OR &quot;wellstatus&quot; ='suspended stock')  AND &quot;wsinfo&quot; is NULL" key="{10ddd8fa-5818-4e83-8ad9-082be07db29b}" label="бездействующий">
         <rule key="{96b9e58c-e0a3-4000-bc32-31f9f8b772f7}" label="из эксплуатации">
           <rule filter="&quot;wellrole&quot; ='oil producing'" key="{882da65f-fcd6-4261-9910-5a065eea78c6}" symbol="9" label="нефтяные"/>
           <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{dec0b1b9-2fdd-480b-8930-b4216668e54f}" symbol="10" label="газовыые"/>
@@ -274,36 +277,50 @@
         <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{9608c93c-3337-427b-8bd5-096c901a3fdb}" symbol="12" label="из поглащения"/>
         <rule filter="&quot;wellrole&quot; ='water-supply'" key="{3ac3e038-3f77-485b-ada9-dfbe42909ae8}" symbol="13" label="из водозабора"/>
       </rule>
-      <rule filter="&quot;wsinfo&quot; ='reservoir change'" key="{6899e675-b456-4c2d-b7db-3554b27953f3}" label="перевод на другой горизонт">
-        <rule filter="&quot;wsreason&quot; ='oil prod'" key="{c56764f0-6cba-49fb-940e-bf5c4a414062}" symbol="14" label="получена нефть"/>
-        <rule filter="&quot;wsreason&quot; ='inj'" key="{81755a1c-6457-4f3c-9aec-dca17505869d}" symbol="15" label="нагнетательный"/>
-        <rule filter="&quot;wsreason&quot; ='absorb'" key="{e6ba43b4-4596-4fca-8c30-b7d9a9afeb05}" symbol="16" label="поглащающий"/>
-        <rule filter="&quot;wsreason&quot; ='supply'" key="{a2f113d4-eeb4-44e8-999c-5682ab437d21}" symbol="17" label="водозаборный"/>
-        <rule filter="&quot;wsreason&quot; ='gas prod'" key="{801045d0-ab81-4f3a-9caf-5021bee0f07c}" symbol="18" label="получен газ"/>
-        <rule filter="&quot;wsreason&quot; ='water prod'" key="{55f0fd14-a771-438a-ae26-a02e41d8d9ca}" symbol="19" label="получена вода"/>
-        <rule filter="&quot;wsreason&quot; ='no prod'" key="{e799dac0-491e-405b-be6b-6c305eb8aa0a}" symbol="20" label="нет притока"/>
+      <rule description="статус в простое или остановлена  без примечания к статусу" filter="&quot;wellstatus&quot; ='conservation'  AND &quot;wsinfo&quot; is NULL" key="{2247dbe7-ef1e-4c5b-a2f8-b944f3e01f54}" label="консервация">
+        <rule key="{1bf430fc-20e9-4421-a8b1-a4de49ff811c}" label="из эксплуатации">
+          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{65cd01fe-c85d-4a54-8607-fb7e3219782f}" symbol="14" label="нефтяные"/>
+          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{c9addec2-c8ab-44f7-b04d-96ac227e26ac}" symbol="15" label="газовыые"/>
+        </rule>
+        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{289f70db-f670-4cee-b6b5-47c6a56b3c70}" symbol="16" label="из нагнетания"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{101f13e5-a34f-4008-91c4-8c495a5b0793}" symbol="17" label="из поглащения"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{c7c75fcd-5270-4894-936d-5d6f4d99a306}" symbol="18" label="из водозабора"/>
       </rule>
-      <rule description="скважины, которые добурены ниже и не работающие на текущем пласте" filter="&quot;transite&quot; is not NULL AND  &quot;wellstatus&quot; is NULL" key="{191151b6-bfd0-47b4-923d-3fe014fd1475}" symbol="21" label="транзитный"/>
-      <rule filter="&quot;wellstatus&quot; ='abandonment stock'" key="{ca78033c-5cc2-42ea-933b-1e2fa943ceb6}" label="ликвидированный">
+      <rule filter="&quot;wsinfo&quot; ='reservoir change'" key="{6899e675-b456-4c2d-b7db-3554b27953f3}" label="перевод на другой горизонт">
+        <rule filter="&quot;wsreason&quot; ='oil prod'" key="{c56764f0-6cba-49fb-940e-bf5c4a414062}" symbol="19" label="получена нефть"/>
+        <rule filter="&quot;wsreason&quot; ='inj'" key="{81755a1c-6457-4f3c-9aec-dca17505869d}" symbol="20" label="нагнетательный"/>
+        <rule filter="&quot;wsreason&quot; ='absorb'" key="{e6ba43b4-4596-4fca-8c30-b7d9a9afeb05}" symbol="21" label="поглащающий"/>
+        <rule filter="&quot;wsreason&quot; ='supply'" key="{a2f113d4-eeb4-44e8-999c-5682ab437d21}" symbol="22" label="водозаборный"/>
+        <rule filter="&quot;wsreason&quot; ='gas prod'" key="{801045d0-ab81-4f3a-9caf-5021bee0f07c}" symbol="23" label="получен газ"/>
+        <rule filter="&quot;wsreason&quot; ='water prod'" key="{55f0fd14-a771-438a-ae26-a02e41d8d9ca}" symbol="24" label="получена вода"/>
+        <rule filter="&quot;wsreason&quot; ='no prod'" key="{e799dac0-491e-405b-be6b-6c305eb8aa0a}" symbol="25" label="нет притока"/>
+      </rule>
+      <rule description="скважины, которые добурены ниже и не работающие на текущем пласте" filter="&quot;transite&quot; is not NULL AND  &quot;wellstatus&quot; is NULL" key="{191151b6-bfd0-47b4-923d-3fe014fd1475}" symbol="26" label="транзитный"/>
+      <rule description="статус в простое или остановлена  без примечания к статусу" filter="(&quot;wellstatus&quot; ='abandonment stock' OR &quot;wellstatus&quot; ='exploration abandonment stock' ) AND &quot;wsinfo&quot; ='wait abandonment'" key="{db0383d5-7a3c-4d89-8f94-026c600705dc}" label="ожидание ликвидации">
+        <rule key="{7d9f4cf9-9a38-4ab7-8d33-98ca7b5d7f0c}" label="из эксплуатации">
+          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{182decf9-9121-4e53-96f0-0d7dde79d215}" symbol="27" label="нефтяные"/>
+          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{28606bba-920f-49e1-b1c4-3c9ea4686faa}" symbol="28" label="газовыые"/>
+        </rule>
+        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{1919cbab-c97f-4dbd-a45b-3ac0132953de}" symbol="29" label="из нагнетания"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{16dbb1b7-558f-4436-865d-f3e8cd967eda}" symbol="30" label="из поглащения"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{2869348d-8f77-41ed-bacb-b1124a1bcc23}" symbol="31" label="из водозабора"/>
+      </rule>
+      <rule filter="(&quot;wellstatus&quot; ='abandonment stock'  OR &quot;wellstatus&quot; ='exploration abandonment stock')   AND &quot;wsinfo&quot; &lt;> 'wait abandonment'" key="{ca78033c-5cc2-42ea-933b-1e2fa943ceb6}" label="ликвидированный">
         <rule filter="&quot;wsinfo&quot; ='abandonment expl'" key="{0ab147d5-87cf-47b6-89df-97902972ba75}" label="из эксплуатации">
-          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{05ea1f08-06f5-4266-92bb-a4ed327ee2dc}" symbol="22" label="технические причины"/>
-          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{95079071-1e20-4dac-bac1-e45db4516267}" symbol="23" label="геологические причины"/>
+          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{05ea1f08-06f5-4266-92bb-a4ed327ee2dc}" symbol="32" label="технические причины"/>
+          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{95079071-1e20-4dac-bac1-e45db4516267}" symbol="33" label="геологические причины"/>
         </rule>
         <rule filter="&quot;wsinfo&quot; ='abandonment drill'" key="{16c5ed84-d7d4-4952-bd3a-9d3a3bc255bd}" label="из бурения">
-          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{d718269a-c942-450c-b7e4-d486c6f5cbd5}" symbol="24" label="технические причины"/>
-          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{6fcc331e-84ed-4c30-ab21-38b7a002296c}" symbol="25" label="геологические причины"/>
+          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{d718269a-c942-450c-b7e4-d486c6f5cbd5}" symbol="34" label="технические причины"/>
+          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{6fcc331e-84ed-4c30-ab21-38b7a002296c}" symbol="35" label="геологические причины"/>
         </rule>
-        <rule filter="&quot;wsinfo&quot; ='abandonment inj'" key="{1ab5fb67-b1f0-4f7a-9df1-feddd9ed2366}" symbol="26" label="из нагнетания"/>
-        <rule filter="&quot;wsinfo&quot; ='abandonment wat-absorb'" key="{0917a817-c46e-4751-9dfc-f36f732f7d45}" symbol="27" label="из поглащения"/>
-        <rule filter="&quot;wsinfo&quot; ='abandonment wat-sup'" key="{378b281c-c5f0-484f-9e52-52ba0b9b28a6}" symbol="28" label="из водозабора"/>
-        <rule filter="&quot;wsinfo&quot; ='abandonment observ'" key="{c50ae2d5-993a-440d-9461-92b5299582e3}" symbol="29" label="из наблюдения"/>
-        <rule description="Если есть символ на данном пласте,значит скважина целевая" filter="&quot;wsinfo&quot; is NULL" key="{a339e2c2-c9d7-4ae7-bf55-fabffc5dc5cc}" symbol="30" label="причина не указана"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting' AND &quot;wsinfo&quot; is NULL " key="{1ab5fb67-b1f0-4f7a-9df1-feddd9ed2366}" symbol="36" label="из нагнетания"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'  AND &quot;wsinfo&quot; is NULL " key="{0917a817-c46e-4751-9dfc-f36f732f7d45}" symbol="37" label="из поглащения"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'  AND &quot;wsinfo&quot; is NULL " key="{378b281c-c5f0-484f-9e52-52ba0b9b28a6}" symbol="38" label="из водозабора"/>
+        <rule filter="&quot;wellstatus&quot; ='exploration abandonment stock'" key="{c50ae2d5-993a-440d-9461-92b5299582e3}" symbol="39" label="из наблюдения"/>
+        <rule description="Если есть символ на данном пласте,значит скважина целевая" filter="&quot;wsinfo&quot; is NULL" key="{a339e2c2-c9d7-4ae7-bf55-fabffc5dc5cc}" symbol="40" label="причина не указана"/>
       </rule>
-      <rule filter="&quot;wellstatus&quot; ='abandonment stock'" key="{38b0bfa2-b8f7-4f41-bb5f-efb1bf5eeb7b}" label="ожидающий ликвидации">
-        <rule filter="&quot;wsinfo&quot; ='wait abandonment expl'" key="{feef2fb8-d8be-42fa-90be-93b763d1d940}" symbol="31" label="из эксплуатации"/>
-        <rule filter="&quot;wsinfo&quot; ='wait abandonment inj'" key="{9e13d6e8-34ff-4f3f-ae83-95bd902fcc19}" symbol="32" label="из нагнетания и поглащения"/>
-      </rule>
-      <rule checkstate="0" filter="False" key="{9309deff-de94-4f9e-a283-81d968682b46}" symbol="33" label="проектные"/>
+      <rule checkstate="0" filter="False" key="{9309deff-de94-4f9e-a283-81d968682b46}" symbol="41" label="проектные"/>
     </rules>
     <symbols>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="0">
@@ -429,9 +446,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="14">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="201,120,54,255"/>
+          <prop k="color" v="85,93,184,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_OILPROD.svg"/>
+          <prop k="name" v="shirvan_fond/CONSERVED_OIL.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -449,9 +466,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="15">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="164,163,103,255"/>
+          <prop k="color" v="137,46,131,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_INJ.svg"/>
+          <prop k="name" v="shirvan_fond/CONSERVED_GAS.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -469,9 +486,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="16">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="173,112,216,255"/>
+          <prop k="color" v="30,157,102,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_ABSORB.svg"/>
+          <prop k="name" v="shirvan_fond/CONSERVED_INJ.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -489,9 +506,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="17">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="76,164,82,255"/>
+          <prop k="color" v="25,74,219,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_SUPPLY.svg"/>
+          <prop k="name" v="shirvan_fond/CONSERVED_ABSORB.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -509,9 +526,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="18">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="68,35,190,255"/>
+          <prop k="color" v="214,34,233,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_GASPROD.svg"/>
+          <prop k="name" v="shirvan_fond/CONSERVED_SUPPLY.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -529,9 +546,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="19">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="1,133,107,255"/>
+          <prop k="color" v="201,120,54,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_WATERPROD.svg"/>
+          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_OILPROD.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -569,6 +586,106 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="20">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
+          <prop k="color" v="164,163,103,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_INJ.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="21">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="173,112,216,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_ABSORB.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="22">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="76,164,82,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_SUPPLY.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="23">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="68,35,190,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_GASPROD.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="24">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="1,133,107,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_WATERPROD.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="25">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
           <prop k="color" v="213,54,211,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
           <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_NOINFLOW.svg"/>
@@ -586,7 +703,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="21">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="26">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="125,171,131,255"/>
@@ -606,112 +723,12 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="22">
-        <layer pass="2" class="SvgMarker" locked="0">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="38,156,15,255"/>
-          <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/ABANDONED_PROD_TECHNICALREASON.svg"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_width" v="0"/>
-          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="8"/>
-          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
-          <prop k="vertical_anchor_point" v="1"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="23">
-        <layer pass="2" class="SvgMarker" locked="0">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="185,139,208,255"/>
-          <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/ABANDONED_PROD_GEOLOGYREASON.svg"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_width" v="0"/>
-          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="8"/>
-          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
-          <prop k="vertical_anchor_point" v="1"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="24">
-        <layer pass="2" class="SvgMarker" locked="0">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="145,63,16,255"/>
-          <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/ABANDONED_DRILL_TECHNICALREASON.svg"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_width" v="0"/>
-          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="8"/>
-          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
-          <prop k="vertical_anchor_point" v="1"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="25">
-        <layer pass="2" class="SvgMarker" locked="0">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="142,100,32,255"/>
-          <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/ABANDONED_DRILL_GEOLOGYREASON.svg"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_width" v="0"/>
-          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="8"/>
-          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
-          <prop k="vertical_anchor_point" v="1"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="26">
-        <layer pass="2" class="SvgMarker" locked="0">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="121,156,44,255"/>
-          <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/ABANDONED_INJ.svg"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_width" v="0"/>
-          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="8"/>
-          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
-          <prop k="vertical_anchor_point" v="1"/>
-        </layer>
-      </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="27">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="205,223,137,255"/>
+          <prop k="color" v="85,93,184,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/ABANDONED_ABSORB.svg"/>
+          <prop k="name" v="shirvan_fond/WAIT_ABANDONED_OIL.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -729,9 +746,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="28">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="169,132,127,255"/>
+          <prop k="color" v="137,46,131,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/ABANDONED_SUPPLY.svg"/>
+          <prop k="name" v="shirvan_fond/WAIT_ABANDONED_GAS.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -749,9 +766,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="29">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="181,175,86,255"/>
+          <prop k="color" v="30,157,102,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/ABANDONED_OBSERV.svg"/>
+          <prop k="name" v="shirvan_fond/WAIT_ABANDONED_INJ.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -787,20 +804,19 @@
         </layer>
       </symbol>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="30">
-        <layer pass="0" class="FontMarker" locked="0">
+        <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="chr" v="?"/>
-          <prop k="color" v="0,0,0,0"/>
-          <prop k="font" v="Dingbats"/>
+          <prop k="color" v="25,74,219,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="joinstyle" v="miter"/>
-          <prop k="offset" v="-0.08,-0.08"/>
+          <prop k="name" v="shirvan_fond/WAIT_ABANDONED_ABSORB.svg"/>
+          <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="227,26,28,255"/>
-          <prop k="outline_width" v="0.2"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
           <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
           <prop k="size" v="8"/>
           <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="size_unit" v="MM"/>
@@ -810,9 +826,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="31">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="141,99,63,255"/>
+          <prop k="color" v="214,34,233,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/WAITABANDONED_PROD.svg"/>
+          <prop k="name" v="shirvan_fond/WAIT_ABANDONED_SUPPLY.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -830,9 +846,9 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="32">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="90,66,147,255"/>
+          <prop k="color" v="38,156,15,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/WAITABANDONED_INJ.svg"/>
+          <prop k="name" v="shirvan_fond/ABANDONED_PROD_TECHNICALREASON.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -850,9 +866,129 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="33">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
-          <prop k="color" v="133,181,192,255"/>
+          <prop k="color" v="185,139,208,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/PROJECT.svg"/>
+          <prop k="name" v="shirvan_fond/ABANDONED_PROD_GEOLOGYREASON.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="34">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="145,63,16,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/ABANDONED_DRILL_TECHNICALREASON.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="35">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="142,100,32,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/ABANDONED_DRILL_GEOLOGYREASON.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="36">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="121,156,44,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/ABANDONED_INJ.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="37">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="205,223,137,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/ABANDONED_ABSORB.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="38">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="169,132,127,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/ABANDONED_SUPPLY.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="39">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="181,175,86,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/ABANDONED_OBSERV.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -873,6 +1009,47 @@
           <prop k="color" v="18,38,194,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
           <prop k="name" v="shirvan_fond/INJ.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="40">
+        <layer pass="0" class="FontMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="chr" v="?"/>
+          <prop k="color" v="0,0,0,0"/>
+          <prop k="font" v="Dingbats"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="joinstyle" v="miter"/>
+          <prop k="offset" v="-0.08,-0.08"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="227,26,28,255"/>
+          <prop k="outline_width" v="0.2"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="41">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="133,181,192,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/PROJECT.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -1136,10 +1313,12 @@
     <property key="labeling/xOffset" value="0"/>
     <property key="labeling/yOffset" value="0"/>
     <property key="labeling/zIndex" value="0"/>
+    <property key="pds_fondLoad_isObject" value="False"/>
+    <property key="pds_fondLoad_isWell" value="True"/>
     <property key="pds_prod_PhaseFilter" value="[]"/>
-    <property key="pds_prod_SelectedReservoirs" value="[u'PS01_z2', u'PS01_zeh1', u'PS01_zeh3']"/>
-    <property key="pds_prod_endDate" value="31/07/2017 00:00:00"/>
-    <property key="pds_project" value="{u'project': u'kurovdag_m2', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;PDS252&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
+    <property key="pds_prod_SelectedReservoirs" value="[u'Ap2']"/>
+    <property key="pds_prod_endDate" value="31/01/2019 00:00:00"/>
+    <property key="pds_project" value="{u'project': u'mish_20190213', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;KARASU&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
     <property key="qgis_pds_type" value="pds_current_production"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
@@ -1169,10 +1348,9 @@
     <multilineenabled fieldname="" on=""/>
     <selectedonly on=""/>
   </labelattributes>
-  <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+  <SingleCategoryDiagramRenderer diagramType="Histogram" sizeLegend="0" attributeLegend="1">
     <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
       <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
-      <attribute field="" color="#000000" label=""/>
     </DiagramCategory>
     <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
       <layer pass="0" class="SimpleMarker" locked="0">
@@ -1197,7 +1375,7 @@
       </layer>
     </symbol>
   </SingleCategoryDiagramRenderer>
-  <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+  <DiagramLayerSettings yPosColumn="-1" showColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
   <annotationform>.</annotationform>
   <aliases>
     <alias field="well_id" index="0" name=""/>
@@ -1214,74 +1392,75 @@
     <alias field="startdate" index="11" name=""/>
     <alias field="days" index="12" name=""/>
     <alias field="liftmethod" index="13" name=""/>
-    <alias field="lablx" index="14" name=""/>
-    <alias field="lably" index="15" name=""/>
-    <alias field="labloffx" index="16" name=""/>
-    <alias field="labloffy" index="17" name=""/>
-    <alias field="labloffset" index="18" name=""/>
-    <alias field="lablwidth" index="19" name=""/>
-    <alias field="bubblesize" index="20" name=""/>
-    <alias field="scaletype" index="21" name=""/>
-    <alias field="movingres" index="22" name=""/>
-    <alias field="resstate" index="23" name=""/>
-    <alias field="multiprod" index="24" name=""/>
-    <alias field="oilvol" index="25" name="Сырая нефть (объем)"/>
-    <alias field="oilmas" index="26" name="Сырая нефть (масса)"/>
-    <alias field="oilmax_m" index="27" name="Сырая нефть (макс. дебит по массе)"/>
-    <alias field="oilmaxd_m" index="28" name="Сырая нефть (дата макс. дебита по массе)"/>
-    <alias field="oilmax_v" index="29" name="Сырая нефть (макс. дебит по объему)"/>
-    <alias field="oilmaxd_v" index="30" name="Сырая нефть (дата макс. дебита по объему)"/>
-    <alias field="ngasvol" index="31" name="Природный газ (объем)"/>
-    <alias field="ngasmas" index="32" name="Природный газ (масса)"/>
-    <alias field="ngasmax_m" index="33" name="Природный газ (макс. дебит по массе)"/>
-    <alias field="ngasmaxd_m" index="34" name="Природный газ (дата макс. дебита по массе)"/>
-    <alias field="ngasmax_v" index="35" name="Природный газ (макс. дебит по объему)"/>
-    <alias field="ngasmaxd_v" index="36" name="Природный газ (дата макс. дебита по объему)"/>
-    <alias field="pwvol" index="37" name="Добыча вода (объем)"/>
-    <alias field="pwmas" index="38" name="Добыча вода (масса)"/>
-    <alias field="pwmax_m" index="39" name="Добыча вода (макс. дебит по массе)"/>
-    <alias field="pwmaxd_m" index="40" name="Добыча вода (дата макс. дебита по массе)"/>
-    <alias field="pwmax_v" index="41" name="Добыча вода (макс. дебит по объему)"/>
-    <alias field="pwmaxd_v" index="42" name="Добыча вода (дата макс. дебита по объему)"/>
-    <alias field="condvol" index="43" name="Конденсат (объем)"/>
-    <alias field="condmas" index="44" name="Конденсат (масса)"/>
-    <alias field="condmax_m" index="45" name="Конденсат (макс. дебит по массе)"/>
-    <alias field="condmaxd_m" index="46" name="Конденсат (дата макс. дебита по массе)"/>
-    <alias field="condmax_v" index="47" name="Конденсат (макс. дебит по объему)"/>
-    <alias field="condmaxd_v" index="48" name="Конденсат (дата макс. дебита по объему)"/>
-    <alias field="igasvol" index="49" name="Закачка газа (объем)"/>
-    <alias field="igasmas" index="50" name="Закачка газа (масса)"/>
-    <alias field="igasmax_m" index="51" name="Закачка газа (макс. дебит по массе)"/>
-    <alias field="igasmaxd_m" index="52" name="Закачка газа (дата макс. дебита по массе)"/>
-    <alias field="igasmax_v" index="53" name="Закачка газа (макс. дебит по объему)"/>
-    <alias field="igasmaxd_v" index="54" name="Закачка газа (дата макс. дебита по объему)"/>
-    <alias field="iwvol" index="55" name="Закачка воды (объем)"/>
-    <alias field="iwmas" index="56" name="Закачка воды (масса)"/>
-    <alias field="iwmax_m" index="57" name="Закачка воды (макс. дебит по массе)"/>
-    <alias field="iwmaxd_m" index="58" name="Закачка воды (дата макс. дебита по массе)"/>
-    <alias field="iwmax_v" index="59" name="Закачка воды (макс. дебит по объему)"/>
-    <alias field="iwmaxd_v" index="60" name="Закачка воды (дата макс. дебита по объему)"/>
-    <alias field="lgasvol" index="61" name="Газлифт (объем)"/>
-    <alias field="lgasmas" index="62" name="Газлифт (масса)"/>
-    <alias field="lgasmax_m" index="63" name="Газлифт (макс. дебит по массе)"/>
-    <alias field="lgasmaxd_m" index="64" name="Газлифт (дата макс. дебита по массе)"/>
-    <alias field="lgasmax_v" index="65" name="Газлифт (макс. дебит по объему)"/>
-    <alias field="lgasmaxd_v" index="66" name="Газлифт (дата макс. дебита по объему)"/>
-    <alias field="fgasvol" index="67" name="Свободный газ (объем)"/>
-    <alias field="fgasmas" index="68" name="Свободный газ (масса)"/>
-    <alias field="fgasmax_m" index="69" name="Свободный газ (макс. дебит по массе)"/>
-    <alias field="fgasmaxd_m" index="70" name="Свободный газ (дата макс. дебита по массе)"/>
-    <alias field="fgasmax_v" index="71" name="Свободный газ (макс. дебит по объему)"/>
-    <alias field="fgasmaxd_v" index="72" name="Свободный газ (дата макс. дебита по объему)"/>
-    <alias field="pflvol" index="73" name="Добыча жидкости (объем)"/>
-    <alias field="pflmas" index="74" name="Добыча жидкости (масса)"/>
-    <alias field="pflmax_m" index="75" name="Добыча жидкости (макс. дебит по массе)"/>
-    <alias field="pflmaxd_m" index="76" name="Добыча жидкости (дата макс. дебита по массе)"/>
-    <alias field="pflmax_v" index="77" name="Добыча жидкости (макс. дебит по объему)"/>
-    <alias field="pflmaxd_v" index="78" name="Добыча жидкости (дата макс. дебита по объему)"/>
-    <alias field="MD" index="79" name=""/>
-    <alias field="TVD" index="80" name=""/>
-    <alias field="transite" index="81" name=""/>
+    <alias field="bubblesize" index="14" name=""/>
+    <alias field="scaletype" index="15" name=""/>
+    <alias field="movingres" index="16" name=""/>
+    <alias field="resstate" index="17" name=""/>
+    <alias field="multiprod" index="18" name=""/>
+    <alias field="lablx" index="19" name=""/>
+    <alias field="lably" index="20" name=""/>
+    <alias field="labloffx" index="21" name=""/>
+    <alias field="labloffy" index="22" name=""/>
+    <alias field="labloffset" index="23" name=""/>
+    <alias field="lablwidth" index="24" name=""/>
+    <alias field="lablcol" index="25" name=""/>
+    <alias field="bufcol" index="26" name=""/>
+    <alias field="bufwidth" index="27" name=""/>
+    <alias field="font" index="28" name=""/>
+    <alias field="oilvol" index="29" name="Сырая нефть (объем)"/>
+    <alias field="oilmas" index="30" name="Сырая нефть (масса)"/>
+    <alias field="oilmax_m" index="31" name="Сырая нефть (макс. дебит по массе)"/>
+    <alias field="oilmaxd_m" index="32" name="Сырая нефть (дата макс. дебита по массе)"/>
+    <alias field="oilmax_v" index="33" name="Сырая нефть (макс. дебит по объему)"/>
+    <alias field="oilmaxd_v" index="34" name="Сырая нефть (дата макс. дебита по объему)"/>
+    <alias field="ngasvol" index="35" name="Природный газ (объем)"/>
+    <alias field="ngasmas" index="36" name="Природный газ (масса)"/>
+    <alias field="ngasmax_m" index="37" name="Природный газ (макс. дебит по массе)"/>
+    <alias field="ngasmaxd_m" index="38" name="Природный газ (дата макс. дебита по массе)"/>
+    <alias field="ngasmax_v" index="39" name="Природный газ (макс. дебит по объему)"/>
+    <alias field="ngasmaxd_v" index="40" name="Природный газ (дата макс. дебита по объему)"/>
+    <alias field="pwvol" index="41" name="Добыча вода (объем)"/>
+    <alias field="pwmas" index="42" name="Добыча вода (масса)"/>
+    <alias field="pwmax_m" index="43" name="Добыча вода (макс. дебит по массе)"/>
+    <alias field="pwmaxd_m" index="44" name="Добыча вода (дата макс. дебита по массе)"/>
+    <alias field="pwmax_v" index="45" name="Добыча вода (макс. дебит по объему)"/>
+    <alias field="pwmaxd_v" index="46" name="Добыча вода (дата макс. дебита по объему)"/>
+    <alias field="condvol" index="47" name="Конденсат (объем)"/>
+    <alias field="condmas" index="48" name="Конденсат (масса)"/>
+    <alias field="condmax_m" index="49" name="Конденсат (макс. дебит по массе)"/>
+    <alias field="condmaxd_m" index="50" name="Конденсат (дата макс. дебита по массе)"/>
+    <alias field="condmax_v" index="51" name="Конденсат (макс. дебит по объему)"/>
+    <alias field="condmaxd_v" index="52" name="Конденсат (дата макс. дебита по объему)"/>
+    <alias field="igasvol" index="53" name="Закачка газа (объем)"/>
+    <alias field="igasmas" index="54" name="Закачка газа (масса)"/>
+    <alias field="igasmax_m" index="55" name="Закачка газа (макс. дебит по массе)"/>
+    <alias field="igasmaxd_m" index="56" name="Закачка газа (дата макс. дебита по массе)"/>
+    <alias field="igasmax_v" index="57" name="Закачка газа (макс. дебит по объему)"/>
+    <alias field="igasmaxd_v" index="58" name="Закачка газа (дата макс. дебита по объему)"/>
+    <alias field="iwvol" index="59" name="Закачка воды (объем)"/>
+    <alias field="iwmas" index="60" name="Закачка воды (масса)"/>
+    <alias field="iwmax_m" index="61" name="Закачка воды (макс. дебит по массе)"/>
+    <alias field="iwmaxd_m" index="62" name="Закачка воды (дата макс. дебита по массе)"/>
+    <alias field="iwmax_v" index="63" name="Закачка воды (макс. дебит по объему)"/>
+    <alias field="iwmaxd_v" index="64" name="Закачка воды (дата макс. дебита по объему)"/>
+    <alias field="lgasvol" index="65" name="Газлифт (объем)"/>
+    <alias field="lgasmas" index="66" name="Газлифт (масса)"/>
+    <alias field="lgasmax_m" index="67" name="Газлифт (макс. дебит по массе)"/>
+    <alias field="lgasmaxd_m" index="68" name="Газлифт (дата макс. дебита по массе)"/>
+    <alias field="lgasmax_v" index="69" name="Газлифт (макс. дебит по объему)"/>
+    <alias field="lgasmaxd_v" index="70" name="Газлифт (дата макс. дебита по объему)"/>
+    <alias field="fgasvol" index="71" name="Свободный газ (объем)"/>
+    <alias field="fgasmas" index="72" name="Свободный газ (масса)"/>
+    <alias field="fgasmax_m" index="73" name="Свободный газ (макс. дебит по массе)"/>
+    <alias field="fgasmaxd_m" index="74" name="Свободный газ (дата макс. дебита по массе)"/>
+    <alias field="fgasmax_v" index="75" name="Свободный газ (макс. дебит по объему)"/>
+    <alias field="fgasmaxd_v" index="76" name="Свободный газ (дата макс. дебита по объему)"/>
+    <alias field="pflvol" index="77" name="Добыча жидкости (объем)"/>
+    <alias field="pflmas" index="78" name="Добыча жидкости (масса)"/>
+    <alias field="pflmax_m" index="79" name="Добыча жидкости (макс. дебит по массе)"/>
+    <alias field="pflmaxd_m" index="80" name="Добыча жидкости (дата макс. дебита по массе)"/>
+    <alias field="pflmax_v" index="81" name="Добыча жидкости (макс. дебит по объему)"/>
+    <alias field="pflmaxd_v" index="82" name="Добыча жидкости (дата макс. дебита по объему)"/>
   </aliases>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
@@ -1367,10 +1546,11 @@
       <column width="-1" hidden="0" type="field" name="pflmax_v"/>
       <column width="-1" hidden="0" type="field" name="pflmaxd_v"/>
       <column width="-1" hidden="1" type="actions"/>
-      <column width="-1" hidden="0" type="field" name="transite"/>
       <column width="-1" hidden="0" type="field" name="initrole"/>
-      <column width="-1" hidden="0" type="field" name="MD"/>
-      <column width="-1" hidden="0" type="field" name="TVD"/>
+      <column width="-1" hidden="0" type="field" name="lablcol"/>
+      <column width="-1" hidden="0" type="field" name="bufcol"/>
+      <column width="-1" hidden="0" type="field" name="bufwidth"/>
+      <column width="-1" hidden="0" type="field" name="font"/>
     </columns>
   </attributetableconfig>
   <editform>.</editform>
@@ -1421,17 +1601,21 @@ def my_form_open(dialog, layer, feature):
     <default field="startdate" expression=""/>
     <default field="days" expression=""/>
     <default field="liftmethod" expression=""/>
+    <default field="bubblesize" expression=""/>
+    <default field="scaletype" expression=""/>
+    <default field="movingres" expression=""/>
+    <default field="resstate" expression=""/>
+    <default field="multiprod" expression=""/>
     <default field="lablx" expression=""/>
     <default field="lably" expression=""/>
     <default field="labloffx" expression=""/>
     <default field="labloffy" expression=""/>
     <default field="labloffset" expression=""/>
     <default field="lablwidth" expression=""/>
-    <default field="bubblesize" expression=""/>
-    <default field="scaletype" expression=""/>
-    <default field="movingres" expression=""/>
-    <default field="resstate" expression=""/>
-    <default field="multiprod" expression=""/>
+    <default field="lablcol" expression=""/>
+    <default field="bufcol" expression=""/>
+    <default field="bufwidth" expression=""/>
+    <default field="font" expression=""/>
     <default field="oilvol" expression=""/>
     <default field="oilmas" expression=""/>
     <default field="oilmax_m" expression=""/>
@@ -1486,9 +1670,6 @@ def my_form_open(dialog, layer, feature):
     <default field="pflmaxd_m" expression=""/>
     <default field="pflmax_v" expression=""/>
     <default field="pflmaxd_v" expression=""/>
-    <default field="MD" expression=""/>
-    <default field="TVD" expression=""/>
-    <default field="transite" expression=""/>
   </defaults>
   <previewExpression>COALESCE( "symbolname", '&lt;NULL>' )</previewExpression>
   <layerGeometryType>0</layerGeometryType>
