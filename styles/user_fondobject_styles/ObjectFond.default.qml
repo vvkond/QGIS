@@ -277,7 +277,7 @@
         <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{9608c93c-3337-427b-8bd5-096c901a3fdb}" symbol="12" label="из поглащения"/>
         <rule filter="&quot;wellrole&quot; ='water-supply'" key="{3ac3e038-3f77-485b-ada9-dfbe42909ae8}" symbol="13" label="из водозабора"/>
       </rule>
-      <rule description="статус в простое или остановлена  без примечания к статусу" filter="&quot;wellstatus&quot; ='conservation'  AND &quot;wsinfo&quot; is NULL" key="{2247dbe7-ef1e-4c5b-a2f8-b944f3e01f54}" label="консервация">
+      <rule description="статус в простое или остановлена  без примечания к статусу" filter="&quot;wellstatus&quot; ='conservation stock'  AND &quot;wsinfo&quot; is NULL" key="{2247dbe7-ef1e-4c5b-a2f8-b944f3e01f54}" label="консервация">
         <rule key="{1bf430fc-20e9-4421-a8b1-a4de49ff811c}" label="из эксплуатации">
           <rule filter="&quot;wellrole&quot; ='oil producing'" key="{65cd01fe-c85d-4a54-8607-fb7e3219782f}" symbol="14" label="нефтяные"/>
           <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{c9addec2-c8ab-44f7-b04d-96ac227e26ac}" symbol="15" label="газовыые"/>
@@ -1313,13 +1313,7 @@
     <property key="labeling/xOffset" value="0"/>
     <property key="labeling/yOffset" value="0"/>
     <property key="labeling/zIndex" value="0"/>
-    <property key="pds_fondLoad_isObject" value="False"/>
-    <property key="pds_fondLoad_isWell" value="True"/>
-    <property key="pds_prod_PhaseFilter" value="[]"/>
-    <property key="pds_prod_SelectedReservoirs" value="[u'Ap2']"/>
-    <property key="pds_prod_endDate" value="31/01/2019 00:00:00"/>
-    <property key="pds_project" value="{u'project': u'mish_20190213', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;KARASU&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
-    <property key="qgis_pds_type" value="pds_current_production"/>
+    <property key="qgis_pds_type" value="pds_fond"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
   </customproperties>
@@ -1348,9 +1342,10 @@
     <multilineenabled fieldname="" on=""/>
     <selectedonly on=""/>
   </labelattributes>
-  <SingleCategoryDiagramRenderer diagramType="Histogram" sizeLegend="0" attributeLegend="1">
+  <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
     <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
       <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+      <attribute field="" color="#000000" label=""/>
     </DiagramCategory>
     <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
       <layer pass="0" class="SimpleMarker" locked="0">
@@ -1375,7 +1370,7 @@
       </layer>
     </symbol>
   </SingleCategoryDiagramRenderer>
-  <DiagramLayerSettings yPosColumn="-1" showColumn="-1" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+  <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
   <annotationform>.</annotationform>
   <aliases>
     <alias field="well_id" index="0" name=""/>
