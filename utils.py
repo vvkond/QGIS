@@ -223,7 +223,7 @@ def memoryToShp(layer, scheme, layerName):
     settings = QSettings()
     systemEncoding = settings.value('/UI/encoding', 'System')
 
-    ln = layerName.replace('/', '-').replace('\\', '-')[:MAX_FILE_NAME_SIZE-26]
+    ln = layerName.replace('/', '-').replace('\\', '-').replace('>', '-').replace('<', '-').replace(' ', '')[:MAX_FILE_NAME_SIZE-26]
     layerFile = u'/{0}_{1}_{2}.shp'.format(scheme, ln, time.strftime('%d_%m_%Y_%H_%M_%S', time.localtime()))
 
     (prjPath, prjExt) = os.path.splitext(QgsProject.instance().fileName())
