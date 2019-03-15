@@ -1641,7 +1641,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         if self.isCurrentProd  and not self.isFondLayer:
             #--- Load only wells, which last work <=self.mEndDate on self.mSelectedReservoirs
             # --- For CURRENT PROD 
-            sql ="""
+            sql =u"""
                 SELECT 
                     DISTINCT well.WELL_ID
                     {v_maxdt}
@@ -1689,14 +1689,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                         AND well.well_s=wellbore.well_s
                     GROUP by well.WELL_ID    
                       """.format(
-                          v_maxdt=","+self.to_oracle_char("max(production_aloc.END_TIME)")
-                          , start_time_filter="AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate)
-                          , reservoir_group_filter="AND reservoir_part_code in ('" + "','".join(reservoir_group_names) +"')"
+                          v_maxdt=u","+self.to_oracle_char("max(production_aloc.END_TIME)")
+                          , start_time_filter=u"AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate)
+                          , reservoir_group_filter=u"AND reservoir_part_code in ('" + u"','".join(reservoir_group_names) +u"')"
                           )
         else:
             #--- Load only wells which works <=self.mEndDate >=self.mStartDate on  self.mSelectedReservoirs
             # --- For CUMMULATIVE_PROD and for FOND
-            sql = """
+            sql = u"""
                 SELECT DISTINCT 
                     well.WELL_ID
                     {v_maxdt}
@@ -1725,10 +1725,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                       and well.well_s=wellbore.well_s
                 GROUP by well.WELL_ID
                 """.format(
-                        v_maxdt=","+self.to_oracle_char("max(production_aloc.END_TIME)")
-                        , reservoir_group_filter="AND reservoir_part_code in ('" + "','".join(reservoir_group_names) +"')"
-                        , start_time_filter="AND PRODUCTION_ALOC.START_TIME >= " + self.to_oracle_date(self.mStartDate)
-                        , end_time_filter=  "AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate)
+                        v_maxdt=u","+self.to_oracle_char("max(production_aloc.END_TIME)")
+                        , reservoir_group_filter=u"AND reservoir_part_code in ('" + "','".join(reservoir_group_names) +u"')"
+                        , start_time_filter=u"AND PRODUCTION_ALOC.START_TIME >= " + self.to_oracle_date(self.mStartDate)
+                        , end_time_filter=  u"AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate)
                         )
         IS_DEBUG and QgsMessageLog.logMessage(u"Execute getWells: {}\\n\n".format(sql), tag="QgisPDS.sql")
         result = self.db.execute(sql).fetchall()
@@ -2152,13 +2152,16 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     # Return comma separeted string of SLDNID`s of selected reservoirs
     #===========================================================================
     def getReservoirsFilter(self,reservoir_names=[]):
-        sql = ("select wellbore_intv.geologic_ftr_s "
-                "from earth_pos_rgn, wellbore_intv, topological_rel, reservoir_part "
-                "where earth_pos_rgn_s = topological_rel.prim_toplg_obj_s "
-                "and wellbore_intv_s = topological_rel.sec_toplg_obj_s "
-                "and earth_pos_rgn.geologic_ftr_s = reservoir_part_s "
-                "and entity_type_nm = 'RESERVOIR_ZONE' "
-                "and reservoir_part_code in ('" + "','".join(reservoir_names) +"')")
+        sql =  u"""select wellbore_intv.geologic_ftr_s 
+                from earth_pos_rgn, wellbore_intv, topological_rel, reservoir_part 
+                where earth_pos_rgn_s = topological_rel.prim_toplg_obj_s 
+                and wellbore_intv_s = topological_rel.sec_toplg_obj_s 
+                and earth_pos_rgn.geologic_ftr_s = reservoir_part_s 
+                and entity_type_nm = 'RESERVOIR_ZONE'
+                and reservoir_part_code in ('{reservoirs}') 
+                """.format(
+                    reservoirs=u"','".join(map(lambda val:val.encode('utf-8').decode('utf-8'),reservoir_names))
+                    )
                 
         IS_DEBUG and QgsMessageLog.logMessage(u"Execute getReservoirsFilter: {}\n\n".format(sql), tag="QgisPDS.sql")                
         result = self.db.execute(sql)     
@@ -2220,7 +2223,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         try:
             db = connection.get_db(scheme)
             
-            sql = """
+            sql = u"""
                     SELECT
                         {minDt} start_time   ---min(pa.PROD_START_TIME) start_time
                         ,{maxDt} end_time   ---max(pa.PROD_END_TIME) end_time     
@@ -2283,7 +2286,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 ,twh_filter=u" AND twh.DB_SLDNID in ('{}')".format("','".join(well_ids)) if len(well_ids)>0 else '' 
                 ,st_time_filter=u"AND pa.START_TIME>="+self.to_oracle_date(st_date)
                 ,en_time_filter=u"AND pa.END_TIME<="+self.to_oracle_date(end_date)
-                ,reservoir_filter=u"AND grp.RESERVOIR_PART_CODE in ('" + u"','".join(reservoirs) +u"')"  if len(reservoirs)>0 else ''
+                ,reservoir_filter=u"AND grp.RESERVOIR_PART_CODE in ('" + u"','".join(map(lambda val:val.encode('utf-8').decode('utf-8'),reservoirs)) +u"')"  if len(reservoirs)>0 else u'' 
                 )
             
             IS_DEBUG and QgsMessageLog.logMessage(u"Execute bbl_getreservoir_period: {}\n\n".format(sql), tag="QgisPDS.sql")
