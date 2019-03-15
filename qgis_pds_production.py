@@ -431,6 +431,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitDateMass(fl.code), "date"   )
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitVol(     fl.code), "double" )
                 self.uri += '&field={}:{}'.format(bblInit.attrFluidMaxDebitDateVol( fl.code), "date"   )
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidFirstDebitVol(   fl.code), "double" )
+                self.uri += '&field={}:{}'.format(bblInit.attrFluidFirstDebitMass(  fl.code), "double" )
             layerName = u"Current production - " + ",".join(self.mSelectedReservoirs)
             
             if self.isFondLayer:
@@ -510,6 +512,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             for attrfield in chain(FieldsProdLayer,FieldsForLabels):
                 bblInit.checkQgsFieldExists(self.layer,attrfield.field)
             bblInit.updateOldProductionStructure(self.layer)
+            self.layer.updateFields()
 
 
         self.layer.setCustomProperty("pds_prod_endDate",            self.mEndDate.toString(self.dateFormat))
@@ -747,12 +750,18 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                         attrMaxDebitMass     = bblInit.attrFluidMaxDebitMass(     fl.code)
                         attrMaxDebitDateMass = bblInit.attrFluidMaxDebitDateMass( fl.code)
                         attrMaxDebitDateVol  = bblInit.attrFluidMaxDebitDateVol(  fl.code)
+                        attrFirstDebitVol    = bblInit.attrFluidFirstDebitVol(    fl.code)
+                        attrFirstDebitMass   = bblInit.attrFluidFirstDebitMass(   fl.code)
+                        
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMass),             feature.attribute(attrMass)            )
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrVol),              feature.attribute(attrVol)             )
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMaxDebitMass),     feature.attribute(attrMaxDebitMass)    )
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMaxDebitVol),      feature.attribute(attrMaxDebitVol)     )
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMaxDebitDateMass), feature.attribute(attrMaxDebitDateMass))
                         self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrMaxDebitDateVol),  feature.attribute(attrMaxDebitDateVol) )
+                        self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrFirstDebitVol),    feature.attribute(attrFirstDebitVol)   )
+                        self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(attrFirstDebitMass),   feature.attribute(attrFirstDebitMass)  )
+
                     num +=1
                 #--- add new well if need
                 if not num:                 #--- well not present in base layer
@@ -1087,6 +1096,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitVol(     fl.code), prodWell.maxDebits[i].volValue)
             self.setWellAttribute(prodWell.name, bblInit.attrFluidMaxDebitDateVol( fl.code), prodWell.maxDebits[i].volDebitDate)
 
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidFirstDebitMass(    fl.code), prodWell.firstDebits[i].massValue)
+            self.setWellAttribute(prodWell.name, bblInit.attrFluidFirstDebitVol(     fl.code), prodWell.firstDebits[i].volValue)
+
 
     #==========================================================================
     # read production for selected well from  BASE
@@ -1290,12 +1302,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 for fluid in fluid_fields:
                     debit=row_dict[fluid.field]/days
                     if fluid.unit=="Mass":
-                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat),debit_type=ProdDebit.DEBIT_TYPE_MASS)
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat)                    ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
+                        prodWell.firstDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat,sort_attr='dt')   ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
 #                         if prodWell.maxDebits[fluid.idx].massValue < debit:
 #                             prodWell.maxDebits[fluid.idx].massValue = debit
 #                             prodWell.maxDebits[fluid.idx].massDebitDate = stadat
                     else:
-                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit,dt=stadat),debit_type=ProdDebit.DEBIT_TYPE_VOL)
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit,dt=stadat)                     ,debit_type=ProdDebit.DEBIT_TYPE_VOL)
+                        prodWell.firstDebits[fluid.idx].addDebit(Debit(value=debit,dt=stadat,sort_attr='dt')    ,debit_type=ProdDebit.DEBIT_TYPE_VOL)
 #                         if prodWell.maxDebits[fluid.idx].volValue < debit:
 #                             prodWell.maxDebits[fluid.idx].volValue = debit
 #                             prodWell.maxDebits[fluid.idx].volDebitDate = stadat
@@ -1536,6 +1550,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         # @TODO: not optimal code. Need change...
         self.showProgressBar(msg="Read production", maximum=len(result))    
         now=time.time()
+        well_first_prod_dt={}
         for idx,row in enumerate(result):
             self.progress.setValue(idx)
             if time.time()-now>1:  QCoreApplication.processEvents();time.sleep(0.02);now=time.time() #refresh GUI
@@ -1553,12 +1568,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 for fluid in fluid_fields:
                     debit=row_dict[fluid.field]/days
                     if fluid.unit=="Mass":
-                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat),debit_type=ProdDebit.DEBIT_TYPE_MASS)
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat)                    ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
+                        prodWell.firstDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat,sort_attr='dt')   ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
 #                         if prodWell.maxDebits[fluid.idx].massValue < debit:
 #                             prodWell.maxDebits[fluid.idx].massValue = debit/1000
 #                             prodWell.maxDebits[fluid.idx].massDebitDate = stadat
                     else:
-                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit,dt=stadat),debit_type=ProdDebit.DEBIT_TYPE_VOL)
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit,dt=stadat)                     ,debit_type=ProdDebit.DEBIT_TYPE_VOL)
+                        prodWell.firstDebits[fluid.idx].addDebit(Debit(value=debit,dt=stadat,sort_attr='dt')    ,debit_type=ProdDebit.DEBIT_TYPE_VOL)
 #                         if prodWell.maxDebits[fluid.idx].volValue < debit:
 #                             prodWell.maxDebits[fluid.idx].volValue = debit
 #                             prodWell.maxDebits[fluid.idx].volDebitDate = stadat
@@ -1858,8 +1875,18 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                                                         , enable_bad_data_filter=self.maxDebitGrpBox.isChecked()
                                                         , filter_koef=self.maxDebitKoef.value() 
                                                         , skeep_filter_koef=self.maxDebitFilterUseKoef.value()
-                                                        , log_msg_on_bad_data_filtered=u"Well: {}-> {}".format(well_name,c.alias)  
+                                                        , log_msg_on_bad_data_filtered=u"Well: {}-> {}".format(well_name,c.alias)
+                                                        , sort_descending=True  
                                                         ) for c in bblInit.fluidCodes]
+                                 ,firstDebits = [ProdDebit(
+                                                        records_limit=1
+                                                        , enable_bad_data_filter=False
+                                                        , filter_koef=None 
+                                                        , skeep_filter_koef=None
+                                                        , log_msg_on_bad_data_filtered=u"Well: {}-> {}".format(well_name,c.alias)
+                                                        , sort_descending=False
+                                                        ) for c in bblInit.fluidCodes]
+                                 
                                  ,wRole = role
                                  ,wStatus = status
                                  ,wStatusReason = status_reason 
@@ -1996,8 +2023,17 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                                                                 , enable_bad_data_filter=self.maxDebitGrpBox.isChecked()
                                                                 , filter_koef=self.maxDebitKoef.value() 
                                                                 , skeep_filter_koef=self.maxDebitFilterUseKoef.value()
-                                                                , log_msg_on_bad_data_filtered=u"Well: {}-> {}".format(well_name,c.alias)  
+                                                                , log_msg_on_bad_data_filtered=u"Well: {}-> {}".format(well_name,c.alias)
+                                                                , sort_descending=True  
                                                                  ) for c in bblInit.fluidCodes]
+                                            ,firstDebits = [ProdDebit(
+                                                                    records_limit=1
+                                                                    , enable_bad_data_filter=False
+                                                                    , filter_koef=None 
+                                                                    , skeep_filter_koef=None
+                                                                    , log_msg_on_bad_data_filtered=u"Well: {}-> {}".format(well_name,c.alias)
+                                                                    , sort_descending=False
+                                                                    ) for c in bblInit.fluidCodes]                                             
                                              ,wRole=wellRole
                                              ,wStatus=wellStatus
                                              ,wStatusReason=wellStatusReason
