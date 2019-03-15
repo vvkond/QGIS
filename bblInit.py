@@ -856,7 +856,7 @@ class bblInit:
         if newIdx < 0:
             if layer.isEditable(): layer.commitChanges()            
             with edit_layer(layer):
-                provider.addAttributes([field])                
+                provider.addAttributes([qgsfield])                
     #===========================================================================
     # 
     #===========================================================================
