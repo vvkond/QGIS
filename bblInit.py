@@ -219,9 +219,11 @@ TableUnit = namedtuple('TableUnit', ['table', 'unit'])
 # not used. Planed for QgsField.type association
 #===============================================================================
 FIELD_AND_TYPES={"string":QVariant.String
+             ,"integer":QVariant.Int
              ,"int":QVariant.Int
              ,"double":QVariant.Double
              ,"date":QVariant.String
+             ,"DateTime":QVariant.DateTime
              }
 #===============================================================================
 # 
@@ -242,7 +244,7 @@ class AttributeField():
                         ,field_alias=""
                  ):
         self.field=QgsField(name=field_name
-                        #, type= FIELD_TYPES[self.field_type]
+                        , type= FIELD_AND_TYPES[field_type]
                         , typeName=field_type  # char, varchar, text, int, serial, double. QVariant.Double,QVariant.Date,QVariant.String
                         , len=field_len
                         , prec=field_prec
