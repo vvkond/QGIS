@@ -106,6 +106,12 @@
     <edittype widgetv2type="TextEdit" name="oilmaxd_v">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="oil_f_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="oil_f_m">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
     <edittype widgetv2type="TextEdit" name="ngasvol">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
@@ -122,6 +128,12 @@
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="ngasmaxd_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="ngas_f_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="ngas_f_m">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="pwvol">
@@ -142,6 +154,12 @@
     <edittype widgetv2type="TextEdit" name="pwmaxd_v">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="pw_f_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="pw_f_m">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
     <edittype widgetv2type="TextEdit" name="condvol">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
@@ -158,6 +176,12 @@
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="condmaxd_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="cond_f_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="cond_f_m">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="igasvol">
@@ -178,6 +202,12 @@
     <edittype widgetv2type="TextEdit" name="igasmaxd_v">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="igas_f_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="igas_f_m">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
     <edittype widgetv2type="TextEdit" name="iwvol">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
@@ -194,6 +224,12 @@
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="iwmaxd_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="iw_f_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="iw_f_m">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="lgasvol">
@@ -214,6 +250,12 @@
     <edittype widgetv2type="TextEdit" name="lgasmaxd_v">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="lgas_f_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="lgas_f_m">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
     <edittype widgetv2type="TextEdit" name="fgasvol">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
@@ -230,6 +272,12 @@
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="fgasmaxd_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="fgas_f_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="fgas_f_m">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
     <edittype widgetv2type="TextEdit" name="pflvol">
@@ -250,6 +298,12 @@
     <edittype widgetv2type="TextEdit" name="pflmaxd_v">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="pfl_f_v">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="pfl_f_m">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
   </edittypes>
   <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
     <rules key="{080e9a79-fc68-4be0-8d7a-ceb05b29c241}">
@@ -266,7 +320,7 @@
         <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{4bfe5dcb-d101-4c7b-926f-42467c701d9d}" symbol="5" label="поглащающий"/>
         <rule filter="&quot;wellrole&quot; ='water-supply'" key="{34dca591-89a8-49f5-8737-7086d21295b2}" symbol="6" label="водозаборный"/>
       </rule>
-      <rule description="Назначение по фонду-наблюдательная, состояние- наблюдательная" filter="&quot;initrole&quot; ='observation' AND &quot;wellstatus&quot; ='exploration active stock' " key="{2bf8de60-254a-4439-bbc4-653c6bb285bc}" symbol="7" label="наблюдательный"/>
+      <rule description="Назначение по фонду-наблюдательная, состояние- наблюдательная" filter="&quot;wellstatus&quot; ='exploration active stock' " key="{2bf8de60-254a-4439-bbc4-653c6bb285bc}" symbol="7" label="наблюдательный"/>
       <rule filter="&quot;wellstatus&quot; ='completion stock'" key="{20724455-3264-4a19-b890-b613c58b0772}" symbol="8" label="в освоении"/>
       <rule description="статус в простое или остановлена  без примечания к статусу" filter="&quot;wellstatus&quot; ='inactive stock' OR &quot;wellstatus&quot; ='suspended stock'" key="{1d687551-25f2-4876-ad96-e33db5722348}" label="бездействующий">
         <rule key="{60d75df5-1d48-47b1-a467-6b0f699e85c8}" label="из эксплуатации">
@@ -277,14 +331,14 @@
         <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{d5df987f-e52c-44d5-b8a2-97ba08c69554}" symbol="12" label="из поглащения"/>
         <rule filter="&quot;wellrole&quot; ='water-supply'" key="{a772e800-c3a4-4cda-b043-7c2c9e43a59c}" symbol="13" label="из водозабора"/>
       </rule>
-      <rule description="статус в простое или остановлена  без примечания к статусу" filter="&quot;wellstatus&quot; ='conservation stock'" key="{47d180cc-7850-4b14-bb96-7f2585696bf2}" label="консервация">
+      <rule description="статус в простое или остановлена  без примечания к статусу" filter="&quot;wellstatus&quot; ='conservation stock' or &quot;wellstatus&quot; ='exploration conservation stock'" key="{47d180cc-7850-4b14-bb96-7f2585696bf2}" label="консервация">
         <rule key="{86d84fb8-30e9-4d07-bce7-e06e3a7c6aa9}" label="из эксплуатации">
           <rule filter="&quot;wellrole&quot; ='oil producing'" key="{985468e2-46bf-41b9-b67b-77ae5be88ecf}" symbol="14" label="нефтяные"/>
           <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{71225fea-d8ce-4b65-b8b0-cc9891c951ff}" symbol="15" label="газовыые"/>
         </rule>
         <rule filter="&quot;wellrole&quot; ='water injecting' " key="{a075494c-7916-4c76-8ba6-e2cdd5d2d323}" symbol="16" label="из нагнетания"/>
         <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{8db2ff7f-1b3a-49ce-8aa0-6bbd569b390c}" symbol="17" label="из поглащения"/>
-        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{dc639939-d291-46d0-a240-a59e25527da1}" symbol="18" label="из водозабора"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{459f3837-3f67-441b-8ede-a2282f157be3}" symbol="18" label="из водозабора"/>
       </rule>
       <rule description="статус в простое или остановлена  без примечания к статусу" filter="(&quot;wellstatus&quot; ='abandonment stock' OR &quot;wellstatus&quot; ='exploration abandonment stock' ) AND &quot;wsinfo&quot; ='wait abandonment'" key="{2c01f082-f220-4eae-a50c-6101a0458a24}" label="ожидание ликвидации">
         <rule key="{9e78d870-fe5b-4fa4-95ac-c4af2f48fd38}" label="из эксплуатации">
@@ -293,7 +347,7 @@
         </rule>
         <rule filter="&quot;wellrole&quot; ='water injecting' " key="{ee81616c-d80d-48a1-84a5-8fc61185ae9b}" symbol="21" label="из нагнетания"/>
         <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{cebb5693-d659-44f0-8043-458dfa90deac}" symbol="22" label="из поглащения"/>
-        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{1253236a-cc9c-47e4-b3ee-81dda5837c56}" symbol="23" label="из водозабора"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{4fc23353-1b1e-4724-b6ea-525a7dda9807}" symbol="23" label="из водозабора"/>
       </rule>
       <rule filter="&quot;wellstatus&quot; ='abandonment stock' OR &quot;wellstatus&quot; ='exploration abandonment stock'" key="{ca78033c-5cc2-42ea-933b-1e2fa943ceb6}" label="ликвидированный">
         <rule filter="&quot;wsinfo&quot; ='abandonment expl'" key="{0ab147d5-87cf-47b6-89df-97902972ba75}" label="из эксплуатации">
@@ -304,11 +358,11 @@
           <rule filter="&quot;wsreason&quot; ='technical reason'" key="{d718269a-c942-450c-b7e4-d486c6f5cbd5}" symbol="26" label="технические причины"/>
           <rule filter="&quot;wsreason&quot; ='geology reason'" key="{6fcc331e-84ed-4c30-ab21-38b7a002296c}" symbol="27" label="геологические причины"/>
         </rule>
-        <rule filter="&quot;wsinfo&quot; ='abandonment inj'" key="{1ab5fb67-b1f0-4f7a-9df1-feddd9ed2366}" symbol="28" label="из нагнетания"/>
-        <rule filter="&quot;wsinfo&quot; ='abandonment wat-absorb'" key="{0917a817-c46e-4751-9dfc-f36f732f7d45}" symbol="29" label="из поглащения"/>
-        <rule filter="&quot;wsinfo&quot; ='abandonment wat-sup'" key="{378b281c-c5f0-484f-9e52-52ba0b9b28a6}" symbol="30" label="из водозабора"/>
-        <rule filter="&quot;wellstatus&quot; ='exploration abandonment stock'" key="{c50ae2d5-993a-440d-9461-92b5299582e3}" symbol="31" label="из наблюдения"/>
-        <rule description="Если есть символ на данном пласте,значит скважина целевая" filter="&quot;wsinfo&quot; is NULL" key="{a339e2c2-c9d7-4ae7-bf55-fabffc5dc5cc}" symbol="32" label="причина не указана"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting'  and &quot;wsinfo&quot; is NULL" key="{1ab5fb67-b1f0-4f7a-9df1-feddd9ed2366}" symbol="28" label="из нагнетания"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'  and &quot;wsinfo&quot; is NULL" key="{0917a817-c46e-4751-9dfc-f36f732f7d45}" symbol="29" label="из поглащения"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'  and &quot;wsinfo&quot; is NULL" key="{378b281c-c5f0-484f-9e52-52ba0b9b28a6}" symbol="30" label="из водозабора"/>
+        <rule filter="&quot;wellstatus&quot; ='exploration abandonment stock'  and &quot;wsinfo&quot; is NULL" key="{c50ae2d5-993a-440d-9461-92b5299582e3}" symbol="31" label="из наблюдения"/>
+        <rule description="Если есть символ на данном пласте,значит скважина целевая" filter="(&#xd;&#xa;&#x9;&quot;wsinfo&quot; is NULL &#xd;&#xa;&#x9;and  (&quot;wellrole&quot;  not in ('water injecting','water absorbing','water-supply') &#xd;&#xa;&#x9;and (&quot;wellstatus&quot; not in ('exploration abandonment stock') )) &#xd;&#xa;) or (&#xd;&#xa;&#x9;&quot;wsinfo&quot; is not NULL  and &quot;wsinfo&quot; not in ('abandonment expl','abandonment drill')&#xd;&#xa;)&#xd;&#xa;" key="{a339e2c2-c9d7-4ae7-bf55-fabffc5dc5cc}" symbol="32" label="причина не указана"/>
       </rule>
       <rule checkstate="0" filter="False" key="{9309deff-de94-4f9e-a283-81d968682b46}" symbol="33" label="проектные"/>
     </rules>
@@ -1143,6 +1197,13 @@
     <property key="labeling/xOffset" value="0"/>
     <property key="labeling/yOffset" value="0"/>
     <property key="labeling/zIndex" value="0"/>
+    <property key="pds_fondLoad_isObject" value="False"/>
+    <property key="pds_fondLoad_isWell" value="True"/>
+    <property key="pds_prod_PhaseFilter" value="[]"/>
+    <property key="pds_prod_SelectedReservoirs" value="[u'AP03', u'AP02', u'I-ob-AP02', u'II-ob-AP02', u'II-a-AP02', u'II-b-AP02', u'II-b1-AP02', u'II-c-AP02', u'II-c1-AP02', u'II-c2-AP02', u'II-c3-AP02', u'II-c4-AP02', u'II-d-AP02', u'II-e-AP02', u'III-ob-AP02', u'IV-ob-AP02', u'AP01', u'AKCH', u'PS01', u'PS02', u'PS03', u'PS04', u'PS05', u'PS06', u'PS07', u'PS08', u'PS09', u'PS10', u'PS11', u'PS12', u'PS13', u'PS14', u'PS15', u'PS16', u'PS17', u'PS18', u'PS20', u'PS19', u'PS22', u'PS21', u'0', u'I-c-AP02']"/>
+    <property key="pds_prod_endDate" value="28/02/2019 00:00:00"/>
+    <property key="pds_project" value="{u'project': u'kurnew_20190306', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;SHIRVAN&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
+    <property key="qgis_pds_type" value="pds_fond"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
   </customproperties>
@@ -1237,68 +1298,86 @@
     <alias field="oilmaxd_m" index="32" name="Сырая нефть (дата макс. дебита по массе)"/>
     <alias field="oilmax_v" index="33" name="Сырая нефть (макс. дебит по объему)"/>
     <alias field="oilmaxd_v" index="34" name="Сырая нефть (дата макс. дебита по объему)"/>
-    <alias field="ngasvol" index="35" name="Природный газ (объем)"/>
-    <alias field="ngasmas" index="36" name="Природный газ (масса)"/>
-    <alias field="ngasmax_m" index="37" name="Природный газ (макс. дебит по массе)"/>
-    <alias field="ngasmaxd_m" index="38" name="Природный газ (дата макс. дебита по массе)"/>
-    <alias field="ngasmax_v" index="39" name="Природный газ (макс. дебит по объему)"/>
-    <alias field="ngasmaxd_v" index="40" name="Природный газ (дата макс. дебита по объему)"/>
-    <alias field="pwvol" index="41" name="Добыча вода (объем)"/>
-    <alias field="pwmas" index="42" name="Добыча вода (масса)"/>
-    <alias field="pwmax_m" index="43" name="Добыча вода (макс. дебит по массе)"/>
-    <alias field="pwmaxd_m" index="44" name="Добыча вода (дата макс. дебита по массе)"/>
-    <alias field="pwmax_v" index="45" name="Добыча вода (макс. дебит по объему)"/>
-    <alias field="pwmaxd_v" index="46" name="Добыча вода (дата макс. дебита по объему)"/>
-    <alias field="condvol" index="47" name="Конденсат (объем)"/>
-    <alias field="condmas" index="48" name="Конденсат (масса)"/>
-    <alias field="condmax_m" index="49" name="Конденсат (макс. дебит по массе)"/>
-    <alias field="condmaxd_m" index="50" name="Конденсат (дата макс. дебита по массе)"/>
-    <alias field="condmax_v" index="51" name="Конденсат (макс. дебит по объему)"/>
-    <alias field="condmaxd_v" index="52" name="Конденсат (дата макс. дебита по объему)"/>
-    <alias field="igasvol" index="53" name="Закачка газа (объем)"/>
-    <alias field="igasmas" index="54" name="Закачка газа (масса)"/>
-    <alias field="igasmax_m" index="55" name="Закачка газа (макс. дебит по массе)"/>
-    <alias field="igasmaxd_m" index="56" name="Закачка газа (дата макс. дебита по массе)"/>
-    <alias field="igasmax_v" index="57" name="Закачка газа (макс. дебит по объему)"/>
-    <alias field="igasmaxd_v" index="58" name="Закачка газа (дата макс. дебита по объему)"/>
-    <alias field="iwvol" index="59" name="Закачка воды (объем)"/>
-    <alias field="iwmas" index="60" name="Закачка воды (масса)"/>
-    <alias field="iwmax_m" index="61" name="Закачка воды (макс. дебит по массе)"/>
-    <alias field="iwmaxd_m" index="62" name="Закачка воды (дата макс. дебита по массе)"/>
-    <alias field="iwmax_v" index="63" name="Закачка воды (макс. дебит по объему)"/>
-    <alias field="iwmaxd_v" index="64" name="Закачка воды (дата макс. дебита по объему)"/>
-    <alias field="lgasvol" index="65" name="Газлифт (объем)"/>
-    <alias field="lgasmas" index="66" name="Газлифт (масса)"/>
-    <alias field="lgasmax_m" index="67" name="Газлифт (макс. дебит по массе)"/>
-    <alias field="lgasmaxd_m" index="68" name="Газлифт (дата макс. дебита по массе)"/>
-    <alias field="lgasmax_v" index="69" name="Газлифт (макс. дебит по объему)"/>
-    <alias field="lgasmaxd_v" index="70" name="Газлифт (дата макс. дебита по объему)"/>
-    <alias field="fgasvol" index="71" name="Свободный газ (объем)"/>
-    <alias field="fgasmas" index="72" name="Свободный газ (масса)"/>
-    <alias field="fgasmax_m" index="73" name="Свободный газ (макс. дебит по массе)"/>
-    <alias field="fgasmaxd_m" index="74" name="Свободный газ (дата макс. дебита по массе)"/>
-    <alias field="fgasmax_v" index="75" name="Свободный газ (макс. дебит по объему)"/>
-    <alias field="fgasmaxd_v" index="76" name="Свободный газ (дата макс. дебита по объему)"/>
-    <alias field="pflvol" index="77" name="Добыча жидкости (объем)"/>
-    <alias field="pflmas" index="78" name="Добыча жидкости (масса)"/>
-    <alias field="pflmax_m" index="79" name="Добыча жидкости (макс. дебит по массе)"/>
-    <alias field="pflmaxd_m" index="80" name="Добыча жидкости (дата макс. дебита по массе)"/>
-    <alias field="pflmax_v" index="81" name="Добыча жидкости (макс. дебит по объему)"/>
-    <alias field="pflmaxd_v" index="82" name="Добыча жидкости (дата макс. дебита по объему)"/>
+    <alias field="oil_f_v" index="35" name=""/>
+    <alias field="oil_f_m" index="36" name=""/>
+    <alias field="ngasvol" index="37" name="Природный газ (объем)"/>
+    <alias field="ngasmas" index="38" name="Природный газ (масса)"/>
+    <alias field="ngasmax_m" index="39" name="Природный газ (макс. дебит по массе)"/>
+    <alias field="ngasmaxd_m" index="40" name="Природный газ (дата макс. дебита по массе)"/>
+    <alias field="ngasmax_v" index="41" name="Природный газ (макс. дебит по объему)"/>
+    <alias field="ngasmaxd_v" index="42" name="Природный газ (дата макс. дебита по объему)"/>
+    <alias field="ngas_f_v" index="43" name=""/>
+    <alias field="ngas_f_m" index="44" name=""/>
+    <alias field="pwvol" index="45" name="Добыча вода (объем)"/>
+    <alias field="pwmas" index="46" name="Добыча вода (масса)"/>
+    <alias field="pwmax_m" index="47" name="Добыча вода (макс. дебит по массе)"/>
+    <alias field="pwmaxd_m" index="48" name="Добыча вода (дата макс. дебита по массе)"/>
+    <alias field="pwmax_v" index="49" name="Добыча вода (макс. дебит по объему)"/>
+    <alias field="pwmaxd_v" index="50" name="Добыча вода (дата макс. дебита по объему)"/>
+    <alias field="pw_f_v" index="51" name=""/>
+    <alias field="pw_f_m" index="52" name=""/>
+    <alias field="condvol" index="53" name="Конденсат (объем)"/>
+    <alias field="condmas" index="54" name="Конденсат (масса)"/>
+    <alias field="condmax_m" index="55" name="Конденсат (макс. дебит по массе)"/>
+    <alias field="condmaxd_m" index="56" name="Конденсат (дата макс. дебита по массе)"/>
+    <alias field="condmax_v" index="57" name="Конденсат (макс. дебит по объему)"/>
+    <alias field="condmaxd_v" index="58" name="Конденсат (дата макс. дебита по объему)"/>
+    <alias field="cond_f_v" index="59" name=""/>
+    <alias field="cond_f_m" index="60" name=""/>
+    <alias field="igasvol" index="61" name="Закачка газа (объем)"/>
+    <alias field="igasmas" index="62" name="Закачка газа (масса)"/>
+    <alias field="igasmax_m" index="63" name="Закачка газа (макс. дебит по массе)"/>
+    <alias field="igasmaxd_m" index="64" name="Закачка газа (дата макс. дебита по массе)"/>
+    <alias field="igasmax_v" index="65" name="Закачка газа (макс. дебит по объему)"/>
+    <alias field="igasmaxd_v" index="66" name="Закачка газа (дата макс. дебита по объему)"/>
+    <alias field="igas_f_v" index="67" name=""/>
+    <alias field="igas_f_m" index="68" name=""/>
+    <alias field="iwvol" index="69" name="Закачка воды (объем)"/>
+    <alias field="iwmas" index="70" name="Закачка воды (масса)"/>
+    <alias field="iwmax_m" index="71" name="Закачка воды (макс. дебит по массе)"/>
+    <alias field="iwmaxd_m" index="72" name="Закачка воды (дата макс. дебита по массе)"/>
+    <alias field="iwmax_v" index="73" name="Закачка воды (макс. дебит по объему)"/>
+    <alias field="iwmaxd_v" index="74" name="Закачка воды (дата макс. дебита по объему)"/>
+    <alias field="iw_f_v" index="75" name=""/>
+    <alias field="iw_f_m" index="76" name=""/>
+    <alias field="lgasvol" index="77" name="Газлифт (объем)"/>
+    <alias field="lgasmas" index="78" name="Газлифт (масса)"/>
+    <alias field="lgasmax_m" index="79" name="Газлифт (макс. дебит по массе)"/>
+    <alias field="lgasmaxd_m" index="80" name="Газлифт (дата макс. дебита по массе)"/>
+    <alias field="lgasmax_v" index="81" name="Газлифт (макс. дебит по объему)"/>
+    <alias field="lgasmaxd_v" index="82" name="Газлифт (дата макс. дебита по объему)"/>
+    <alias field="lgas_f_v" index="83" name=""/>
+    <alias field="lgas_f_m" index="84" name=""/>
+    <alias field="fgasvol" index="85" name="Свободный газ (объем)"/>
+    <alias field="fgasmas" index="86" name="Свободный газ (масса)"/>
+    <alias field="fgasmax_m" index="87" name="Свободный газ (макс. дебит по массе)"/>
+    <alias field="fgasmaxd_m" index="88" name="Свободный газ (дата макс. дебита по массе)"/>
+    <alias field="fgasmax_v" index="89" name="Свободный газ (макс. дебит по объему)"/>
+    <alias field="fgasmaxd_v" index="90" name="Свободный газ (дата макс. дебита по объему)"/>
+    <alias field="fgas_f_v" index="91" name=""/>
+    <alias field="fgas_f_m" index="92" name=""/>
+    <alias field="pflvol" index="93" name="Добыча жидкости (объем)"/>
+    <alias field="pflmas" index="94" name="Добыча жидкости (масса)"/>
+    <alias field="pflmax_m" index="95" name="Добыча жидкости (макс. дебит по массе)"/>
+    <alias field="pflmaxd_m" index="96" name="Добыча жидкости (дата макс. дебита по массе)"/>
+    <alias field="pflmax_v" index="97" name="Добыча жидкости (макс. дебит по объему)"/>
+    <alias field="pflmaxd_v" index="98" name="Добыча жидкости (дата макс. дебита по объему)"/>
+    <alias field="pfl_f_v" index="99" name=""/>
+    <alias field="pfl_f_m" index="100" name=""/>
   </aliases>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
   <attributeactions default="-1"/>
-  <attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;well_id&quot;" sortOrder="0">
+  <attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;wellstatus&quot;" sortOrder="0">
     <columns>
       <column width="-1" hidden="0" type="field" name="well_id"/>
       <column width="-1" hidden="0" type="field" name="latitude"/>
       <column width="-1" hidden="0" type="field" name="longitude"/>
       <column width="385" hidden="0" type="field" name="symbolid"/>
-      <column width="107" hidden="0" type="field" name="symbolname"/>
+      <column width="151" hidden="0" type="field" name="symbolname"/>
       <column width="-1" hidden="0" type="field" name="symbolcode"/>
       <column width="132" hidden="0" type="field" name="wellrole"/>
-      <column width="114" hidden="0" type="field" name="wellstatus"/>
+      <column width="232" hidden="0" type="field" name="wellstatus"/>
       <column width="156" hidden="0" type="field" name="wsreason"/>
       <column width="137" hidden="0" type="field" name="wsinfo"/>
       <column width="-1" hidden="0" type="field" name="startdate"/>
@@ -1375,6 +1454,24 @@
       <column width="-1" hidden="0" type="field" name="bufcol"/>
       <column width="-1" hidden="0" type="field" name="bufwidth"/>
       <column width="-1" hidden="0" type="field" name="font"/>
+      <column width="-1" hidden="0" type="field" name="oil_f_v"/>
+      <column width="-1" hidden="0" type="field" name="oil_f_m"/>
+      <column width="-1" hidden="0" type="field" name="ngas_f_v"/>
+      <column width="-1" hidden="0" type="field" name="ngas_f_m"/>
+      <column width="-1" hidden="0" type="field" name="pw_f_v"/>
+      <column width="-1" hidden="0" type="field" name="pw_f_m"/>
+      <column width="-1" hidden="0" type="field" name="cond_f_v"/>
+      <column width="-1" hidden="0" type="field" name="cond_f_m"/>
+      <column width="-1" hidden="0" type="field" name="igas_f_v"/>
+      <column width="-1" hidden="0" type="field" name="igas_f_m"/>
+      <column width="-1" hidden="0" type="field" name="iw_f_v"/>
+      <column width="-1" hidden="0" type="field" name="iw_f_m"/>
+      <column width="-1" hidden="0" type="field" name="lgas_f_v"/>
+      <column width="-1" hidden="0" type="field" name="lgas_f_m"/>
+      <column width="-1" hidden="0" type="field" name="fgas_f_v"/>
+      <column width="-1" hidden="0" type="field" name="fgas_f_m"/>
+      <column width="-1" hidden="0" type="field" name="pfl_f_v"/>
+      <column width="-1" hidden="0" type="field" name="pfl_f_m"/>
     </columns>
   </attributetableconfig>
   <editform>.</editform>
@@ -1446,54 +1543,72 @@ def my_form_open(dialog, layer, feature):
     <default field="oilmaxd_m" expression=""/>
     <default field="oilmax_v" expression=""/>
     <default field="oilmaxd_v" expression=""/>
+    <default field="oil_f_v" expression=""/>
+    <default field="oil_f_m" expression=""/>
     <default field="ngasvol" expression=""/>
     <default field="ngasmas" expression=""/>
     <default field="ngasmax_m" expression=""/>
     <default field="ngasmaxd_m" expression=""/>
     <default field="ngasmax_v" expression=""/>
     <default field="ngasmaxd_v" expression=""/>
+    <default field="ngas_f_v" expression=""/>
+    <default field="ngas_f_m" expression=""/>
     <default field="pwvol" expression=""/>
     <default field="pwmas" expression=""/>
     <default field="pwmax_m" expression=""/>
     <default field="pwmaxd_m" expression=""/>
     <default field="pwmax_v" expression=""/>
     <default field="pwmaxd_v" expression=""/>
+    <default field="pw_f_v" expression=""/>
+    <default field="pw_f_m" expression=""/>
     <default field="condvol" expression=""/>
     <default field="condmas" expression=""/>
     <default field="condmax_m" expression=""/>
     <default field="condmaxd_m" expression=""/>
     <default field="condmax_v" expression=""/>
     <default field="condmaxd_v" expression=""/>
+    <default field="cond_f_v" expression=""/>
+    <default field="cond_f_m" expression=""/>
     <default field="igasvol" expression=""/>
     <default field="igasmas" expression=""/>
     <default field="igasmax_m" expression=""/>
     <default field="igasmaxd_m" expression=""/>
     <default field="igasmax_v" expression=""/>
     <default field="igasmaxd_v" expression=""/>
+    <default field="igas_f_v" expression=""/>
+    <default field="igas_f_m" expression=""/>
     <default field="iwvol" expression=""/>
     <default field="iwmas" expression=""/>
     <default field="iwmax_m" expression=""/>
     <default field="iwmaxd_m" expression=""/>
     <default field="iwmax_v" expression=""/>
     <default field="iwmaxd_v" expression=""/>
+    <default field="iw_f_v" expression=""/>
+    <default field="iw_f_m" expression=""/>
     <default field="lgasvol" expression=""/>
     <default field="lgasmas" expression=""/>
     <default field="lgasmax_m" expression=""/>
     <default field="lgasmaxd_m" expression=""/>
     <default field="lgasmax_v" expression=""/>
     <default field="lgasmaxd_v" expression=""/>
+    <default field="lgas_f_v" expression=""/>
+    <default field="lgas_f_m" expression=""/>
     <default field="fgasvol" expression=""/>
     <default field="fgasmas" expression=""/>
     <default field="fgasmax_m" expression=""/>
     <default field="fgasmaxd_m" expression=""/>
     <default field="fgasmax_v" expression=""/>
     <default field="fgasmaxd_v" expression=""/>
+    <default field="fgas_f_v" expression=""/>
+    <default field="fgas_f_m" expression=""/>
     <default field="pflvol" expression=""/>
     <default field="pflmas" expression=""/>
     <default field="pflmax_m" expression=""/>
     <default field="pflmaxd_m" expression=""/>
     <default field="pflmax_v" expression=""/>
     <default field="pflmaxd_v" expression=""/>
+    <default field="pfl_f_v" expression=""/>
+    <default field="pfl_f_m" expression=""/>
   </defaults>
   <previewExpression>COALESCE( "symbolname", '&lt;NULL>' )</previewExpression>
   <layerGeometryType>0</layerGeometryType>
