@@ -137,7 +137,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             except:pass
             self.fondByWellRdBtn.setChecked(self.fondLoadConfig.isWell   or False)
             self.fondByObjRdBtn.setChecked( self.fondLoadConfig.isObject or False)
-            
+        self.fondByWellRdBtn.toggled.connect(self.onFondByWellRdBtn)
         self.endDateEdit.setDateTime(self.mEndDate)
         self.startDateEdit.setDateTime(self.mStartDate)
 
@@ -175,7 +175,15 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         sql_file_path = os.path.join(plugin_dir, 'db', value)
         with open(sql_file_path, 'rb') as f:
             return f.read().decode('utf-8')
+    #===========================================================================
+    # 
+    #===========================================================================
+    def onFondByWellRdBtn(self):
+        if self.fondByWellRdBtn.isChecked():
+            for row in range(self.reservoirsListWidget.count()):
+                self.reservoirsListWidget.item(row).setSelected(True)
         
+
     #===========================================================================
     # 
     #===========================================================================
@@ -595,7 +603,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             self.mStartDate.setDate(QDate(self.mStartDate.date().year(), self.mStartDate.date().month(), 1))
 
         #--- READ PRODUCTION
-        if self.mDynamicCheckBox.isChecked() and self.isCurrentProd:
+        if self.mDynamicCheckBox.isChecked() and self.isCurrentProd and not self.isFondLayer:
             # progressMessageBar = self.iface.messageBar()
             # self.progress = QProgressBar()
             # self.progress.setMaximum(100)
@@ -669,8 +677,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.readWellsProduction( prodWells = self.mProductionWells )
         IS_DEBUG and QgsMessageLog.logMessage(u"prod read in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction"); time_start=time.time()
 
-        #--- CALCULATE SUM PRODUCTION/DAYS FOR SELECTED WELLS 
-        for pdw in self.mProductionWells:
+        #--- CALCULATE SUM PRODUCTION/DAYS FOR SELECTED WELLS
+        self.showProgressBar(msg="Read fond({})".format(len(self.mProductionWells)), maximum=len(self.mProductionWells)) 
+        for idx,pdw in enumerate(self.mProductionWells):
+            self.progress.setValue(idx)
             self.calcBubbles(pdw)
         IS_DEBUG and QgsMessageLog.logMessage(u"bubble calculated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction");time_start=time.time()
         
@@ -722,7 +732,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                         ]
             f_count=len(self.mWells.values())
             now=time.time()
-            self.showProgressBar(msg="Update layer data", maximum=f_count)
+            self.showProgressBar(msg="Update layer table '{}'".format(self.layer.name()), maximum=f_count)
             for idx,feature in enumerate(self.mWells.values()):                                 #--- iterate over each record in result
                 self.progress.setValue(idx)
                 if time.time()-now>2:  QCoreApplication.processEvents();time.sleep(0.02);now=time.time() #refresh GUI
@@ -864,8 +874,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 , [Fields.WellStatusInfo.name   ,cStatusInfo       ,  Fields.WellStatusInfo.name    ]
                 , [Fields.WellInitRole.name     ,cInitRole         ,  Fields.WellInitRole.name      ]
             ]
-            
-            for prodWell in self.mProductionWells:
+            self.showProgressBar(msg="Update layer table with dynamic production '{}' ".format(self.layer.name()), maximum=len(self.mProductionWells))
+            for idx,prodWell in enumerate(self.mProductionWells):
+                self.progress.setValue(idx)
                 oldFeature = self.mWells[prodWell.name]
                 for prod in prodWell.prods:
                     feature = QgsFeature(oldFeature)
@@ -1342,7 +1353,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         """
             @param prodWells: list of links to self.mProductionWells
         """
-        self.showProgressBar(msg="Read production", maximum=0)
+        self.showProgressBar(msg="Generate query", maximum=0)
         #TableUnit = namedtuple('TableUnit', ['table', 'unit'])
         #prodTables = [
         #                TableUnit("p_std_vol_lq",   "Volume"), 
@@ -1541,6 +1552,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             return
         # ---4 execute QUERY
         IS_DEBUG and QgsMessageLog.logMessage(u"Execute readWellProduction: {}\n\n".format(sql), tag="QgisPDS.readWellProduction")
+        self.showProgressBar(msg="Execute query", maximum=0)
         result = self.db.execute(sql).fetchall()
         IS_DEBUG and QgsMessageLog.logMessage(u"query in {}".format((time.time() - time_start)/60), tag="QgisPDS.readWellProduction");  time_start=time.time()
         
@@ -1548,7 +1560,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     
         # ---5 read QUERY result
         # @TODO: not optimal code. Need change...
-        self.showProgressBar(msg="Read production", maximum=len(result))    
+        self.showProgressBar(msg="Parse production({} rows)".format(len(result)), maximum=len(result))    
         now=time.time()
         well_first_prod_dt={}
         for idx,row in enumerate(result):
@@ -1564,7 +1576,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             stadat = QDateTime.fromString(row_dict["start_time_txt"], self.dateFormat)
             enddat = QDateTime.fromString(row_dict["end_time_txt"]  , self.dateFormat)
             days=row_dict["days"]
-            if row_dict["days"]>0:
+            if not self.isFondLayer and row_dict["days"]>0 :
                 for fluid in fluid_fields:
                     debit=row_dict[fluid.field]/days
                     if fluid.unit=="Mass":
@@ -1579,7 +1591,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
 #                         if prodWell.maxDebits[fluid.idx].volValue < debit:
 #                             prodWell.maxDebits[fluid.idx].volValue = debit
 #                             prodWell.maxDebits[fluid.idx].volDebitDate = stadat
-            if (stadat >= self.mStartDate and stadat <= self.mEndDate) or (enddat >= self.mStartDate and enddat <= self.mEndDate):
+            if not self.isFondLayer and (stadat >= self.mStartDate and stadat <= self.mEndDate) or (enddat >= self.mStartDate and enddat <= self.mEndDate):
                 #init clear production record
                 product = Production([0 for c in bblInit.fluidCodes], [0 for c in bblInit.fluidCodes], stadat, enddat, days)
                 prodWell.prods.append(product)
@@ -1588,11 +1600,13 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                         product.massVals[fluid.idx] += row_dict[fluid.field]
                     else:
                         product.volumeVals[fluid.idx] += row_dict[fluid.field]
-        for id,prodWell in prodWells_dict.items():
+        self.showProgressBar(msg="Update liftmethod({} rows)".format(len(prodWells_dict)), maximum=len(prodWells_dict))
+        for idx,(id,prodWell) in enumerate(prodWells_dict.items()):
+            self.progress.setValue(idx)
             liftMethod = self.getWellStrProperty(prodWell.sldnid, self.fondEndDate, "lift method")
             if liftMethod in bblInit.bblLiftMethods.keys():
                 prodWell.liftMethod = liftMethod
-        time.sleep(1)
+        self.showProgressBar(msg="End read production", maximum=0)
          
          
          
@@ -1985,7 +1999,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             result = self.db.execute(
                 "select tig_latest_well_name, db_sldnid, tig_latitude, tig_longitude from tig_well_history")
             wellRole=wellStatus=wellStatusDesc=wellInitRole=''
-            for well_name, wId, lat, lon in result:
+            self.showProgressBar(msg="Read info from not working wells({})".format(len(result)), maximum=len(result))
+            for idx,(well_name, wId, lat, lon) in enumerate(result):
+                self.progress.setValue(idx)
                 if well_name not in self.mWells:
                     if self.fondLoadConfig.isWell:
                         wellRole =        self.getWellStrProperty(wId, self.fondEndDate, "current well role")
