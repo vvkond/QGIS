@@ -106,7 +106,6 @@ class ProdDebit(object):
         self.skeep_filter_koef=skeep_filter_koef
         self.sort_descending=sort_descending
         
-    
     def addDebit(self
                  ,debit # type: Debit
                  ,debit_type
@@ -589,15 +588,19 @@ class bblInit:
                     ),
                     ]
 
-    bblLiftMethods =  {u"flowing": LiftMethod(True, False),
-                            u"centrifugal pump": LiftMethod( False, True),
-                            u"diaphragm pump": LiftMethod( False, True),
-                            u"sucker-rod pump": LiftMethod( False, True),
-                            u"jet pump": LiftMethod( False, True),
-                            u"plunger pump": LiftMethod( False, True),
-                            u"gas lift": LiftMethod( False, False),
-                            u"spiral pump": LiftMethod( False, True),
-                            u"RED pump": LiftMethod( False, True)}
+    bblLiftMethods =  {
+                        u"flowing": LiftMethod(True, False),
+                        u"centrifugal pump": LiftMethod( False, True),
+                        u"diaphragm pump": LiftMethod( False, True),
+                        u"sucker-rod pump": LiftMethod( False, True),
+                        u"jet pump": LiftMethod( False, True),
+                        u"plunger pump": LiftMethod( False, True),
+                        u"gas lift": LiftMethod( False, False),
+                        u"spiral pump": LiftMethod( False, True),
+                        u"RED pump": LiftMethod( False, True),
+                        u"kompressor": LiftMethod( False, True),
+                        u"shvn": LiftMethod( False, True)
+                        }
 
     standardDiagramms = {
                     "1LIQUID_PRODUCTION"     : StandardDiagram(name=u"Диаграмма жидкости",   scale=300000,  unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]),
