@@ -159,7 +159,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 elif isSelected:
                     self.reservoirsListWidget.addItem(item)
 
-
+        self.onFondByWellRdBtn()
+        
         self.realEndDate = self.realStartDate = QDate()  #temporary,used only in GUI
         self.fondStartDate = self.fondEndDate = QDate()  #fond load date diapazon 
 
@@ -179,9 +180,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     # 
     #===========================================================================
     def onFondByWellRdBtn(self):
-        if self.fondByWellRdBtn.isChecked():
-            for row in range(self.reservoirsListWidget.count()):
-                self.reservoirsListWidget.item(row).setSelected(True)
+        if self.layer is None:
+            if self.fondByWellRdBtn.isChecked():
+                for row in range(self.reservoirsListWidget.count()):
+                    self.reservoirsListWidget.item(row).setSelected(True)
         
 
     #===========================================================================
