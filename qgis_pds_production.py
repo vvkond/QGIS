@@ -1663,6 +1663,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     #===========================================================================
     # Load only production wells and status on fond date
     #===========================================================================
+    # @TODO: make UNION SQL !!!!!
     def getWells(self,reservoir_group_names=[]):
 
         
@@ -1814,75 +1815,30 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             if time.time()-now>1:  QCoreApplication.processEvents();time.sleep(0.02);now=time.time() #refresh GUI
             self.loadWellByName(to_unicode("".join(wl)), maxDt=QDateTime.fromString(max_dt  , self.dateFormat) if self.fondLoadConfig.isObject else None  )
         
-    # def getWells(self, cmpl_id):
-    #     if self.isCurrentProd:
-    #         sql = ("SELECT DISTINCT wellbore.WELL_ID"
-    #                "    FROM  reservoir_part,"
-    #                "    wellbore_intv,"
-    #                "    wellbore,"
-    #                "    production_aloc,"
-    #                "    pfnu_prod_act_x,"
-    #                "      (SELECT"
-    #                "        wellbore.WELL_ID w_id,"
-    #                "        MAX(PRODUCTION_ALOC.START_TIME) max_time"
-    #                "      FROM  reservoir_part,"
-    #                "        wellbore_intv,"
-    #                "        wellbore,"
-    #                "        production_aloc,"
-    #                "        pfnu_prod_act_x"
-    #                "      WHERE PRODUCTION_ALOC.PRODUCTION_ALOC_S = PFNU_PROD_ACT_X.PRODUCTION_ACT_S"
-    #                "        and production_aloc.bsasc_source = 'Reallocated Production'"
-    #                "        and reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s"
-    #                "        and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
-    #                "        and wellbore.wellbore_s=wellbore_intv.wellbore_s"
-    #                "        AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate) +
-    #                "      GROUP BY wellbore.WELL_ID) md"
-    #                "    WHERE PRODUCTION_ALOC.PRODUCTION_ALOC_S = PFNU_PROD_ACT_X.PRODUCTION_ACT_S"
-    #                "      and production_aloc.bsasc_source = 'Reallocated Production'"
-    #                "      and reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s"
-    #                "      AND PRODUCTION_ALOC.START_TIME = md.max_time"
-    #                "      AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate) +
-    #                "      AND wellbore.WELL_ID=md.w_id"
-    #                "      and reservoir_part.reservoir_part_s in (" + cmpl_id + ")"
-    #                "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
-    #                "      and wellbore.wellbore_s=wellbore_intv.wellbore_s")
-    #     else:
-    #         sql = ("SELECT DISTINCT wellbore.WELL_ID"
-    #                "    FROM  reservoir_part,"
-    #                "    wellbore_intv,"
-    #                "    wellbore,"
-    #                "    production_aloc,"
-    #                "    pfnu_prod_act_x"
-    #                "    WHERE PRODUCTION_ALOC.PRODUCTION_ALOC_S = PFNU_PROD_ACT_X.PRODUCTION_ACT_S"
-    #                "      and production_aloc.bsasc_source = 'Reallocated Production'"
-    #                "      and reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s"
-    #                "      AND PRODUCTION_ALOC.START_TIME >= " + self.to_oracle_date(self.mStartDate) +
-    #                "      AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate) +
-    #                "      and reservoir_part.reservoir_part_s in (" + cmpl_id + ")"
-    #                "      and wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s"
-    #                "      and wellbore.wellbore_s=wellbore_intv.wellbore_s")
-    #
-    #     result = self.db.execute(sql)
-    #
-    #     for wl in result:
-    #         self.loadWellByName(to_unicode("".join(wl)))
-    
-    
     #===========================================================================
     # Load well by its name and date limit(for fond info)
     #===========================================================================
     def loadWellByName(self, well_name,maxDt=None):
-        sql = ("SELECT db_sldnid FROM tig_well_history "
-                "WHERE rtrim(tig_latest_well_name) = '" + well_name + "' "
-                "AND (tig_only_proposal = 0 OR tig_only_proposal = 1) ")
+        sql = """SELECT 
+                    db_sldnid
+                    , tig_latest_well_name
+                    , tig_latitude
+                    , tig_longitude 
+                FROM tig_well_history 
+                WHERE rtrim(tig_latest_well_name) = '{well_name}' 
+                    AND (tig_only_proposal = 0 OR tig_only_proposal = 1) 
+                """.format(well_name=well_name)
 
         IS_DEBUG and QgsMessageLog.logMessage(u"Execute loadWellByName: {}\\n\n".format(sql), tag="QgisPDS.loadWellByName")
-        result = self.db.execute(sql)
+        result = self.db.execute(sql,cursor_id="loadWellByName")
         for id in result:
             wId = id[0]
             #if wId!=682:continue # @DEBUG
             symbolId,role,status,status_reason,status_info,initial_role = self.bbl_wellsymbol(wId,maxDt=maxDt)
-            self.loadWellFeature(wId, symbolId)
+            self.loadWellFeature(wId, symbolId, well_params_dict={"tig_latest_well_name":id[1]
+                                                                 ,"tig_latitude":id[2]
+                                                                 ,"tig_longitude":id[3]
+                                                                 })
             pwp = ProductionWell(name=well_name, sldnid=wId, liftMethod='', prods=[],
                                  maxDebits = [ProdDebit(
                                                         records_limit=self.maxDebitRange.value()
@@ -1997,17 +1953,23 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     def _readAllWells(self):
         try:
             result = self.db.execute(
-                "select tig_latest_well_name, db_sldnid, tig_latitude, tig_longitude from tig_well_history")
+                "select tig_latest_well_name, db_sldnid, tig_latitude, tig_longitude from tig_well_history").fetchall()
             wellRole=wellStatus=wellStatusDesc=wellInitRole=''
             self.showProgressBar(msg="Read info from not working wells({})".format(len(result)), maximum=len(result))
             for idx,(well_name, wId, lat, lon) in enumerate(result):
                 self.progress.setValue(idx)
                 if well_name not in self.mWells:
                     if self.fondLoadConfig.isWell:
-                        wellRole =        self.getWellStrProperty(wId, self.fondEndDate, "current well role")
-                        wellStatus =      self.getWellStrProperty(wId, self.fondEndDate, "well status"      )
-                        wellStatusDesc =  self.getWellStrProperty(wId, self.fondEndDate, "well status",sqlColumn="description" )
-                        wellInitRole =    self.getWellStrProperty(wId, self.fondEndDate, "initial well role")
+                        prop=self.getWellStrProperties(wId, [ 
+                                                            {"enddat":self.fondEndDate,  "propertyType": "initial well role"} 
+                                                           ,{"enddat":self.fondEndDate,  "propertyType": "current well role"}
+                                                           ,{"enddat":self.fondEndDate,  "propertyType": "well status"}
+                                                           ,{"enddat":self.fondEndDate,  "propertyType": "well status", "sqlColumn":'description'}
+                                                          ])
+                        wellInitRole =    prop[0]['value']
+                        wellRole =        prop[1]['value']
+                        wellStatus =      prop[2]['value']
+                        wellStatusDesc =  prop[3]['value']
                     elif self.fondLoadConfig.isObject:
                         wellRole = wellStatus = wellStatusDesc = '' # fond only for well in selected reservoirs
                     wellStatusInfo=wellStatusReason=""
@@ -2065,14 +2027,20 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     #===============================================================================
     def bbl_wellsymbol(self, sldnid,maxDt=None):
         if maxDt is None:   maxDt=self.fondEndDate
-        initialWellRole = self.getWellStrProperty(sldnid, maxDt, "initial well role")
-        wellRole =        self.getWellStrProperty(sldnid, maxDt, "current well role")
-        wellStatus =      self.getWellStrProperty(sldnid, maxDt, "well status"      )
-        wellStatusDesc =  self.getWellStrProperty(sldnid, maxDt, "well status",sqlColumn="description" )
+        prop=self.getWellStrProperties(sldnid,[ 
+                                            {"enddat":maxDt,  "propertyType": "initial well role"} 
+                                           ,{"enddat":maxDt,  "propertyType": "current well role"}
+                                           ,{"enddat":maxDt,  "propertyType": "well status"}
+                                           ,{"enddat":maxDt,  "propertyType": "well status", "sqlColumn":'description'}
+                                          ])
+        initialWellRole = prop[0]['value']
+        wellRole =        prop[1]['value']
+        wellStatus =      prop[2]['value']
+        wellStatusDesc =  prop[3]['value']
         wellStatusInfo=wellStatusReason=""
         try:   wellStatusReason, wellStatusInfo = wellStatusDesc.split("|")
         except:pass
-        
+        IS_DEBUG and QgsMessageLog.logMessage(u"\tbbl_wellsymbol: {}\n\n".format(str(prop)), tag="QgisPDS.loadWellByName")
         #---not need cheeck initial well role at now
         #for conv in bblInit.bblConvertedSymbols:
         #    if (
@@ -2112,12 +2080,38 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     #===========================================================================
     # Load well geometry
     #===========================================================================
-    def loadWellFeature(self, sldnid, symbolId):
-        sql = ("select tig_latest_well_name,"
-               "  tig_latitude, tig_longitude "
-                "  from tig_well_history where db_sldnid = " + str(sldnid))
-        result = self.db.execute(sql)
-
+    def loadWellFeature(self, sldnid, symbolId, well_params_dict={}):
+        """
+            @param well_params: dict of tig_latest_well_name, tig_latitude, tig_longitude. If None/{}/or dont have some param then reread all from sql 
+        """
+        # check need or not exec sql
+        needExecSql=False
+        PARAMS_2_READ=[
+                        "tig_latest_well_name"
+                        , "tig_latitude"
+                        , "tig_longitude"
+                        ]
+        if isinstance(well_params_dict, dict):
+            for param in PARAMS_2_READ:
+                if param not in well_params_dict.keys():
+                    needExecSql=True
+                    break
+        if needExecSql:
+            sql = """
+                    select 
+                        tig_latest_well_name
+                        , tig_latitude
+                        , tig_longitude 
+                    from tig_well_history 
+                    where db_sldnid = {}
+                    """.format(str(sldnid))
+            result = self.db.execute(sql)
+        else:
+            result=[]
+            result.append([])
+            for param in PARAMS_2_READ:
+                result[0].append(well_params_dict[param])
+        # parse well params
         well = QgsFeature(self.layer.fields())
         plugin_dir = os.path.dirname(__file__)
         for well_name, lat, lon in result:
@@ -2176,6 +2170,76 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         for row in result:
             propertyValue = row[0]
         return propertyValue
+
+    #===========================================================================
+    # Read equipment value bulk for specified wells
+    #===========================================================================
+    def getWellStrProperties(self, sldnid, properties):
+        """
+            @info: Read equipment value bulk for specified wells
+            @param properties: list of dictionary : { "enddat", "propertyType", "sqlColumn"='string_value'}
+            @return properties with add attribute 'value' for each property 
+        """
+        base_sql=''
+        for idx,properrty_desc in enumerate(properties):
+            # make select for one property ordered desc by date
+            sql="""
+                     (
+                     select 
+                          p_equipment_fcl.{sqlColumn} as p{idx}
+                     from 
+                         p_equipment_fcl
+                         , equipment_insl 
+                         , well
+                         , tig_well_history 
+                     where 
+                         equipment_insl.equipment_item_s = p_equipment_fcl.object_s 
+                         and 
+                         well.well_s = equipment_insl.facility_s 
+                         and 
+                         tig_well_history.tig_latest_well_name = well.well_id 
+                         and 
+                         tig_well_history.db_sldnid = {sldnid} 
+                         and 
+                         p_equipment_fcl.bsasc_source = '{propertyType}' 
+                         and 
+                         p_equipment_fcl.start_time <= {enddat}
+                     order by p_equipment_fcl.start_time desc
+                    )  t{idx}   
+                """.format(
+                            sldnid=str(sldnid)
+                           ,propertyType=properrty_desc["propertyType"]
+                           ,enddat=self.to_oracle_date(properrty_desc["enddat"])
+                           ,sqlColumn=  properrty_desc["sqlColumn"] if "sqlColumn" in properrty_desc.keys()  else 'string_value' 
+                           ,idx=idx
+                           )
+            if idx>0:
+                # join property select to other property selects
+                sql="""
+                    LEFT JOIN {}
+                    ON 1=1
+                """.format(sql)
+            base_sql+=sql
+        # get only first row(last record by date for each property)
+        base_sql="""
+        SELECT *
+        FROM {}
+        WHERE ROWNUM=1
+        """.format(base_sql)
+
+        IS_DEBUG and QgsMessageLog.logMessage(u"Execute getWellStrProperty: {}\n\n".format(base_sql), tag="QgisPDS.sql")   
+        result = self.db.execute(base_sql, cursor_id="getWellStrProperties")
+        
+        hasRow=False
+        for row in result:
+            for idx,properrty_desc in enumerate(properties):
+                properties[idx]["value"]=row[idx]
+            hasRow=True
+        if not hasRow:
+            for idx,properrty_desc in enumerate(properties):
+                properties[idx]["value"]=None
+        return properties
+
 
     #===========================================================================
     # Return TO_DATE oracle string 
