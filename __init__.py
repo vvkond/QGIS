@@ -42,6 +42,11 @@ def classFactory(iface):  # pylint: disable=invalid-name
     #svg_path=os.path.join(os.environ['USERPROFILE'],u'.qgis2',u'python',u'plugins',u'QgisPDS',u'svg')
     svg_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),u'svg')
     utils_path=os.path.join(os.path.dirname(os.path.abspath(__file__)),u'libs\\pds_opt_py')
+    utils_platform_depended=str(os.path.join(
+                                os.path.dirname(os.path.abspath(__file__))
+                                ,r"libs\x86_64" if sys.maxsize > 2**32 else r"libs\i386" 
+                            ))                            
+    sys.path.insert(0, utils_platform_depended)
     sys.path.insert(0, utils_path)
 
     
