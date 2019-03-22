@@ -545,8 +545,8 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                 well.append(rec[3])                                         #Operator
                 well.append(rec[4])                                         #API number
                 well.append(rec[5])                                         #Location
-                well.append(float(rec[6]))                                  #Latitude
-                well.append(float(rec[7]))                                  #Longitude
+                well.append(float(rec[6]) if rec[6] is not None else 0)     #Latitude
+                well.append(float(rec[7]) if rec[7] is not None else 0)     #Longitude
                 well.append(rec[8])                                         #Slot number
                 well.append(rec[9])                                         #Owner
                 dt = QDateTime.fromTime_t(0).addSecs(int(rec[10]))          #Date
