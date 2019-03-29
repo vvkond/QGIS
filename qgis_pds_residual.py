@@ -829,7 +829,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
             if layer:
                 QgsMapLayerRegistry.instance().addMapLayer(layer)
                 # usage - QgsZonalStatistics (QgsVectorLayer *polygonLayer, const QString &rasterFile, const QString &attributePrefix="", int rasterBand=1)
-                zoneStat = QgsZonalStatistics(layer, self.out_production_raster_path, '', 1, QgsZonalStatistics.Sum)
+                zoneStat = QgsZonalStatistics(layer, self.out_raster_path, '', 1, QgsZonalStatistics.Sum)
                 zoneStat.calculateStatistics(None)
             else:
                 self.iface.messageBar().pushMessage(self.tr("Error"),
