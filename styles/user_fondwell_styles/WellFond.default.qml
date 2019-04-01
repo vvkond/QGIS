@@ -349,7 +349,7 @@
         <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{cebb5693-d659-44f0-8043-458dfa90deac}" symbol="22" label="из поглащения"/>
         <rule filter="&quot;wellrole&quot; ='water-supply'" key="{4fc23353-1b1e-4724-b6ea-525a7dda9807}" symbol="23" label="из водозабора"/>
       </rule>
-      <rule filter="&quot;wellstatus&quot; ='abandonment stock' OR &quot;wellstatus&quot; ='exploration abandonment stock'" key="{ca78033c-5cc2-42ea-933b-1e2fa943ceb6}" label="ликвидированный">
+      <rule filter="(&quot;wellstatus&quot; ='abandonment stock' OR &quot;wellstatus&quot; ='exploration abandonment stock')  AND (&quot;wsinfo&quot; is Null or NOT( &quot;wsinfo&quot;= 'wait abandonment' ))" key="{ca78033c-5cc2-42ea-933b-1e2fa943ceb6}" label="ликвидированный">
         <rule filter="&quot;wsinfo&quot; ='abandonment expl'" key="{0ab147d5-87cf-47b6-89df-97902972ba75}" label="из эксплуатации">
           <rule filter="&quot;wsreason&quot; ='technical reason'" key="{05ea1f08-06f5-4266-92bb-a4ed327ee2dc}" symbol="24" label="технические причины"/>
           <rule filter="&quot;wsreason&quot; ='geology reason'" key="{95079071-1e20-4dac-bac1-e45db4516267}" symbol="25" label="геологические причины"/>
@@ -1202,7 +1202,7 @@
     <property key="pds_prod_PhaseFilter" value="[]"/>
     <property key="pds_prod_SelectedReservoirs" value="[u'AP03', u'AP02', u'I-ob-AP02', u'II-ob-AP02', u'II-a-AP02', u'II-b-AP02', u'II-b1-AP02', u'II-c-AP02', u'II-c1-AP02', u'II-c2-AP02', u'II-c3-AP02', u'II-c4-AP02', u'II-d-AP02', u'II-e-AP02', u'III-ob-AP02', u'IV-ob-AP02', u'AP01', u'AKCH', u'PS01', u'PS02', u'PS03', u'PS04', u'PS05', u'PS06', u'PS07', u'PS08', u'PS09', u'PS10', u'PS11', u'PS12', u'PS13', u'PS14', u'PS15', u'PS16', u'PS17', u'PS18', u'PS20', u'PS19', u'PS22', u'PS21', u'0', u'I-c-AP02']"/>
     <property key="pds_prod_endDate" value="28/02/2019 00:00:00"/>
-    <property key="pds_project" value="{u'project': u'kurnew_20190306', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;SHIRVAN&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
+    <property key="pds_project" value="{'project': u'kurovdag_new', 'type': u'tigress', 'options': u'{&quot;host&quot;: &quot;soc-tig&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;TIG11G&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;2223&quot;}'}"/>
     <property key="qgis_pds_type" value="pds_fond"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
