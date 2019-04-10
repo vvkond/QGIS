@@ -2,18 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import division
-import os
+import webbrowser, os
 import pandas as pd
 from os.path import join
 from pandas import ExcelWriter
 import pandas.io.sql as psql
-
 import numpy as np
-
-from  scipy import stats,signal
-import scipy.stats.mstats as sc
 from scipy.optimize import curve_fit
-
 import random
 try: # try import updated matplotlib
     import matplotlib2.pyplot as plt
@@ -32,7 +27,6 @@ from pandas.plotting import register_matplotlib_converters
 
 from tmp_TypeWell.production_sql_ramil import prod_sql
 
-from datetime import datetime
 from collections import namedtuple
 register_matplotlib_converters()
 
@@ -1103,6 +1097,7 @@ class DCA():
             comb_oil1.index=comb_oil1.index.year
             comb_oil1.transpose().to_excel(out_f)
             log( "END")
+        webbrowser.open(os.path.realpath(out_dir))
         pass
 
     
