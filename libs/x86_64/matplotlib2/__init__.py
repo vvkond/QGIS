@@ -826,16 +826,16 @@ def matplotlib2_fname():
     """
 
     def gen_candidates():
-        yield os.path.join(six.moves.getcwd(), 'matplotlib2rc')
+        yield os.path.join(six.moves.getcwd(), 'matplotlibrc')
         try:
-            matplotlib2rc = os.environ['matplotlib2RC']
+            matplotlib2rc = os.environ['matplotlibRC']
         except KeyError:
             pass
         else:
             yield matplotlib2rc
-            yield os.path.join(matplotlib2rc, 'matplotlib2rc')
-        yield os.path.join(_get_configdir(), 'matplotlib2rc')
-        yield os.path.join(get_data_path(), 'matplotlib2rc')
+            yield os.path.join(matplotlib2rc, 'matplotlibrc')
+        yield os.path.join(_get_configdir(), 'matplotlibrc')
+        yield os.path.join(get_data_path(), 'matplotlibrc')
 
     for fname in gen_candidates():
         if os.path.exists(fname):
