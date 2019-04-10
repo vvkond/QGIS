@@ -50,6 +50,7 @@ from qgis_pds_oracleSql import QgisOracleSql
 from qgis_pds_createIsolines import QgisPDSCreateIsolines
 from qgis_pds_transite import QgisPDSTransitionsDialog
 from qgis_pds_SelectMapTool import QgisPDSSelectMapTool
+from qgis_pds_dca import QgisPDSDCAForm
 from qgis_pds_wellsBrowserDialog import *
 # Import both Processing and CommanderWindow 
 #   classes from the Processing framework. 
@@ -757,6 +758,13 @@ class QgisPDS(QObject):
             callback=self.calcStatistics,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/type_well.png'
+        self.actionRefreshLayer = self.add_action(
+            icon_path,
+            text=self.tr(u'DCA'),
+            callback=self.calcDCA,
+            parent=self.iface.mainWindow())
+
         icon_path = ':/plugins/QgisPDS/mActionFileSave.png'
         self.add_action(
             icon_path,
@@ -1178,6 +1186,17 @@ class QgisPDS(QObject):
         dlg = QgisPDSStatisticsDialog(self.currentProject, self.iface)
         dlg.exec_()
         return
+
+    def calcDCA(self):
+#         if not QgsProject.instance().homePath():
+#             self.iface.messageBar().pushMessage(self.tr('Error'),
+#                         self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+#             return
+        dlg = QgisPDSDCAForm(self.currentProject, self.iface)
+        dlg.exec_()
+        #dlg.show()
+        return
+
 
     def saveLayerToPDS(self):
         currentLayer = self.iface.activeLayer()
