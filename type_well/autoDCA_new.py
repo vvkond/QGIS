@@ -25,8 +25,6 @@ from sklearn.metrics import mean_squared_error, r2_score
 from pandas.plotting import register_matplotlib_converters
 #from production_sql import prod_sql
 
-from tmp_TypeWell.production_sql_ramil import prod_sql
-
 from collections import namedtuple
 register_matplotlib_converters()
 
@@ -65,6 +63,79 @@ EndFitFcst=False
 perhour=1 #defaults is 24
 persecond=1 #default is 3600 
 """
+SQL_PROD="""
+with grps as (
+    select distinct 
+        w.WELL_ID               WELL_ID
+        ,RP.RESERVOIR_PART_CODE RP_CODE
+        ,RP.RESERVOIR_PART_S    RP_ID
+        ,GRP.RESERVOIR_PART_CODE GRP_CODE
+        ,GRP.RESERVOIR_PART_S   GRP_ID
+        ,wbi.WELLBORE_INTV_S
+    from 
+        WELL w
+        ,WELLBORE wb
+        ,RESERVOIR_PART rp
+        ,WELLBORE_INTV wbi
+        ---get WELLBORE_INTERVAL(SEC_TOPLG_OBJ)->is topological in RESERVOIR_PART(PRIM_TOPLG_OBJ) 
+        LEFT JOIN TOPOLOGICAL_REL 
+            ON 
+                TOPOLOGICAL_REL.SEC_TOPLG_OBJ_S = wbi.WELLBORE_INTV_S
+                AND 
+                TOPOLOGICAL_REL.SEC_TOPLG_OBJ_T = 'WELLBORE_INTV'
+                AND
+                TOPOLOGICAL_REL.PRIM_TOPLG_OBJ_T='EARTH_POS_RGN'
+        LEFT JOIN EARTH_POS_RGN 
+            ON 
+                TOPOLOGICAL_REL.PRIM_TOPLG_OBJ_S =EARTH_POS_RGN.EARTH_POS_RGN_S
+                AND
+                EARTH_POS_RGN.GEOLOGIC_FTR_T='RESERVOIR_PART'
+        INNER JOIN RESERVOIR_PART GRP 
+            ON 
+                EARTH_POS_RGN.GEOLOGIC_FTR_S=GRP.RESERVOIR_PART_S
+    ----            
+    where 
+        wbi.WELLBORE_S=wb.WELLBORE_S
+        ---get RESERVOIR_PART of WELLBORE_INTERVAL
+        and wbi.GEOLOGIC_FTR_T='RESERVOIR_PART'
+        and rp.RESERVOIR_PART_S=wbi.GEOLOGIC_FTR_S
+        and w.WELL_S=wb.WELL_S
+)
+select 
+    vpr.WELL_ID
+    ,min(PROD_START_TIME) PROD_START_TIME
+    ,max(PROD_END_TIME)   PROD_END_TIME
+    ,sum(case when PROD_VALUE_NAME='crude oil' and PROD_VALUE_SOURCE='P_STD_VOL_LQ' then PROD_VALUE else 0 end) as OIL_VOL
+    ,sum(case when PROD_VALUE_NAME='produced water' and PROD_VALUE_SOURCE='P_STD_VOL_LQ' then PROD_VALUE else 0 end) as WAT_VOL
+    ,sum(case when PROD_VALUE_NAME='natural gas' and PROD_VALUE_SOURCE='P_STD_VOL_GAS' then PROD_VALUE else 0 end) as GAS_VOL
+    ,sum(case when PROD_VALUE_NAME='condensate' and PROD_VALUE_SOURCE='P_STD_VOL_LQ' then PROD_VALUE else 0 end) as COND_VOL
+    ,max(PROD_DAYS) PROD_DAYS
+    ,grps.GRP_CODE  GRP_CODE   
+    
+from V_PROD_RESPART_M2 vpr
+left join grps
+    on vpr.WELLBORE_INTV_S=grps.WELLBORE_INTV_S
+where 1=1 
+    {FILTER_GRP}          ---- FILTER RESERVOIR GROUPS  (grps.GRP_CODE)
+    {FILTER_WELLS}        ----FILTER WELLS              (vpr.WELL_ID)
+group by vpr.WELL_ID
+        , PROD_START_YEAR
+        , PROD_START_MONTH
+        , grps.GRP_CODE    
+order by vpr.WELL_ID
+       , PROD_START_YEAR
+       , PROD_START_MONTH
+       , grps.GRP_CODE     
+"""
+cREG='GRP_CODE'
+cWELL='WELL_ID'
+cPROD_DAYS='PROD_DAYS'
+cPROD_START_TIME='PROD_START_TIME'
+cWAT_VOL='WAT_VOL'
+cOIL_VOL='OIL_VOL'
+cNAT_GAS='GAS_VOL'
+cCOND_VOL='COND_VOL'
+
 
 #===============================================================================
 # 
@@ -127,9 +198,9 @@ def get_reservoir_prop(REG):
     #
     if primary_product==u'OIL_VOL':
         return OilReservoirProp(
-                primary_product=primary_product
+                primary_product=cOIL_VOL
                 ,primdiv=1
-                ,secondary_product=u'GAS_VOL'
+                ,secondary_product=cNAT_GAS
                 ,secdiv=1000 #Gas is stored in m3, need to be comverted to Mm3
                 ,units=', m3'
                 ,calcRF=False
@@ -137,11 +208,11 @@ def get_reservoir_prop(REG):
                 ,GOR=reg_string['GOR'].iloc[0]
                 ,FF=reg_string['FF'].iloc[0] #Oil shrinkage formation factor
             )
-    elif primary_product=='GAS_VOL':
+    elif primary_product==u'GAS_VOL':
         return GasReservoirProp(    
-                primary_product=primary_product    
+                primary_product=cNAT_GAS    
                 ,primdiv=1000 #Gas is stored in m3, need to be comverted to Mm3
-                ,secondary_product='CONDENSATE_VOL'
+                ,secondary_product=cCOND_VOL
                 ,secdiv=1
                 ,units=', Mm3'
                 ,calcRF=True
@@ -166,6 +237,7 @@ Config=namedtuple('Config',[
                             ,"EndFitFcst"
                             ,"perhour"
                             ,"persecond"
+                            ,"window_size"
                           ])
 
 def get_config():
@@ -196,6 +268,7 @@ def get_config():
                 
                 ,perhour=1 #defaults is 24
                 ,persecond=1 #default is 3600
+                ,window_size=5 #size of Sample for calculkation
                 )
 #===============================================================================
 # 
@@ -222,7 +295,11 @@ def get_connection(
 # 
 #=======================================================================
 class DCA():
-    def __init__(self, reservoir_group, well_names=None, conn=None):
+    def __init__(self
+                 , reservoir_group
+                 , well_names=None
+                 , conn=None
+                 ):
         self.is_terminated=False
         self.REG=reservoir_group
         self.WELLS=well_names
@@ -230,7 +307,10 @@ class DCA():
         self.config=get_config()
         self.reservoir_prop=get_reservoir_prop(self.REG)
         if not self.reservoir_prop:
-            log("Error read reservoir group '{}' property".format(self.REG))
+            log("Error. Can't read reservoir group '{}' property".format(self.REG))
+            self.is_terminated=True
+        if self.config.window_size>len(self.WELLS)>0:
+            log("Error. Window size={} must be < 'selected wells'{}".format(str(self.config.window_size),str(len(self.WELLS))))
             self.is_terminated=True
         if conn is None:
             self.conn=get_connection()
@@ -487,7 +567,7 @@ class DCA():
         rndavg=[]
         no_select=10
         for i in range(iterations):
-            rndavg.append(np.mean(random.sample(data.EUR,5)))
+            rndavg.append(np.mean(random.sample(data.EUR,self.config.window_size)))
     
         #Create numpy array from list
         mean_sim=np.asarray(rndavg)
@@ -544,7 +624,7 @@ class DCA():
         iterations=1000
         for i in range(iterations):
             #This is a list of EUR values of 5: [202400L, 28809L, 3798L, 7010L, 35110L]
-            rnd_sel=random.sample(data.EUR,5)
+            rnd_sel=random.sample(data.EUR,self.config.window_size)
             for j in range(len(rnd_sel)):
                 if rnd_sel[j] > p90:
                     #Find index of the value
@@ -570,46 +650,52 @@ class DCA():
         if self.is_terminated:
             log("Terminated")
             return
-        # Read  Wells  from project
-        SELECT=prod_sql.format(
-                                FILTER_WELLS=u"AND well.WELL_ID in ('{}')".format("','".join(map(str,self.WELLS))) if self.WELLS is not None and len(self.WELLS)>0 else '' 
+        # Read  production for selected wells
+        SELECT=SQL_PROD.format(
+                                FILTER_WELLS=u"AND vpr.WELL_ID in ('{}')".format("','".join(map(str,self.WELLS))) if self.WELLS is not None and len(self.WELLS)>0 else ''
+                                ,FILTER_GRP=u"AND grps.GRP_CODE in ('{}')".format(self.REG)
                                )
         log(SELECT)
         df=psql.read_sql(sql=SELECT, con= self.conn)
         fill_nan={}
-        for c in ['CONDENSATE_VOL','CONDENSATE_MASS','OIL_MASS','OIL_VOL'
-                    ,'WATER_MASS','WATER_VOL','WATER_INJ_VOL'
-                    ,'GAS_VOL','FREE_GAS_VOL','DIS_GAS_VOL'
-                    ,'INJ_WATER','INJ_GAS','CRUDE_OIL','PRODUCED_WATER']:
+        for c in [cCOND_VOL
+                  ,cOIL_VOL
+                  ,cNAT_GAS
+                  ,cWAT_VOL
+                   #,'CONDENSATE_MASS','OIL_MASS'
+                   # ,'WATER_MASS','WATER_INJ_VOL'
+                   # ,'FREE_GAS_VOL','DIS_GAS_VOL'
+                   # ,'INJ_WATER','INJ_GAS','CRUDE_OIL','PRODUCED_WATER'
+                   ]:
             fill_nan[c]=0
         df.fillna(value=fill_nan,inplace=True)
         df.to_clipboard()
-        df['Hours']=df['TIME_PROD']*24
+        df['Hours']=df[cPROD_DAYS]*24
         
         #=====================
         #Set Reservoir Group  datatframe
-        reg_dataframe=df.loc[df['WELL_COMPLETION_ID']==self.REG]
+        reg_dataframe=df.loc[df[cREG]==self.REG]
         #Create list of wells in REG
-        wlist=np.array(reg_dataframe.drop_duplicates('WELL_ID').WELL_ID)
+        wlist=reg_dataframe[cWELL].unique()
         #Calculate forecasts workflow well by well
         wcount=0
         eur_list=[]
         for well in wlist:
             if self.is_terminated:break
-            oil=reg_dataframe.loc[reg_dataframe['WELL_ID']==well]
-            oil.set_index('PROD_START_TIME',drop=False, inplace=True)
+            oil=reg_dataframe.loc[reg_dataframe[cWELL]==well]
+            oil.set_index(cPROD_START_TIME,drop=False, inplace=True)
             #Calculate oil rate m3/D to be more precise
             oil['Rate']=oil[self.reservoir_prop.primary_product]/(oil['Hours'].loc[oil['Hours']>0])*24/self.reservoir_prop.primdiv
             #Convert index to cumulative days time
             oil['Time']=oil.index.days_in_month*self.config.perhour*self.config.persecond
             oil['Time']=oil['Time'].cumsum()
             oil['CumOil']=oil[self.reservoir_prop.primary_product].cumsum()/self.reservoir_prop.primdiv
-            oil['wc']=oil['WATER_VOL']/(oil[self.reservoir_prop.primary_product]+oil['WATER_VOL'])
+            oil['wc']=oil[cWAT_VOL]/(oil[self.reservoir_prop.primary_product]+oil[cWAT_VOL])
             #Calculate rate for the secondary product
             oil['Rate2']=oil[self.reservoir_prop.secondary_product]/(oil['Hours'].loc[oil['Hours']>0])*24/self.reservoir_prop.secdiv
             oil['secondRatio']=oil['Rate2']/oil['Rate']
             #Calculate 1+WOR
-            oil['Watrate']=(oil['WATER_VOL'].loc[oil['WATER_VOL']>0])/(oil['Hours'].loc[oil['Hours']>0])*24
+            oil['Watrate']=(oil[cWAT_VOL].loc[oil[cWAT_VOL]>0])/(oil['Hours'].loc[oil['Hours']>0])*24
             oil['WOR']=1+oil['Watrate'].loc[oil['Watrate']>0]/oil['Rate'].loc[oil['Rate']>0]
                
         
@@ -706,7 +792,7 @@ class DCA():
             ##########################################################
             #Call fitselect function for WOR. Use cumulative oil chart
             ##########################################################
-            if oil.WATER_VOL.max() > 0:
+            if oil[cWAT_VOL].max() > 0:
                 prd='WOR'
                 wor=True
                 wor_workflow=True
@@ -1042,7 +1128,7 @@ class DCA():
             #Accumulate both historical and forecast rates in a dataframe
             if wcount == 0 :
                 if len(lp_forecast)>0:
-                    comb_dates=pd.date_range(reg_dataframe.PROD_START_TIME.min(),lp_forecast.index.max(),freq='Y')
+                    comb_dates=pd.date_range(reg_dataframe[cPROD_START_TIME].min(),lp_forecast.index.max(),freq='Y')
                     comb_oil=pd.DataFrame(index=comb_dates)
                     lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').sum()
                     #Drop 1st year
@@ -1113,8 +1199,8 @@ if __name__ == "__main__":
     #REG='T3'
     #REG='D2gv(ad)'
     #REG='D2af-bs'
-    
 #     IS_STANDALONE=True
 #     a=DCA()
 #     a.process()
+    log("WARNING!!!. Need V_PROD_RECORDS,V_PROD_RESPART_M2")
     pass

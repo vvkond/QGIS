@@ -21,42 +21,52 @@ from QgisPDS.db import Oracle
 from QgisPDS.connections import create_connection
 from utils import *
 from bblInit import NAMES, Fields
+import pandas as pd
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_dca_base.ui'))
 
 
-
 #===============================================================================
 # 
 #===============================================================================
-class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS):
+class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS,WithSql):
     """Constructor."""
     def __init__(self, _project, _iface, parent=None):
         super(QgisPDSDCAForm, self).__init__(parent)
         self.setupUi(self)
         self._db = None
+        self._need_views=['view_V_PROD_RECORDS.sql','view_V_PROD_RESPART_M2.sql']
+        
         self.iface = _iface
         self.project = _project
         self.reservoirsListWidget.setSelectionMode( QtGui.QAbstractItemView.SingleSelection )
         
-        reservoirs = self._getReservoirs()
-        if reservoirs is not None:
-            for reservoir_part_code,order_num in reservoirs:
-                reservoirName = to_unicode("".join(reservoir_part_code))
-                item = QtGui.QListWidgetItem(reservoirName)
-                if self.reservoirsListWidget.isEnabled():
-                    self.reservoirsListWidget.addItem(item)
-                    self.reservoirsListWidget.setItemSelected(item, False)
+        connection = create_connection(self.project)
+        scheme = self.project['project']
+        self.db = connection.get_db(scheme)
+        self._create_views()
+        
+        res=[]
         #self.buttonBox.setEnabled(len(self.wells)>0)
         if len(self.wells)>0:
             self.setWindowTitle(u"Select reservoir for calculation")
             self.buttonBox.button( QtGui.QDialogButtonBox.Ok).setEnabled(True)
+            reg = self._getReservoirGroups(wells=self.wells)            
             pass
         else:
             self.setWindowTitle(u"You must select wells")
             self.buttonBox.button( QtGui.QDialogButtonBox.Ok).setEnabled(False)
+            reg = self._getReservoirGroups()
             pass
+    
+        if reg is not None:
+            for reservoir_group_code in reg:
+                reservoirName = to_unicode("".join(reservoir_group_code))
+                item = QtGui.QListWidgetItem(reservoirName)
+                if self.reservoirsListWidget.isEnabled():
+                    self.reservoirsListWidget.addItem(item)
+                    self.reservoirsListWidget.setItemSelected(item, False)
     #===========================================================
     # 
     #===========================================================
@@ -82,18 +92,28 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS):
     #===========================================================================
     # read reservoirs names from DB
     #===========================================================================
-    def _getReservoirs(self):
-        connection = create_connection(self.project)
-        scheme = self.project['project']
+    def _create_views(self):
+        for view in self._need_views:
+            QgsMessageLog.logMessage(u"Update view '{}'".format(view), tag="QgisPDS.DCA")
+            sql = self.get_sql(view)
+            pd.io.sql.execute(sql,self.db.connection)
+        pass
+    #===========================================================================
+    # read reservoirs names from DB
+    #===========================================================================
+    def _getReservoirGroups(self,wells=None):
         try:           
-            self.db = connection.get_db(scheme)
-            sql = self.get_sql('ReservoirZones.sql')
-            result = self.db.execute(sql)
-            # db.disconnect()
-            return result
+            sql = self.get_sql('WellReservoirs.sql')
+            SELECT=sql.format(
+                WELL_FILTER='' if wells is None else "AND w.WELL_ID in ('{}')".format("','".join(map(str,wells)))
+                ,RP_FILTER=''
+                ,GRP_FILTER=''
+                )
+            res_df=pd.read_sql(SELECT,self.db.connection)
+            return res_df[u'GRP_CODE'].sort_values(ascending=True).unique()
             
         except Exception as e:
-            QgsMessageLog.logMessage(u"Project production read error {0}: {1}".format(scheme, str(e)), tag="QgisPDS.Error")
+            QgsMessageLog.logMessage(u"Project reservoir group read error {0}: {1}".format(scheme, str(e)), tag="QgisPDS.Error")
             return None
 
     #=======================================================================
@@ -131,9 +151,8 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS):
         from QgisPDS.type_well.autoDCA_new import DCA
         for reg in self.reservoir_groups:
             QgsMessageLog.logMessage(u"Reservoir '{}'".format(reg), tag="QgisPDS.DCA")
-            a=DCA(reservoir_group=reg, well_names=self.wells, conn=self.db.connection)
-            a.process()
-             
+            dca=DCA(reservoir_group=reg, well_names=self.wells, conn=self.db.connection)
+            dca.process()
         pass
 
 

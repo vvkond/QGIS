@@ -22,6 +22,13 @@ class StrictInit(object):
         self.__dict__.update(kw)
 
 
+class WithSql(object):
+    def get_sql(self, value):
+        plugin_dir = os.path.dirname(__file__)
+        sql_file_path = os.path.join(plugin_dir, 'db', value)
+        with open(sql_file_path, 'rb') as f:
+            return f.read().decode('utf-8')    
+
 class Args(StrictInit):
     args = None
 
