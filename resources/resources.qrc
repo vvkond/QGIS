@@ -43,5 +43,6 @@
         <file alias="contours.png">/icons/contours.png</file>
         <file alias="surface.png">/icons/surface.png</file>
         <file alias="move_label.png">/icons/move_label.png</file>
+        <file alias="type_well.png">/icons/type_well.png</file>
     </qresource>
 </RCC>
