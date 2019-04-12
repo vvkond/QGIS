@@ -240,35 +240,41 @@ Config=namedtuple('Config',[
                             ,"window_size"
                           ])
 
-def get_config():
-    """    
-        @return: config
-    """
-    return Config(
-                #Forecast parameters setup
+def get_config(
                 forecast_end='2029'
                 # Set technical rate limit, m3/D
                 ,MinRate=0.158988 #One barrel per day
                 #MinRate=0
                 # Set technical WC limit, frac
                 ,MaxWC=0.99
-                
                 #Autofit parameters setup. Threshold defines sensitivity of data variation
                 ,threshold=0.1
                 #maxthreshold=3
                 #This can handle rugousity of the chart (ignore gaps)
                 #threshold_step=0.05
-                
                 #Set forecast selection charts
                 ,LastPointFcst=True
                 ,LastDateFcst=False
                 ,EndFitFcst=False
-                
                 #Set units, defulat is perday=1:
-                
                 ,perhour=1 #defaults is 24
                 ,persecond=1 #default is 3600
                 ,window_size=5 #size of Sample for calculkation
+        ):
+    """    
+        @return: config
+    """
+    return Config(
+                forecast_end=forecast_end
+                ,MinRate=MinRate
+                ,MaxWC=MaxWC
+                ,threshold=threshold
+                ,LastPointFcst=LastPointFcst
+                ,LastDateFcst=LastDateFcst
+                ,EndFitFcst=EndFitFcst
+                ,perhour=perhour
+                ,persecond=persecond
+                ,window_size=window_size
                 )
 #===============================================================================
 # 
@@ -299,12 +305,13 @@ class DCA():
                  , reservoir_group
                  , well_names=None
                  , conn=None
+                 , config=get_config()
                  ):
         self.is_terminated=False
         self.REG=reservoir_group
         self.WELLS=well_names
         log("Read DCA config")
-        self.config=get_config()
+        self.config=config
         self.reservoir_prop=get_reservoir_prop(self.REG)
         if not self.reservoir_prop:
             log("Error. Can't read reservoir group '{}' property".format(self.REG))
