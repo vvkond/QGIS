@@ -304,6 +304,18 @@
     <edittype widgetv2type="TextEdit" name="pfl_f_m">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
     </edittype>
+    <edittype widgetv2type="TextEdit" name="transite">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="target">
+      <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="x">
+      <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
+    <edittype widgetv2type="TextEdit" name="y">
+      <widgetv2config IsMultiline="0" fieldEditable="0" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+    </edittype>
   </edittypes>
   <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
     <rules key="{080e9a79-fc68-4be0-8d7a-ceb05b29c241}">
@@ -312,69 +324,70 @@
           <rule filter="&quot;wellrole&quot; ='oil producing'" key="{7bdbacd9-e0c2-4574-a7bf-834e72d325c2}" label="нефтяные">
             <rule filter=" &quot;liftmethod&quot; ='sucker-rod pump'" key="{7c30646d-3644-4d1a-ae33-3d0fc6338334}" symbol="0" label="ШГН"/>
             <rule filter=" &quot;liftmethod&quot; ='centrifugal pump'" key="{aa53a643-c231-400c-928e-6b5bfa262466}" symbol="1" label="ЕЦН"/>
-            <rule filter=" &quot;liftmethod&quot; ='flowing'" key="{a6b2e780-da20-4b6e-873f-e5b62d870983}" symbol="2" label="фонтан"/>
+            <rule filter=" &quot;liftmethod&quot; ='flowing'" key="{d40a4391-9ede-44ee-a949-88e45a2f6e77}" symbol="2" label="фонтан"/>
+            <rule filter=" &quot;liftmethod&quot;  is Null or &quot;liftmethod&quot;  not in ('sucker-rod pump','centrifugal pump','flowing')" key="{a6b2e780-da20-4b6e-873f-e5b62d870983}" symbol="3" label="остальные"/>
           </rule>
-          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{cc5ba0d1-7d37-4729-bc2c-f251e547a2de}" symbol="3" label="газовые"/>
+          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{cc5ba0d1-7d37-4729-bc2c-f251e547a2de}" symbol="4" label="газовые"/>
         </rule>
-        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{35a1c362-5641-4358-9c24-50380f80fda0}" symbol="4" label="нагнетательный"/>
-        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{4bfe5dcb-d101-4c7b-926f-42467c701d9d}" symbol="5" label="поглащающий"/>
-        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{34dca591-89a8-49f5-8737-7086d21295b2}" symbol="6" label="водозаборный"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{35a1c362-5641-4358-9c24-50380f80fda0}" symbol="5" label="нагнетательный"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{4bfe5dcb-d101-4c7b-926f-42467c701d9d}" symbol="6" label="поглащающий"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{34dca591-89a8-49f5-8737-7086d21295b2}" symbol="7" label="водозаборный"/>
       </rule>
-      <rule description="Назначение по фонду-наблюдательная, состояние- наблюдательная" filter="&quot;wellstatus&quot; ='exploration active stock'   AND   (&quot;wsinfo&quot; is Null or &quot;wsinfo&quot;  not in ('reservoir change'))" key="{2bf8de60-254a-4439-bbc4-653c6bb285bc}" symbol="7" label="наблюдательный"/>
-      <rule filter="&quot;wellstatus&quot; ='completion stock'   AND   (&quot;wsinfo&quot; is Null or &quot;wsinfo&quot;  not in ('reservoir change'))" key="{20724455-3264-4a19-b890-b613c58b0772}" symbol="8" label="в освоении"/>
+      <rule description="Назначение по фонду-наблюдательная, состояние- наблюдательная" filter="&quot;wellstatus&quot; ='exploration active stock'   AND   (&quot;wsinfo&quot; is Null or &quot;wsinfo&quot;  not in ('reservoir change'))" key="{2bf8de60-254a-4439-bbc4-653c6bb285bc}" symbol="8" label="наблюдательный"/>
+      <rule filter="&quot;wellstatus&quot; ='completion stock'   AND   (&quot;wsinfo&quot; is Null or &quot;wsinfo&quot;  not in ('reservoir change'))" key="{20724455-3264-4a19-b890-b613c58b0772}" symbol="9" label="в освоении"/>
       <rule description="статус в простое или остановлена  без примечания к статусу" filter="(&quot;wellstatus&quot; ='inactive stock' OR &quot;wellstatus&quot; ='suspended stock')  AND   (&quot;wsinfo&quot; is Null or &quot;wsinfo&quot;  not in ('reservoir change'))" key="{10ddd8fa-5818-4e83-8ad9-082be07db29b}" label="бездействующий">
         <rule key="{96b9e58c-e0a3-4000-bc32-31f9f8b772f7}" label="из эксплуатации">
-          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{882da65f-fcd6-4261-9910-5a065eea78c6}" symbol="9" label="нефтяные"/>
-          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{dec0b1b9-2fdd-480b-8930-b4216668e54f}" symbol="10" label="газовыые"/>
+          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{882da65f-fcd6-4261-9910-5a065eea78c6}" symbol="10" label="нефтяные"/>
+          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{dec0b1b9-2fdd-480b-8930-b4216668e54f}" symbol="11" label="газовыые"/>
         </rule>
-        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{37f9a9f7-3921-4433-9d14-bcecf8e4ac2d}" symbol="11" label="из нагнетания"/>
-        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{9608c93c-3337-427b-8bd5-096c901a3fdb}" symbol="12" label="из поглащения"/>
-        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{3ac3e038-3f77-485b-ada9-dfbe42909ae8}" symbol="13" label="из водозабора"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{37f9a9f7-3921-4433-9d14-bcecf8e4ac2d}" symbol="12" label="из нагнетания"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{9608c93c-3337-427b-8bd5-096c901a3fdb}" symbol="13" label="из поглащения"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{3ac3e038-3f77-485b-ada9-dfbe42909ae8}" symbol="14" label="из водозабора"/>
       </rule>
       <rule description="статус в простое или остановлена  без примечания к статусу" filter="(&quot;wellstatus&quot; ='conservation stock' or &quot;wellstatus&quot; ='exploration conservation stock')  AND   (&quot;wsinfo&quot; is Null or &quot;wsinfo&quot;  not in ('reservoir change'))" key="{2247dbe7-ef1e-4c5b-a2f8-b944f3e01f54}" label="консервация">
         <rule key="{1bf430fc-20e9-4421-a8b1-a4de49ff811c}" label="из эксплуатации">
-          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{65cd01fe-c85d-4a54-8607-fb7e3219782f}" symbol="14" label="нефтяные"/>
-          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{c9addec2-c8ab-44f7-b04d-96ac227e26ac}" symbol="15" label="газовыые"/>
+          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{65cd01fe-c85d-4a54-8607-fb7e3219782f}" symbol="15" label="нефтяные"/>
+          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{c9addec2-c8ab-44f7-b04d-96ac227e26ac}" symbol="16" label="газовыые"/>
         </rule>
-        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{289f70db-f670-4cee-b6b5-47c6a56b3c70}" symbol="16" label="из нагнетания"/>
-        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{101f13e5-a34f-4008-91c4-8c495a5b0793}" symbol="17" label="из поглащения"/>
-        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{c7c75fcd-5270-4894-936d-5d6f4d99a306}" symbol="18" label="из водозабора"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{289f70db-f670-4cee-b6b5-47c6a56b3c70}" symbol="17" label="из нагнетания"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{101f13e5-a34f-4008-91c4-8c495a5b0793}" symbol="18" label="из поглащения"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{c7c75fcd-5270-4894-936d-5d6f4d99a306}" symbol="19" label="из водозабора"/>
       </rule>
       <rule filter="&quot;wsinfo&quot; ='reservoir change'" key="{6899e675-b456-4c2d-b7db-3554b27953f3}" label="перевод на другой горизонт">
-        <rule filter="&quot;wsreason&quot; ='oil prod'" key="{c56764f0-6cba-49fb-940e-bf5c4a414062}" symbol="19" label="получена нефть"/>
-        <rule filter="&quot;wsreason&quot; ='inj'" key="{81755a1c-6457-4f3c-9aec-dca17505869d}" symbol="20" label="нагнетательный"/>
-        <rule filter="&quot;wsreason&quot; ='absorb'" key="{e6ba43b4-4596-4fca-8c30-b7d9a9afeb05}" symbol="21" label="поглащающий"/>
-        <rule filter="&quot;wsreason&quot; ='supply'" key="{a2f113d4-eeb4-44e8-999c-5682ab437d21}" symbol="22" label="водозаборный"/>
-        <rule filter="&quot;wsreason&quot; ='gas prod'" key="{801045d0-ab81-4f3a-9caf-5021bee0f07c}" symbol="23" label="получен газ"/>
-        <rule filter="&quot;wsreason&quot; ='water prod'" key="{55f0fd14-a771-438a-ae26-a02e41d8d9ca}" symbol="24" label="получена вода"/>
-        <rule filter="&quot;wsreason&quot; ='no prod'" key="{e799dac0-491e-405b-be6b-6c305eb8aa0a}" symbol="25" label="нет притока"/>
+        <rule filter="&quot;wsreason&quot; ='oil prod'" key="{c56764f0-6cba-49fb-940e-bf5c4a414062}" symbol="20" label="получена нефть"/>
+        <rule filter="&quot;wsreason&quot; ='inj'" key="{81755a1c-6457-4f3c-9aec-dca17505869d}" symbol="21" label="нагнетательный"/>
+        <rule filter="&quot;wsreason&quot; ='absorb'" key="{e6ba43b4-4596-4fca-8c30-b7d9a9afeb05}" symbol="22" label="поглащающий"/>
+        <rule filter="&quot;wsreason&quot; ='supply'" key="{a2f113d4-eeb4-44e8-999c-5682ab437d21}" symbol="23" label="водозаборный"/>
+        <rule filter="&quot;wsreason&quot; ='gas prod'" key="{801045d0-ab81-4f3a-9caf-5021bee0f07c}" symbol="24" label="получен газ"/>
+        <rule filter="&quot;wsreason&quot; ='water prod'" key="{55f0fd14-a771-438a-ae26-a02e41d8d9ca}" symbol="25" label="получена вода"/>
+        <rule filter="&quot;wsreason&quot; ='no prod'" key="{e799dac0-491e-405b-be6b-6c305eb8aa0a}" symbol="26" label="нет притока"/>
       </rule>
-      <rule description="скважины, которые добурены ниже и не работающие на текущем пласте" filter="&quot;transite&quot; is not NULL AND  &quot;wellstatus&quot; is NULL" key="{191151b6-bfd0-47b4-923d-3fe014fd1475}" symbol="26" label="транзитный"/>
+      <rule description="скважины, которые добурены ниже и не работающие на текущем пласте" filter="&quot;transite&quot; is not NULL AND  &quot;wellstatus&quot; is NULL" key="{191151b6-bfd0-47b4-923d-3fe014fd1475}" symbol="27" label="транзитный"/>
       <rule description="статус в простое или остановлена  без примечания к статусу" filter="(&quot;wellstatus&quot; ='abandonment stock' OR &quot;wellstatus&quot; ='exploration abandonment stock' ) AND &quot;wsinfo&quot; ='wait abandonment'" key="{db0383d5-7a3c-4d89-8f94-026c600705dc}" label="ожидание ликвидации">
         <rule key="{7d9f4cf9-9a38-4ab7-8d33-98ca7b5d7f0c}" label="из эксплуатации">
-          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{182decf9-9121-4e53-96f0-0d7dde79d215}" symbol="27" label="нефтяные"/>
-          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{28606bba-920f-49e1-b1c4-3c9ea4686faa}" symbol="28" label="газовыые"/>
+          <rule filter="&quot;wellrole&quot; ='oil producing'" key="{182decf9-9121-4e53-96f0-0d7dde79d215}" symbol="28" label="нефтяные"/>
+          <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{28606bba-920f-49e1-b1c4-3c9ea4686faa}" symbol="29" label="газовыые"/>
         </rule>
-        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{1919cbab-c97f-4dbd-a45b-3ac0132953de}" symbol="29" label="из нагнетания"/>
-        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{16dbb1b7-558f-4436-865d-f3e8cd967eda}" symbol="30" label="из поглащения"/>
-        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{2869348d-8f77-41ed-bacb-b1124a1bcc23}" symbol="31" label="из водозабора"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{1919cbab-c97f-4dbd-a45b-3ac0132953de}" symbol="30" label="из нагнетания"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{16dbb1b7-558f-4436-865d-f3e8cd967eda}" symbol="31" label="из поглащения"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{2869348d-8f77-41ed-bacb-b1124a1bcc23}" symbol="32" label="из водозабора"/>
       </rule>
       <rule filter="(&#xd;&#xa;&#x9;&quot;wellstatus&quot; ='abandonment stock'  &#xd;&#xa;&#x9;OR &quot;wellstatus&quot; ='exploration abandonment stock'&#xd;&#xa;)   AND (&#xd;&#xa;&quot;wsinfo&quot; is Null OR &quot;wsinfo&quot; &lt;> 'wait abandonment'&#xd;&#xa;)" key="{ca78033c-5cc2-42ea-933b-1e2fa943ceb6}" label="ликвидированный">
         <rule filter="&quot;wsinfo&quot; ='abandonment expl'" key="{0ab147d5-87cf-47b6-89df-97902972ba75}" label="из эксплуатации">
-          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{05ea1f08-06f5-4266-92bb-a4ed327ee2dc}" symbol="32" label="технические причины"/>
-          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{95079071-1e20-4dac-bac1-e45db4516267}" symbol="33" label="геологические причины"/>
+          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{05ea1f08-06f5-4266-92bb-a4ed327ee2dc}" symbol="33" label="технические причины"/>
+          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{95079071-1e20-4dac-bac1-e45db4516267}" symbol="34" label="геологические причины"/>
         </rule>
         <rule filter="&quot;wsinfo&quot; ='abandonment drill'" key="{16c5ed84-d7d4-4952-bd3a-9d3a3bc255bd}" label="из бурения">
-          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{d718269a-c942-450c-b7e4-d486c6f5cbd5}" symbol="34" label="технические причины"/>
-          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{6fcc331e-84ed-4c30-ab21-38b7a002296c}" symbol="35" label="геологические причины"/>
+          <rule filter="&quot;wsreason&quot; ='technical reason'" key="{d718269a-c942-450c-b7e4-d486c6f5cbd5}" symbol="35" label="технические причины"/>
+          <rule filter="&quot;wsreason&quot; ='geology reason'" key="{6fcc331e-84ed-4c30-ab21-38b7a002296c}" symbol="36" label="геологические причины"/>
         </rule>
-        <rule filter="&quot;wellrole&quot; ='water injecting' AND &quot;wsinfo&quot; is NULL " key="{1ab5fb67-b1f0-4f7a-9df1-feddd9ed2366}" symbol="36" label="из нагнетания"/>
-        <rule filter="&quot;wellrole&quot; ='water absorbing'  AND &quot;wsinfo&quot; is NULL " key="{0917a817-c46e-4751-9dfc-f36f732f7d45}" symbol="37" label="из поглащения"/>
-        <rule filter="&quot;wellrole&quot; ='water-supply'  AND &quot;wsinfo&quot; is NULL " key="{378b281c-c5f0-484f-9e52-52ba0b9b28a6}" symbol="38" label="из водозабора"/>
-        <rule filter="&quot;wellstatus&quot; ='exploration abandonment stock'   AND &quot;wsinfo&quot; is NULL " key="{c50ae2d5-993a-440d-9461-92b5299582e3}" symbol="39" label="из наблюдения"/>
-        <rule description="Если есть символ на данном пласте,значит скважина целевая" filter="(&#xd;&#xa;&#x9;&quot;wsinfo&quot; is NULL &#xd;&#xa;&#x9;and  (&quot;wellrole&quot;  not in ('water injecting','water absorbing','water-supply') &#xd;&#xa;&#x9;and (&quot;wellstatus&quot; not in ('exploration abandonment stock') )) &#xd;&#xa;) or (&#xd;&#xa;&#x9;&quot;wsinfo&quot; not in ('abandonment expl','abandonment drill',NULL)&#xd;&#xa;)&#xd;&#xa;" key="{53287e0b-409d-4b19-852f-49d8552371be}" symbol="40" label="причина не указана"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting' AND &quot;wsinfo&quot; is NULL " key="{1ab5fb67-b1f0-4f7a-9df1-feddd9ed2366}" symbol="37" label="из нагнетания"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'  AND &quot;wsinfo&quot; is NULL " key="{0917a817-c46e-4751-9dfc-f36f732f7d45}" symbol="38" label="из поглащения"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'  AND &quot;wsinfo&quot; is NULL " key="{378b281c-c5f0-484f-9e52-52ba0b9b28a6}" symbol="39" label="из водозабора"/>
+        <rule filter="&quot;wellstatus&quot; ='exploration abandonment stock'   AND &quot;wsinfo&quot; is NULL " key="{c50ae2d5-993a-440d-9461-92b5299582e3}" symbol="40" label="из наблюдения"/>
+        <rule description="Если есть символ на данном пласте,значит скважина целевая" filter="(&#xd;&#xa;&#x9;&quot;wsinfo&quot; is NULL &#xd;&#xa;&#x9;and  (&quot;wellrole&quot;  not in ('water injecting','water absorbing','water-supply') &#xd;&#xa;&#x9;and (&quot;wellstatus&quot; not in ('exploration abandonment stock') )) &#xd;&#xa;) or (&#xd;&#xa;&#x9;&quot;wsinfo&quot; not in ('abandonment expl','abandonment drill',NULL)&#xd;&#xa;)&#xd;&#xa;" key="{53287e0b-409d-4b19-852f-49d8552371be}" symbol="41" label="причина не указана"/>
       </rule>
-      <rule checkstate="0" filter="False" key="{9309deff-de94-4f9e-a283-81d968682b46}" symbol="41" label="проектные"/>
+      <rule checkstate="0" filter="False" key="{9309deff-de94-4f9e-a283-81d968682b46}" symbol="42" label="проектные"/>
     </rules>
     <symbols>
       <symbol alpha="1" clip_to_extent="1" type="marker" name="0">
@@ -420,6 +433,26 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="10">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
+          <prop k="color" v="85,93,184,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/INACTIVE_OIL.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="11">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
           <prop k="color" v="137,46,131,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
           <prop k="name" v="shirvan_fond/INACTIVE_GAS.svg"/>
@@ -437,7 +470,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="11">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="12">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="30,157,102,255"/>
@@ -457,7 +490,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="12">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="13">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="25,74,219,255"/>
@@ -477,7 +510,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="13">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="14">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="214,34,233,255"/>
@@ -497,7 +530,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="14">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="15">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="85,93,184,255"/>
@@ -517,7 +550,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="15">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="16">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="137,46,131,255"/>
@@ -537,7 +570,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="16">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="17">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="30,157,102,255"/>
@@ -557,7 +590,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="17">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="18">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="25,74,219,255"/>
@@ -577,32 +610,12 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="18">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="19">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="214,34,233,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
           <prop k="name" v="shirvan_fond/CONSERVED_SUPPLY.svg"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_width" v="0"/>
-          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="8"/>
-          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
-          <prop k="vertical_anchor_point" v="1"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="19">
-        <layer pass="2" class="SvgMarker" locked="0">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="201,120,54,255"/>
-          <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_OILPROD.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -640,6 +653,26 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="20">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
+          <prop k="color" v="201,120,54,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_OILPROD.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="21">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
           <prop k="color" v="164,163,103,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
           <prop k="name" v="shirvan_fond/RESERVOIR_CHANGE_INJ.svg"/>
@@ -657,7 +690,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="21">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="22">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="173,112,216,255"/>
@@ -677,7 +710,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="22">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="23">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="76,164,82,255"/>
@@ -697,7 +730,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="23">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="24">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="68,35,190,255"/>
@@ -717,7 +750,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="24">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="25">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="1,133,107,255"/>
@@ -737,7 +770,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="25">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="26">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="213,54,211,255"/>
@@ -757,7 +790,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="26">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="27">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="125,171,131,255"/>
@@ -777,7 +810,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="27">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="28">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="85,93,184,255"/>
@@ -797,7 +830,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="28">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="29">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="137,46,131,255"/>
@@ -817,7 +850,27 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="29">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="3">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="51,160,44,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="primitives/WellSymbol001.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="34,139,34,255"/>
+          <prop k="outline_width" v="0.2"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="30">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="30,157,102,255"/>
@@ -837,27 +890,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="3">
-        <layer pass="2" class="SvgMarker" locked="0">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="224,155,226,255"/>
-          <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/GAS.svg"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_width" v="0"/>
-          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="8"/>
-          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
-          <prop k="vertical_anchor_point" v="1"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="30">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="31">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="25,74,219,255"/>
@@ -877,7 +910,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="31">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="32">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="214,34,233,255"/>
@@ -897,7 +930,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="32">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="33">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="38,156,15,255"/>
@@ -917,7 +950,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="33">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="34">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="185,139,208,255"/>
@@ -937,7 +970,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="34">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="35">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="145,63,16,255"/>
@@ -957,7 +990,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="35">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="36">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="142,100,32,255"/>
@@ -977,7 +1010,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="36">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="37">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="121,156,44,255"/>
@@ -997,7 +1030,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="37">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="38">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="205,223,137,255"/>
@@ -1017,7 +1050,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="38">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="39">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="169,132,127,255"/>
@@ -1037,7 +1070,27 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="39">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="4">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
+          <prop k="color" v="224,155,226,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/GAS.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="40">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="181,175,86,255"/>
@@ -1057,27 +1110,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="4">
-        <layer pass="2" class="SvgMarker" locked="0">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="18,38,194,255"/>
-          <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/INJ.svg"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_width" v="0"/>
-          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="8"/>
-          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
-          <prop k="vertical_anchor_point" v="1"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="40">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="41">
         <layer pass="0" class="FontMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="chr" v="?"/>
@@ -1098,7 +1131,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="41">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="42">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="133,181,192,255"/>
@@ -1121,6 +1154,26 @@
       <symbol alpha="1" clip_to_extent="1" type="marker" name="5">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
+          <prop k="color" v="18,38,194,255"/>
+          <prop k="horizontal_anchor_point" v="1"/>
+          <prop k="name" v="shirvan_fond/INJ.svg"/>
+          <prop k="offset" v="0,0"/>
+          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="offset_unit" v="MM"/>
+          <prop k="outline_color" v="0,0,0,255"/>
+          <prop k="outline_width" v="0"/>
+          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="outline_width_unit" v="MM"/>
+          <prop k="scale_method" v="diameter"/>
+          <prop k="size" v="8"/>
+          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+          <prop k="size_unit" v="MM"/>
+          <prop k="vertical_anchor_point" v="1"/>
+        </layer>
+      </symbol>
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="6">
+        <layer pass="2" class="SvgMarker" locked="0">
+          <prop k="angle" v="0"/>
           <prop k="color" v="175,91,178,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
           <prop k="name" v="shirvan_fond/ABSORB.svg"/>
@@ -1138,7 +1191,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="6">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="7">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="191,166,22,255"/>
@@ -1158,7 +1211,7 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="7">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="8">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="6,173,15,255"/>
@@ -1178,32 +1231,12 @@
           <prop k="vertical_anchor_point" v="1"/>
         </layer>
       </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="8">
+      <symbol alpha="1" clip_to_extent="1" type="marker" name="9">
         <layer pass="2" class="SvgMarker" locked="0">
           <prop k="angle" v="0"/>
           <prop k="color" v="138,26,30,255"/>
           <prop k="horizontal_anchor_point" v="1"/>
           <prop k="name" v="shirvan_fond/COMPLETION.svg"/>
-          <prop k="offset" v="0,0"/>
-          <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="offset_unit" v="MM"/>
-          <prop k="outline_color" v="0,0,0,255"/>
-          <prop k="outline_width" v="0"/>
-          <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="outline_width_unit" v="MM"/>
-          <prop k="scale_method" v="diameter"/>
-          <prop k="size" v="8"/>
-          <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
-          <prop k="size_unit" v="MM"/>
-          <prop k="vertical_anchor_point" v="1"/>
-        </layer>
-      </symbol>
-      <symbol alpha="1" clip_to_extent="1" type="marker" name="9">
-        <layer pass="2" class="SvgMarker" locked="0">
-          <prop k="angle" v="0"/>
-          <prop k="color" v="85,93,184,255"/>
-          <prop k="horizontal_anchor_point" v="1"/>
-          <prop k="name" v="shirvan_fond/INACTIVE_OIL.svg"/>
           <prop k="offset" v="0,0"/>
           <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
           <prop k="offset_unit" v="MM"/>
@@ -1367,12 +1400,12 @@
     <property key="labeling/xOffset" value="0"/>
     <property key="labeling/yOffset" value="0"/>
     <property key="labeling/zIndex" value="0"/>
-    <property key="pds_fondLoad_isObject" value="False"/>
-    <property key="pds_fondLoad_isWell" value="True"/>
+    <property key="pds_fondLoad_isObject" value="True"/>
+    <property key="pds_fondLoad_isWell" value="False"/>
     <property key="pds_prod_PhaseFilter" value="[]"/>
-    <property key="pds_prod_SelectedReservoirs" value="[u'AP03', u'AP02', u'I-ob-AP02', u'II-ob-AP02', u'II-a-AP02', u'II-b-AP02', u'II-b1-AP02', u'II-c-AP02', u'II-c1-AP02', u'II-c2-AP02', u'II-c3-AP02', u'II-c4-AP02', u'II-d-AP02', u'II-e-AP02', u'III-ob-AP02', u'IV-ob-AP02', u'AP01', u'AKCH', u'PS01', u'PS02', u'PS03', u'PS04', u'PS05', u'PS06', u'PS07', u'PS08', u'PS09', u'PS10', u'PS11', u'PS12', u'PS13', u'PS14', u'PS15', u'PS16', u'PS17', u'PS18', u'PS20', u'PS19', u'PS22', u'PS21', u'0', u'I-c-AP02']"/>
+    <property key="pds_prod_SelectedReservoirs" value="[u'PS01']"/>
     <property key="pds_prod_endDate" value="28/02/2019 00:00:00"/>
-    <property key="pds_project" value="{u'project': u'kurnew_20190306', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;SHIRVAN&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
+    <property key="pds_project" value="{'project': u'kurovdag_new', 'type': u'tigress', 'options': u'{&quot;host&quot;: &quot;soc-tig&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;TIG11G&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;2223&quot;}'}"/>
     <property key="qgis_pds_type" value="pds_fond"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
@@ -1534,6 +1567,10 @@
     <alias field="pflmaxd_v" index="98" name="Добыча жидкости (дата макс. дебита по объему)"/>
     <alias field="pfl_f_v" index="99" name=""/>
     <alias field="pfl_f_m" index="100" name=""/>
+    <alias field="transite" index="101" name=""/>
+    <alias field="target" index="102" name=""/>
+    <alias field="x" index="103" name=""/>
+    <alias field="y" index="104" name=""/>
   </aliases>
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
@@ -1642,6 +1679,10 @@
       <column width="-1" hidden="0" type="field" name="fgas_f_m"/>
       <column width="-1" hidden="0" type="field" name="pfl_f_v"/>
       <column width="-1" hidden="0" type="field" name="pfl_f_m"/>
+      <column width="-1" hidden="0" type="field" name="transite"/>
+      <column width="-1" hidden="0" type="field" name="target"/>
+      <column width="-1" hidden="0" type="field" name="x"/>
+      <column width="-1" hidden="0" type="field" name="y"/>
     </columns>
   </attributetableconfig>
   <editform>.</editform>
@@ -1779,6 +1820,10 @@ def my_form_open(dialog, layer, feature):
     <default field="pflmaxd_v" expression=""/>
     <default field="pfl_f_v" expression=""/>
     <default field="pfl_f_m" expression=""/>
+    <default field="transite" expression=""/>
+    <default field="target" expression=""/>
+    <default field="x" expression=""/>
+    <default field="y" expression=""/>
   </defaults>
   <previewExpression>COALESCE( "symbolname", '&lt;NULL>' )</previewExpression>
   <layerGeometryType>0</layerGeometryType>
