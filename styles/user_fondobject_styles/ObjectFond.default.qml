@@ -354,13 +354,13 @@
         <rule filter="&quot;wellrole&quot; ='water-supply'" key="{c7c75fcd-5270-4894-936d-5d6f4d99a306}" symbol="19" label="из водозабора"/>
       </rule>
       <rule filter="&quot;wsinfo&quot; ='reservoir change'" key="{6899e675-b456-4c2d-b7db-3554b27953f3}" label="перевод на другой горизонт">
-        <rule filter="&quot;wsreason&quot; ='oil prod'" key="{c56764f0-6cba-49fb-940e-bf5c4a414062}" symbol="20" label="получена нефть"/>
-        <rule filter="&quot;wsreason&quot; ='inj'" key="{81755a1c-6457-4f3c-9aec-dca17505869d}" symbol="21" label="нагнетательный"/>
-        <rule filter="&quot;wsreason&quot; ='absorb'" key="{e6ba43b4-4596-4fca-8c30-b7d9a9afeb05}" symbol="22" label="поглащающий"/>
-        <rule filter="&quot;wsreason&quot; ='supply'" key="{a2f113d4-eeb4-44e8-999c-5682ab437d21}" symbol="23" label="водозаборный"/>
-        <rule filter="&quot;wsreason&quot; ='gas prod'" key="{801045d0-ab81-4f3a-9caf-5021bee0f07c}" symbol="24" label="получен газ"/>
-        <rule filter="&quot;wsreason&quot; ='water prod'" key="{55f0fd14-a771-438a-ae26-a02e41d8d9ca}" symbol="25" label="получена вода"/>
-        <rule filter="&quot;wsreason&quot; ='no prod'" key="{e799dac0-491e-405b-be6b-6c305eb8aa0a}" symbol="26" label="нет притока"/>
+        <rule filter=" &quot;wellrole&quot; = 'oil producing' " key="{c56764f0-6cba-49fb-940e-bf5c4a414062}" symbol="20" label="получена нефть"/>
+        <rule filter="&quot;wellrole&quot; ='water injecting' " key="{81755a1c-6457-4f3c-9aec-dca17505869d}" symbol="21" label="нагнетательный"/>
+        <rule filter="&quot;wellrole&quot; ='water absorbing'" key="{e6ba43b4-4596-4fca-8c30-b7d9a9afeb05}" symbol="22" label="поглащающий"/>
+        <rule filter="&quot;wellrole&quot; ='water-supply'" key="{a2f113d4-eeb4-44e8-999c-5682ab437d21}" symbol="23" label="водозаборный"/>
+        <rule filter="&quot;wellrole&quot; ='gas producing'  " key="{801045d0-ab81-4f3a-9caf-5021bee0f07c}" symbol="24" label="получен газ"/>
+        <rule filter="False" key="{55f0fd14-a771-438a-ae26-a02e41d8d9ca}" symbol="25" label="получена вода"/>
+        <rule filter="False" key="{e799dac0-491e-405b-be6b-6c305eb8aa0a}" symbol="26" label="нет притока"/>
       </rule>
       <rule description="скважины, которые добурены ниже и не работающие на текущем пласте" filter="&quot;transite&quot; is not NULL AND  &quot;wellstatus&quot; is NULL" key="{191151b6-bfd0-47b4-923d-3fe014fd1475}" symbol="27" label="транзитный"/>
       <rule description="статус в простое или остановлена  без примечания к статусу" filter="(&quot;wellstatus&quot; ='abandonment stock' OR &quot;wellstatus&quot; ='exploration abandonment stock' ) AND &quot;wsinfo&quot; ='wait abandonment'" key="{db0383d5-7a3c-4d89-8f94-026c600705dc}" label="ожидание ликвидации">
@@ -1575,13 +1575,13 @@
   <excludeAttributesWMS/>
   <excludeAttributesWFS/>
   <attributeactions default="-1"/>
-  <attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;liftmethod&quot;" sortOrder="1">
+  <attributetableconfig actionWidgetStyle="dropDown" sortExpression="&quot;wellstatus&quot;" sortOrder="0">
     <columns>
       <column width="-1" hidden="0" type="field" name="well_id"/>
       <column width="-1" hidden="0" type="field" name="latitude"/>
       <column width="-1" hidden="0" type="field" name="longitude"/>
       <column width="385" hidden="0" type="field" name="symbolid"/>
-      <column width="107" hidden="0" type="field" name="symbolname"/>
+      <column width="167" hidden="0" type="field" name="symbolname"/>
       <column width="-1" hidden="0" type="field" name="symbolcode"/>
       <column width="132" hidden="0" type="field" name="wellrole"/>
       <column width="114" hidden="0" type="field" name="wellstatus"/>
