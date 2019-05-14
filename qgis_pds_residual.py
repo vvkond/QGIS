@@ -94,7 +94,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         super(QgisPDSResidualDialog, self).__init__(parent)       
 
         self.oilKindId = u'crude oil'
-        self.gasKindId = u'free gas'
+        self.gasKindId = u'natural gas'
 
         self.iface = iface
         self.project = project
