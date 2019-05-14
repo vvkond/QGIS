@@ -968,6 +968,7 @@ class DCA():
                 
                 plt.plot(lp_forecast[self.reservoir_prop.primary_product+'RF'],lp_forecast[self.reservoir_prop.secondary_product+'RF'], 'y--',)
                 plt.plot(oil.GasRF, oil.CondRF, color='red', linewidth=1, label='RFcond/RFgas' )
+                plt.text(max(oil.GasRF),max(oil.CondRF),well)
                 plt.ylabel(self.reservoir_prop.secondary_product+'RF')
                 plt.xlabel(self.reservoir_prop.primary_product+'RF')
         
@@ -1137,18 +1138,18 @@ class DCA():
                 if len(lp_forecast)>0:
                     comb_dates=pd.date_range(reg_dataframe[cPROD_START_TIME].min(),lp_forecast.index.max(),freq='Y')
                     comb_oil=pd.DataFrame(index=comb_dates)
-                    lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').sum()
+                    lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').mean()
                     #Drop 1st year
                     lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
-                    comb_oil[well]=oil['Rate'].resample('Y').sum().append(lp_forecast1)
+                    comb_oil[well]=oil['Rate'].resample('Y').mean().append(lp_forecast1)
                     #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
                         
             else:
                 if len(lp_forecast)>0:
-                    lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').sum()
+                    lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').mean()
                     #Drop 1st year
                     lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
-                    comb_oil[well]=oil['Rate'].resample('Y').sum().append(lp_forecast1)
+                    comb_oil[well]=oil['Rate'].resample('Y').mean().append(lp_forecast1)
                     #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
             wcount=wcount+1
             #Append eur_list
@@ -1174,7 +1175,7 @@ class DCA():
             
             #Final chart
             log( "SHOW FINAL GRAPH")
-            plt.figure(3, figsize=(12,8))#All rates and forecasts vs Years
+            plt.figure(4, figsize=(12,8))#All rates and forecasts vs Years
             for well in comb_oil.columns:
                 plt.plot(comb_oil.index, comb_oil[well], linewidth=1,label=well)
                 pass
