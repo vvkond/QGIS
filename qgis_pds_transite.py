@@ -15,7 +15,7 @@ from .connections import create_connection
 from .utils import to_unicode, makeShpFileName
 from .tig_projection import *
 from .qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
-from utils import edit_layer
+from utils import edit_layer, LayersHider
 from bblInit import layer_to_labeled, Fields
 
 
@@ -247,6 +247,10 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
     def process(self):
         global IS_DEBUG
         IS_DEBUG=     self.isDebugChkBox.isChecked()
+        #hide layers
+        layer_hider=LayersHider(self.iface)
+        layer_hider.hide()
+        #
         for editLayer in self.selectedLayers:
             progressMessageBar = self.iface.messageBar()
             self.progress = QProgressBar()
@@ -272,6 +276,8 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
                 QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
     
             self.iface.messageBar().clearWidgets()
+        #show layers
+        layer_hider.show()
 
     #===========================================================================
     # 

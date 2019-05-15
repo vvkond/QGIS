@@ -37,6 +37,24 @@ class Exc(Exception):
     pass
 
 
+class LayersHider():
+    def __init__(self,iface):
+        self.iface=iface
+        self.viz_layers=[]
+    def hide(self):
+        self.viz_layers=[]
+        for layer in self.iface.legendInterface().layers():
+            if self.iface.legendInterface().isLayerVisible(layer):
+                self.viz_layers.append(layer)
+                self.iface.legendInterface().setLayerVisible(layer, False)
+        self.iface.mapCanvas().refresh() #Repaints the canvas map
+        # self.iface.mapCanvas().refreshAllLayers() #Reload all layers, clear the cache and refresh the canvas 
+    def show(self):
+        for layer in self.viz_layers:
+            self.iface.legendInterface().setLayerVisible(layer, True)
+        self.iface.mapCanvas().refresh()#Repaints the canvas map
+        
+
 class cached_property(object):
 
     def __init__(self, func, name=None, doc=None):
