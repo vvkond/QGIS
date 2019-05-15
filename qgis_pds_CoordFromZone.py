@@ -31,7 +31,7 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     #===========================================================================
     # 
     #===========================================================================
-    def __init__(self, _project, _iface, _editLayer, parent=None):
+    def __init__(self, _project, _iface, _editLayers, parent=None):
         """Constructor."""
         super(QgisPDSCoordFromZoneDialog, self).__init__(parent)
 
@@ -45,7 +45,9 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
         self.plugin_dir = os.path.dirname(__file__)
         self.iface = _iface
         self.project = _project
-        self.editLayer = _editLayer
+        
+        self.selectedLayers =_editLayers if isinstance(_editLayers, (list, tuple)) else [_editLayers]
+        self.editLayer =None if isinstance(_editLayers, (list, tuple)) else _editLayers # for support in present subclass
         
 
         if _project:
@@ -108,12 +110,14 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     # 
     #===========================================================================
     def on_buttonBox_accepted(self):
-        self.process()
-        if self.editLayer:
-            field = QgsField( 'x', QVariant.Double )
-            self.editLayer.addExpressionField( '  $x  ', field )
-            field = QgsField( 'y', QVariant.Double )
-            self.editLayer.addExpressionField( '  $y  ', field )
+        for _editLayer in self.selectedLayers:
+            self.editLayer=_editLayer
+            self.process()
+            if self.editLayer:
+                field = QgsField( 'x', QVariant.Double )
+                self.editLayer.addExpressionField( '  $x  ', field )
+                field = QgsField( 'y', QVariant.Double )
+                self.editLayer.addExpressionField( '  $y  ', field )
             
         
     #===========================================================================

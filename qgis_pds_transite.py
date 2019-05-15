@@ -26,9 +26,9 @@ C_TARGET='target'
 # 
 #===============================================================================
 class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
-    def __init__(self, _project, _iface, _editLayer, parent=None, allow_split_layer=True):
+    def __init__(self, _project, _iface, _editLayers, parent=None, allow_split_layer=True):
         """Constructor."""
-        super(QgisPDSTransitionsDialog, self).__init__(_project, _iface, _editLayer, parent)
+        super(QgisPDSTransitionsDialog, self).__init__(_project, _iface, _editLayers, parent)
 
         newTitle = self.tr(u'Transite wells') + ' - ' + self.project['project']
         self.setWindowTitle(newTitle)
@@ -245,34 +245,33 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
     # 
     #===========================================================================
     def process(self):
-
         global IS_DEBUG
         IS_DEBUG=     self.isDebugChkBox.isChecked()
+        for editLayer in self.selectedLayers:
+            progressMessageBar = self.iface.messageBar()
+            self.progress = QProgressBar()
+            self.progress.setMaximum(100)
+            progressMessageBar.pushWidget(self.progress)
+            self.editLayer=editLayer
+            try:
+                if self.twoLayers:
+                    selectedZonations, selectedZones = self.performOperationTwoLayers()
+                else:
+                    selectedZonations, selectedZones = self.performOperation(clear_target=self.clearTargetFieldChkBox.isChecked())
         
-        progressMessageBar = self.iface.messageBar()
-        self.progress = QProgressBar()
-        self.progress.setMaximum(100)
-        progressMessageBar.pushWidget(self.progress)
-
-        try:
-            if self.twoLayers:
-                selectedZonations, selectedZones = self.performOperationTwoLayers()
-            else:
-                selectedZonations, selectedZones = self.performOperation(clear_target=self.clearTargetFieldChkBox.isChecked())
+                settings = QSettings()
+                settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
+                settings.setValue("/PDS/Zonations/selectedZones",     selectedZones)
+                settings.setValue("/PDS/Zonations/TwoLayers",         'True' if self.twoLayers else 'False')
+                settings.setValue("/PDS/Zonations/notUseLastZone",    'True' if self.notUseLastZoneChkBox.isChecked() else 'False')
+                settings.setValue("/PDS/Zonations/notUseLastZoneNum", str(self.notUseLastZoneNum.value()))
+                settings.setValue("/PDS/Zonations/clearTargetField",  'True' if self.clearTargetFieldChkBox.isChecked() else 'False')
+                settings.setValue("/PDS/Zonations/enableFilter",      'True' if self.enableFilterChkBox.isChecked() else 'False')
+                
+            except Exception as e:
+                QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
     
-            settings = QSettings()
-            settings.setValue("/PDS/Zonations/SelectedZonations", selectedZonations)
-            settings.setValue("/PDS/Zonations/selectedZones",     selectedZones)
-            settings.setValue("/PDS/Zonations/TwoLayers",         'True' if self.twoLayers else 'False')
-            settings.setValue("/PDS/Zonations/notUseLastZone",    'True' if self.notUseLastZoneChkBox.isChecked() else 'False')
-            settings.setValue("/PDS/Zonations/notUseLastZoneNum", str(self.notUseLastZoneNum.value()))
-            settings.setValue("/PDS/Zonations/clearTargetField",  'True' if self.clearTargetFieldChkBox.isChecked() else 'False')
-            settings.setValue("/PDS/Zonations/enableFilter",      'True' if self.enableFilterChkBox.isChecked() else 'False')
-            
-        except Exception as e:
-            QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
-
-        self.iface.messageBar().clearWidgets()
+            self.iface.messageBar().clearWidgets()
 
     #===========================================================================
     # 

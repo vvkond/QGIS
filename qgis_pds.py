@@ -1096,27 +1096,28 @@ class QgisPDS(QObject):
 
 
     def wellCoordFromZone(self):
-        currentLayer = self.iface.activeLayer()
-        if currentLayer is None:
-            return
-
-        projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
-        proj = ast.literal_eval(projStr)
-
-        dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, currentLayer)
-        dlg.exec_()
+        selectedLayers = self.iface.legendInterface().selectedLayers()
+        #currentLayer = self.iface.activeLayer()
+        #if currentLayer is None:
+        #    return
+        #projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+        #proj = ast.literal_eval(projStr)
+        if len(selectedLayers)>0:
+    
+            dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, selectedLayers)
+            dlg.exec_()
         return
 
     def transiteWells(self):
-        currentLayer = self.iface.activeLayer()
-        if currentLayer is None:
-            return
-
-        projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
-        proj = ast.literal_eval(projStr)
-
-        dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, currentLayer)
-        dlg.exec_()
+        selectedLayers = self.iface.legendInterface().selectedLayers()
+        #currentLayer = self.iface.activeLayer()
+        #if currentLayer is None:
+        #    return
+        #projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+        #proj = ast.literal_eval(projStr)
+        if len(selectedLayers)>0:
+            dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, selectedLayers)
+            dlg.exec_()
         return
 
     def refreshLayer(self):
