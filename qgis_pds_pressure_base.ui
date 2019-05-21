@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PDSPressureBase</class>
+ <widget class="QDialog" name="PDSPressureBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>543</width>
+    <height>484</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Map of current production</string>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../../../../../media/viktor/DATA/myprog/arctig/ui</normaloff>../../../../../../media/viktor/DATA/myprog/arctig/ui</iconset>
+  </property>
+  <property name="locale">
+   <locale language="C" country="AnyCountry"/>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QGridLayout">
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <property name="topMargin">
+    <number>9</number>
+   </property>
+   <property name="rightMargin">
+    <number>9</number>
+   </property>
+   <property name="bottomMargin">
+    <number>9</number>
+   </property>
+   <property name="spacing">
+    <number>6</number>
+   </property>
+   <item row="2" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QGroupBox" name="reservoirsPanel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>16</width>
+       <height>64</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Пласты</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="spacing">
+       <number>0</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QListWidget" name="reservoirsListWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::ExtendedSelection</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QGroupBox" name="datePeriodPanel">
+     <property name="title">
+      <string>Период</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="2">
+       <widget class="QDateEdit" name="startDateEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="displayFormat">
+         <string>dd.MM.yyyy</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="endDateLabel">
+        <property name="text">
+         <string>Конечная дата</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="startDateLabel">
+        <property name="text">
+         <string>Начальная дата</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QDateEdit" name="endDateEdit">
+        <property name="displayFormat">
+         <string>dd.MM.yyyy</string>
+        </property>
+        <property name="timeSpec">
+         <enum>Qt::LocalTime</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QCheckBox" name="lastDate">
+        <property name="text">
+         <string>Last date</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QCheckBox" name="firstDate">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>First date</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>reservoirsListWidget</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>PDSPressureBase</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>396</x>
+     <y>445</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>460</x>
+     <y>372</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>PDSPressureBase</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>315</x>
+     <y>445</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>455</x>
+     <y>434</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>lastDate</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>PDSPressureBase</receiver>
+   <slot>lastDateClicked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>392</x>
+     <y>394</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>324</x>
+     <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>firstDate</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>PDSPressureBase</receiver>
+   <slot>firstDateClicked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>376</x>
+     <y>367</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>173</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>diagrammTypeChanged(int)</slot>
+  <slot>lastDateClicked(bool)</slot>
+  <slot>firstDateClicked(bool)</slot>
+ </slots>
+</ui>
