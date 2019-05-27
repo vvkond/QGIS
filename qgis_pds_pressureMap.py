@@ -315,7 +315,6 @@ class QgisPDSPressure(QgisPDSPressureDialog):
         self.setWindowTitle(self.tr(u'Pressure map'))
 
         self.startDateEdit.setEnabled(True)
-        self.firstDate.setEnabled(True)
 
         self.plugin_dir = os.path.dirname(__file__)
 
