@@ -45,9 +45,14 @@ def classFactory(iface):  # pylint: disable=invalid-name
     utils_platform_depended=str(os.path.join(
                                 os.path.dirname(os.path.abspath(__file__))
                                 ,r"libs\x86_64" if sys.maxsize > 2**32 else r"libs\i386" 
-                            ))                            
+                            ))
+    bin_platform_depended=str(os.path.join(
+                                os.path.dirname(os.path.abspath(__file__))
+                                ,r"bin\x86_64" if sys.maxsize > 2**32 else r"bin\i386" 
+                            ))
     sys.path.insert(0, utils_platform_depended)
     sys.path.insert(0, utils_path)
+    sys.path.insert(0, bin_platform_depended)
 
     
     if svg_path not in settings_svg_path and svg_path is not None:
