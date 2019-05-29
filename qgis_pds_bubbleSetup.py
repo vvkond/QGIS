@@ -5,7 +5,7 @@ from PyQt4 import QtGui, uic, QtCore
 from PyQt4.QtGui import *
 # from PyQt4.QtCore import *
 from qgis import core, gui
-from qgis.gui import QgsColorButtonV2, QgsFieldExpressionWidget, QgsFieldProxyModel
+from qgis.gui import QgsColorButtonV2, QgsFieldExpressionWidget, QgsFieldProxyModel, QgsColorDialogV2
 # from qgis.gui import *
 # from qgscolorbuttonv2 import QgsColorButtonV2
 from collections import namedtuple
@@ -235,8 +235,8 @@ class ColorDelegate(QStyledItemDelegate):
         self.initStyleOption(option, index)
 
         self.newColor = QColor(index.data(Qt.DecorationRole))
-        colorEd = QColorDialog(self.newColor, parent)
-
+        colorEd = QgsColorDialogV2(parent)
+        colorEd.setColor(self.newColor)
         return colorEd
 
     def paint(self, painter, option, index):
@@ -255,7 +255,7 @@ class ColorDelegate(QStyledItemDelegate):
 
 
     def setModelData(self, editor, model, index):
-        clr = editor.currentColor()
+        clr = editor.color()
         model.setData(index, clr, Qt.EditRole)
         model.dataChanged.emit(index, index)
 
