@@ -889,280 +889,359 @@ class QgisPDS(QObject):
 
 
     def selectProject(self):
-        dlg = QgisPDSDialog(self.iface)
-        if self.currentProject is not None:
-            dlg.setCurrentProject(self.currentProject)
-        
-        result = dlg.exec_()
-        if result:
-            self.currentProject = dlg.selectedProject()           
-            self.saveSettings()
-            toolTipText = self.tr(u'Select PDS project')
-            if self.currentProject:
-                toolTipText += ' ({0})'.format(self.currentProject['project'])
-            self.selectProjectAction.setToolTip(toolTipText)
+        try:
+            dlg = QgisPDSDialog(self.iface)
+            if self.currentProject is not None:
+                dlg.setCurrentProject(self.currentProject)
+            
+            result = dlg.exec_()
+            if result:
+                self.currentProject = dlg.selectedProject()           
+                self.saveSettings()
+                toolTipText = self.tr(u'Select PDS project')
+                if self.currentProject:
+                    toolTipText += ' ({0})'.format(self.currentProject['project'])
+                self.selectProjectAction.setToolTip(toolTipText)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+                
       
             
     def createProductionlayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-
-        dlg = QgisPDSProductionDialog(self.currentProject, self.iface)
-        if dlg.isInitialised():
-            result = dlg.exec_()
-            if dlg.getLayer() is not None:
-                dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+                return
+    
+            dlg = QgisPDSProductionDialog(self.currentProject, self.iface)
+            if dlg.isInitialised():
+                result = dlg.exec_()
+                if dlg.getLayer() is not None:
+                    dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+                    
 
     def createFondlayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-        currentLayer = self.iface.activeLayer()
-        dlg = QgisPDSProductionDialog(self.currentProject, self.iface, isOnlyFond=True)
-        if dlg.isInitialised():
-            result = dlg.exec_()
-            if dlg.getLayer() is not None:
-                dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
-        if self.iface.activeLayer()!=currentLayer:
-            currentLayer = self.iface.activeLayer()
-            if currentLayer is None:
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
                 return
-            #--- zonation move
-            dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, currentLayer)
-            dlg.exec_()
-    
-            #---transite
-            dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, currentLayer, allow_split_layer=False)
-            dlg.exec_()
+            currentLayer = self.iface.activeLayer()
+            dlg = QgisPDSProductionDialog(self.currentProject, self.iface, isOnlyFond=True)
+            if dlg.isInitialised():
+                result = dlg.exec_()
+                if dlg.getLayer() is not None:
+                    dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
+            if self.iface.activeLayer()!=currentLayer:
+                currentLayer = self.iface.activeLayer()
+                if currentLayer is None:
+                    return
+                #--- zonation move
+                dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, currentLayer)
+                dlg.exec_()
+        
+                #---transite
+                dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, currentLayer, allow_split_layer=False)
+                dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+                
         
 
 
 
     def loadPressure(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-
-        dlg = QgisPDSPressure(self.currentProject, self.iface)
-        if dlg.isInitialised():
-            result = dlg.exec_()
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+                return
+    
+            dlg = QgisPDSPressure(self.currentProject, self.iface)
+            if dlg.isInitialised():
+                result = dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+                
 
     def loadZonations(self):
-        dlg = QgisPDSZonationsDialog(self.currentProject, self.iface)
-        dlg.exec_()
+        try:
+            dlg = QgisPDSZonationsDialog(self.currentProject, self.iface)
+            dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
     def placeLabels(self):
         self.renderComplete()
 
     def createSummProductionlayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-
-        dlg = QgisPDSProductionDialog(self.currentProject, self.iface, isCP=False)
-        if dlg.isInitialised():
-            result = dlg.exec_()
-            if dlg.getLayer() is not None:
-                dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+                return
+    
+            dlg = QgisPDSProductionDialog(self.currentProject, self.iface, isCP=False)
+            if dlg.isInitialised():
+                result = dlg.exec_()
+                if dlg.getLayer() is not None:
+                    dlg.getLayer().attributeValueChanged.connect(self.pdsLayerModified)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
 
     def refreshProduction(self, layer, project, isCurrentProd=False ,isOnlyFond=False):
-        dlg = QgisPDSProductionDialog(project, self.iface, isCP=isCurrentProd, isOnlyFond=isOnlyFond, _layer=layer)
-        if dlg.isInitialised():
-            result = dlg.exec_()
-            if result and layer and not isOnlyFond:
-                prodSetup = QgisPDSProdSetup(self.iface, layer)
-                prodSetup.setup(layer)
-        del dlg
+        try:        
+            dlg = QgisPDSProductionDialog(project, self.iface, isCP=isCurrentProd, isOnlyFond=isOnlyFond, _layer=layer)
+            if dlg.isInitialised():
+                result = dlg.exec_()
+                if result and layer and not isOnlyFond:
+                    prodSetup = QgisPDSProdSetup(self.iface, layer)
+                    prodSetup.setup(layer)
+            del dlg
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
 
     def createCPointsLayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ControlPointReader(self.iface))
-        dlg.exec_()
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+                return
+            dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ControlPointReader(self.iface))
+            dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            
 
 
     def createContoursLayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,0 ,styleName=CONTOUR_STYLE,styleUserDir=USER_CONTOUR_STYLE_DIR ,isShowSymbCategrized=False ))
-        dlg.exec_()
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+                return
+            dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,0 ,styleName=CONTOUR_STYLE,styleUserDir=USER_CONTOUR_STYLE_DIR ,isShowSymbCategrized=False ))
+            dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            
 
 
     def createPolygonsLayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,1 ,styleName=POLYGON_STYLE,styleUserDir=USER_POLYGON_STYLE_DIR ,isShowSymbCategrized=False ))
-        dlg.exec_()
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+                return
+            dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,1 ,styleName=POLYGON_STYLE,styleUserDir=USER_POLYGON_STYLE_DIR ,isShowSymbCategrized=False ))
+            dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            
 
     def createSurfaceLayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr('Error'),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, SurfaceReader(styleName=SURF_SYLE,styleUserDir=USER_SURF_STYLE_DIR  ))
-        dlg.exec_()
-        del dlg
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr('Error'),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+                return
+            dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, SurfaceReader(styleName=SURF_SYLE,styleUserDir=USER_SURF_STYLE_DIR  ))
+            dlg.exec_()
+            del dlg
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
 
     def createFaultsLayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-        dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,2 ,styleName=FAULT_STYLE,styleUserDir=USER_FAULT_STYLE_DIR ,isShowSymbCategrized=False ))
-        dlg.exec_()
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+                return
+            dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ContoursReader(self.iface,2 ,styleName=FAULT_STYLE,styleUserDir=USER_FAULT_STYLE_DIR ,isShowSymbCategrized=False ))
+            dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            
       
 
     def createWellLayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load wells'), level=QgsMessageBar.CRITICAL)
-            return
-
-        dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
-        if dlg.exec_():
-            wells = QgisPDSWells(self.iface, self.currentProject ,styleName=WELL_STYLE,styleUserDir=USER_WELL_STYLE_DIR  )
-            wells.setWellList(dlg.getWellIds())
-            layer = wells.createWellLayer()
-            if layer is not None:
-                layer.attributeValueChanged.connect(self.pdsLayerModified)
-        del dlg
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load wells'), level=QgsMessageBar.CRITICAL)
+                return
+    
+            dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
+            if dlg.exec_():
+                wells = QgisPDSWells(self.iface, self.currentProject ,styleName=WELL_STYLE,styleUserDir=USER_WELL_STYLE_DIR  )
+                wells.setWellList(dlg.getWellIds())
+                layer = wells.createWellLayer()
+                if layer is not None:
+                    layer.attributeValueChanged.connect(self.pdsLayerModified)
+            del dlg
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
 
     def createWellDeviationLayer(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr("Error"),
-                        self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
-            return
-
-        dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
-        if dlg.exec_():
-            wells = QgisPDSDeviation(self.iface, self.currentProject ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
-            wells.setWellList(dlg.getWellIds())
-            layer = wells.createWellLayer()
-
-        # if layer is not None:
-        #     layer.attributeValueChanged.connect(self.pdsLayerModified)
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr("Error"),
+                            self.tr(u'Save project before load'), level=QgsMessageBar.CRITICAL)
+                return
+    
+            dlg = QgisPDSWellsBrowserDialog(self.iface, self.currentProject)
+            if dlg.exec_():
+                wells = QgisPDSDeviation(self.iface, self.currentProject ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
+                wells.setWellList(dlg.getWellIds())
+                layer = wells.createWellLayer()
+    
+            # if layer is not None:
+            #     layer.attributeValueChanged.connect(self.pdsLayerModified)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            
 
         
     def refreshWells(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=None):
-        wells = QgisPDSWells(self.iface, project)
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=filterWellIds)
+        try:
+            wells = QgisPDSWells(self.iface, project)
+            wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=filterWellIds)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
 
     def loadWellDeviations(self, layer, project, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=None):
-        wells = QgisPDSDeviation(self.iface, project ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
-        wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=filterWellIds)
+        try:
+            wells = QgisPDSDeviation(self.iface, project ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
+            wells.loadWells(layer, isRefreshKoords, isRefreshData, isSelectedOnly, isAddMissing, isDeleteMissing, filterWellIds=filterWellIds)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
 
     def productionSetup(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr('Error'),
-                        self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
-            return
-
-        currentLayer = self.iface.activeLayer()
-        if currentLayer is None:
-            return
-
-        currentLayer.blockSignals(True)
-        prodSetup = QgisPDSProdSetup(self.iface, currentLayer)
-        prodSetup.exec_()
-        currentLayer.blockSignals(False)
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr('Error'),
+                            self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+                return
+    
+            currentLayer = self.iface.activeLayer()
+            if currentLayer is None:
+                return
+    
+            currentLayer.blockSignals(True)
+            prodSetup = QgisPDSProdSetup(self.iface, currentLayer)
+            prodSetup.exec_()
+            currentLayer.blockSignals(False)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
 
     def bubblesSetup(self):
-        currentLayer = self.iface.activeLayer()
-        if currentLayer is None:
-            return
-
-        currentLayer.blockSignals(True)
-        prodSetup = QgisPDSBubbleSetup(self.iface, currentLayer)
-        prodSetup.exec_()
-        currentLayer.blockSignals(False)
+        try:
+            currentLayer = self.iface.activeLayer()
+            if currentLayer is None:
+                return
+            currentLayer.blockSignals(True)
+            prodSetup = QgisPDSBubbleSetup(self.iface, currentLayer)
+            prodSetup.exec_()
+            currentLayer.blockSignals(False)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+        
 
 
     def wellCoordFromZone(self):
-        selectedLayers = self.iface.legendInterface().selectedLayers()
-        #currentLayer = self.iface.activeLayer()
-        #if currentLayer is None:
-        #    return
-        #projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
-        #proj = ast.literal_eval(projStr)
-        if len(selectedLayers)>0:
-    
-            dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, selectedLayers)
-            dlg.exec_()
-        return
+        try:
+            selectedLayers = self.iface.legendInterface().selectedLayers()
+            currentLayer = self.iface.activeLayer()
+            if currentLayer is None:
+                return
+            #projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+            #proj = ast.literal_eval(projStr)
+            if len(selectedLayers)>0:
+        
+                dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, selectedLayers)
+                dlg.exec_()
+            return
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+
 
     def transiteWells(self):
-        selectedLayers = self.iface.legendInterface().selectedLayers()
-        #currentLayer = self.iface.activeLayer()
-        #if currentLayer is None:
-        #    return
-        #projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
-        #proj = ast.literal_eval(projStr)
-        if len(selectedLayers)>0:
-            dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, selectedLayers)
-            dlg.exec_()
-        return
+        try:
+            selectedLayers = self.iface.legendInterface().selectedLayers()
+            currentLayer = self.iface.activeLayer()
+            if currentLayer is None:
+                return
+            #projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+            #proj = ast.literal_eval(projStr)
+            if len(selectedLayers)>0:
+                dlg = QgisPDSTransitionsDialog(self.currentProject, self.iface, selectedLayers)
+                dlg.exec_()
+            return
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+        
 
     def refreshLayer(self):
-#        threads = []
-        for currentLayer in self.iface.legendInterface().selectedLayers():
-            self.refreshcurrentLayer(currentLayer)
-#             process = Thread(target=self.refreshcurrentLayer, args=[currentLayer])
-#             process.start()
-#             threads.append(process)
+        try:
+    #        threads = []
+            for currentLayer in self.iface.legendInterface().selectedLayers():
+                self.refreshcurrentLayer(currentLayer)
+    #             process = Thread(target=self.refreshcurrentLayer, args=[currentLayer])
+    #             process.start()
+    #             threads.append(process)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+    
         
         
     def refreshcurrentLayer( self,currentLayer=None):
-        if currentLayer is None:  currentLayer = self.iface.activeLayer()
-        if currentLayer.type() != QgsMapLayer.VectorLayer:
-            return
-        pr = currentLayer.dataProvider()
-
-        projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
-        proj = ast.literal_eval(projStr)
-
-        currentLayer.blockSignals(True)
-        prop = currentLayer.customProperty("qgis_pds_type")
-        layerWellIds,_=currentLayer.getValues(Fields.Sldnid.name)
-        
-        if prop == "pds_wells":
-            dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
-            if dlg.exec_():
-                self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                  dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
-                                  ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
-                                  )
-        elif prop == "pds_fond":
-            self.refreshProduction(currentLayer, self.currentProject, isOnlyFond=True)                
-        elif prop == "pds_current_production":
-            self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=True)
-        elif prop == "pds_cumulative_production":
-            self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=False)
-        elif prop == "pds_well_deviations":
-            dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
-            if dlg.exec_():
-                self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                        dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
-                                        ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
-                                        )
-        currentLayer.blockSignals(False)
+        try:
+            if currentLayer is None:  currentLayer = self.iface.activeLayer()
+            if currentLayer.type() != QgsMapLayer.VectorLayer:
+                return
+            pr = currentLayer.dataProvider()
+    
+            projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+            proj = ast.literal_eval(projStr)
+    
+            currentLayer.blockSignals(True)
+            prop = currentLayer.customProperty("qgis_pds_type")
+            layerWellIds,_=currentLayer.getValues(Fields.Sldnid.name)
+            
+            if prop == "pds_wells":
+                dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
+                if dlg.exec_():
+                    self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
+                                      dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
+                                      ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
+                                      )
+            elif prop == "pds_fond":
+                self.refreshProduction(currentLayer, self.currentProject, isOnlyFond=True)                
+            elif prop == "pds_current_production":
+                self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=True)
+            elif prop == "pds_cumulative_production":
+                self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=False)
+            elif prop == "pds_well_deviations":
+                dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
+                if dlg.exec_():
+                    self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords,
+                                            dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
+                                            ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
+                                            )
+            currentLayer.blockSignals(False)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            
 
        
     def addProductionLayer(self):
@@ -1180,50 +1259,70 @@ class QgisPDS(QObject):
         return
 
     def calcStatistics(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr('Error'),
-                        self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr('Error'),
+                            self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+                return
+            dlg = QgisPDSStatisticsDialog(self.currentProject, self.iface)
+            dlg.exec_()
             return
-        dlg = QgisPDSStatisticsDialog(self.currentProject, self.iface)
-        dlg.exec_()
-        return
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+        
 
     def calcDCA(self):
-#         if not QgsProject.instance().homePath():
-#             self.iface.messageBar().pushMessage(self.tr('Error'),
-#                         self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
-#             return
-        dlg = QgisPDSDCAForm(self.currentProject, self.iface)
-        dlg.exec_()
-        #dlg.show()
-        return
+        try:
+    #         if not QgsProject.instance().homePath():
+    #             self.iface.messageBar().pushMessage(self.tr('Error'),
+    #                         self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+    #             return
+            dlg = QgisPDSDCAForm(self.currentProject, self.iface)
+            dlg.exec_()
+            #dlg.show()
+            return
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+        
 
 
     def saveLayerToPDS(self):
-        currentLayer = self.iface.activeLayer()
-        if not currentLayer:
-            return
-
-        dlg = QgisSaveMapsetToPDS(self.currentProject, self.iface, currentLayer)
-        dlg.exec_()
+        try:
+            currentLayer = self.iface.activeLayer()
+            if not currentLayer:
+                return
+    
+            dlg = QgisSaveMapsetToPDS(self.currentProject, self.iface, currentLayer)
+            dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            
 
     def dataFromOracleSql(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr('Error'),
-                        self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
-            return
-
-        dlg = QgisOracleSql(self.currentProject, self.iface)
-        dlg.exec_()
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr('Error'),
+                            self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+                return
+    
+            dlg = QgisOracleSql(self.currentProject, self.iface)
+            dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            
 
     def createIsolines(self):
-        if not QgsProject.instance().homePath():
-            self.iface.messageBar().pushMessage(self.tr('Error'),
-                        self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
-            return
-
-        dlg = QgisPDSCreateIsolines(self.iface)
-        dlg.exec_()
+        try:
+            if not QgsProject.instance().homePath():
+                self.iface.messageBar().pushMessage(self.tr('Error'),
+                            self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+                return
+    
+            dlg = QgisPDSCreateIsolines(self.iface)
+            dlg.exec_()
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            
 
     def createProjectString(self, args={}):
         projectName = args['project']
