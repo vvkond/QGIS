@@ -27,16 +27,7 @@
    <bool>true</bool>
   </property>
   <layout class="QGridLayout">
-   <property name="leftMargin">
-    <number>9</number>
-   </property>
-   <property name="topMargin">
-    <number>9</number>
-   </property>
-   <property name="rightMargin">
-    <number>9</number>
-   </property>
-   <property name="bottomMargin">
+   <property name="margin">
     <number>9</number>
    </property>
    <property name="spacing">
@@ -247,6 +238,19 @@
            </item>
           </layout>
          </item>
+         <item row="0" column="2">
+          <widget class="QCheckBox" name="mDynamicSumRelativeChkBx">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Если вкл.,то накопленная добыча рассчитывается с указанной даты.&lt;br/&gt;Если выкл.,то накопленная добыча рассчитывается с первой даты работы скважины&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Начальная добыча 0</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -449,6 +453,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>mDynamicCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>PDSProductionBase</receiver>
+   <slot>dynamicChkBxClicked(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>340</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>247</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>diagrammTypeChanged(int)</slot>
@@ -456,5 +476,6 @@
   <slot>firstDateClicked(bool)</slot>
   <slot>lastObjectDateClicked(bool)</slot>
   <slot>reservoirSelected()</slot>
+  <slot>dynamicChkBxClicked(bool)</slot>
  </slots>
 </ui>
