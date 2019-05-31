@@ -969,7 +969,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                                                                     )
                         self.layer.commitChanges()  # --- commit each row
                         self.layer.startEditing()  # --- and start edit again
-                    break # @TODO: DEBUG
+                    #break # @TODO: DEBUG
                         
                 else:                
                     # --- iterate over each record for well, find that date records in 'attribute table' and update them
