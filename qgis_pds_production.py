@@ -805,8 +805,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                     else:
                         pass
                 self.layer.commitChanges()  #--- commit each row
-                QgsMessageLog.logMessage(u"on commit:  {}".format(map(str,self.layer.commitErrors())), tag="QgisPDS.debug")
                 self.layer.startEditing()   #--- and start edit again
+                #QgsMessageLog.logMessage(u"on commit:  {}".format(map(str,self.layer.commitErrors())), tag="QgisPDS.debug")
         #--- if layer filtered and selected Add All remove filter,add all,set back filter
         if is_needaddall:
             with edit_layer(self.layer):
