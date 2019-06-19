@@ -799,16 +799,16 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                     num +=1
                 #--- add new well if need
                 if not num:                 #--- well not present in base layer
-                    if not is_layerfiltered:  #--- if layer without filter provider,than allow add new records
-                        if is_needaddall or is_rowwithprod(feature):       #--- Add All wells checked or new row have production
-                            self.layer.addFeatures([feature])
+                    if is_needaddall or is_rowwithprod(feature):       #--- Add All wells checked or new row have production
+                        is_added=self.layer.addFeature(feature)
+                        if not is_added: QgsMessageLog.logMessage(u"error add well {}".format(feature.attribute(Fields.WellId.name)), tag="QgisPDS.debug")
                     else:
                         pass
                 self.layer.commitChanges()  #--- commit each row
+                QgsMessageLog.logMessage(u"on commit:  {}".format(map(str,self.layer.commitErrors())), tag="QgisPDS.debug")
                 self.layer.startEditing()   #--- and start edit again
-
         #--- if layer filtered and selected Add All remove filter,add all,set back filter
-        if is_layerfiltered and is_needaddall:
+        if is_needaddall:
             with edit_layer(self.layer):
                 for feature in self.mWells.values(): 
                     args = (Fields.WellId.name, feature.attribute(Fields.WellId.name))
@@ -817,7 +817,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                     for f in searchRes:
                         break
                     else:
-                        self.layer.addFeatures([feature])
+                        self.layer.addFeature(feature)
                         self.layer.commitChanges()  #--- commit each row
                         self.layer.startEditing()   #--- and start edit again
 
@@ -1003,16 +1003,15 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                             num += 1
                         # --- add new well if need
                         if not num:  # --- well not present in base layer
-                            if not is_layerfiltered:  # --- if layer without filter provider,than allow add new records
-                                if is_needaddall or is_rowwithprod(feature):  # --- Add All wells checked or new row have production
-                                    self.layer.addFeatures([feature])
+                            if is_needaddall or is_rowwithprod(feature):  # --- Add All wells checked or new row have production
+                                self.layer.addFeatures([feature])
                             else:
                                 pass
                         self.layer.commitChanges()  # --- commit each row
                         self.layer.startEditing()  # --- and start edit again
 
         # --- if layer filtered and selected Add All remove filter,add all,set back filter
-        if is_layerfiltered and is_needaddall:
+        if is_needaddall:
             with edit_layer(self.layer):
                 for feature in self.mWells.values():
                     args = (Fields.WellId.name, feature.attribute(Fields.WellId.name))
@@ -1109,16 +1108,15 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                         num += 1
                     # --- add new well if need
                     if not num:  # --- well not present in base layer
-                        if not is_layerfiltered:  # --- if layer without filter provider,than allow add new records
-                            if is_needaddall or is_rowwithprod(feature):  # --- Add All wells checked or new row have production
-                                self.layer.addFeatures([feature])
+                        if is_needaddall or is_rowwithprod(feature):  # --- Add All wells checked or new row have production
+                            self.layer.addFeatures([feature])
                         else:
                             pass
                     self.layer.commitChanges()  # --- commit each row
                     self.layer.startEditing()  # --- and start edit again
 
         # --- if layer filtered and selected Add All remove filter,add all,set back filter
-        if is_layerfiltered and is_needaddall:
+        if is_needaddall:
             with edit_layer(self.layer):
                 for feature in self.mWells.values():
                     args = (Fields.WellId.name, feature.attribute(Fields.WellId.name))

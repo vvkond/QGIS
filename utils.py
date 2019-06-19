@@ -36,7 +36,6 @@ class Args(StrictInit):
 class Exc(Exception):
     pass
 
-
 class LayersHider():
     def __init__(self,iface):
         self.iface=iface
@@ -47,12 +46,17 @@ class LayersHider():
             if self.iface.legendInterface().isLayerVisible(layer):
                 self.viz_layers.append(layer)
                 self.iface.legendInterface().setLayerVisible(layer, False)
-        self.iface.mapCanvas().refresh() #Repaints the canvas map
+        self.iface.mapCanvas().refresh() #Repaints the canvas map/ Not work.BUG????
+        self.refresh_layers()
         # self.iface.mapCanvas().refreshAllLayers() #Reload all layers, clear the cache and refresh the canvas 
     def show(self):
         for layer in self.viz_layers:
             self.iface.legendInterface().setLayerVisible(layer, True)
-        self.iface.mapCanvas().refresh()#Repaints the canvas map
+        self.iface.mapCanvas().refresh()#Repaints the canvas map/ Not work.BUG????
+        self.refresh_layers()
+    def refresh_layers(self):
+        for layer in self.iface.mapCanvas().layers():
+            layer.triggerRepaint()
         
 
 class cached_property(object):
@@ -136,22 +140,26 @@ def to_unicode(s,codding='utf-8'):
 
 def start_edit_layer(layer):
     if not layer.isEditable():
-        filter_str=layer.subsetString()
+        filter_str=layer.subsetString()   
         layer.setCustomProperty("subsetStringBckp", filter_str)
-        layer.setSubsetString("")
+        layer.setSubsetString(None)  #If use it in qtdialog.exec_() block on QGIS 2.18 can't add new feature to layer. Only if remove layer.subsetString() before qtdialog.exec_()
+        #layer.reload()
+        #layer.endEditCommand()
+        #layer.commitChanges()
         layer.startEditing()
 
 def stop_edit_layer(layer):
     layer.commitChanges()  
     filter_str=layer.customProperty("subsetStringBckp")
-    layer.removeCustomProperty("subsetStringBckp")
+    #layer.removeCustomProperty("subsetStringBckp")
     layer.setSubsetString(filter_str)
-          
+    
 class edit_layer:
     """
         @info: contruction for use edit layer in implemention: 
             with edit_layer(layer):
                 Do something with layer
+        @warning: If use it in qtdialog.exec_() block on QGIS 2.18 can't add new feature to exist layer. Only if remove layer.subsetString() before qtdialog.exec_() 
     """
     def __init__(self,layer):
         self.layer=layer
@@ -164,7 +172,6 @@ class edit_layer:
         stop_edit_layer(self.layer)
         iface.legendInterface().setLayerVisible(self.layer, self.isVisible)        
 
-        
 
 def load_styles_from_dir(layer,styles_dir,switchActiveStyle=True):
     editLayerStyles=layer.styleManager()

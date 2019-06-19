@@ -1215,6 +1215,9 @@ class QgisPDS(QObject):
             proj = ast.literal_eval(projStr)
     
             currentLayer.blockSignals(True)
+            filter_str=currentLayer.subsetString()
+            currentLayer.setSubsetString(None)
+            
             prop = currentLayer.customProperty("qgis_pds_type")
             layerWellIds,_=currentLayer.getValues(Fields.Sldnid.name)
             
@@ -1238,6 +1241,7 @@ class QgisPDS(QObject):
                                             dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
                                             ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
                                             )
+            currentLayer.setSubsetString(filter_str)
             currentLayer.blockSignals(False)
         except Exception as e:
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
