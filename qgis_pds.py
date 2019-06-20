@@ -1161,6 +1161,8 @@ class QgisPDS(QObject):
     def wellCoordFromZone(self):
         try:
             selectedLayers = self.iface.legendInterface().selectedLayers()
+            map( lambda currentLayer:currentLayer.blockSignals(True),selectedLayers)
+            
             currentLayer = self.iface.activeLayer()
             if currentLayer is None:
                 return
@@ -1170,6 +1172,7 @@ class QgisPDS(QObject):
         
                 dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, selectedLayers)
                 dlg.exec_()
+            map(lambda currentLayer:currentLayer.blockSignals(False),selectedLayers)
             return
         except Exception as e:
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
