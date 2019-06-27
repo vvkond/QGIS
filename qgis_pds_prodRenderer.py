@@ -8,7 +8,7 @@
                               -------------------
         begin                : 2016-11-05
         git sha              : $Format:%H$
-        copyright            : (C) 2016 by Viktor Kondrashov
+        copyright            : (C) 2016 by SoyuzGeoService
         email                :
  ***************************************************************************/
 
@@ -47,12 +47,15 @@ class DiagrammSlice(MyStruct):
     percent = 0.0
 
 class DiagrammDesc:
-    def __init__(self, diagrammSize, slices):
+    def __init__(self, diagrammSize, slices,realSize=None):
         self.mDiagrammSize = diagrammSize
+        self.mRealSize = realSize
         self.mSlices = slices
 
     def __repr__(self):
-        return repr((self.mDiagrammSize, self.mSlices))
+        return repr((self.mRealSize, self.mDiagrammSize, self.mSlices))
+    def __str__(self):
+        return self.__repr__()
 
 
 def float_t(val):
@@ -72,6 +75,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
     LABEL_OFFSETY = 'labloffy'
     BUBBLE_SIZE = 'bubblesize'
     DIAGRAMM_LABELS = 'bbllabels'
+    DEBUG=False
 
     def __init__(self, props):
         QgsMarkerSymbolLayerV2.__init__(self)
@@ -303,11 +307,13 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         feature = context.feature()
         p = context.renderContext().painter()
 
-        if not feature:
+        if not feature: 
+            '''
+            If item not feature, then draw preview (symbol in legend or in style dock)
+            '''
             labelSize = QgsSymbolLayerV2Utils.convertToPainterUnits(context.renderContext(), self.size(), self.sizeUnit())
             self.drawPreview(p, QPointF(point.x() - labelSize / 2, point.y() - labelSize / 2), QSizeF(labelSize, labelSize))
             return
-
 
         attrs = feature.attributes()
 
@@ -318,11 +324,16 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
         try:
             if self.diagrammProps > 0:
+                '''
+                 Get feature diagram size. New variant: from layer properties 
+                '''
                 size = float_t(feature.attribute(BubbleSymbolLayer.BUBBLE_SIZE))
                 diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, size, QgsSymbolV2.MM)
 
                 templateStr = self.templateStr
+                self.DEBUG and QgsMessageLog.logMessage('#'*30, 'BubbleSymbolLayer') #DEBUG
                 for d in self.diagrammProps:
+                    self.DEBUG and QgsMessageLog.logMessage('*'*10, 'BubbleSymbolLayer') #DEBUG
                     slices = d['slices']
                     scaleType = int(d['scaleType'])
                     scaleMaxRadius = float_t(d['scaleMaxRadius'])
@@ -338,7 +349,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                             if self.hasDataDefinedProperty(expName):
                                 (val, ok) = self.evaluateDataDefinedProperty(expName, context, 0.0 )
                                 if val != NULL:
-                                    #QgsMessageLog.logMessage('val={},koef={},scale={} '.format(val, koef, scale), 'BubbleSymbolLayer') #DEBUG                                   
+                                    self.DEBUG and QgsMessageLog.logMessage('val={},koef={},scale={} '.format(val, koef, scale), 'BubbleSymbolLayer') #DEBUG                                   
                                     sum = sum + val
                                     bc = QgsSymbolLayerV2Utils.decodeColor(slice['backColor'])
                                     lc = QgsSymbolLayerV2Utils.decodeColor(slice['lineColor'])
@@ -353,7 +364,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                                 ds = fixedSize
                             else:
                                 ds = scaleMinRadius + sum * koef
-                                #QgsMessageLog.logMessage('ds={} '.format(ds), 'BubbleSymbolLayer') #DEBUG
+                                self.DEBUG and QgsMessageLog.logMessage('ds={} '.format(ds), 'BubbleSymbolLayer') #DEBUG
                                 if ds > scaleMaxRadius:
                                     ds = scaleMaxRadius
                                 if ds < scaleMinRadius:
@@ -362,7 +373,8 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                                 slice.percent = slice.percent / sum
 
                             ds = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, ds, QgsSymbolV2.MM)
-                            diagramm = DiagrammDesc(ds, newSlices)
+                            self.DEBUG and QgsMessageLog.logMessage('ds={} '.format(ds), 'BubbleSymbolLayer') #DEBUG
+                            diagramm = DiagrammDesc(ds, newSlices, sum * koef )
                             diagramms.append(diagramm)
 
                     if 'labels' in d:
@@ -383,6 +395,9 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
 
             elif self.mDiagrammIndex >= 0:
+                '''
+                 Get feature diagram size. Old variant: from Field with XML
+                '''
 
                 xmlString = attrs[self.mDiagrammIndex]
                 if not xmlString:
@@ -412,11 +427,18 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
                 for label in root.findall('label'):
                     labelTemplate = label.attrib['labelText']
-
-            diagramms = sorted(diagramms, key=lambda diagramm: diagramm.mDiagrammSize, reverse=True)
-
+            '''
+            Draw diagramm for current feature
+            '''
+            diagramms = sorted(diagramms, key=lambda diagramm: [diagramm.mDiagrammSize,diagramm.mRealSize], reverse=True)
+            self.DEBUG and QgsMessageLog.logMessage("\n".join(map(str,diagramms)), 'BubbleSymbolLayer') #DEBUG
             if self.showDiagramms:
-                for desc in diagramms:
+                for idx,desc in enumerate(diagramms):
+                    #--- Fix for diagramms with identicaly size
+                    if diagramms[idx-1].mDiagrammSize==desc.mDiagrammSize or (idx>0 and diagramms[idx-1].mDiagrammSize<desc.mDiagrammSize):
+                        desc.mDiagrammSize=desc.mDiagrammSize*0.8
+                        if desc.mDiagrammSize<=0:desc.mDiagrammSize=1
+                    self.DEBUG and QgsMessageLog.logMessage("diagram {} size:{}".format(str(idx),str(desc.mDiagrammSize)), 'BubbleSymbolLayer') #DEBUG
                     rect = QRectF(point, QSizeF(desc.mDiagrammSize, desc.mDiagrammSize))
                     rect.translate(-desc.mDiagrammSize / 2, -desc.mDiagrammSize / 2)
                     startAngle = 90.0
@@ -436,6 +458,9 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
                         startAngle = startAngle + spanAngle
 
+            '''
+            Draw diagram label for current feature
+            '''
             labelSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, self.labelSize, QgsSymbolV2.Pixel)
 
             font = QFont()
