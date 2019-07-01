@@ -19,7 +19,6 @@ from qgis_pds_prodRenderer import BubbleSymbolLayer
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_prodsetup_base.ui'))
 
-
 #===============================================================================
 # 
 #===============================================================================
@@ -53,10 +52,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         self.currentLayer = layer       
 
         self.standardDiagramms = {
-                    "1_liquidproduction":    MyStruct(name=u'Диаграмма жидкости',   scale=300000,  testval=1, unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]),
-                    "2_liquidinjection":     MyStruct(name=u'Диаграмма закачки',    scale=300000,  testval=1, unitsType=0, units=0, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0]),
-                    "3_gasproduction":       MyStruct(name=u"Диаграмма газа",       scale=300000,  testval=1, unitsType=1, units=0, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0]),
-                    "4_condensatproduction": MyStruct(name=u"Диаграмма конденсата", scale=3000000, testval=1, unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0, 0])
+                    "1_liquidproduction":    MyStruct(name=u'Диаграмма жидкости',   scale=300000,  testval=1, unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]),
+                    "2_liquidinjection":     MyStruct(name=u'Диаграмма закачки',    scale=300000,  testval=1, unitsType=0, units=0, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0] , diagSize=[2,15]),
+                    "3_gasproduction":       MyStruct(name=u"Диаграмма газа",       scale=300000,  testval=1, unitsType=1, units=0, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]),
+                    "4_condensatproduction": MyStruct(name=u"Диаграмма конденсата", scale=3000000, testval=1, unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0, 0] , diagSize=[2,15])
                 }
 
         self.layerDiagramms = []
@@ -112,8 +111,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             if len(self.layerDiagramms) < 1:
                 if self.currentLayer.customProperty("qgis_pds_type") == "pds_current_production":
                     #----CURENT PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,   testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0 ,0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,   testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 0, 1, 0, 0 ,0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,   testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0 ,0] , diagSize=[2,15]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,   testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 0, 1, 0, 0 ,0] , diagSize=[2,15]))
                     bblInit.fluidCodes[2].inPercent=1
                     self.bubbleProps['dailyProduction']=1
                     self.dailyProduction.setChecked(1)
@@ -125,8 +124,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                     
                 elif self.currentLayer.customProperty("qgis_pds_type") == "pds_cumulative_production":
                     #----CUMMULATIV PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=50,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=50,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 0, 1, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=50,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=50,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 0, 1, 0, 0, 0] , diagSize=[2,15]))
                 #oil
                 bblInit.fluidCodes[0].backColor.setNamedColor('#daa520')
                 bblInit.fluidCodes[0].lineColor.setNamedColor('#daa520')
@@ -159,8 +158,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 bblInit.fluidCodes[7].backColor.setNamedColor('#00a0a0')
                 bblInit.fluidCodes[7].lineColor.setNamedColor('#00a0a0')
                 bblInit.fluidCodes[7].labelColor.setNamedColor('#00a0a0')
-                self.maxDiagrammSize.setValue(float(30))
-                self.minDiagrammSize.setValue(float(3))
                 self.templateExpression.setText("%1-%3/%6")
         ##--------------------------SHIRVAN CONFIG                
         def shirvan():
@@ -168,9 +165,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             if len(self.layerDiagramms) < 1:
                 if self.currentLayer.customProperty("qgis_pds_type") == "pds_current_production":
                     #----CURENT PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=2,  fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=10, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0] , diagSize=[2,15]))
+                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]))
                     bblInit.fluidCodes[2].inPercent=1
     #                 cOil=QColor()
     #                 cOil.setNamedColor('#aaaaaa')
@@ -180,9 +177,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                     
                 elif self.currentLayer.customProperty("qgis_pds_type") == "pds_cumulative_production":
                     #----CUMMULATIV PRODUCTION
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0]))
-                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=15, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=1,    testval=1, unitsType=0, units=3,  fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]))
+                    self.layerDiagramms.append(MyStruct(name=u'Диаграмма закачки',  scale=1,    testval=1, unitsType=1, units=14, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0] , diagSize=[2,15]))
+                    self.layerDiagramms.append(MyStruct(name=u"Диаграмма газа",     scale=1,    testval=1, unitsType=1, units=15, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]))
                 #oil
                 bblInit.fluidCodes[0].backColor.setNamedColor('#daa520')
                 bblInit.fluidCodes[0].lineColor.setNamedColor('#daa520')
@@ -215,8 +212,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 bblInit.fluidCodes[7].backColor.setNamedColor('#00a0a0')
                 bblInit.fluidCodes[7].lineColor.setNamedColor('#00a0a0')
                 bblInit.fluidCodes[7].labelColor.setNamedColor('#00a0a0')
-                self.maxDiagrammSize.setValue(float(20))
-                self.minDiagrammSize.setValue(float(1))
                 self.templateExpression.setText("%1-%3-%2/%6")            
         shirvan()
         
@@ -244,7 +239,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         if len(self.layerDiagramms) < 1:
             self.dailyProduction.setChecked(self.isCurrentProd)
             self.layerDiagramms.append(MyStruct(name=u'Диаграмма жидкости', scale=300000, testval=1, unitsType=0,
-                                                units=self.defaultUnitNum, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]))
+                                                units=self.defaultUnitNum, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]))
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
         for d in self.layerDiagramms:
@@ -278,6 +273,14 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         vec = diagramm.fluids
         for idx, v in enumerate(vec):
             self.componentsList.item(idx).setCheckState(Qt.Checked if v else Qt.Unchecked)
+            
+        #@TODO: min/max diagram sizes
+        self.minDiagrammSize.blockSignals(True)
+        self.maxDiagrammSize.blockSignals(True)
+        self.minDiagrammSize.setValue(diagramm.diagSize[0])
+        self.maxDiagrammSize.setValue(diagramm.diagSize[1])
+        self.maxDiagrammSize.blockSignals(False)
+        self.minDiagrammSize.blockSignals(False)
     #===========================================================================
     # 
     #===========================================================================
@@ -289,6 +292,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                      , unitsType=0
                      , units=self.defaultUnitNum
                      , fluids=[0, 0, 0, 0, 0, 0, 0, 0, 0]
+                     , diagSize=[2,15]
                      )
         self.layerDiagramms.append(d)
 
@@ -533,11 +537,6 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
 
         self.applySettings()
 
-        maxDiagrammSize = self.maxDiagrammSize.value()
-        minDiagrammSize = self.minDiagrammSize.value()
-        if maxDiagrammSize < minDiagrammSize:
-            maxDiagrammSize = minDiagrammSize
-
         editLayerProvider = editLayer.dataProvider()
 
         uniqSymbols = {}
@@ -602,6 +601,11 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             templateStr = self.templateExpression.text()
             diagramms = []
             for d in self.layerDiagramms:
+                minDiagrammSize = d.diagSize[0]
+                maxDiagrammSize = d.diagSize[1]
+                if maxDiagrammSize < minDiagrammSize:
+                    maxDiagrammSize = minDiagrammSize
+                
                 vec = d.fluids
                 if d.unitsType == 0:
                     scaleType = bblInit.attrFluidMass("")
@@ -694,8 +698,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             multiplier = 1.0 / mm
 
             diagramm = {}
-            diagramm['scaleMaxRadius'] = maxDiagrammSize
-            diagramm['scaleMinRadius'] = minDiagrammSize
+            diagramm['scaleMinRadius'] = d.diagSize[0]
+            diagramm['scaleMaxRadius'] = d.diagSize[1]
             diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else multiplier * maxSum
             diagramm['multiplier'] = mm
             diagramm['dailyProduction'] = self.dailyProduction.isChecked()
@@ -1259,10 +1263,40 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.templateExpression.setText(tmpStr + '-%' + str(row+1))
 
     def on_maxDiagrammSize_valueChanged(self, val):
+        if val<self.minDiagrammSize.value():
+            self.minDiagrammSize.setValue(val)
         if type(val) is float:
             self.minDiagrammSize.blockSignals(True)
-            self.minDiagrammSize.setMaximum(val)
+            #self.minDiagrammSize.setMaximum(val)
             self.minDiagrammSize.blockSignals(False)
+
+        row = self.mDiagrammsListWidget.currentRow()
+        if row < 0:
+            return
+        conf=self.mDiagrammsListWidget.item(row).data(Qt.UserRole)
+        conf.diagSize=[conf.diagSize[0], self.maxDiagrammSize.value()]
+        self.mDiagrammsListWidget.item(row).setData(Qt.UserRole,conf)
+
+    def on_minDiagrammSize_valueChanged(self, val):
+        if val>self.maxDiagrammSize.value():
+            self.maxDiagrammSize.setValue(val)
+        
+        if type(val) is float:
+            self.maxDiagrammSize.blockSignals(True)
+            #self.maxDiagrammSize.setMinimum(val)
+            self.maxDiagrammSize.blockSignals(False)
+
+        row = self.mDiagrammsListWidget.currentRow()
+        if row < 0:
+            return
+        conf=self.mDiagrammsListWidget.item(row).data(Qt.UserRole)
+        if len(conf.diagSize)<2:
+            conf.diagSize=[self.minDiagrammSize.value(),self.maxDiagrammSize.value()]
+        else:
+            conf.diagSize[0]=  self.minDiagrammSize.value()
+        self.mDiagrammsListWidget.item(row).setData(Qt.UserRole,conf)
+
+
 
 
     #===========================================================================
@@ -1356,8 +1390,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     #===========================================================================
     def readSettingsNew(self):
         self.currentDiagramm = '1_liquidproduction'
-        self.maxDiagrammSize.setValue(     float(self.currentLayer.customProperty('maxDiagrammSize', 15))                    )
-        self.minDiagrammSize.setValue(     float(self.currentLayer.customProperty('minDiagrammSize', 3.0))                   )
+        #self.maxDiagrammSize.setValue(     float(self.currentLayer.customProperty('maxDiagrammSize', 15))                    )
+        #self.minDiagrammSize.setValue(     float(self.currentLayer.customProperty('minDiagrammSize', 3.0))                   )
         self.mShowZero.setChecked(         int(self.currentLayer.customProperty("alwaysShowZero", "0")) == 1                 )
         self.mSymbolSize.setValue(         float(self.currentLayer.customProperty("defaultSymbolSize", 4.0))                 )
         self.useScaleGroupBox.setChecked(  int(self.currentLayer.customProperty("useScaleGroupBox", "0")) == 1               )
@@ -1378,6 +1412,11 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             val.unitsType = int(self.currentLayer.customProperty(   'diagramm_unitsType_' + d, 0   ))
             val.units =     int(self.currentLayer.customProperty(   'diagramm_units_' + d, 0       ))
             val.fluids =    QgsSymbolLayerV2Utils.decodeRealVector(self.currentLayer.customProperty('diagramm_fluids_' + d))
+            val.diagSize=   QgsSymbolLayerV2Utils.decodeRealVector(self.currentLayer.customProperty('diagramm_sizes_' + d))
+            # update from old structure of diagramm size
+            if val.diagSize==[0.0]:
+                val.diagSize=[float(self.currentLayer.customProperty('minDiagrammSize', 3.0)), float(self.currentLayer.customProperty('maxDiagrammSize', 15)) ]
+
             self.layerDiagramms.append(val)
 
         self.labelSizeEdit.setValue(float(self.currentLayer.customProperty('labelSize', self.labelSizeEdit.value())))
@@ -1404,15 +1443,15 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     def saveSettings(self):
         all_prop=[] #list of names all stored properties. Used for store GLOBAL parameters
         self.currentLayer.setCustomProperty("diagrammCount",     len(self.layerDiagramms))
-        self.currentLayer.setCustomProperty("maxDiagrammSize",   self.maxDiagrammSize.value())
-        self.currentLayer.setCustomProperty("minDiagrammSize",   self.minDiagrammSize.value())
+        #self.currentLayer.setCustomProperty("maxDiagrammSize",   self.maxDiagrammSize.value())
+        #self.currentLayer.setCustomProperty("minDiagrammSize",   self.minDiagrammSize.value())
         self.currentLayer.setCustomProperty("alwaysShowZero",    int(self.mShowZero.isChecked()))
         self.currentLayer.setCustomProperty("defaultSymbolSize", self.mSymbolSize.value())
         self.currentLayer.setCustomProperty("useScaleGroupBox",  int(self.useScaleGroupBox.isChecked()))
         all_prop.extend([
                         "diagrammCount"    
-                        ,"maxDiagrammSize"  
-                        ,"minDiagrammSize"  
+                        #,"maxDiagrammSize"  
+                        #,"minDiagrammSize"  
                         ,"alwaysShowZero"   
                         ,"defaultSymbolSize"
                         ,"useScaleGroupBox"             
@@ -1427,12 +1466,16 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.currentLayer.setCustomProperty('diagramm_units_' + d, val.units        )
             self.currentLayer.setCustomProperty('diagramm_fluids_' + d,
                                                 QgsSymbolLayerV2Utils.encodeRealVector(val.fluids))
+            self.currentLayer.setCustomProperty('diagramm_sizes_' + d,
+                                                QgsSymbolLayerV2Utils.encodeRealVector(val.diagSize))
+            
             all_prop.extend([
                             'diagramm_name_' + d
                             ,'diagramm_scale_' + d
                             ,'diagramm_unitsType_' + d
                             ,'diagramm_units_' + d
-                            ,'diagramm_fluids_' + d                   
+                            ,'diagramm_fluids_' + d
+                            ,'diagramm_sizes_' + d                    
                             ])
             num = num + 1
 

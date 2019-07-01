@@ -428,27 +428,11 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="minDiagrammSize">
-               <property name="suffix">
-                <string> мм</string>
-               </property>
-               <property name="decimals">
-                <number>2</number>
-               </property>
-               <property name="maximum">
-                <double>999999.000000000000000</double>
-               </property>
-               <property name="singleStep">
-                <double>1.000000000000000</double>
-               </property>
-               <property name="value">
-                <double>3.000000000000000</double>
-               </property>
-              </widget>
-             </item>
              <item row="1" column="1">
               <widget class="QDoubleSpinBox" name="maxDiagrammSize">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::PlusMinus</enum>
+               </property>
                <property name="suffix">
                 <string> мм</string>
                </property>
@@ -463,6 +447,28 @@
                </property>
                <property name="value">
                 <double>15.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="minDiagrammSize">
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::PlusMinus</enum>
+               </property>
+               <property name="suffix">
+                <string> мм</string>
+               </property>
+               <property name="decimals">
+                <number>2</number>
+               </property>
+               <property name="maximum">
+                <double>999999.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>1.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>3.000000000000000</double>
                </property>
               </widget>
              </item>
@@ -856,6 +862,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>maxDiagrammSize</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Dialog</receiver>
+   <slot>on_maxDiagrammSize_valueChanged(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>431</x>
+     <y>395</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>292</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>minDiagrammSize</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>Dialog</receiver>
+   <slot>on_minDiagrammSize_valueChanged(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>431</x>
+     <y>369</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>292</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>diagrammTypeChanged(int)</slot>
@@ -868,5 +906,7 @@
   <slot>mDeleteDiagramm_clicked()</slot>
   <slot>mImportFromLayer_clicked()</slot>
   <slot>mImportFromGlobalPB_clicked()</slot>
+  <slot>on_maxDiagrammSize_valueChanged(double)</slot>
+  <slot>on_minDiagrammSize_valueChanged(double)</slot>
  </slots>
 </ui>

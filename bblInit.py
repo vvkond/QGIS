@@ -22,7 +22,7 @@ LiftMethod = namedtuple('LiftMethod', ['isFlowing', 'isPump'])
 BBL_CONVERTED_SYMBOL = namedtuple('BBL_CONVERTED_SYMBOL', ['initialWellRole', 'currentWellRole', 'wellStatus', 'symbol', 'wellRoleTr'])
 BBL_SYMBOL = namedtuple('BBL_SYMBOL', ['wellRole', 'wellStatus', 'symbol', 'wellRoleTr'])
 SYMBOL = namedtuple('SYMBOL', ['wellRole', 'symbol'])
-StandardDiagram = namedtuple('StandardDiagram', ['name', 'scale', 'unitsType', 'units', 'fluids'])
+StandardDiagram = namedtuple('StandardDiagram', ['name', 'scale', 'unitsType', 'units', 'fluids','diagSize'])
 OLD_NEW_FIELDNAMES = [u'BubbleFields', u'bubbleflds']
 
 
@@ -603,10 +603,10 @@ class bblInit:
                         }
 
     standardDiagramms = {
-                    "1LIQUID_PRODUCTION"     : StandardDiagram(name=u"Диаграмма жидкости",   scale=300000,  unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]),
-                    "2LIQUID_INJECTION"      : StandardDiagram(name=u"Диаграмма закачки",    scale=300000,  unitsType=0, units=0, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0]),
-                    "3GAS_PRODUCTION"        : StandardDiagram(name=u"Диагмамма газа",       scale=3000000, unitsType=1, units=0, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0]),
-                    "4CONDENSAT_PRODUCTION"  : StandardDiagram(name=u"Диаграмма конденсата", scale=3000000, unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0, 0])
+                    "1LIQUID_PRODUCTION"     : StandardDiagram(name=u"Диаграмма жидкости",   scale=300000,  unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]),
+                    "2LIQUID_INJECTION"      : StandardDiagram(name=u"Диаграмма закачки",    scale=300000,  unitsType=0, units=0, fluids=[0, 0, 0, 0, 1, 1, 0, 0, 0] , diagSize=[2,15]),
+                    "3GAS_PRODUCTION"        : StandardDiagram(name=u"Диагмамма газа",       scale=3000000, unitsType=1, units=0, fluids=[0, 1, 0, 0, 0, 0, 0, 0, 0] , diagSize=[2,15]),
+                    "4CONDENSAT_PRODUCTION"  : StandardDiagram(name=u"Диаграмма конденсата", scale=3000000, unitsType=0, units=0, fluids=[0, 0, 0, 1, 0, 0, 0, 0, 0] , diagSize=[2,15])
                 }
 
     bblSymbols = [ # IN QGIS USE symbolcode+1. For example 70+1 ="unknown well" 
