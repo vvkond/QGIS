@@ -94,7 +94,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         super(QgisPDSResidualDialog, self).__init__(parent)       
 
         self.oilKindId = u'crude oil'
-        self.gasKindId = u'natural gas'
+        self.gasKindId = u'natural gas' #u'free gas'
 
         self.iface = iface
         self.project = project
@@ -828,7 +828,8 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
             layer = QgsVectorLayer(self.out_nfpt_path, basename(self.out_nfpt_path), 'ogr')
             if layer:
                 QgsMapLayerRegistry.instance().addMapLayer(layer)
-                # usage - QgsZonalStatistics (QgsVectorLayer *polygonLayer, const QString &rasterFile, const QString &attributePrefix="", int rasterBand=1)
+                # @TODO: resample rater before run QgsZonalStatistics to take cell size 1m/1m 
+                # usage - 'QgsZonalStatistics(QgsVectorLayer, QString, QString attributePrefix="", int rasterBand=1, QgsZonalStatistics.Statistics stats=QgsZonalStatistics.Statistics(QgsZonalStatistics.Count|QgsZonalStatistics.Sum|QgsZonalStatistics.Mean))'
                 zoneStat = QgsZonalStatistics(layer, self.out_raster_path, '', 1, QgsZonalStatistics.Sum)
                 zoneStat.calculateStatistics(None)
             else:
