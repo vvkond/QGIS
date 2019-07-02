@@ -88,6 +88,11 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_residuals_base.ui'))
 
 class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
+    '''
+        @warning: All operations go in current map projection!!!! 
+                    So if projection in degree,then 1map unit=1degree
+                    If projection in meters,then 1map unit=1metr
+    '''
 
     def __init__(self, project, iface, parent=None):
         """Constructor."""
@@ -773,6 +778,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         r = QgisProcessing()
         r.saveRaster(self.out_raster_path, gdal_input_raster.GetGeoTransform(), 0, rasterCrs.toWkt(), cols, rows, out_raster)
         layer = QgsRasterLayer(self.out_raster_path, basename(self.out_raster_path))
+        layer_out_raster_path=layer
         if layer is None:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Raster layer add error'),
@@ -828,10 +834,16 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
             layer = QgsVectorLayer(self.out_nfpt_path, basename(self.out_nfpt_path), 'ogr')
             if layer:
                 QgsMapLayerRegistry.instance().addMapLayer(layer)
-                # @TODO: resample rater before run QgsZonalStatistics to take cell size 1m/1m 
-                # usage - 'QgsZonalStatistics(QgsVectorLayer, QString, QString attributePrefix="", int rasterBand=1, QgsZonalStatistics.Statistics stats=QgsZonalStatistics.Statistics(QgsZonalStatistics.Count|QgsZonalStatistics.Sum|QgsZonalStatistics.Mean))'
+                # usage - 'QgsZonalStatistics(QgsVectorLayer, Rastr full path QString, QString attributePrefix="", int rasterBand=1, QgsZonalStatistics.Statistics stats=QgsZonalStatistics.Statistics(QgsZonalStatistics.Count|QgsZonalStatistics.Sum|QgsZonalStatistics.Mean))'
                 zoneStat = QgsZonalStatistics(layer, self.out_raster_path, '', 1, QgsZonalStatistics.Sum)
                 zoneStat.calculateStatistics(None)
+                #--recalculate zoneStat result by multiple it to raster cell size in current map unit!!!!
+                sum_col=layer.fieldNameIndex('sum')
+                layer.startEditing()
+                for feature in layer.getFeatures():
+                    feature['sum']
+                    layer.changeAttributeValue(feature.id(), sum_col, feature['sum']*cell_area)#layer_out_raster_path.rasterUnitsPerPixelX()*layer_out_raster_path.rasterUnitsPerPixelY()) #feature['sum']*rastr.rasterUnitsPerPixelX()*rastr.rasterUnitsPerPixelY())
+                layer.commitChanges()
             else:
                 self.iface.messageBar().pushMessage(self.tr("Error"),
                                                     self.tr(u'Residuals layer add error'),
