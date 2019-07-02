@@ -428,7 +428,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                 for label in root.findall('label'):
                     labelTemplate = label.attrib['labelText']
             '''
-            Draw diagramm for current feature
+            Draw diagram for current feature
             '''
             diagramms = sorted(diagramms, key=lambda diagramm: [diagramm.mDiagrammSize,diagramm.mRealSize], reverse=True)
             self.DEBUG and QgsMessageLog.logMessage("\n".join(map(str,diagramms)), 'BubbleSymbolLayer') #DEBUG
@@ -552,24 +552,43 @@ class BabbleSymbolLayerWidget(QgsSymbolLayerV2Widget, FORM_CLASS):
         self.showLabels.setChecked(layer.showLabels)
         self.showDiagramms.setChecked(layer.showDiagramms)
         self.mLabelSizeSpinBox.setValue(layer.labelSize)
+        self.editTemplateStr.setText(layer.templateStr)
+        self.editDiagrammStr.setPlainText(layer.diagrammStr)
 
     def symbolLayer(self):
         return self.layer
+    
+    def on_editTemplateStr_txt_changed(self,val):
+        #QgsMessageLog.logMessage('on_editTemplateStr_txt_changed', 'BubbleSymbolLayer')
+        self.layer.templateStr=val
+        self.emit(SIGNAL("changed()"))
+        pass
+
+    def on_editDiagrammStr_txt_changed(self):
+        #QgsMessageLog.logMessage('on_editDiagrammStr_txt_changed', 'BubbleSymbolLayer')
+        self.layer.diagrammStr=self.editDiagrammStr.toPlainText()
+        self.emit(SIGNAL("changed()"))
+        
+        pass
 
     def on_showLineouts_toggled(self, value):
+        #QgsMessageLog.logMessage('on_showLineouts_toggled', 'BubbleSymbolLayer')
         self.layer.showLineouts = value
         self.emit(SIGNAL("changed()"))
 
     def on_showLabels_toggled(self, value):
+        #QgsMessageLog.logMessage('on_showLabels_toggled', 'BubbleSymbolLayer')
         self.layer.showLabels = value
         self.emit(SIGNAL("changed()"))
 
     def on_showDiagramms_toggled(self, value):
+        #QgsMessageLog.logMessage('on_showDiagramms_toggled', 'BubbleSymbolLayer')
         self.layer.showDiagramms = value
         self.emit(SIGNAL("changed()"))
 
     @pyqtSlot(float)
     def on_mLabelSizeSpinBox_valueChanged(self, value):
+        #QgsMessageLog.logMessage('on_mLabelSizeSpinBox_valueChanged', 'BubbleSymbolLayer')
         self.layer.labelSize = value
         self.emit(SIGNAL("changed()"))
 
