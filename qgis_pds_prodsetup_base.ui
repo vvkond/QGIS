@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1016</width>
-    <height>586</height>
+    <height>597</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0" rowspan="3" colspan="2">
+   <item row="0" column="0" rowspan="2" colspan="2">
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
       <bool>true</bool>
@@ -38,12 +38,12 @@
         <x>0</x>
         <y>0</y>
         <width>1080</width>
-        <height>520</height>
+        <height>531</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_5">
        <item row="2" column="0">
-        <widget class="QGroupBox" name="groupBox_5">
+        <widget class="QGroupBox" name="grpBoxMainConfig">
          <property name="title">
           <string>Общее</string>
          </property>
@@ -89,7 +89,7 @@
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QGroupBox" name="groupBox_6">
+        <widget class="QGroupBox" name="grpBoxStyleLoadConfig">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -105,45 +105,49 @@
          <property name="checked">
           <bool>false</bool>
          </property>
-         <widget class="QWidget" name="verticalLayoutWidget">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>14</y>
-            <width>471</width>
-            <height>65</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QRadioButton" name="isUseDefaultStyle">
-             <property name="text">
-              <string>Использовать стиль по умолчанию</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="isAppendToStyle">
-             <property name="text">
-              <string>Добавить к текущему стилю</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="isAppendToEachLastSymbol">
-             <property name="text">
-              <string>Добавить ко всем последним символам текущего стиля</string>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QRadioButton" name="isUpdateExistDiagram">
+              <property name="text">
+               <string>Обновить текущие диаграммы</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="isUseDefaultStyle">
+              <property name="text">
+               <string>Использовать стиль по умолчанию</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="isAppendToStyle">
+              <property name="text">
+               <string>Добавить к текущему стилю</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="isAppendToEachLastSymbol">
+              <property name="text">
+               <string>Добавить ко всем последним символам текущего стиля</string>
+              </property>
+              <property name="checked">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
        <item row="0" column="1">
@@ -894,6 +898,70 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>isAppendToEachLastSymbol</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>on_grpBoxStyleLoadConfig_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>833</x>
+     <y>512</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>isUpdateExistDiagram</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>on_grpBoxStyleLoadConfig_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>833</x>
+     <y>443</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>isAppendToStyle</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>on_grpBoxStyleLoadConfig_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>833</x>
+     <y>489</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>isUseDefaultStyle</sender>
+   <signal>clicked()</signal>
+   <receiver>Dialog</receiver>
+   <slot>on_grpBoxStyleLoadConfig_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>833</x>
+     <y>466</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>507</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>diagrammTypeChanged(int)</slot>
@@ -908,5 +976,6 @@
   <slot>mImportFromGlobalPB_clicked()</slot>
   <slot>on_maxDiagrammSize_valueChanged(double)</slot>
   <slot>on_minDiagrammSize_valueChanged(double)</slot>
+  <slot>on_grpBoxStyleLoadConfig_clicked()</slot>
  </slots>
 </ui>
