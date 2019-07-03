@@ -200,6 +200,9 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
         if self.styleName is not None:
             load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
 
+        #---Add virtual field with WKT geometry
+        field = QgsField( 'devi', QVariant.String )
+        layer.addExpressionField( 'geom_to_wkt(  $geometry )', field )
 
         return layer
 
