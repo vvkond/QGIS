@@ -149,6 +149,12 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             except:pass
             self.fondByWellRdBtn.setChecked(self.fondLoadConfig.isWell   or False)
             self.fondByObjRdBtn.setChecked( self.fondLoadConfig.isObject or False)
+            try:
+                self.mStartDate=QDateTime().fromString( self.layer.customProperty("pds_prod_startDate", QDateTime(1900,01,01,00,00).toString(self.dateFormat)) , self.dateFormat)
+                self.mEndDate=  QDateTime().fromString( self.layer.customProperty("pds_prod_endDate",   QDateTime().currentDateTime().toString(self.dateFormat)) , self.dateFormat)
+            except:
+                self.mStartDate=QDateTime(1900,01,01,00,00)
+                self.mEndDate=  QDateTime().currentDateTime()
         self.fondByWellRdBtn.toggled.connect(self.onFondByWellRdBtn)
         self.endDateEdit.setDateTime(self.mEndDate)
         self.startDateEdit.setDateTime(self.mStartDate)
@@ -494,6 +500,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             self.layer.setCustomProperty("pds_project",                 str(self.project)                      )
             self.layer.setCustomProperty("pds_prod_SelectedReservoirs", str(self.mSelectedReservoirs)          )
             self.layer.setCustomProperty("pds_prod_PhaseFilter",        str(self.mPhaseFilter)                 )
+            
 
             # symbolList = self.layer.rendererV2().symbols()
             # symbol = QgsSymbolV2.defaultSymbol(self.layer.geometryType())
@@ -547,9 +554,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             self.layer.updateFields()
 
 
-        self.layer.setCustomProperty("pds_prod_endDate",            self.mEndDate.toString(self.dateFormat))
         self.layer.setCustomProperty("pds_fondLoad_isWell",         str(self.fondLoadConfig.isWell         ))
         self.layer.setCustomProperty("pds_fondLoad_isObject",       str(self.fondLoadConfig.isObject       ))
+        self.layer.setCustomProperty("pds_prod_startDate",          self.mStartDate.toString(self.dateFormat))
+        self.layer.setCustomProperty("pds_prod_endDate",            self.mEndDate.toString(self.dateFormat))
+        
 
         # ---
         self.mSelectedReservoirs = ast.literal_eval(self.layer.customProperty("pds_prod_SelectedReservoirs"))
@@ -2561,7 +2570,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     #===========================================================================
     def readSettings(self):
         settings = QSettings()
-        self.mStartDate = settings.value("/PDS/production/startDate", QDateTime().currentDateTime())
+        self.mStartDate = settings.value("/PDS/production/startDate", QDateTime(1900,01,01,00,00))
         self.mEndDate   = settings.value("/PDS/production/endDate",   QDateTime().currentDateTime())
         self.mSelectedReservoirs = settings.value("/PDS/production/selectedReservoirs")
         self.mPhaseFilter =        settings.value("/PDS/production/selectedPhases")
