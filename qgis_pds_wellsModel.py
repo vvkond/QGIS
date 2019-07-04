@@ -197,7 +197,9 @@ class WellsItemsModel(QAbstractItemModel):
         self.checkStates = []
         self.headerdata = headerData
         self.firstColumn = firstColumn
-        self.allowCheckRow=allowCheckRow        
+        self.allowCheckRow=allowCheckRow
+        self.id_col=0 #id of column,returned by .data(Qt:UserRole)
+    
 
     def setModelData(self, _arrayData):
         if len(_arrayData) > 0:
@@ -238,7 +240,7 @@ class WellsItemsModel(QAbstractItemModel):
         elif role == Qt.CheckStateRole and index.column() == 0:
             return self.checkStates[index.row()]
         elif role == Qt.UserRole:
-            return self.arraydata[index.row()][0]
+            return self.arraydata[index.row()][self.id_col]
 
         return None
 

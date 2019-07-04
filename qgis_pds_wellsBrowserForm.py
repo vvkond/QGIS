@@ -129,15 +129,22 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
         self.getWells()
         self.wellItemModel.setModelData(self.wellList)
 
-    def getSelectedWells(self):
+    def getSelectedWells(self, id_col=None):
+        '''
+            @param id_col: id of column for return values 
+        '''
         well_ids = []
+        if id_col is not None:
+            id_bckp=self.wellItemModel.id_col
+            self.wellItemModel.id_col=id_col
         for numRow in xrange(self.wellItemProxyModel.rowCount()):
             index = self.wellItemProxyModel.index(numRow, 0)
             checked = self.wellItemProxyModel.data(index, Qt.CheckStateRole)
             if checked == Qt.Checked:
                 id = self.wellItemProxyModel.data(index, Qt.UserRole)
                 well_ids.append(id)
-
+        if id_col is not None:
+            self.wellItemModel.id_col=id_bckp
         return well_ids
 
     @property

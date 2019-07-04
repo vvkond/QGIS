@@ -18,7 +18,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
     """Constructor."""
-    def __init__(self, _iface, _project, parent=None, selectedIds=None):
+    def __init__(self, _iface, _project, parent=None, selectedIds=None, allowCheckRow=True):
         super(QgisPDSWellsBrowserDialog, self).__init__(parent)
         self.setupUi(self)
 
@@ -27,7 +27,7 @@ class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
         self.iface = _iface
         self.initDb()
 
-        self.wellsBrowser = QgisPDSWellsBrowserForm(_iface, self.db, self.getAllWells, self.project, parent=self, selectedIds=selectedIds)
+        self.wellsBrowser = QgisPDSWellsBrowserForm(_iface, self.db, self.getAllWells, self.project, parent=self, selectedIds=selectedIds,allowCheckRow=allowCheckRow)
         self.verticalLayout.insertWidget(0, self.wellsBrowser)
 
     def initDb(self):
@@ -63,8 +63,13 @@ class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
         with open(sql_file_path, 'rb') as f:
             return f.read().decode('utf-8')
 
-    def getWellIds(self):
-        return self.wellsBrowser.getSelectedWells()
+    def getWellIds(self,return_col=None):
+        '''
+            @param return_col: number of column for with values for return 
+            @return: list of visible and selected id of well rows. Id is column from row,by default 'index'(slnid) 
+        '''
+        return self.wellsBrowser.getSelectedWells(id_col=return_col)
+    
 
     def getAllWells(self):
         wellList = []
