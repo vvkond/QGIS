@@ -26,7 +26,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
     """Constructor."""
-    def __init__(self, _iface, _db, getWellsFunc, _project, parent=None, selectedIds=None):
+    def __init__(self, _iface, _db, getWellsFunc, _project, parent=None, selectedIds=None, allowCheckRow=True):
         super(QgisPDSWellsBrowserForm, self).__init__(parent)
         self.setupUi(self)
 
@@ -53,6 +53,7 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
         self.mUnselectAll.setIcon(QIcon(':/plugins/QgisPDS/unchecked_checkbox.png'))
         self.mToggleSelected.setIcon(QIcon(':/plugins/QgisPDS/toggle.png'))
         self.mSaveWellList.setIcon(QIcon(':/plugins/QgisPDS/mActionFileSave.png'))
+
 
         #Selectors menu
         filterMenu = QMenu(self)
@@ -83,7 +84,7 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
                       self.tr('Operator'), self.tr('API number'), self.tr('Location'),
                       self.tr('Latitude'), self.tr('Longitude'), self.tr('Slot number'),
                       self.tr('Created by'), self.tr('Updated')]
-        self.wellItemModel = WellsItemsModel(headerData, 1, self)
+        self.wellItemModel = WellsItemsModel(headerData, 1, self, allowCheckRow=allowCheckRow)
         self.wellItemModel.setModelData(self.wellList)
         
         self.updateRowCheckStates()
@@ -94,6 +95,11 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
         self.wellItemProxyModel.setFilterActive(self.mWellFilterToolButton.isChecked())
         self.mWellsTreeView.setModel(self.wellItemProxyModel)
         
+        if not self.wellItemModel.allowCheckRow:
+            self.mSelectAll.setEnabled(False)
+            self.mUnselectAll.setEnabled(False)
+            self.mToggleSelected.setEnabled(False)
+
 
     def updateRowCheckStates(self):
         if self.selectedIds is not None:

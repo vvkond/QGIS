@@ -191,12 +191,13 @@ class WellsItemsProxyModel(QSortFilterProxyModel):
 
 
 class WellsItemsModel(QAbstractItemModel):
-    def __init__(self, headerData, firstColumn = 0, parent=None, *args):
+    def __init__(self, headerData, firstColumn = 0, parent=None, allowCheckRow=True, *args):
         super(WellsItemsModel, self).__init__(parent)
         self.arraydata = []
         self.checkStates = []
         self.headerdata = headerData
         self.firstColumn = firstColumn
+        self.allowCheckRow=allowCheckRow        
 
     def setModelData(self, _arrayData):
         if len(_arrayData) > 0:
@@ -274,8 +275,10 @@ class WellsItemsModel(QAbstractItemModel):
 
         if index.column() > 0:
             return Qt.ItemIsEnabled | Qt.ItemIsSelectable
-        else:
+        elif self.allowCheckRow:
             return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
+        else:
+            return Qt.ItemIsEnabled | Qt.ItemIsSelectable 
 
     def setCheckstateAll(self, checked):
         self.beginResetModel()
