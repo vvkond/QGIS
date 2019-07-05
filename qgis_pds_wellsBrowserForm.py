@@ -26,7 +26,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
     """Constructor."""
-    def __init__(self, _iface, _db, getWellsFunc, _project, parent=None, selectedIds=None, markedIdsCol=0 ,markedIds=None, isDisableUnmarkedItems=False, allowCheckRow=True ):
+    def __init__(self, _iface, _db, getWellsFunc, _project, parent=None, selectedIds=None, selectedIdsCol=0, markedIdsCol=0 ,markedIds=None, isDisableUnmarkedItems=False, allowCheckRow=True ):
         super(QgisPDSWellsBrowserForm, self).__init__(parent)
         self.setupUi(self)
 
@@ -37,6 +37,8 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
         self.wellListId = -1
         self.wellList = []
         self.selectedIds=selectedIds   # list of wellIds that must be Checked by default.
+        self.selectedIdsCol=(0 if selectedIdsCol is None else selectedIdsCol)
+        markedIdsCol=(self.selectedIdsCol if markedIdsCol is None else markedIdsCol) 
         self.mark=[[markedIdsCol,markedIds]] if markedIds is not None else []  # list of list '[column_id,[list wellIds]]' that must be marked.
         self.isDisableUnmarkedItems=isDisableUnmarkedItems
         # self.wellFilter = wellFilter
@@ -107,7 +109,7 @@ class QgisPDSWellsBrowserForm(QtGui.QWidget, FORM_CLASS):
     def updateRowCheckStates(self):
         if self.selectedIds is not None:
             self.wellItemModel.setCheckstateAll(checked=Qt.Unchecked)
-            rows=[self.wellItemModel.rowId(item) for item in self.wellItemModel.getDataFiltered(filter_func=lambda row:row[self.wellItemModel.id_col] in self.selectedIds)]
+            rows=[self.wellItemModel.rowId(item) for item in self.wellItemModel.getDataFiltered(filter_func=lambda row:row[self.selectedIdsCol] in self.selectedIds)]
             self.wellItemModel.setCheckState(checked=Qt.Checked, rows=rows )
         else:
             self.wellItemModel.setCheckstateAll(checked=Qt.Checked)

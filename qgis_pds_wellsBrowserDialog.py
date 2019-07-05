@@ -18,7 +18,7 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
     """Constructor."""
-    def __init__(self, _iface, _project, parent=None, selectedIds=None, markedIds=None, markedIdsCol=0 ,allowCheckRow=True, isDisableUnmarkedItems=False):
+    def __init__(self, _iface, _project, parent=None, selectedIds=None, selectedIdsCol=0, markedIds=None, markedIdsCol=0 ,allowCheckRow=True, isDisableUnmarkedItems=False):
         super(QgisPDSWellsBrowserDialog, self).__init__(parent)
         self.setupUi(self)
 
@@ -27,7 +27,7 @@ class QgisPDSWellsBrowserDialog(QtGui.QDialog, FORM_CLASS):
         self.iface = _iface
         self.initDb()
 
-        self.wellsBrowser = QgisPDSWellsBrowserForm(_iface, self.db, self.getAllWells, self.project, parent=self, selectedIds=selectedIds, markedIdsCol=markedIdsCol, markedIds=markedIds, isDisableUnmarkedItems=isDisableUnmarkedItems, allowCheckRow=allowCheckRow)
+        self.wellsBrowser = QgisPDSWellsBrowserForm(_iface, self.db, self.getAllWells, self.project, parent=self, selectedIds=selectedIds, selectedIdsCol=selectedIdsCol, markedIdsCol=markedIdsCol, markedIds=markedIds, isDisableUnmarkedItems=isDisableUnmarkedItems, allowCheckRow=allowCheckRow)
         self.verticalLayout.insertWidget(0, self.wellsBrowser)
 
     def initDb(self):
