@@ -27,7 +27,21 @@
         </widget>
        </item>
        <item>
-        <widget class="QgsFieldExpressionWidget" name="mFieldExpMarkText"/>
+        <widget class="QgsFieldExpressionWidget" name="mFieldExpMarkText" native="true"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>Цвет</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QgsColorButtonV2" name="mCBtnLine"/>
        </item>
       </layout>
      </item>
@@ -42,20 +56,6 @@
        </item>
        <item>
         <widget class="QgsColorButtonV2" name="mCBtnFill"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Обводка</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QgsColorButtonV2" name="mCBtnLine"/>
        </item>
       </layout>
      </item>

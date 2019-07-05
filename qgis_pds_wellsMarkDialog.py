@@ -22,8 +22,8 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'wellsMarkDialog_base.ui'))
 
 cTxt="mrkTxt"
-cFillColor="mrkCFill"
-cLineColor="mrkCLine"
+cFillColor="bufcol"
+cLineColor="lablcol"
   
 
 class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
@@ -43,11 +43,19 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
         self.setupUi(self)
         self.layer=layer
         
+        #cbtn.setDefaultColor(QColor("black")) 
+        self.mCBtnLine.setShowNull(False)
+        self.mCBtnLine.setDefaultColor(QColor("black"))         
+        self.mCBtnFill.setShowNull(True)
+        #cbtn.setAllowAlpha(True)
+        #cbtn.setShowNoColor(True)
+        
+        
         self.mFieldExpMarkText.setLayer(self.layer)
         self.fields_info=[ # field_name ,      type,       editWidget           , value get func                                               
                      [cTxt,       QVariant.String      ,  None                  , lambda:QgsExpression(self.mFieldExpMarkText.asExpression()) ]
-                    ,[cFillColor, QVariant.String      ,  u'Color'              , lambda:self.mCBtnFill.color().name()                        ]
-                    ,[cLineColor, QVariant.String      ,  u'Color'              , lambda:self.mCBtnLine.color().name()                        ]
+                    ,[cLineColor, QVariant.String      ,  u'Color'              , lambda:self.mCBtnLine.color().name() if not self.mCBtnLine.isNull() else ""] #QColor("black").name() ]
+                    ,[cFillColor, QVariant.String      ,  u'Color'              , lambda:self.mCBtnFill.color().name() if not self.mCBtnFill.isNull() else "" ]
                     ]
 
         if _project:
@@ -78,9 +86,6 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
     # 
     #=======================================================================
     def process(self): #default QDialog action
-        
-        #--- get values for mark
-        self.mFieldExpMarkText
         
         pr = self.layer.dataProvider()
         #---1 clear column if need
@@ -124,7 +129,7 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
                 QgsMessageLog.logMessage(u"Expr:{}".format(expr_str), tag="QgisPDS.markWells")
                 expr = QgsExpression(expr_str)        #--- search in layer record with that WELL_ID
                 feature_filter=QgsFeatureRequest(expr)
-            for feature in self.layer.getFeatures(feature_filter):
+            for feature in (self.layer.getFeatures() if feature_filter is None else self.layer.getFeatures(feature_filter)):
                 r_id = feature.id()
                 for field_info,f_id in zip(self.fields_info,f_ids):
                     f_name=   field_info[0]
@@ -134,6 +139,7 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
                         res = val.evaluate(context)
                     else:
                         res=val
+                    #if res==u"#000000":res=""
                     self.layer.changeAttributeValue(r_id, f_id, res)
             #self.layer.updateFeature(feature)
             self.layer.commitChanges()              
