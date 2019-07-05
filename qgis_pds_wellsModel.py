@@ -9,6 +9,16 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from qgis_pds_WellFilterSetup import *
 
+
+class AutoVivification(dict):
+    """Implementation of perl's autovivification feature."""
+    def __getitem__(self, item):
+        try:
+            return dict.__getitem__(self, item)
+        except KeyError:
+            value = self[item] = type(self)()
+            return value
+
 class WellsItemsProxyModel(QSortFilterProxyModel):
     def __init__(self, parent=None):
         QSortFilterProxyModel.__init__(self, parent)
@@ -192,8 +202,14 @@ class WellsItemsProxyModel(QSortFilterProxyModel):
 
 class WellsItemsModel(QAbstractItemModel):
     def __init__(self, headerData, firstColumn = 0, parent=None, allowCheckRow=True, *args):
+        '''
+            @param allowCheckRow: Flag enable/disable row checking 
+            @param firstColumn: index of first column,showed in table view
+        '''
         super(WellsItemsModel, self).__init__(parent)
         self.arraydata = []
+        self.arrayOptRoles=AutoVivification() # dict of dict optional roles "{index:{Role:}"
+        self.arrayOptFlags={} # dict of item flags Qt::ItemFlags
         self.checkStates = []
         self.headerdata = headerData
         self.firstColumn = firstColumn
@@ -212,7 +228,9 @@ class WellsItemsModel(QAbstractItemModel):
 
         self.beginResetModel()
         self.arraydata = _arrayData
-        self.checkStates = [Qt.Checked for i in self.arraydata]
+        self.arrayOptRoles=AutoVivification()
+        self.arrayOptFlags={}
+        self.checkStates = [Qt.Unchecked for i in self.arraydata]
         self.endResetModel()
 
     def getRowArray(self, row):
@@ -241,7 +259,9 @@ class WellsItemsModel(QAbstractItemModel):
             return self.checkStates[index.row()]
         elif role == Qt.UserRole:
             return self.arraydata[index.row()][self.id_col]
-
+        else:
+            if role in self.arrayOptRoles[index].keys():
+                return self.arrayOptRoles[index][role]
         return None
 
     def setData(self, index, value, role):
@@ -251,8 +271,43 @@ class WellsItemsModel(QAbstractItemModel):
         if role == Qt.CheckStateRole and index.column() == 0:
             self.checkStates[index.row()] = value
             return True
-
+        else:
+            self.arrayOptRoles[index][role]=value
+            return True
         return False
+    
+    def markData(self, markedLineIds=[]
+                 , markedIdColumn=None
+                 , markValue=QBrush(QColor('red')) ,markRole=Qt.ForegroundRole
+                 , markItemFlag=None
+                 , unMarkedItemFlag=None
+                 ):
+        '''
+            @param markedLineIds: list of ids row for mark. In table look value in column self.id_col
+        '''
+        #row_s,col_s=len(self.arraydata), len(self.arraydata[0])
+        col_bck=self.id_col
+        if markedIdColumn is not None:
+            self.id_col=markedIdColumn
+        row_s,col_s= self.rowCount() ,self.columnCount()
+        isMarkAll=( len(markedLineIds)==0)
+        self.beginResetModel()
+        for row in range(row_s):
+            if isMarkAll or self.arraydata[row][self.id_col] in markedLineIds: 
+                for col in range(col_s):
+                    index=self.index(row,col)
+                    self.setData(index,markValue,markRole)
+                    if markItemFlag is not None:
+                        self.arrayOptFlags[index]=markItemFlag
+            elif unMarkedItemFlag is not None:
+                for col in range(col_s):
+                    index=self.index(row,col)
+                    self.arrayOptFlags[index]=unMarkedItemFlag
+                        
+        self.endResetModel()
+        if markedIdColumn is not None:
+            self.id_col=col_bck
+
 
     def headerData(self, col, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -275,7 +330,9 @@ class WellsItemsModel(QAbstractItemModel):
         if not index.isValid():
             return QtCore.Qt.NoItemFlags
 
-        if index.column() > 0:
+        if index in self.arrayOptFlags.keys():
+            return self.arrayOptFlags[index]
+        elif index.column() > 0:
             return Qt.ItemIsEnabled | Qt.ItemIsSelectable
         elif self.allowCheckRow:
             return Qt.ItemIsEnabled | Qt.ItemIsSelectable | Qt.ItemIsUserCheckable
@@ -284,10 +341,8 @@ class WellsItemsModel(QAbstractItemModel):
 
     def setCheckstateAll(self, checked):
         self.beginResetModel()
-        self.checkStates = [checked for r in self.checkStates]
+        self.checkStates = [checked if bool(self.flags(self.index(row, 0)) & Qt.ItemIsUserCheckable) else state for row,state in enumerate(self.checkStates) ]
         self.endResetModel()
-        # index1 = self.index(0, 0)
-        # index2 = self.index(self.rowCount(), 0)
         # self.dataChanged.emit(index1, index2)
         
     def rowId(self,rowData):
@@ -301,12 +356,15 @@ class WellsItemsModel(QAbstractItemModel):
         filterdata=filter(filter_func, self.arraydata)
         return filterdata
                
-    def setCheckState(self, checked, row):
-        if row >= 0 and row < len(self.arraydata):
-            self.beginResetModel()
-            self.checkStates[row]=checked
-            self.endResetModel()
-        
+    def setCheckState(self, checked, rows):
+        '''
+            @param rows: list of rows ids for check
+        '''
+        self.beginResetModel()
+        for row in rows:
+            if row >= 0 and row < len(self.arraydata):
+                self.checkStates[row]=checked
+        self.endResetModel()
         
         
         
