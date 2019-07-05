@@ -51,6 +51,7 @@ from qgis_pds_createIsolines import QgisPDSCreateIsolines
 from qgis_pds_transite import QgisPDSTransitionsDialog
 from qgis_pds_SelectMapTool import QgisPDSSelectMapTool
 from qgis_pds_dca import QgisPDSDCAForm
+from qgis_pds_wellsMarkDialog import QgisPDSWellsMarkDialog
 from qgis_pds_wellsBrowserDialog import *
 # Import both Processing and CommanderWindow 
 #   classes from the Processing framework. 
@@ -417,6 +418,9 @@ class QgisPDS(QObject):
                             self.selectMapTool.setLayer(layer)
                         else:
                             self.selectMapTool.reset()
+                            
+                field_names = [field.name() for field in layer.dataProvider().fields()]
+                self.actionMarkWells.setEnabled(Fields.WellId.name in field_names)                              
         except:
             pass
 
@@ -661,6 +665,13 @@ class QgisPDS(QObject):
             icon_path,
             text=self.tr(u'Load wells'),
             callback=self.createWellLayer,
+            parent=self.iface.mainWindow())
+
+        icon_path = ':/plugins/QgisPDS/mark_item.png'
+        self.actionMarkWells=self.add_action(
+            icon_path,
+            text=self.tr(u'Mark wells'),
+            callback=self.markLayers,
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/deviations.png'
@@ -1068,6 +1079,39 @@ class QgisPDS(QObject):
         except Exception as e:
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
             
+    
+    def markLayers(self):
+        try:
+            for currentLayer in self.iface.legendInterface().selectedLayers():
+                self.markWells(currentLayer)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+
+        
+    def markWells(self,currentLayer=None):
+        try:
+            if currentLayer is None or (not isinstance(currentLayer,QgsMapLayer))  :  currentLayer = self.iface.activeLayer()
+            if currentLayer.type() != QgsMapLayer.VectorLayer:
+                return
+            pr = currentLayer.dataProvider()
+    
+            projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+            proj = ast.literal_eval(projStr)
+    
+            currentLayer.blockSignals(True)
+            filter_str=currentLayer.subsetString()
+            currentLayer.setSubsetString(None)
+            
+            layerWellNames,_=currentLayer.getValues(Fields.WellId.name)
+            
+            dlg = QgisPDSWellsMarkDialog(self.iface, self.currentProject, layer=currentLayer ,  checkedWellIds=layerWellNames,checkedWellIdsColumn=1)
+            if dlg.exec_():
+                pass
+            del dlg
+            currentLayer.setSubsetString(filter_str)
+            currentLayer.blockSignals(False)
+        except Exception as e:
+            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
       
 
     def createWellLayer(self):
