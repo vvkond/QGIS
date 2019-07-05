@@ -1104,7 +1104,7 @@ class QgisPDS(QObject):
             
             layerWellNames,_=currentLayer.getValues(Fields.WellId.name)
             
-            dlg = QgisPDSWellsMarkDialog(self.iface, self.currentProject, layer=currentLayer ,  checkedWellIds=layerWellNames,checkedWellIdsColumn=1)
+            dlg = QgisPDSWellsMarkDialog(self.iface, self.currentProject, layer=currentLayer ,  checkedWellIds=layerWellNames, checkedWellIdsColumn=1, markedWellIds=layerWellNames)
             if dlg.exec_():
                 pass
             del dlg

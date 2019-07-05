@@ -27,13 +27,14 @@ cLineColor="mrkCLine"
   
 
 class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
-    def __init__(self, _iface, _project, layer, checkedWellIds=None, checkedWellIdsColumn=0,parent=None):
+    def __init__(self, _iface, _project, layer, checkedWellIds=None, markedWellIds=None, checkedWellIdsColumn=0, parent=None):
         '''
             @param checkedWellIds: ids of wells(sldnid) for check by default in wellBrowser
         '''
         super(QgisPDSWellsMarkDialog, self).__init__(parent)
         self.filterWellNames = None # list of selected well names
-        self._filterWellIds = checkedWellIds  
+        self._filterWellIds = checkedWellIds
+        self._markedWellIds = markedWellIds 
         self._bckpfilterWellIds = checkedWellIds
         self._checkedWellIdsColumn=checkedWellIdsColumn
         self._isDisableUnmarkedItems=True
@@ -61,10 +62,18 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
     #===============================================================================
     # 
     #===============================================================================
-    @pyqtSlot()
+    #SLOT
     def on_buttonBox_accepted(self):
+        #QgsMessageLog.logMessage(u"accept", tag="QgisPDS.debug")
         self.writeSettings()
         self.process()
+    #SLOT
+    def on_buttonBox_clicked(self, btn):
+        #QgsMessageLog.logMessage(u"apply", tag="QgisPDS.debug")
+        if self.buttonBox.buttonRole(btn) == QDialogButtonBox.ApplyRole:
+            self.writeSettings()
+            self.process()
+        
     #=======================================================================
     # 
     #=======================================================================
@@ -145,15 +154,15 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
         try:
             dlg = QgisPDSWellsBrowserDialog(self.iface, self.project
                                             , selectedIdsCol=self._checkedWellIdsColumn
-                                            , selectedIds=self._filterWellIds
-                                            , markedIdsCol=self._checkedWellIdsColumn
-                                            , markedIds=self._filterWellIds
+                                            , selectedIds   =self._filterWellIds
+                                            , markedIdsCol  =self._checkedWellIdsColumn
+                                            , markedIds     =self._markedWellIds
                                             , allowCheckRow=self.allowCheckRow
                                             , isDisableUnmarkedItems=self._isDisableUnmarkedItems
                                             )
             if dlg.exec_():
                 self.btnOpenBrowser.setStyleSheet("background-color: red")
-                self._filterWellIds=dlg.getWellIds()
+                self._filterWellIds=dlg.getWellIds(return_col=self._checkedWellIdsColumn)
                 self.filterWellNames=dlg.getWellIds(return_col=1)
                 QgsMessageLog.logMessage(u"Selected {}:".format(str(self._filterWellIds)), tag="QgisPDS.markWells")
                 self.isNeedFilterWellIds=True
