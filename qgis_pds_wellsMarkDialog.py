@@ -12,7 +12,7 @@ from QgisPDS.connections import create_connection
 from utils import *
 from QgisPDS.tig_projection import *
 from qgis_pds_wellsBrowserDialog import QgisPDSWellsBrowserDialog
-from bblInit import Fields
+from bblInit import Fields, layer_to_labeled
 
 ''' In *.ui replace <header>*.h</header>  to  <header>qgis.gui</header> if use qgis promotoves
     <header>[^<]*</header>
@@ -52,10 +52,10 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
         
         
         self.mFieldExpMarkText.setLayer(self.layer)
-        self.fields_info=[ # field_name ,      type,       editWidget           , value get func                                               
-                     [cTxt,       QVariant.String      ,  None                  , lambda:QgsExpression(self.mFieldExpMarkText.asExpression()) ]
-                    ,[cLineColor, QVariant.String      ,  u'Color'              , lambda:self.mCBtnLine.color().name() if not self.mCBtnLine.isNull() else ""] #QColor("black").name() ]
-                    ,[cFillColor, QVariant.String      ,  u'Color'              , lambda:self.mCBtnFill.color().name() if not self.mCBtnFill.isNull() else "" ]
+        self.fields_info=[ # 0 field_name ,     1 type,      2 editWidget      , 3 value get func                                                              4 widget
+                     [cTxt,       QVariant.String      ,  None                  , lambda:QgsExpression(self.mFieldExpMarkText.asExpression())                , self.mFieldExpMarkText ]
+                    ,[cLineColor, QVariant.String      ,  u'Color'              , lambda:self.mCBtnLine.color().name() if not self.mCBtnLine.isNull() else "", self.mCBtnLine ] #QColor("black").name() ]
+                    ,[cFillColor, QVariant.String      ,  u'Color'              , lambda:self.mCBtnFill.color().name() if not self.mCBtnFill.isNull() else "", self.mCBtnFill ]
                     ]
 
         if _project:
@@ -86,6 +86,9 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
     # 
     #=======================================================================
     def process(self): #default QDialog action
+        #--- check enabled widgets
+        self.fields_info=[field_info for field_info in self.fields_info if field_info[4].isEnabled()]
+        #QgsMessageLog.logMessage(u"Marks :{}".format(str(field_info)), tag="QgisPDS.markWells")
         
         pr = self.layer.dataProvider()
         #---1 clear column if need
@@ -142,7 +145,22 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
                     #if res==u"#000000":res=""
                     self.layer.changeAttributeValue(r_id, f_id, res)
             #self.layer.updateFeature(feature)
-            self.layer.commitChanges()              
+            self.layer.commitChanges()
+        #---4 add rendering rules
+        if self.chkBoxAddDrawRule.isChecked():
+            palyr = QgsPalLayerSettings()
+            palyr.readFromLayer(self.layer)
+            palyr.enabled = True
+            #palyr.fieldName = Fields.WellId.name
+            palyr.placement= QgsPalLayerSettings.OverPoint
+            palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
+            palyr.labelOffsetInMapUnits = False
+            palyr.distInMapUnits = True
+            palyr.displayAll = True
+            palyr.fontSizeInMapUnits = False
+            palyr=layer_to_labeled(palyr)  #---enable EasyLabel
+            palyr.writeToLayer(self.layer)            
+
 
     #===============================================================================
     # from PyQt4.QtGui import *

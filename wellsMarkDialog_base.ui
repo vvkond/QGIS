@@ -8,65 +8,88 @@
     <x>0</x>
     <y>0</y>
     <width>387</width>
-    <height>144</height>
+    <height>169</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Mark wells</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Текст</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QgsFieldExpressionWidget" name="mFieldExpMarkText" native="true"/>
-       </item>
-      </layout>
+      <widget class="QGroupBox" name="grpBox1">
+       <property name="title">
+        <string>Текст</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QgsFieldExpressionWidget" name="mFieldExpMarkText"/>
+        </item>
+       </layout>
+      </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Цвет</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QgsColorButtonV2" name="mCBtnLine"/>
-       </item>
-      </layout>
+      <widget class="QGroupBox" name="grpBox2">
+       <property name="title">
+        <string>Цвет</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QgsColorButtonV2" name="mCBtnLine"/>
+        </item>
+       </layout>
+      </widget>
      </item>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Заливка</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QgsColorButtonV2" name="mCBtnFill"/>
-       </item>
-      </layout>
+      <widget class="QGroupBox" name="grpBox3">
+       <property name="title">
+        <string>Заливка</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QgsColorButtonV2" name="mCBtnFill"/>
+        </item>
+       </layout>
+      </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QCheckBox" name="chkBoxClearOldMark">
-     <property name="text">
-      <string>Очистить текущие метки</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QCheckBox" name="chkBoxClearOldMark">
+       <property name="text">
+        <string>Очистить текущие метки</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkBoxAddDrawRule">
+       <property name="text">
+        <string>Добавить правило отрисовки</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QPushButton" name="btnOpenBrowser">
