@@ -209,6 +209,15 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
         self.mCBtnFill.setColor(QColor(settings.value("/PDS/markwell/FillColor")))  
         self.mCBtnLine.setColor(QColor(settings.value("/PDS/markwell/LineColor")))  
         self.mFieldExpMarkText.setExpression(settings.value("/PDS/markwell/Text",None))
+        #---restore checkbox
+        for item in [ 
+                          self.grpBox1
+                         ,self.grpBox2
+                         ,self.grpBox3
+                         ,self.chkBoxAddDrawRule
+                         ,self.chkBoxClearOldMark
+                         ]:
+            item.setChecked(settings.value("/PDS/markwell/{}".format(item.objectName()),True))
     #===========================================================================
     # 
     #===========================================================================
@@ -217,7 +226,15 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
         settings.setValue("/PDS/markwell/FillColor", self.mCBtnFill.color().name())
         settings.setValue("/PDS/markwell/LineColor", self.mCBtnLine.color().name())
         settings.setValue("/PDS/markwell/Text", self.mFieldExpMarkText.asExpression())
-        
+        #---store checkbox
+        for item in [ 
+                          self.grpBox1
+                         ,self.grpBox2
+                         ,self.grpBox3
+                         ,self.chkBoxAddDrawRule
+                         ,self.chkBoxClearOldMark
+                         ]:
+            settings.setValue("/PDS/markwell/{}".format(item.objectName()), int(item.isChecked()))
         
 
 
