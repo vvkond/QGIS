@@ -87,14 +87,14 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
     #=======================================================================
     def process(self): #default QDialog action
         #--- check enabled widgets
-        self.fields_info=[field_info for field_info in self.fields_info if field_info[4].isEnabled()]
+        fields_info=[field_info for field_info in self.fields_info if field_info[4].isEnabled()]
         #QgsMessageLog.logMessage(u"Marks :{}".format(str(field_info)), tag="QgisPDS.markWells")
         
         pr = self.layer.dataProvider()
         #---1 clear column if need
         if self.chkBoxClearOldMark.isChecked():
             f_ids=[]
-            for field_info in self.fields_info:
+            for field_info in fields_info:
                 f_name= field_info[0]
                 field_index = self.layer.fields().indexFromName(f_name)
                 if field_index > -1:
@@ -102,7 +102,7 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
             pr.deleteAttributes(f_ids)            
             self.layer.updateFields() # tell the vector layer to fetch changes from the provider
         #---2 create columns if need
-        for field_info in self.fields_info:
+        for field_info in fields_info:
             f_name=   field_info[0]
             f_type=   field_info[1]
             e_widget= field_info[2]
@@ -116,7 +116,7 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
         self.layer.updateFields() # tell the vector layer to fetch changes from the provider                
         #---3 set values
         f_ids=[]
-        for field_info in self.fields_info:
+        for field_info in fields_info:
             f_name       =field_info[0]
             field_index = self.layer.fields().indexFromName(f_name)
             f_ids.append(field_index)
@@ -134,7 +134,7 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
                 feature_filter=QgsFeatureRequest(expr)
             for feature in (self.layer.getFeatures() if feature_filter is None else self.layer.getFeatures(feature_filter)):
                 r_id = feature.id()
-                for field_info,f_id in zip(self.fields_info,f_ids):
+                for field_info,f_id in zip(fields_info,f_ids):
                     f_name=   field_info[0]
                     val   =   field_info[3]()
                     if isinstance(val,QgsExpression):
