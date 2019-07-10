@@ -297,6 +297,16 @@ def createProjectString(args):
 
     return u'{0}/{1}/{2}'.format(host, sid, projectName)
 
+def qgs_get_all_rules(rule):
+    childrenRules=rule.children()
+    res=[rule]
+    if len(childrenRules)>0:
+        for childrenRule in childrenRules:
+            res.extend(qgs_get_all_rules(childrenRule))
+    else:
+        pass
+    return res
+
 def qgs_get_last_child_rules(rule):
     childrenRules=rule.children()
     res=[]
