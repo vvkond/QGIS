@@ -72,6 +72,7 @@ import json
 from qgis.core import QgsMapLayerRegistry
 from qgis.utils import qgsfunction
 from qgis.core import QgsExpression
+from utils import getenv_system
 
 
 @qgsfunction(args='auto', group='PumaPlus')
@@ -1393,6 +1394,9 @@ class QgisPDS(QObject):
         return u'{0}/{1}/{2}'.format(host, sid, projectName)
 
     def startSelectMapTool(self, layer, exeName, appArgs):
+        '''
+            @TODO: work only if layer and map projection equal!!!!. In layer projection... 
+        '''
         if not self.selectMapTool:
             self.selectMapTool = QgisPDSSelectMapTool(self.iface.mapCanvas(), layer)
             self.selectMapTool.finished.connect(self.selectMapTool_finished)
@@ -1509,8 +1513,20 @@ class QgisPDS(QObject):
         runStr = exeName + ' ' + args
         QgsMessageLog.logMessage('Running: ' + runStr, 'QGisPDS')
         # os.system(runStr)
-
+        
         process = QProcess(self.iface)
+        process_env=QProcessEnvironment()
+        process_env=process_env.systemEnvironment() #all environment of parent
+#         process_env.insert("PATH",
+#                                 ";".join([
+#                                         "ORACLE_HOME"
+#                                         ,os.path.split(exeName)[0]
+#                                         ,process_env.value("PATH")
+#                                         ])
+#                            )
+        process_env.insert("PATH", getenv_system("PATH"))
+        process.setProcessEnvironment(process_env)
+        QgsMessageLog.logMessage('Running env: ' + "\n".join(process.processEnvironment().toStringList()), 'QGisPDS')
         process.start(runStr)
 
 
@@ -1529,7 +1545,7 @@ class QgisPDS(QObject):
         result = '0'
         try:
             for f in features:
-                 result += ',{0}'.format(f.attribute(self.sldnidFieldName))
+                result += ',{0}'.format(f.attribute(self.sldnidFieldName))
         except:
             pass
 

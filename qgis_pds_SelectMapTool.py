@@ -49,6 +49,7 @@ class QgisPDSSelectMapTool(QgsMapToolEmitPoint):
             pt1 = self.toMapCoordinates(QPoint(e.pos().x()-5, e.pos().y() - 5))
             pt2 = self.toMapCoordinates(QPoint(e.pos().x() + 5, e.pos().y() + 5))
             rect = QgsRectangle(pt1, pt2)
+            # @TODO: rectangle in map coordinate,QgsFeatureRequest in layer coordinates 
             it = self.layer.getFeatures(QgsFeatureRequest(rect))
             ids1 = [i.id() for i in self.features]
             for f in it:
@@ -59,7 +60,7 @@ class QgisPDSSelectMapTool(QgsMapToolEmitPoint):
                     self.features.append(f)
                     ids1.append(f.id())
 
-            self.layer.setSelectedFeatures( ids1 )
+            self.layer.selectByIds( ids1 )
 
             self.showRect(self.endPoint)
         elif e.button() == Qt.RightButton:

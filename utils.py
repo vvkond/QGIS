@@ -347,3 +347,33 @@ def ping(host,hidden=True):
             startupinfo.dwFlags |= subprocess._subprocess.STARTF_USESHOWWINDOW#subprocess.STARTF_USESHOWWINDOW
     #proc = subprocess.Popen(command, startupinfo=startupinfo)    
     return subprocess.call(command, startupinfo=startupinfo) == 0
+
+
+
+#===============================================================================
+# 
+#===============================================================================
+def getenv_system(varname, default=''):
+    '''
+        return system environment variable
+    '''
+    import os
+    import win32api
+    import win32con
+    import platform   # For getting the operating system name
+    
+    if platform.system()!='Windows':
+        return os.environ(varname)
+    else:
+        v = default
+        try:
+            rkey = win32api.RegOpenKey(win32con.HKEY_LOCAL_MACHINE, 'SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment')
+            try:
+                v = str(win32api.RegQueryValueEx(rkey, varname)[0])
+                v = win32api.ExpandEnvironmentStrings(v)
+            except:
+                pass
+        finally:
+            win32api.RegCloseKey(rkey)
+        return v
+
