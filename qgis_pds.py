@@ -1394,9 +1394,6 @@ class QgisPDS(QObject):
         return u'{0}/{1}/{2}'.format(host, sid, projectName)
 
     def startSelectMapTool(self, layer, exeName, appArgs):
-        '''
-            @TODO: work only if layer and map projection equal!!!!. In layer projection... 
-        '''
         if not self.selectMapTool:
             self.selectMapTool = QgisPDSSelectMapTool(self.iface.mapCanvas(), layer)
             self.selectMapTool.finished.connect(self.selectMapTool_finished)
