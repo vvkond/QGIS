@@ -43,13 +43,20 @@ class QgisPDSSelectMapTool(QgsMapToolEmitPoint):
 
     def canvasPressEvent(self, e):
         if e.button() == Qt.LeftButton:
+            # get transform for canvas CRS->layer CRS
+            canvas_crs=self.canvas.mapSettings().destinationCrs()     
+            layer_crs=self.layer.crs()
+            xform = QgsCoordinateTransform(canvas_crs, layer_crs)
+            
+            #canvas click point
             self.startPoint = self.toMapCoordinates(e.pos())
             self.endPoint = self.startPoint
 
             pt1 = self.toMapCoordinates(QPoint(e.pos().x()-5, e.pos().y() - 5))
             pt2 = self.toMapCoordinates(QPoint(e.pos().x() + 5, e.pos().y() + 5))
             rect = QgsRectangle(pt1, pt2)
-            # @TODO: rectangle in map coordinate,QgsFeatureRequest in layer coordinates 
+            #rect.asWktCoordinates()
+            rect=xform.transform(rect)
             it = self.layer.getFeatures(QgsFeatureRequest(rect))
             ids1 = [i.id() for i in self.features]
             for f in it:
@@ -63,6 +70,7 @@ class QgisPDSSelectMapTool(QgsMapToolEmitPoint):
             self.layer.selectByIds( ids1 )
 
             self.showRect(self.endPoint)
+            
         elif e.button() == Qt.RightButton:
             self.finished.emit(self.features, self.exeName, self.appArgs)
             self.reset()
@@ -99,15 +107,18 @@ class QgisPDSSelectMapTool(QgsMapToolEmitPoint):
 
     def showRect(self, endPoint):
         self.rubberBand.reset()
-
+        # get transform for layer CRS->canvas CRS
+        canvas_crs=self.canvas.mapSettings().destinationCrs()     
+        layer_crs=self.layer.crs()
+        xform = QgsCoordinateTransform(layer_crs, canvas_crs)
+        
         for f in self.features:
             point1 = self.getFeaturePoint(f.geometry())
             if point1:
-                self.rubberBand.addPoint(point1, False)
+                self.rubberBand.addPoint(xform.transform(point1), False)
 
-        point3 = QgsPoint(endPoint.x(), endPoint.y())
-        self.rubberBand.addPoint(point3, True)
-
+        #point3 = QgsPoint(endPoint.x(), endPoint.y())
+        self.rubberBand.addPoint(endPoint, True)
         self.rubberBand.show()
 
     def activate(self):
