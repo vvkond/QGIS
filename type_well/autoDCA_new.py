@@ -1168,8 +1168,9 @@ class DCA():
                         comb_oil[well]=oil['Rate'].resample('Y').sum().append(lp_forecast1)
                         #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
                 wcount=wcount+1
-                #Append eur_list
-                eur_list.append((well, lp_Tr))
+                #Append eur_list, skip wells without forecast to match comboil
+                if len(lp_forecast)>0:
+                    eur_list.append((well, lp_Tr))
             except Exception as e:
                 log( '===========================')
                 log( 'WARNING!!!')
@@ -1184,7 +1185,7 @@ class DCA():
         if self.config.UseTypeWell and not self.is_terminated:
             #Create eur dataframe
             eur=pd.DataFrame(eur_list, columns=('WELL', 'EUR'))
-            
+            #log(eur)
             
             Tweight=self.typewell(eur)
             
@@ -1193,8 +1194,11 @@ class DCA():
             comb_oil1=comb_oil.copy()
             comb_oil1['TypeWell']=0
             comb_oil1=comb_oil1.fillna(value=0)
+            
             for i in range(len(Tweight)):
                 if Tweight['TWeight'].iloc[i] > 0:
+                    #log('Tweight='+Tweight['WELL'].iloc[i])
+                    
                     comb_oil1['TypeWell']=comb_oil1['TypeWell']+comb_oil1[Tweight['WELL'].iloc[i]]*Tweight['TWeight'].iloc[i]
             
             
@@ -1202,8 +1206,8 @@ class DCA():
             #Final chart
             log( "SHOW FINAL GRAPH")
             plt.figure(3, figsize=(12,8))#All rates and forecasts vs Years
-            for well in comb_oil.columns:
-                plt.plot(comb_oil.index, comb_oil[well], linewidth=1,label=well)
+            for well in comb_oil1.columns:
+                plt.plot(comb_oil1.index, comb_oil1[well], linewidth=1,label=well)
                 pass
             plt.plot(comb_oil1.index, comb_oil1.TypeWell,'b--',label='Type Well') 
             plt.yscale('log')
