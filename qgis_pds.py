@@ -830,13 +830,13 @@ class QgisPDS(QObject):
                 callback=lambda :cw.runAlgorithm(alg_ml),
                 parent=self.iface.mainWindow())
         # Then get the algorithm you're interested in (for instance, Join Attributes):
-        alg_ml = Processing.getAlgorithm("pumaplus:setmapvariable")
-        if alg_ml is not None:
+        alg_mv = Processing.getAlgorithm("pumaplus:setmapvariable")
+        if alg_mv is not None:
             icon_path = ':/plugins/QgisPDS/text_edit.png'
             self.add_action(
                 icon_path,
                 text=self.tr(u'Update variables'),
-                callback=lambda :cw.runAlgorithm(alg_ml),
+                callback=lambda :cw.runAlgorithm(alg_mv),
                 parent=self.iface.mainWindow())
 
 
