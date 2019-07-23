@@ -238,6 +238,7 @@ Config=namedtuple('Config',[
                             ,"perhour"
                             ,"persecond"
                             ,"window_size"
+                            ,"UseTypeWell"
                           ])
 
 def get_config(
@@ -260,6 +261,7 @@ def get_config(
                 ,perhour=1 #defaults is 24
                 ,persecond=1 #default is 3600
                 ,window_size=5 #size of Sample for calculkation
+                ,UseTypeWell=True
         ):
     """    
         @return: config
@@ -275,6 +277,7 @@ def get_config(
                 ,perhour=perhour
                 ,persecond=persecond
                 ,window_size=window_size
+                ,UseTypeWell=UseTypeWell
                 )
 #===============================================================================
 # 
@@ -688,474 +691,497 @@ class DCA():
         wcount=0
         eur_list=[]
         for well in wlist:
-            if self.is_terminated:break
-            oil=reg_dataframe.loc[reg_dataframe[cWELL]==well]
-            oil.set_index(cPROD_START_TIME,drop=False, inplace=True)
-            #Calculate oil rate m3/D to be more precise
-            oil['Rate']=oil[self.reservoir_prop.primary_product]/(oil['Hours'].loc[oil['Hours']>0])*24/self.reservoir_prop.primdiv
-            #Convert index to cumulative days time
-            oil['Time']=oil.index.days_in_month*self.config.perhour*self.config.persecond
-            oil['Time']=oil['Time'].cumsum()
-            oil['CumOil']=oil[self.reservoir_prop.primary_product].cumsum()/self.reservoir_prop.primdiv
-            oil['wc']=oil[cWAT_VOL]/(oil[self.reservoir_prop.primary_product]+oil[cWAT_VOL])
-            #Calculate rate for the secondary product
-            oil['Rate2']=oil[self.reservoir_prop.secondary_product]/(oil['Hours'].loc[oil['Hours']>0])*24/self.reservoir_prop.secdiv
-            oil['secondRatio']=oil['Rate2']/oil['Rate']
-            #Calculate 1+WOR
-            oil['Watrate']=(oil[cWAT_VOL].loc[oil[cWAT_VOL]>0])/(oil['Hours'].loc[oil['Hours']>0])*24
-            oil['WOR']=1+oil['Watrate'].loc[oil['Watrate']>0]/oil['Rate'].loc[oil['Rate']>0]
-               
-        
-            #######################################
-            #Call fitselect function with oil rate
-            #######################################
-            prd='Rate'
-            #Add row counter
-            data=oil
-            data['rownum']=1
-            data.rownum=data.rownum.cumsum()
-            maxrate=data.loc[data.Rate == data.Rate.max()]
+            log( '\n'*2)
+            log( '='*40)
+            log( 'Well '+well )
+            log( '='*40)
             
-            if len(maxrate)>0:
-                dshift=maxrate['rownum'].iloc[0]-1
-            else:
-                dshift=0
+            try:
+                if self.is_terminated:break
+                oil=reg_dataframe.loc[reg_dataframe[cWELL]==well]
+                oil.set_index(cPROD_START_TIME,drop=False, inplace=True)
+                #Calculate oil rate m3/D to be more precise
+                oil['Rate']=oil[self.reservoir_prop.primary_product]/(oil['Hours'].loc[oil['Hours']>0])*24/self.reservoir_prop.primdiv
+                #Convert index to cumulative days time
+                oil['Time']=oil.index.days_in_month*self.config.perhour*self.config.persecond
+                oil['Time']=oil['Time'].cumsum()
+                oil['CumOil']=oil[self.reservoir_prop.primary_product].cumsum()/self.reservoir_prop.primdiv
+                oil['wc']=oil[cWAT_VOL]/(oil[self.reservoir_prop.primary_product]+oil[cWAT_VOL])
+                #Calculate rate for the secondary product
+                oil['Rate2']=oil[self.reservoir_prop.secondary_product]/(oil['Hours'].loc[oil['Hours']>0])*24/self.reservoir_prop.secdiv
+                oil['secondRatio']=oil['Rate2']/oil['Rate']
+                #Calculate 1+WOR
+                oil['Watrate']=(oil[cWAT_VOL].loc[oil[cWAT_VOL]>0])/(oil['Hours'].loc[oil['Hours']>0])*24
+                oil['WOR']=1+oil['Watrate'].loc[oil['Watrate']>0]/oil['Rate'].loc[oil['Rate']>0]
+                   
             
-            #dshift=0
-            data=oil[dshift:]
-            stream=self.fitselect(data,self.config.threshold,prd)
-            wor=False
-            stream=stream[stream['Rate']>0]
-            #Call regression function for log rate vs time and check for positive slope
-            if len(stream) > 2:
-                oil_fit, regr=self.linregress(stream, wor)
-            else:
-                continue
-            
-            #Find time for start and end of stream
-            iT=oil.loc[stream.index[0],'Time']
-            eT=oil.loc[stream.index[len(stream)-1],'Time']
-            
-            while regr.coef_[0][0] > 0:
-                if len(stream) > 0:
-                    dshift=dshift+len(stream)
-                    #dshift=len(oil.loc[stream.index[len(stream)-1]:])
-                    #dshift=dshift+1
-                    data=oil[dshift:]
-                    stream=self.fitselect(data,self.config.threshold,prd)
+                #######################################
+                #Call fitselect function with oil rate
+                #######################################
+                prd='Rate'
+                #Add row counter
+                data=oil
+                data['rownum']=1
+                data.rownum=data.rownum.cumsum()
+                maxrate=data.loc[data.Rate == data.Rate.max()]
+                
+                if len(maxrate)>0:
+                    dshift=maxrate['rownum'].iloc[0]-1
                 else:
-                    dshift=dshift+1
-                    data=oil[dshift:]
-                    stream=self.fitselect(data,self.config.threshold,prd)
-                if dshift > len(oil)-2:
-                    log( '=================================')
-                    log( 'Well '+well+' has no valid points')
-                    log( '=================================')
-                    break
-                    
-                #print 'dshift= ', dshift, len(stream), len(data), regr.coef_[0][0]
-                #stream=fitselect(data,threshold,prd)
-                #print stream
-                #Call regression function for log rate vs time
+                    dshift=0
+                
+                #dshift=0
+                data=oil[dshift:]
+                stream=self.fitselect(data,self.config.threshold,prd)
+                wor=False
                 stream=stream[stream['Rate']>0]
-                if len(stream) >= 2:
+                #Call regression function for log rate vs time and check for positive slope
+                if len(stream) > 2:
                     oil_fit, regr=self.linregress(stream, wor)
                 else:
                     continue
                 
-            #Call regression function for log rate vs time with negative slope
-            if len(stream) <= 2:
-                continue
-            stream=stream[stream['Rate']>0]
-            oil_fit, regr=self.linregress(stream, wor)
-            """
-            print 'Fitted curve parameters:'
-            print '-------------------------'
-            #Nominal decline rate take 12 months, data are monthly sampled
-            ndr=(oil_fit[0][0]-oil_fit[1][0])/oil_fit[0][0]*100*12
-            print 'Nominal decline rate, %: ', ndr
-        
-            #Effective decline rate
-            #edr=regr.coef_[0][0]
-            edr=100*(1-2.72**(ndr/-100))
-            #print 'Effective decline rate, %: ', edr*perhour*persecond*30*12*-100
-            print 'Effective decline rate, %: ', edr
-        
-            #Initial rate
-            Qi=oil_fit[0][0]
-            print 'Initial rate, '+units, Qi
-        
-            #Initial cumulative: from start of production to start of fitted curve
-            iC=(2.72**regr.intercept_[0]-oil_fit[0][0])/regr.coef_[0][0]*-1
-            #iC=oil['CumOil'].iloc[len(oil)-1]
-            print 'Initial cumulative, m3:', iC, units
-        
-            #Technical reserves: iC+reserves from start of fitted curve
-            Tr=(2.72**regr.intercept_[0]-MinRate)/regr.coef_[0][0]*-1
-            #Tr=oil['CumOil'].iloc[len(oil)-1]+oil_forecast.sum()
-            print 'Technical reserves: ',Tr, units
-            print '======================'
-            """
-            ##########################################################
-            #Call fitselect function for WOR. Use cumulative oil chart
-            ##########################################################
-            if oil[cWAT_VOL].max() > 0:
-                prd='WOR'
-                wor=True
-                wor_workflow=True
-                #Find max value among last 10 points to avoid decreasing patterns
-                maxval=0
-                if len(oil) > 10:
-                    for j in range(10):
-                        if maxval < oil[prd].iloc[len(oil)-(j+1)]:
-                            maxval=oil[prd].iloc[len(oil)-(j+1)]
-                        else:
-                            break
-                        #print ('maxval= '), maxval, j
-                    oil_temp=oil[len(oil)-(2+j):len(oil)-j].fillna(value=0)
-                    i=0
-                    #Select and regress
-                    while i < len(oil):
-                        if len(oil_temp)>=4:
-                            #Call last selection
-                            lfit, wor_regr=self.lastselect(oil_temp,prd,wor)
-                            #Predict Rate on full time range
-                            np_Cum=np.array(oil.loc[:,['CumOil']])
-                            if not wor:
-                                oil_predict=2.72**wor_regr.predict(np_Cum)
-                            if wor:
-                                wor_predict=wor_regr.predict(np_Cum)                        
-                            break
-                        else: #shift for one point, leaving maxval point untached
-                            oil_temp=oil[len(oil)-(2+j+i):len(oil)-(1+j+i)]
-                            oil_temp=oil_temp.append(oil[len(oil)-(1+j):len(oil)-j])
-                            i=i+1
-                            
-                            #Call last selection
-                            oil_temp=oil_temp[oil_temp['WOR']>0]
-                            if len(oil_temp)>1:
-                                lfit, wor_regr=self.lastselect(oil_temp,prd,wor)
-                            else:
-                                continue
-                            #Predict Rate on full time range
-                            np_Cum=np.array(oil.loc[:,['CumOil']])
-                            if not wor:
-                                oil_predict=2.72**wor_regr.predict(np_Cum)
-                                #Count number of points near the line
-                                oil_temp=oil[abs(oil[prd]-oil_predict.reshape(len(oil_predict)))<oil[prd].std()]
-                            if wor:
-                                wor_predict=wor_regr.predict(np_Cum)
-                                #Count number of points near the line
-                                oil_temp=oil[abs(oil[prd]-wor_predict.reshape(len(wor_predict)))<oil[prd].std()]
-                                #Select points within one year from pairs
-                                #oil_temp=oil_temp[oil_temp['Time'].diff()<365]
-                    #print (oil_temp)
-                    if len(oil_temp)<3:
-                        wor_workflow=False
-                        log( '===========================')
-                        log( 'WOR workflow is not applied')
-            else:
-                wor_workflow=False
-                log( '===========================')
-                log( 'WOR workflow is not applied')
-            
-            
-        
-            regr_type=regr
-            ############################
-            #Apply forecast at Last date
-            ############################
-            #Create forecast dataframe, start forecast on the following year from last production
-            forecast_start=str(oil.index.max().year+1)
-            data=oil
-            forecast_type='last_date'
-            Qi=1
-            #forecast(data, regr_type, forecast_type, forecast_start, forecast_end, Qi=1,Intercept=0)
-            ld_forecast, forecast_dates=self.forecast(data, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start, self.config.forecast_end, Qi, eT)
-        
-            ##################################################
-            #Apply forecast at Last point: Rate is No 4 column
-            ##################################################
-            #forecast_start=str(oil.index.max().year+1)
-            forecast_start=str(oil.index.max())
-            forecast_type='last_point'
-            #Qi=oil.iat[len(oil)-1,4]
-            Qi=oil['Rate'].iloc[len(oil)-1]
-            lp_forecast, forecast_dates=self.forecast(oil, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start,self.config.forecast_end, Qi, eT)
-            #Drop first row as it is equals to historical data
-            lp_forecast=lp_forecast[1:len(lp_forecast)]
-            log( '==============================='                   )
-            log( 'Last point forecast parameters for well:',well, self.REG)
-            log( '-------------------------'                         )
-            #Nominal decline rate take 12 months, data are monthly sampled
-            #ndr=(oil_fit[0][0]-oil_fit[1][0])/oil_fit[0][0]*100*12
-            ndr=(lp_forecast[self.reservoir_prop.primary_product+'Rate'].iloc[0]-lp_forecast[self.reservoir_prop.primary_product+'Rate'].iloc[1])/lp_forecast[self.reservoir_prop.primary_product+'Rate'].iloc[0]*12*100
-            log( 'Nominal decline rate, %: ', ndr)
-        
-            #Effective decline rate
-            #edr=regr.coef_[0][0]
-            edr=100*(1-2.72**(ndr/-100))
-            #print 'Effective decline rate, %: ', edr*perhour*persecond*30*12*-100
-            log('Effective decline rate, %: ', edr)
-        
-            #Initial rate
-            Qi=lp_forecast[self.reservoir_prop.primary_product+'Rate'].iloc[0]
-            log('Initial rate, '+self.reservoir_prop.units, Qi)
-        
-            #Initial cumulative: from start of production to start of forecast
-            #iC=(2.72**regr.intercept_[0]-Qi)/regr.coef_[0][0]*-1
-            iC=oil['CumOil'].iloc[len(oil)-1]
-            log( 'Cumulative to Date, ', iC, self.reservoir_prop.units)
-        
-            #Technical reserves: iC+reserves from start of fitted curve
-            #lp_Tr=(2.72**regr.intercept_[0]-MinRate)/regr.coef_[0][0]*-1
-        
-            #Remaining reserves
-            #rR=lp_Tr-iC
-            #iC=oil['CumOil'].iloc[len(oil)-1]
-            lp_forecast['CumOil']=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond
-            lp_forecast['CumOil']=lp_forecast['CumOil'].cumsum()
-            rR=lp_forecast['CumOil'].iloc[len(lp_forecast)-1]
-            log( 'Remaining reserves,: ', rR, self.reservoir_prop.units)
-            lp_Tr=iC+rR
-            log( 'Estimated ultimate recovery: ',lp_Tr, self.reservoir_prop.units)
-            log( '======================')
-            #For gas producers calculate RF of gas and RF of condencate. CumOil in # 6 column
-            if self.reservoir_prop.calcRF:
-                oil['GasRF']=oil['CumOil']/lp_Tr
-                oil['CumCond']=oil[self.reservoir_prop.secondary_product].cumsum()#Calculate cumulative condenat
-                Cond_Tr=lp_Tr*self.reservoir_prop.cond_RFi
-                oil['CondRF']=oil['CumCond']/Cond_Tr
-                log( 'Condensate Initial reserves: ', Cond_Tr/1000, self.reservoir_prop.units)
-                #Define non-linear regression function
-                def nonlinear(x, a, b, c):
-                    return a*x**2+b*x+c
-                def linear(x,a,b):
-                    return a*x+b
-                #Call non-linear regression function for last 10 points
-                #popt, pcov = curve_fit(nonlinear, oil['GasRF'].iloc[len(oil)-10:len(oil)], oil['CondRF'].iloc[len(oil)-10:len(oil)])
-                #Call linear regression for last 10 points
-                popt, pcov = curve_fit(linear, oil['GasRF'].iloc[len(oil)-10:len(oil)], oil['CondRF'].iloc[len(oil)-10:len(oil)])
-                #Calculate future Gas RF
-                #Calculate monthly volumes from rates
-                lp_forecast[self.reservoir_prop.primary_product]=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond
-                #Save first GAS_VOL value, culumn No 3:
-                Gi=lp_forecast.iat[0,3]
-                #Add cumulative gas in order to calculate gas RF
-                lp_forecast.iat[0,3]=lp_forecast.iat[0,3]+oil['CumOil'].iloc[len(oil)-1]
-                lp_forecast[self.reservoir_prop.primary_product+'RF']=lp_forecast[self.reservoir_prop.primary_product].cumsum()/lp_Tr
-                #Put inital gas volume back
-                lp_forecast.iat[0,3]=Gi
-                #Calculate forecast using non-linear regression
-                """
-                lp_forecast[secondary_product+'RF']=popt[0]*lp_forecast[primary_product+'RF']\
-                                                     **2+popt[1]*lp_forecast[primary_product+'RF']\
-                                                     +popt[2]
-                """
-                #Calculate forecast using linear regression
-                lp_forecast[self.reservoir_prop.secondary_product+'RF']=popt[0]*lp_forecast[self.reservoir_prop.primary_product+'RF']+popt[1]
-                lp_forecast['CondCUM']=lp_forecast[self.reservoir_prop.secondary_product+'RF']*Cond_Tr
-                #Differentiate cumsum back to real values and set rate at start of forecast
-                lp_forecast[self.reservoir_prop.secondary_product+'Rate']=lp_forecast['CondCUM'].diff()/(lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond)
-                lp_forecast[self.reservoir_prop.secondary_product+'Rate']=lp_forecast[self.reservoir_prop.secondary_product+'Rate'].fillna(lp_forecast[self.reservoir_prop.secondary_product+'Rate'].iloc[1]-lp_forecast[self.reservoir_prop.secondary_product+'Rate'].iloc[1]*regr.coef_[0][0])
-                lp_forecast[self.reservoir_prop.secondary_product]=lp_forecast[self.reservoir_prop.secondary_product+'Rate']*lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond
-                #lp_forecast['Cond']=lp_forecast['CondCUM'].diff().fillna(lp_forecast['CondCUM'].iloc[0]-oil['CumCond'].iloc[len(oil)-2])
+                #Find time for start and end of stream
+                iT=oil.loc[stream.index[0],'Time']
+                eT=oil.loc[stream.index[len(stream)-1],'Time']
                 
-                fig=plt.figure(2)
+                while regr.coef_[0][0] > 0:
+                    if len(stream) > 0:
+                        dshift=dshift+len(stream)
+                        #dshift=len(oil.loc[stream.index[len(stream)-1]:])
+                        #dshift=dshift+1
+                        data=oil[dshift:]
+                        stream=self.fitselect(data,self.config.threshold,prd)
+                    else:
+                        dshift=dshift+1
+                        data=oil[dshift:]
+                        stream=self.fitselect(data,self.config.threshold,prd)
+                    if dshift > len(oil)-2:
+                        log( '=================================')
+                        log( 'Well '+well+' has no valid points')
+                        log( '=================================')
+                        break
+                        
+                    #print 'dshift= ', dshift, len(stream), len(data), regr.coef_[0][0]
+                    #stream=fitselect(data,threshold,prd)
+                    #print stream
+                    #Call regression function for log rate vs time
+                    stream=stream[stream['Rate']>0]
+                    if len(stream) >= 2:
+                        oil_fit, regr=self.linregress(stream, wor)
+                    else:
+                        continue
+                    
+                #Call regression function for log rate vs time with negative slope
+                if len(stream) <= 2:
+                    log( '=================================')
+                    log( 'Well '+well+' stream <=2(fitselect function with oil rate), skeeped')
+                    log( '=================================')
+                    continue
+                stream=stream[stream['Rate']>0]
+                oil_fit, regr=self.linregress(stream, wor)
+                """
+                print 'Fitted curve parameters:'
+                print '-------------------------'
+                #Nominal decline rate take 12 months, data are monthly sampled
+                ndr=(oil_fit[0][0]-oil_fit[1][0])/oil_fit[0][0]*100*12
+                print 'Nominal decline rate, %: ', ndr
+            
+                #Effective decline rate
+                #edr=regr.coef_[0][0]
+                edr=100*(1-2.72**(ndr/-100))
+                #print 'Effective decline rate, %: ', edr*perhour*persecond*30*12*-100
+                print 'Effective decline rate, %: ', edr
+            
+                #Initial rate
+                Qi=oil_fit[0][0]
+                print 'Initial rate, '+units, Qi
+            
+                #Initial cumulative: from start of production to start of fitted curve
+                iC=(2.72**regr.intercept_[0]-oil_fit[0][0])/regr.coef_[0][0]*-1
+                #iC=oil['CumOil'].iloc[len(oil)-1]
+                print 'Initial cumulative, m3:', iC, units
+            
+                #Technical reserves: iC+reserves from start of fitted curve
+                Tr=(2.72**regr.intercept_[0]-MinRate)/regr.coef_[0][0]*-1
+                #Tr=oil['CumOil'].iloc[len(oil)-1]+oil_forecast.sum()
+                print 'Technical reserves: ',Tr, units
+                print '======================'
+                """
+                ##########################################################
+                #Call fitselect function for WOR. Use cumulative oil chart
+                ##########################################################
+                if oil[cWAT_VOL].max() > 0:
+                    prd='WOR'
+                    wor=True
+                    wor_workflow=True
+                    #Find max value among last 10 points to avoid decreasing patterns
+                    maxval=0
+                    if len(oil) > 10:
+                        for j in range(10):
+                            if maxval < oil[prd].iloc[len(oil)-(j+1)]:
+                                maxval=oil[prd].iloc[len(oil)-(j+1)]
+                            else:
+                                break
+                            #print ('maxval= '), maxval, j
+                        oil_temp=oil[len(oil)-(2+j):len(oil)-j].fillna(value=0)
+                        i=0
+                        #Select and regress
+                        while i < len(oil):
+                            if len(oil_temp)>=4:
+                                #Call last selection
+                                lfit, wor_regr=self.lastselect(oil_temp,prd,wor)
+                                #Predict Rate on full time range
+                                np_Cum=np.array(oil.loc[:,['CumOil']])
+                                if not wor:
+                                    oil_predict=2.72**wor_regr.predict(np_Cum)
+                                if wor:
+                                    wor_predict=wor_regr.predict(np_Cum)                        
+                                break
+                            else: #shift for one point, leaving maxval point untached
+                                oil_temp=oil[len(oil)-(2+j+i):len(oil)-(1+j+i)]
+                                oil_temp=oil_temp.append(oil[len(oil)-(1+j):len(oil)-j])
+                                i=i+1
+                                
+                                #Call last selection
+                                oil_temp=oil_temp[oil_temp['WOR']>0]
+                                if len(oil_temp)>1:
+                                    lfit, wor_regr=self.lastselect(oil_temp,prd,wor)
+                                else:
+                                    continue
+                                #Predict Rate on full time range
+                                np_Cum=np.array(oil.loc[:,['CumOil']])
+                                if not wor:
+                                    oil_predict=2.72**wor_regr.predict(np_Cum)
+                                    #Count number of points near the line
+                                    oil_temp=oil[abs(oil[prd]-oil_predict.reshape(len(oil_predict)))<oil[prd].std()]
+                                if wor:
+                                    wor_predict=wor_regr.predict(np_Cum)
+                                    #Count number of points near the line
+                                    oil_temp=oil[abs(oil[prd]-wor_predict.reshape(len(wor_predict)))<oil[prd].std()]
+                                    #Select points within one year from pairs
+                                    #oil_temp=oil_temp[oil_temp['Time'].diff()<365]
+                        #print (oil_temp)
+                        if len(oil_temp)<3:
+                            wor_workflow=False
+                            log( '===========================')
+                            log( 'WOR workflow is not applied')
+                else:
+                    wor_workflow=False
+                    log( '===========================')
+                    log( 'WOR workflow is not applied')
+                
+                
+            
+                regr_type=regr
+                ############################
+                #Apply forecast at Last date
+                ############################
+                #Create forecast dataframe, start forecast on the following year from last production
+                forecast_start=str(oil.index.max().year+1)
+                data=oil
+                forecast_type='last_date'
+                Qi=1
+                #forecast(data, regr_type, forecast_type, forecast_start, forecast_end, Qi=1,Intercept=0)
+                ld_forecast, forecast_dates=self.forecast(data, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start, self.config.forecast_end, Qi, eT)
+            
+                ##################################################
+                #Apply forecast at Last point: Rate is No 4 column
+                ##################################################
+                #forecast_start=str(oil.index.max().year+1)
+                forecast_start=str(oil.index.max())
+                forecast_type='last_point'
+                #Qi=oil.iat[len(oil)-1,4]
+                Qi=oil['Rate'].iloc[len(oil)-1]
+                lp_forecast, forecast_dates=self.forecast(oil, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start,self.config.forecast_end, Qi, eT)
+                #Drop first row as it is equals to historical data
+                lp_forecast=lp_forecast[1:len(lp_forecast)]
+                log( '==============================='                   )
+                log( 'Last point forecast parameters for well:',well, self.REG)
+                log( '-------------------------'                         )
+                #Nominal decline rate take 12 months, data are monthly sampled
+                #ndr=(oil_fit[0][0]-oil_fit[1][0])/oil_fit[0][0]*100*12
+                ndr=(lp_forecast[self.reservoir_prop.primary_product+'Rate'].iloc[0]-lp_forecast[self.reservoir_prop.primary_product+'Rate'].iloc[1])/lp_forecast[self.reservoir_prop.primary_product+'Rate'].iloc[0]*12*100
+                log( 'Nominal decline rate, %: ', ndr)
+            
+                #Effective decline rate
+                #edr=regr.coef_[0][0]
+                edr=100*(1-2.72**(ndr/-100))
+                #print 'Effective decline rate, %: ', edr*perhour*persecond*30*12*-100
+                log('Effective decline rate, %: ', edr)
+            
+                #Initial rate
+                Qi=lp_forecast[self.reservoir_prop.primary_product+'Rate'].iloc[0]
+                log('Initial rate, '+self.reservoir_prop.units, Qi)
+            
+                #Initial cumulative: from start of production to start of forecast
+                #iC=(2.72**regr.intercept_[0]-Qi)/regr.coef_[0][0]*-1
+                iC=oil['CumOil'].iloc[len(oil)-1]
+                log( 'Cumulative to Date, ', iC, self.reservoir_prop.units)
+            
+                #Technical reserves: iC+reserves from start of fitted curve
+                #lp_Tr=(2.72**regr.intercept_[0]-MinRate)/regr.coef_[0][0]*-1
+            
+                #Remaining reserves
+                #rR=lp_Tr-iC
+                #iC=oil['CumOil'].iloc[len(oil)-1]
+                lp_forecast['CumOil']=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond
+                lp_forecast['CumOil']=lp_forecast['CumOil'].cumsum()
+                rR=lp_forecast['CumOil'].iloc[len(lp_forecast)-1]
+                log( 'Remaining reserves,: ', rR, self.reservoir_prop.units)
+                lp_Tr=iC+rR
+                log( 'Estimated ultimate recovery: ',lp_Tr, self.reservoir_prop.units)
+                log( '======================')
+                #For gas producers calculate RF of gas and RF of condencate. CumOil in # 6 column
+                if self.reservoir_prop.calcRF:
+                    oil['GasRF']=oil['CumOil']/lp_Tr
+                    oil['CumCond']=oil[self.reservoir_prop.secondary_product].cumsum()#Calculate cumulative condenat
+                    Cond_Tr=lp_Tr*self.reservoir_prop.cond_RFi
+                    oil['CondRF']=oil['CumCond']/Cond_Tr
+                    log( 'Condensate Initial reserves: ', Cond_Tr/1000, self.reservoir_prop.units)
+                    #Define non-linear regression function
+                    def nonlinear(x, a, b, c):
+                        return a*x**2+b*x+c
+                    def linear(x,a,b):
+                        return a*x+b
+                    #Call non-linear regression function for last 10 points
+                    #popt, pcov = curve_fit(nonlinear, oil['GasRF'].iloc[len(oil)-10:len(oil)], oil['CondRF'].iloc[len(oil)-10:len(oil)])
+                    #Call linear regression for last 10 points
+                    popt, pcov = curve_fit(linear, oil['GasRF'].iloc[len(oil)-10:len(oil)], oil['CondRF'].iloc[len(oil)-10:len(oil)])
+                    #Calculate future Gas RF
+                    #Calculate monthly volumes from rates
+                    lp_forecast[self.reservoir_prop.primary_product]=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond
+                    #Save first GAS_VOL value, culumn No 3:
+                    Gi=lp_forecast.iat[0,3]
+                    #Add cumulative gas in order to calculate gas RF
+                    lp_forecast.iat[0,3]=lp_forecast.iat[0,3]+oil['CumOil'].iloc[len(oil)-1]
+                    lp_forecast[self.reservoir_prop.primary_product+'RF']=lp_forecast[self.reservoir_prop.primary_product].cumsum()/lp_Tr
+                    #Put inital gas volume back
+                    lp_forecast.iat[0,3]=Gi
+                    #Calculate forecast using non-linear regression
+                    """
+                    lp_forecast[secondary_product+'RF']=popt[0]*lp_forecast[primary_product+'RF']\
+                                                         **2+popt[1]*lp_forecast[primary_product+'RF']\
+                                                         +popt[2]
+                    """
+                    #Calculate forecast using linear regression
+                    lp_forecast[self.reservoir_prop.secondary_product+'RF']=popt[0]*lp_forecast[self.reservoir_prop.primary_product+'RF']+popt[1]
+                    lp_forecast['CondCUM']=lp_forecast[self.reservoir_prop.secondary_product+'RF']*Cond_Tr
+                    #Differentiate cumsum back to real values and set rate at start of forecast
+                    lp_forecast[self.reservoir_prop.secondary_product+'Rate']=lp_forecast['CondCUM'].diff()/(lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond)
+                    lp_forecast[self.reservoir_prop.secondary_product+'Rate']=lp_forecast[self.reservoir_prop.secondary_product+'Rate'].fillna(lp_forecast[self.reservoir_prop.secondary_product+'Rate'].iloc[1]-lp_forecast[self.reservoir_prop.secondary_product+'Rate'].iloc[1]*regr.coef_[0][0])
+                    lp_forecast[self.reservoir_prop.secondary_product]=lp_forecast[self.reservoir_prop.secondary_product+'Rate']*lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond
+                    #lp_forecast['Cond']=lp_forecast['CondCUM'].diff().fillna(lp_forecast['CondCUM'].iloc[0]-oil['CumCond'].iloc[len(oil)-2])
+                    
+                    fig=plt.figure(2)
+                    fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
+                    fig.canvas.mpl_connect('key_press_event',    self.on_key_press)
+                    fig.canvas.mpl_connect('close_event',        self.on_plt_close)
+                    
+                    plt.plot(lp_forecast[self.reservoir_prop.primary_product+'RF'],lp_forecast[self.reservoir_prop.secondary_product+'RF'], 'y--',)
+                    #plt.text(max(oil.GasRF),max(oil.CondRF),well)                    
+                    plt.plot(oil.GasRF, oil.CondRF, color='red', linewidth=1, label='RFcond/RFgas' )
+                    plt.ylabel(self.reservoir_prop.secondary_product+'RF')
+                    plt.xlabel(self.reservoir_prop.primary_product+'RF')
+            
+                    #Calculate secondary product
+                    lp_forecast['LPG']=lp_forecast[self.reservoir_prop.primary_product]*self.reservoir_prop.propan_fraction*self.reservoir_prop.propan_dens/self.reservoir_prop.propan_liq_dens*self.reservoir_prop.BOE
+                    lp_forecast['Sales Gas']=lp_forecast[self.reservoir_prop.primary_product]*(1-self.reservoir_prop.propan_fraction)*self.reservoir_prop.WetGasShrink
+                   
+                    
+                ######################################
+                #Apply forecast at end of fitted curve
+                ######################################
+                forecast_start=str(stream.index.max().year+1)
+                data=oil
+                forecast_type='end_fit'
+                Qi=1
+                fc_forecast, fc_forecast_dates=self.forecast(data, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start, self.config.forecast_end, Qi, eT)
+            
+                #########################################
+                #Call regression function for cumulative
+                #########################################
+                if len(stream) <= 2:
+                    log( '=================================')
+                    log( 'Well '+well+' stream <=2 (regression function for cumulative), skeeped')
+                    log( '=================================')
+                    continue
+
+                cumoil_fit, cumregr=self.cumlinregress(stream)
+                log( '========================='                                   )
+                log( 'Fitted curve paramenters for Rate vs Cumulative:', well, self.REG )
+                log( '-------------------------'                                   )
+            
+                #Decline rate by cumulative plot
+                log( 'Decline rate from cumulative, %: ', cumregr.coef_[0][0]*365.25*-100)
+            
+                #Initial rate
+                cumQi=cumoil_fit[0][0]
+                log('Initial rate,:', cumQi, self.reservoir_prop.units+'/D')
+            
+                #Initial cumulative: from start of production to start of fitted curve
+                cum_iC=(regr.intercept_[0]-cumoil_fit[0][0])/cumregr.coef_[0][0]
+                log('Cumulative to date,:', cum_iC, self.reservoir_prop.units)
+            
+                #Technical reserves: iC+reserves from start of fitted curve
+                cum_Tr=(cumregr.intercept_[0]-self.config.MinRate)/cumregr.coef_[0][0]
+                log('Estimated ultimate recovery: ',cum_Tr*-1, self.reservoir_prop.units)
+                log('======================')
+            
+                ########################################################################################
+                #Calculate secondary products for oil - secondary product for gas are already calculated
+                ########################################################################################
+                if not self.reservoir_prop.calcRF:
+                    lp_forecast[self.reservoir_prop.primary_product]=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond
+                    lp_forecast[self.reservoir_prop.secondary_product]=lp_forecast[self.reservoir_prop.primary_product]*self.reservoir_prop.GOR
+                    lp_forecast['Sales Gas']=lp_forecast[self.reservoir_prop.secondary_product]*(1-self.reservoir_prop.propan_fraction)
+                    lp_forecast['LPG']=lp_forecast[self.reservoir_prop.secondary_product]*self.reservoir_prop.propan_fraction
+                
+                #Apply WOR forecast, need to create CumOil forecast X axis
+                if wor_workflow:
+                    wor_forecast=lp_forecast.copy()
+                    wor_forecast['CumOil']=wor_forecast[self.reservoir_prop.primary_product]
+                    if not self.reservoir_prop.calcRF: #CumOil is in column 2
+                        wor_forecast.iat[0,2]=oil['CumOil'].max()-wor_forecast.iat[0,2]
+                    elif self.reservoir_prop.calcRF: #CumOil is in column 2 - need to check
+                        wor_forecast.iat[0,2]=oil['CumOil'].max()-wor_forecast.iat[0,2]
+                    wor_forecast['CumOil']=wor_forecast['CumOil'].cumsum()
+                    
+                    np_Cum=np.array(wor_forecast.loc[:,['CumOil']])
+                    wor_predict1=wor_regr.predict(np_Cum)
+                    wor_forecast['WOR']=wor_predict1
+                    log( '1+WOR curve paramenters:'                        )
+                    log( '-------------------------'                       )
+                    log( 'WOR regr.coef= ', wor_regr.coef_[0][0]           )
+                    log( 'WORi=', wor_forecast.WOR[0]                      )
+                    log( 'WORfin=', wor_forecast.WOR[len(wor_forecast)-1]  )
+                    
+                    #Calculate monthly WC to apply limits
+                    lp_forecast['WATER']=lp_forecast[self.reservoir_prop.primary_product]*(wor_forecast.WOR-1)
+                    lp_forecast['WOR']=wor_predict1
+                    lp_forecast['CumOil']=wor_forecast['CumOil']
+                    if not self.reservoir_prop.calcRF: #Liquid is oil+WATER
+                        lp_forecast['WC']=lp_forecast['WATER']/(lp_forecast['WATER']+lp_forecast[self.reservoir_prop.primary_product])
+                        lp_forecast['LiqRate']=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast['WOR']
+                    elif self.reservoir_prop.calcRF: #Liquid is condensate+WATER
+                        lp_forecast['WC']=lp_forecast['WATER']/(lp_forecast['WATER']+lp_forecast[self.reservoir_prop.secondary_product])
+                        lp_forecast['LiqRate']=lp_forecast[self.reservoir_prop.secondary_product+'Rate']*lp_forecast['WOR']
+                    #Cut lp_forecast by WC limit
+                    lp_forecast=lp_forecast[lp_forecast['WC'] < self.config.MaxWC]
+                    
+                
+                #Export last point forecast to Excel
+                report_forecast=pd.DataFrame(index=forecast_dates)
+                report_forecast[self.reservoir_prop.primary_product]=lp_forecast[self.reservoir_prop.primary_product]
+                report_forecast[self.reservoir_prop.secondary_product]=lp_forecast[self.reservoir_prop.secondary_product]
+                report_forecast['Sales Gas']=lp_forecast['Sales Gas']
+                report_forecast['LPG']=lp_forecast['LPG']
+                if wor_workflow:
+                    report_forecast['WATER']=lp_forecast['WATER']
+            
+                out_f=os.path.join(out_dir,well+'_forecast_'+self.REG+'.xlsx')
+                report_forecast=report_forecast.resample('Y').sum()
+                
+                if wor_workflow:
+                    if not self.reservoir_prop.calcRF: #Liquid is oil+WATER
+                        report_forecast['WC']=report_forecast['WATER']/(report_forecast['WATER']+report_forecast[self.reservoir_prop.primary_product])
+                        report_forecast['LiqRate']=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast['WOR']
+                    elif self.reservoir_prop.calcRF: #Liquid is condensate+WATER
+                        report_forecast['WC']=report_forecast['WATER']/(report_forecast['WATER']+report_forecast[self.reservoir_prop.secondary_product])
+                        report_forecast['LiqRate']=lp_forecast[self.reservoir_prop.secondary_product+'Rate']*lp_forecast['WOR']
+                
+                report_forecast.index=report_forecast.index.year
+                report_forecast.transpose().to_excel(out_f)
+            
+                # Plot outputs
+                fig=plt.figure(1, figsize=(12,8))
                 fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
                 fig.canvas.mpl_connect('key_press_event',    self.on_key_press)
                 fig.canvas.mpl_connect('close_event',        self.on_plt_close)
-                
-                plt.plot(lp_forecast[self.reservoir_prop.primary_product+'RF'],lp_forecast[self.reservoir_prop.secondary_product+'RF'], 'y--',)
-                plt.plot(oil.GasRF, oil.CondRF, color='red', linewidth=1, label='RFcond/RFgas' )
-                plt.text(max(oil.GasRF),max(oil.CondRF),well)
-                plt.ylabel(self.reservoir_prop.secondary_product+'RF')
-                plt.xlabel(self.reservoir_prop.primary_product+'RF')
-        
-                #Calculate secondary product
-                lp_forecast['LPG']=lp_forecast[self.reservoir_prop.primary_product]*self.reservoir_prop.propan_fraction*self.reservoir_prop.propan_dens/self.reservoir_prop.propan_liq_dens*self.reservoir_prop.BOE
-                lp_forecast['Sales Gas']=lp_forecast[self.reservoir_prop.primary_product]*(1-self.reservoir_prop.propan_fraction)*self.reservoir_prop.WetGasShrink
-               
-                
-            ######################################
-            #Apply forecast at end of fitted curve
-            ######################################
-            forecast_start=str(stream.index.max().year+1)
-            data=oil
-            forecast_type='end_fit'
-            Qi=1
-            fc_forecast, fc_forecast_dates=self.forecast(data, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start, self.config.forecast_end, Qi, eT)
-        
-            #########################################
-            #Call regression function for cumulative
-            #########################################
-            if len(stream) <= 2:
-                break
-            cumoil_fit, cumregr=self.cumlinregress(stream)
-            log( '========================='                                   )
-            log( 'Fitted curve paramenters for Rate vs Cumulative:', well, self.REG )
-            log( '-------------------------'                                   )
-        
-            #Decline rate by cumulative plot
-            log( 'Decline rate from cumulative, %: ', cumregr.coef_[0][0]*365.25*-100)
-        
-            #Initial rate
-            cumQi=cumoil_fit[0][0]
-            log('Initial rate,:', cumQi, self.reservoir_prop.units+'/D')
-        
-            #Initial cumulative: from start of production to start of fitted curve
-            cum_iC=(regr.intercept_[0]-cumoil_fit[0][0])/cumregr.coef_[0][0]
-            log('Cumulative to date,:', cum_iC, self.reservoir_prop.units)
-        
-            #Technical reserves: iC+reserves from start of fitted curve
-            cum_Tr=(cumregr.intercept_[0]-self.config.MinRate)/cumregr.coef_[0][0]
-            log('Estimated ultimate recovery: ',cum_Tr*-1, self.reservoir_prop.units)
-            log('======================')
-        
-            ########################################################################################
-            #Calculate secondary products for oil - secondary product for gas are already calculated
-            ########################################################################################
-            if not self.reservoir_prop.calcRF:
-                lp_forecast[self.reservoir_prop.primary_product]=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond
-                lp_forecast[self.reservoir_prop.secondary_product]=lp_forecast[self.reservoir_prop.primary_product]*self.reservoir_prop.GOR
-                lp_forecast['Sales Gas']=lp_forecast[self.reservoir_prop.secondary_product]*(1-self.reservoir_prop.propan_fraction)
-                lp_forecast['LPG']=lp_forecast[self.reservoir_prop.secondary_product]*self.reservoir_prop.propan_fraction
+                #plt.subplot(221) #Ratios vs Time
+                plt.subplot2grid((3,2),(2,0))
+                plt.plot(oil.index,oil.wc, color='blue', linewidth=1,label='WATER Cut')
+                plt.plot(oil.index, oil.secondRatio, color='green', label=self.reservoir_prop.secondary_product[0]+'/'+self.reservoir_prop.primary_product[0]+' ratio')
+                plt.plot(oil.index, oil.WOR, color='black', linewidth=1, label='1+WOR')
+                if wor_workflow:
+                    plt.plot(lp_forecast.index, lp_forecast['WOR'], 'b--', linewidth=1, label='1+WOR preidct')
+                    
+                plt.xlabel('Time')
+                plt.legend(loc='best')
+                #plt.subplot(222) #Ratios vs cumulative
+                plt.subplot2grid((3,2),(2,1))
+                plt.plot(oil['CumOil'], oil.wc, color='blue', linewidth=1,label='WATER Cut')
+                plt.plot(oil['CumOil'], oil.secondRatio, color='green', label=self.reservoir_prop.secondary_product[0]+'/'+self.reservoir_prop.primary_product[0]+' ratio')
+                plt.plot(oil['CumOil'], oil.WOR, color='black', linewidth=1, label='1+WOR')
+                if wor_workflow:
+                    plt.plot(oil_temp['CumOil'], lfit, color='red', linewidth=1, label='1+WOR selection')
+                    plt.plot(lp_forecast['CumOil'], lp_forecast['WOR'], 'b--', linewidth=1, label='1+WOR preidct')
+                plt.xlabel('Cum. '+self.reservoir_prop.primary_product+self.reservoir_prop.units)
+                plt.legend(loc='best')
             
-            #Apply WOR forecast, need to create CumOil forecast X axis
-            if wor_workflow:
-                wor_forecast=lp_forecast.copy()
-                wor_forecast['CumOil']=wor_forecast[self.reservoir_prop.primary_product]
-                if not self.reservoir_prop.calcRF: #CumOil is in column 2
-                    wor_forecast.iat[0,2]=oil['CumOil'].max()-wor_forecast.iat[0,2]
-                elif self.reservoir_prop.calcRF: #CumOil is in column 2 - need to check
-                    wor_forecast.iat[0,2]=oil['CumOil'].max()-wor_forecast.iat[0,2]
-                wor_forecast['CumOil']=wor_forecast['CumOil'].cumsum()
-                
-                np_Cum=np.array(wor_forecast.loc[:,['CumOil']])
-                wor_predict1=wor_regr.predict(np_Cum)
-                wor_forecast['WOR']=wor_predict1
-                log( '1+WOR curve paramenters:'                        )
-                log( '-------------------------'                       )
-                log( 'WOR regr.coef= ', wor_regr.coef_[0][0]           )
-                log( 'WORi=', wor_forecast.WOR[0]                      )
-                log( 'WORfin=', wor_forecast.WOR[len(wor_forecast)-1]  )
-                
-                #Calculate monthly WC to apply limits
-                lp_forecast['WATER']=lp_forecast[self.reservoir_prop.primary_product]*(wor_forecast.WOR-1)
-                lp_forecast['WOR']=wor_predict1
-                lp_forecast['CumOil']=wor_forecast['CumOil']
-                if not self.reservoir_prop.calcRF: #Liquid is oil+WATER
-                    lp_forecast['WC']=lp_forecast['WATER']/(lp_forecast['WATER']+lp_forecast[self.reservoir_prop.primary_product])
-                    lp_forecast['LiqRate']=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast['WOR']
-                elif self.reservoir_prop.calcRF: #Liquid is condensate+WATER
-                    lp_forecast['WC']=lp_forecast['WATER']/(lp_forecast['WATER']+lp_forecast[self.reservoir_prop.secondary_product])
-                    lp_forecast['LiqRate']=lp_forecast[self.reservoir_prop.secondary_product+'Rate']*lp_forecast['WOR']
-                #Cut lp_forecast by WC limit
-                lp_forecast=lp_forecast[lp_forecast['WC'] < self.config.MaxWC]
-                
+                #plt.subplot(223) #Log Rates vs Time
+                plt.subplot2grid((3,2),(0,0),rowspan=2)
+                if self.config.LastPointFcst:
+                    plt.plot(lp_forecast.index, lp_forecast[self.reservoir_prop.primary_product+'Rate'], 'b--', linewidth=1,label=self.reservoir_prop.primary_product+'Last point forecast')
+                    if self.reservoir_prop.calcRF:
+                        plt.plot(lp_forecast.index, lp_forecast[self.reservoir_prop.secondary_product+'Rate'], 'y--', linewidth=1, label='Condensate forecast')
+                if self.config.EndFitFcst:
+                    plt.plot(fc_forecast.index, fc_forecast[self.reservoir_prop.primary_product+'Rate'], color='brown', linewidth=1,label='End of fit forecast')
+                if self.config.LastDateFcst:
+                    plt.plot(ld_forecast.index, ld_forecast[self.reservoir_prop.primary_product+'Rate'], color='black', linewidth=1,label='Last date forecast' )
+                plt.plot(oil.index,oil.Rate, color='black', linewidth=1, label=self.reservoir_prop.primary_product+' rate')
+                plt.plot(oil.index,oil.Rate2, color='yellow', linewidth=1, label=self.reservoir_prop.secondary_product+' rate')
+                plt.plot(stream.index, oil_fit, color='red', linewidth=1,label='Fitted curve' )
+                plt.plot(stream.index, stream.Rate, 'r--', linewidth=2,label='Selected points' )
+                #if wor_workflow:
+                #    plt.plot(oil_temp.index, wor_stream['OilWOR'], 'r--', linewidth=1,label='1+WOR Fit' )
+                plt.ylabel(self.reservoir_prop.primary_product+' rate'+self.reservoir_prop.units+'/D')
+                plt.yscale('log')
+                plt.legend(loc='best')
+                plt.title('WELL: '+well+' Reservoir: '+self.REG)
             
-            #Export last point forecast to Excel
-            report_forecast=pd.DataFrame(index=forecast_dates)
-            report_forecast[self.reservoir_prop.primary_product]=lp_forecast[self.reservoir_prop.primary_product]
-            report_forecast[self.reservoir_prop.secondary_product]=lp_forecast[self.reservoir_prop.secondary_product]
-            report_forecast['Sales Gas']=lp_forecast['Sales Gas']
-            report_forecast['LPG']=lp_forecast['LPG']
-            if wor_workflow:
-                report_forecast['WATER']=lp_forecast['WATER']
-        
-            out_f=os.path.join(out_dir,well+'_forecast_'+self.REG+'.xlsx')
-            report_forecast=report_forecast.resample('Y').sum()
+                #plt.subplot(224) #Rates vs Cumulative
+                plt.subplot2grid((3,2),(0,1),rowspan=2)
+                plt.plot(oil['CumOil'], oil.Rate, color='black', linewidth=1, label=self.reservoir_prop.primary_product+' rate')
+                plt.plot(stream['CumOil'], cumoil_fit, color='red', linewidth=1,label='Fitted curve' )
             
-            if wor_workflow:
-                if not self.reservoir_prop.calcRF: #Liquid is oil+WATER
-                    report_forecast['WC']=report_forecast['WATER']/(report_forecast['WATER']+report_forecast[self.reservoir_prop.primary_product])
-                    report_forecast['LiqRate']=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast['WOR']
-                elif self.reservoir_prop.calcRF: #Liquid is condensate+WATER
-                    report_forecast['WC']=report_forecast['WATER']/(report_forecast['WATER']+report_forecast[self.reservoir_prop.secondary_product])
-                    report_forecast['LiqRate']=lp_forecast[self.reservoir_prop.secondary_product+'Rate']*lp_forecast['WOR']
+                plt.legend(loc='best')
             
-            report_forecast.index=report_forecast.index.year
-            report_forecast.transpose().to_excel(out_f)
-        
-            # Plot outputs
-            fig=plt.figure(1, figsize=(12,8))
-            fig.canvas.mpl_connect('button_press_event', self.on_mouse_press)
-            fig.canvas.mpl_connect('key_press_event',    self.on_key_press)
-            fig.canvas.mpl_connect('close_event',        self.on_plt_close)
-            #plt.subplot(221) #Ratios vs Time
-            plt.subplot2grid((3,2),(2,0))
-            plt.plot(oil.index,oil.wc, color='blue', linewidth=1,label='WATER Cut')
-            plt.plot(oil.index, oil.secondRatio, color='green', label=self.reservoir_prop.secondary_product[0]+'/'+self.reservoir_prop.primary_product[0]+' ratio')
-            plt.plot(oil.index, oil.WOR, color='black', linewidth=1, label='1+WOR')
-            if wor_workflow:
-                plt.plot(lp_forecast.index, lp_forecast['WOR'], 'b--', linewidth=1, label='1+WOR preidct')
+                self.show_plot(plt)
+            
+                #Accumulate both historical and forecast rates in a dataframe
+                if wcount == 0 :
+                    if len(lp_forecast)>0:
+                        comb_dates=pd.date_range(reg_dataframe[cPROD_START_TIME].min(),lp_forecast.index.max(),freq='Y')
+                        comb_oil=pd.DataFrame(index=comb_dates)
+                        lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').sum()
+                        #Drop 1st year
+                        lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
+                        comb_oil[well]=oil['Rate'].resample('Y').sum().append(lp_forecast1)
+                        #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
+                            
+                else:
+                    if len(lp_forecast)>0:
+                        lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').sum()
+                        #Drop 1st year
+                        lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
+                        comb_oil[well]=oil['Rate'].resample('Y').sum().append(lp_forecast1)
+                        #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
+                wcount=wcount+1
+                #Append eur_list
+                eur_list.append((well, lp_Tr))
+            except Exception as e:
+                log( '===========================')
+                log( 'WARNING!!!')
+                log( str(e))
+
                 
-            plt.xlabel('Time')
-            plt.legend(loc='best')
-            #plt.subplot(222) #Ratios vs cumulative
-            plt.subplot2grid((3,2),(2,1))
-            plt.plot(oil['CumOil'], oil.wc, color='blue', linewidth=1,label='WATER Cut')
-            plt.plot(oil['CumOil'], oil.secondRatio, color='green', label=self.reservoir_prop.secondary_product[0]+'/'+self.reservoir_prop.primary_product[0]+' ratio')
-            plt.plot(oil['CumOil'], oil.WOR, color='black', linewidth=1, label='1+WOR')
-            if wor_workflow:
-                plt.plot(oil_temp['CumOil'], lfit, color='red', linewidth=1, label='1+WOR selection')
-                plt.plot(lp_forecast['CumOil'], lp_forecast['WOR'], 'b--', linewidth=1, label='1+WOR preidct')
-            plt.xlabel('Cum. '+self.reservoir_prop.primary_product+self.reservoir_prop.units)
-            plt.legend(loc='best')
-        
-            #plt.subplot(223) #Log Rates vs Time
-            plt.subplot2grid((3,2),(0,0),rowspan=2)
-            if self.config.LastPointFcst:
-                plt.plot(lp_forecast.index, lp_forecast[self.reservoir_prop.primary_product+'Rate'], 'b--', linewidth=1,label=self.reservoir_prop.primary_product+'Last point forecast')
-                if self.reservoir_prop.calcRF:
-                    plt.plot(lp_forecast.index, lp_forecast[self.reservoir_prop.secondary_product+'Rate'], 'y--', linewidth=1, label='Condensate forecast')
-            if self.config.EndFitFcst:
-                plt.plot(fc_forecast.index, fc_forecast[self.reservoir_prop.primary_product+'Rate'], color='brown', linewidth=1,label='End of fit forecast')
-            if self.config.LastDateFcst:
-                plt.plot(ld_forecast.index, ld_forecast[self.reservoir_prop.primary_product+'Rate'], color='black', linewidth=1,label='Last date forecast' )
-            plt.plot(oil.index,oil.Rate, color='black', linewidth=1, label=self.reservoir_prop.primary_product+' rate')
-            plt.plot(oil.index,oil.Rate2, color='yellow', linewidth=1, label=self.reservoir_prop.secondary_product+' rate')
-            plt.plot(stream.index, oil_fit, color='red', linewidth=1,label='Fitted curve' )
-            plt.plot(stream.index, stream.Rate, 'r--', linewidth=2,label='Selected points' )
-            #if wor_workflow:
-            #    plt.plot(oil_temp.index, wor_stream['OilWOR'], 'r--', linewidth=1,label='1+WOR Fit' )
-            plt.ylabel(self.reservoir_prop.primary_product+' rate'+self.reservoir_prop.units+'/D')
-            plt.yscale('log')
-            plt.legend(loc='best')
-            plt.title('WELL: '+well+' Reservoir: '+self.REG)
-        
-            #plt.subplot(224) #Rates vs Cumulative
-            plt.subplot2grid((3,2),(0,1),rowspan=2)
-            plt.plot(oil['CumOil'], oil.Rate, color='black', linewidth=1, label=self.reservoir_prop.primary_product+' rate')
-            plt.plot(stream['CumOil'], cumoil_fit, color='red', linewidth=1,label='Fitted curve' )
-        
-            plt.legend(loc='best')
-        
-            self.show_plot(plt)
-        
-            #Accumulate both historical and forecast rates in a dataframe
-            if wcount == 0 :
-                if len(lp_forecast)>0:
-                    comb_dates=pd.date_range(reg_dataframe[cPROD_START_TIME].min(),lp_forecast.index.max(),freq='Y')
-                    comb_oil=pd.DataFrame(index=comb_dates)
-                    lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').mean()
-                    #Drop 1st year
-                    lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
-                    comb_oil[well]=oil['Rate'].resample('Y').mean().append(lp_forecast1)
-                    #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
-                        
-            else:
-                if len(lp_forecast)>0:
-                    lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').mean()
-                    #Drop 1st year
-                    lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
-                    comb_oil[well]=oil['Rate'].resample('Y').mean().append(lp_forecast1)
-                    #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
-            wcount=wcount+1
-            #Append eur_list
-            eur_list.append((well, lp_Tr))
-        
-        if not self.is_terminated:
+        '''
+            *******************************************
+            TYPE WELL
+            *******************************************
+        '''
+        if self.config.UseTypeWell and not self.is_terminated:
             #Create eur dataframe
             eur=pd.DataFrame(eur_list, columns=('WELL', 'EUR'))
             
@@ -1175,7 +1201,7 @@ class DCA():
             
             #Final chart
             log( "SHOW FINAL GRAPH")
-            plt.figure(4, figsize=(12,8))#All rates and forecasts vs Years
+            plt.figure(3, figsize=(12,8))#All rates and forecasts vs Years
             for well in comb_oil.columns:
                 plt.plot(comb_oil.index, comb_oil[well], linewidth=1,label=well)
                 pass

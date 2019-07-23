@@ -27,6 +27,7 @@ from type_well.autoDCA_new import get_config
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_dca_base.ui'))
 
+
 #===============================================================================
 # 
 #===============================================================================
@@ -36,6 +37,9 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS,WithSql):
         super(QgisPDSDCAForm, self).__init__(parent)
         self.setupUi(self)
         self._db = None
+        self.conf = {}      # Dictionary of QTWidget with config parameters
+        self.conf_setter={} # Dictionary of setter/gettervalue in self.conf
+        self.conf_getter={} # Dictionary of setter/gettervalue in self.conf
         self._need_views=['view_V_PROD_RECORDS.sql','view_V_PROD_RESPART_M2.sql']
         
         self.iface = _iface
@@ -80,6 +84,9 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS,WithSql):
             ,window_size=5 #size of Sample for calculkation        
         """
         conf={}
+        conf_setter={} # Dictionary of setter/gettervalue in self.conf
+        conf_getter={} # Dictionary of setter/gettervalue in self.conf
+        
         hh=[]
         tableWidget = QtGui.QTableWidget()
         tableWidget.setColumnCount(1)
@@ -95,45 +102,68 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS,WithSql):
         val.setDate(QtCore.QDate(2029, 01,01) )
         val.setCalendarPopup(False)   
         val.setDisplayFormat("yyyy");
+        setter=lambda widget,val:widget.setDate(QtCore.QDate(int(val), 01,01) )
+        getter=lambda widget:int(widget.date().toString('yyyy'))
         hh.append(name)
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)
         conf[name]=val
+        conf_setter[name]=setter
+        conf_getter[name]=getter
         
         #--- MinRate=0.158988  #One barrel per day
         tableWidget.insertRow(tableWidget.rowCount())
         name='MinRate'
         val=QtGui.QDoubleSpinBox()
-        val.setValue(0.158988) 
+        val.setValue(0.158988)
+        setter=lambda widget,val:widget.setValue(float(val) )
+        getter=lambda widget:widget.value()
         hh.append(name)
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)
-        conf[name]=val        
+        conf[name]=val
+        conf_setter[name]=setter
+        conf_getter[name]=getter
         
         #--- MaxWC=0.99
         tableWidget.insertRow(tableWidget.rowCount())
         name='MaxWC'
         val=QtGui.QDoubleSpinBox()
-        val.setValue(0.99) 
+        val.setValue(0.99)
+        setter=lambda widget,val:widget.setValue(float(val) )
+        getter=lambda widget:widget.value()
         hh.append(name)
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)
         conf[name]=val
+        conf_setter[name]=setter
+        conf_getter[name]=getter
+        
                 
         #--- threshold=0.1
         tableWidget.insertRow(tableWidget.rowCount())
         name='threshold'
         val=QtGui.QDoubleSpinBox()
+        setter=lambda widget,val:widget.setValue(float(val) )
+        getter=lambda widget:widget.value()
         val.setValue(0.1) 
         hh.append(name)
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)
         conf[name]=val  
+        conf_setter[name]=setter
+        conf_getter[name]=getter
+        
         
         #--- window_size=5 #size of Sample for calculkation
         tableWidget.insertRow(tableWidget.rowCount())
         name='window_size'
         val=QtGui.QSpinBox()
+        setter=lambda widget,val:widget.setValue(int(val) )
+        getter=lambda widget:widget.value()
         val.setValue(5) 
         hh.append(name)
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)
-        conf[name]=val        
+        conf[name]=val      
+        conf_setter[name]=setter
+        conf_getter[name]=getter
+
 
         #--- LastPointFcst=True
         tableWidget.insertRow(tableWidget.rowCount())
@@ -141,9 +171,13 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS,WithSql):
         val=QtGui.QCheckBox()
         val.setCheckState(True)
         val.setTristate(False)
+        setter=lambda widget,val:widget.setChecked(False if val in ['False',0,'0'] else True)
+        getter=lambda widget:widget.isChecked()
         hh.append(name) 
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)   
         conf[name]=val     
+        conf_setter[name]=setter
+        conf_getter[name]=getter
 
         #--- LastDateFcst=False
         tableWidget.insertRow(tableWidget.rowCount())
@@ -151,9 +185,13 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS,WithSql):
         val=QtGui.QCheckBox()
         val.setCheckState(False)
         val.setTristate(False)
+        setter=lambda widget,val:widget.setChecked(False if val in ['False',0,'0'] else True)
+        getter=lambda widget:widget.isChecked()
         hh.append(name) 
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)   
         conf[name]=val     
+        conf_setter[name]=setter
+        conf_getter[name]=getter
 
         #--- EndFitFcst=False
         tableWidget.insertRow(tableWidget.rowCount())
@@ -161,32 +199,62 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS,WithSql):
         val=QtGui.QCheckBox()
         val.setCheckState(False)
         val.setTristate(False)
+        setter=lambda widget,val:widget.setChecked(False if val in ['False',0,'0'] else True)
+        getter=lambda widget:widget.isChecked()
         hh.append(name) 
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)   
         conf[name]=val     
+        conf_setter[name]=setter
+        conf_getter[name]=getter
 
         #--- perhour=1 #defaults is 24
         tableWidget.insertRow(tableWidget.rowCount())
         name='perhour'
         val=QtGui.QSpinBox()
         val.setValue(1) 
+        setter=lambda widget,val:widget.setValue(int(val) )
+        getter=lambda widget:widget.value()
         hh.append(name)
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)
         conf[name]=val        
+        conf_setter[name]=setter
+        conf_getter[name]=getter
 
         #--- persecond=1 #default is 3600
         tableWidget.insertRow(tableWidget.rowCount())
         name='persecond'
         val=QtGui.QSpinBox()
         val.setValue(1) 
+        setter=lambda widget,val:widget.setValue(int(val) )
+        getter=lambda widget:widget.value()
         hh.append(name)
         tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)
         conf[name]=val        
+        conf_setter[name]=setter
+        conf_getter[name]=getter
 
+        #--- LastPointFcst=True
+        tableWidget.insertRow(tableWidget.rowCount())
+        name='UseTypeWell'
+        val=QtGui.QCheckBox()
+        val.setCheckState(True)
+        val.setTristate(False)
+        setter=lambda widget,val:widget.setChecked(False if val in ['False',0,'0'] else True)
+        getter=lambda widget:widget.isChecked()
+        hh.append(name) 
+        tableWidget.setCellWidget(tableWidget.rowCount()-1,col,val)   
+        conf[name]=val
+        conf_setter[name]=setter
+        conf_getter[name]=getter
+             
         #---
         tableWidget.setVerticalHeaderLabels(hh)
         self.configPanel.addWidget(tableWidget)
         self.conf=conf
+        self.conf_getter=conf_getter
+        self.conf_setter=conf_setter
+        
+        self.readSettings()
                 
     #===========================================================================
     # 
@@ -197,12 +265,13 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS,WithSql):
                         ,MinRate=        self.conf['MinRate'].value()
                         ,MaxWC=          self.conf['MaxWC'].value()
                         ,threshold=      self.conf['threshold'].value()
-                        ,LastPointFcst= self.conf['LastPointFcst'].isChecked()
-                        ,LastDateFcst=  self.conf['LastDateFcst'].isChecked()
-                        ,EndFitFcst=    self.conf['EndFitFcst'].isChecked()
+                        ,LastPointFcst=  self.conf['LastPointFcst'].isChecked()
+                        ,LastDateFcst=   self.conf['LastDateFcst'].isChecked()
+                        ,EndFitFcst=     self.conf['EndFitFcst'].isChecked()
                         ,perhour=        self.conf['perhour'].value()
                         ,persecond=      self.conf['persecond'].value()
                         ,window_size=    self.conf['window_size'].value()
+                        ,UseTypeWell=    self.conf['UseTypeWell'].isChecked()
                 )        
         
     #===========================================================
@@ -279,11 +348,30 @@ class QgisPDSDCAForm(QtGui.QDialog, FORM_CLASS,WithSql):
                 except:
                     QgsMessageLog.logMessage(u"Error get well_id for '{}'".format(str(i.attributes())), tag="QgisPDS.DCA")
         return res
-       
+    #========================================================================
+    # 
+    #========================================================================
+    def writeSettings(self):
+        settings = QSettings()
+        for name,widget in self.conf.items():
+            settings.setValue("/PDS/dca/{}".format(name), str(self.conf_getter[name](widget)) )
+        pass
+    #========================================================================
+    # 
+    #========================================================================
+    def readSettings(self):
+        settings = QSettings()
+        for name,widget in self.conf.items():
+            val=settings.value("/PDS/dca/{}".format(name), None)
+            if val is not None:
+                self.conf_setter[name](widget,val)
+        pass
+    
     #===========================================================================
     # 
     #===========================================================================
     def accept(self):
+        self.writeSettings()
         self.hide() # QDialog always modal,so hide it
         
         from QgisPDS.type_well.autoDCA_new import DCA
