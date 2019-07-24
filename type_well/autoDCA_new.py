@@ -687,6 +687,21 @@ class DCA():
         reg_dataframe=df.loc[df[cREG]==self.REG]
         #Create list of wells in REG
         wlist=reg_dataframe[cWELL].unique()
+        
+        #Perform initial QC and data selection
+        plt.figure(1, figsize=(12,8))
+        for well in wlist:
+            qc=reg_dataframe.loc[reg_dataframe['WELL_ID']==well]
+            qc.set_index('PROD_START_TIME',drop=False, inplace=True)
+            qc['Rate']=qc[self.reservoir_prop.primary_product]/(qc['Hours'].loc[qc['Hours']>0])*24/self.reservoir_prop.primdiv
+            plt.plot(qc.index,qc.Rate, linewidth=1, label=well)
+        plt.ylabel(self.reservoir_prop.primary_product+' rate'+self.reservoir_prop.units+'/D')
+        plt.grid(True)
+        plt.yscale('log')
+        plt.legend(loc='best')
+        plt.title('Reservoir: '+self.REG)
+        self.show_plot(plt)
+        
         #Calculate forecasts workflow well by well
         wcount=0
         eur_list=[]
@@ -979,7 +994,6 @@ class DCA():
                     fig.canvas.mpl_connect('close_event',        self.on_plt_close)
                     
                     plt.plot(lp_forecast[self.reservoir_prop.primary_product+'RF'],lp_forecast[self.reservoir_prop.secondary_product+'RF'], 'y--',)
-                    #plt.text(max(oil.GasRF),max(oil.CondRF),well)                    
                     plt.plot(oil.GasRF, oil.CondRF, color='red', linewidth=1, label='RFcond/RFgas' )
                     plt.ylabel(self.reservoir_prop.secondary_product+'RF')
                     plt.xlabel(self.reservoir_prop.primary_product+'RF')
