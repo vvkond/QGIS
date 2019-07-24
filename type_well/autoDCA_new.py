@@ -1070,19 +1070,21 @@ class DCA():
                     log( 'WORi=', wor_forecast.WOR[0]                      )
                     log( 'WORfin=', wor_forecast.WOR[len(wor_forecast)-1]  )
                     
-                    #Calculate monthly WC to apply limits
-                    lp_forecast['WATER']=lp_forecast[self.reservoir_prop.primary_product]*(wor_forecast.WOR-1)
-                    lp_forecast['WOR']=wor_predict1
-                    lp_forecast['CumOil']=wor_forecast['CumOil']
-                    if not self.reservoir_prop.calcRF: #Liquid is oil+WATER
-                        lp_forecast['WC']=lp_forecast['WATER']/(lp_forecast['WATER']+lp_forecast[self.reservoir_prop.primary_product])
-                        lp_forecast['LiqRate']=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast['WOR']
-                    elif self.reservoir_prop.calcRF: #Liquid is condensate+WATER
-                        lp_forecast['WC']=lp_forecast['WATER']/(lp_forecast['WATER']+lp_forecast[self.reservoir_prop.secondary_product])
-                        lp_forecast['LiqRate']=lp_forecast[self.reservoir_prop.secondary_product+'Rate']*lp_forecast['WOR']
-                    #Cut lp_forecast by WC limit
-                    lp_forecast=lp_forecast[lp_forecast['WC'] < self.config.MaxWC]
-                    
+                    #Calculate monthly WC to apply limits if regr.coef > 0
+                    if wor_regr.coef_[0][0] > 0:
+                        lp_forecast['WATER']=lp_forecast[self.reservoir_prop.primary_product]*(wor_forecast.WOR-1)
+                        lp_forecast['WOR']=wor_predict1
+                        lp_forecast['CumOil']=wor_forecast['CumOil']
+                        if not self.reservoir_prop.calcRF: #Liquid is oil+WATER
+                            lp_forecast['WC']=lp_forecast['WATER']/(lp_forecast['WATER']+lp_forecast[self.reservoir_prop.primary_product])
+                            lp_forecast['LiqRate']=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast['WOR']
+                        elif self.reservoir_prop.calcRF: #Liquid is condensate+WATER
+                            lp_forecast['WC']=lp_forecast['WATER']/(lp_forecast['WATER']+lp_forecast[self.reservoir_prop.secondary_product])
+                            lp_forecast['LiqRate']=lp_forecast[self.reservoir_prop.secondary_product+'Rate']*lp_forecast['WOR']
+                        #Cut lp_forecast by WC limit
+                        lp_forecast=lp_forecast[lp_forecast['WC'] < self.config.MaxWC]
+                    else:
+                        wor_workflow=False
                 
                 #Export last point forecast to Excel
                 report_forecast=pd.DataFrame(index=forecast_dates)
