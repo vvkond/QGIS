@@ -319,7 +319,7 @@ class DCA():
         if not self.reservoir_prop:
             log("Error. Can't read reservoir group '{}' property".format(self.REG))
             self.is_terminated=True
-        if self.config.window_size>len(self.WELLS)>0:
+        if self.config.UseTypeWell and  self.config.window_size>len(self.WELLS)>0:
             log("Error. Window size={} must be < 'selected wells'{}".format(str(self.config.window_size),str(len(self.WELLS))))
             self.is_terminated=True
         if conn is None:
