@@ -326,9 +326,9 @@ class DCA():
             self.conn=get_connection()
         else:
             self.conn=conn
-        log(self.conn)
-        log(self.config)
-        log(self.reservoir_prop)
+        #log(self.conn)
+        #log(self.config)
+        #log(self.reservoir_prop)
     #===================================================================
     # 
     #===================================================================
@@ -398,6 +398,10 @@ class DCA():
         #for j in reversed(xrange(len(a))):
             if abs(a[j]) < threshold:
                 i=i+1
+                if imax < i:
+                    imax=i
+                end=j
+                
             else:
                 if imax < i:
                     imax=i
@@ -405,8 +409,9 @@ class DCA():
                 start=end-i
                 #log("start= ", start, "end= ", end, "i= ",i)
                 i=0
-            if len(stream)<imax:
+            if len(stream)<=imax:
                 stream=pd.DataFrame(data.iloc[start:end,:])
+            #log("start= "+str(start)+" end= "+str(end)+" j="+str(j)+" i= "+str(i)+" imax= "+str(imax)+" lenstream="+str(len(stream)))
         return stream
     """
     #Old version of fitselect
@@ -708,7 +713,7 @@ class DCA():
         for well in wlist:
             log( '\n'*2)
             log( '='*40)
-            log( 'Well '+well )
+            log( 'Processing well '+well )
             log( '='*40)
             
             try:
@@ -746,19 +751,26 @@ class DCA():
                     dshift=0
                 
                 #dshift=0
+                #log('dshift= '+str(dshift))
                 data=oil[dshift:]
                 stream=self.fitselect(data,self.config.threshold,prd)
                 wor=False
                 stream=stream[stream['Rate']>0]
+                #log(stream)
                 #Call regression function for log rate vs time and check for positive slope
                 if len(stream) > 2:
                     oil_fit, regr=self.linregress(stream, wor)
                 else:
+                    log( '=================================')
+                    log( 'Well '+well+' has no valid points')
+                    log( '=================================')
                     continue
                 
                 #Find time for start and end of stream
                 iT=oil.loc[stream.index[0],'Time']
                 eT=oil.loc[stream.index[len(stream)-1],'Time']
+                log('iT= ', iT)
+                log('eT=', eT)
                 
                 while regr.coef_[0][0] > 0:
                     if len(stream) > 0:
