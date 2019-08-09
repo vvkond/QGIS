@@ -120,15 +120,15 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
         self.uri += '&field={}:{}'.format(self.attrLablOffX, "double")
         self.uri += '&field={}:{}'.format(self.attrLablOffY, "double")
 
-        layer = QgsVectorLayer(self.uri, "Well deviations", "memory")
-        if layer is None:
+        self.layer = QgsVectorLayer(self.uri, "Well deviations", "memory")
+        if self.layer is None:
             QtGui.QMessageBox.critical(None, self.tr(u'Error'),
                self.tr(u'Error create wells layer'), QtGui.QMessageBox.Ok)
 
             return
 
-        self.loadWells(layer, True, True, False, True, False)
-        layer.commitChanges()
+        self.loadWells(self.layer, True, True, False, True, False)
+        self.layer.commitChanges()
         self.db.disconnect()
 
         settings = QSettings()
@@ -141,13 +141,13 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
             os.mkdir(prjPath)
 
         layerFileName = prjPath + layerFile
-        provider = layer.dataProvider()
+        provider = self.layer.dataProvider()
         fields = provider.fields()
         writer = VectorWriter(layerFileName, systemEncoding,
                               fields,
                               provider.geometryType(), provider.crs())
 
-        features = layer.getFeatures()
+        features = self.layer.getFeatures()
         for f in features:
             try:
                 l = f.geometry()
@@ -165,24 +165,24 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
             layerName = layerName + '  ' + time.strftime('%d-%m-%Y %H:%M:%S', time.localtime())
 
         #Register layer
-        layer = QgsVectorLayer(layerFileName, layerName, 'ogr')
-        QgsMapLayerRegistry.instance().addMapLayer(layer)
+        self.layer = QgsVectorLayer(layerFileName, layerName, 'ogr')
+        QgsMapLayerRegistry.instance().addMapLayer(self.layer)
 
-        layer.setCustomProperty("qgis_pds_type", "pds_well_deviations")
-        layer.setCustomProperty("pds_project", str(self.project))
+        self.layer.setCustomProperty("qgis_pds_type", "pds_well_deviations")
+        self.layer.setCustomProperty("pds_project", str(self.project))
 
         #Set default style
         palyr = QgsPalLayerSettings()
-        palyr.readFromLayer(layer)
+        palyr.readFromLayer(self.layer)
         palyr.enabled = True
         palyr.fieldName = self.attrWellId
         palyr.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '8', '')
         palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', self.attrLablX)
         palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', self.attrLablY)
-        palyr.writeToLayer(layer)
+        palyr.writeToLayer(self.layer)
 
 
-        line = QgsSymbolV2.defaultSymbol(layer.geometryType())
+        line = QgsSymbolV2.defaultSymbol(self.layer.geometryType())
 
         # Create an marker line.
         marker_line = QgsMarkerLineSymbolLayerV2()
@@ -191,20 +191,20 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
 
         # Add the style to the line layer.
         renderer = QgsSingleSymbolRendererV2(line)
-        layer.setRendererV2(renderer)
+        self.layer.setRendererV2(renderer)
 
         #---load user styles
         if self.styleUserDir is not None:
-            load_styles_from_dir(layer=layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
+            load_styles_from_dir(layer=self.layer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, self.styleUserDir) ,switchActiveStyle=False)
         #---load default style
         if self.styleName is not None:
-            load_style(layer=layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
+            load_style(layer=self.layer, style_path=os.path.join(plugin_path() ,STYLE_DIR ,self.styleName+".qml"))
 
         #---Add virtual field with WKT geometry
         field = QgsField( 'devi', QVariant.String )
-        layer.addExpressionField( 'geom_to_wkt(  $geometry )', field )
+        self.layer.addExpressionField( 'geom_to_wkt(  $geometry )', field )
 
-        return layer
+        return self.layer
 
     def get_sql(self, value):
         sql_file_path = os.path.join(self.plugin_dir, 'db', value)
