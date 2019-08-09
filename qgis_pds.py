@@ -718,7 +718,7 @@ class QgisPDS(QObject):
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/zonation.png'
-        self.actionLoadPressure = self.add_action(
+        self.actionLoadZoneParams = self.add_action(
             icon_path,
             text=self.tr(u'Zonation parameters'),
             callback=self.loadZonations,
@@ -757,21 +757,21 @@ class QgisPDS(QObject):
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/water-drop.png'
-        self.actionRefreshLayer = self.add_action(
+        self.actionResidual = self.add_action(
             icon_path,
             text=self.tr(u'Residuals'),
             callback=self.residuals,
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/statistics.png'
-        self.actionRefreshLayer = self.add_action(
+        self.actionStatistics = self.add_action(
             icon_path,
             text=self.tr(u'Calculate statistics'),
             callback=self.calcStatistics,
             parent=self.iface.mainWindow())
 
         icon_path = ':/plugins/QgisPDS/type_well.png'
-        self.actionRefreshLayer = self.add_action(
+        self.actionTypeWell = self.add_action(
             icon_path,
             text=self.tr(u'DCA'),
             callback=self.calcDCA,
