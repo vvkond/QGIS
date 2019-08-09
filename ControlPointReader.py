@@ -11,6 +11,7 @@ from QgisPDS.connections import create_connection
 from QgisPDS.utils import to_unicode
 from tig_projection import *
 from ReaderBase import *
+from bblInit import FieldsForLabels, layer_to_labeled
 
 
 class ControlPointReader(ReaderBase):
@@ -63,8 +64,9 @@ class ControlPointReader(ReaderBase):
         self.uri += '&field={}:{}'.format(self.paramNameAttr, "string")
         self.uri += '&field={}:{}'.format(self.subsetNameAttr, "string")
         self.uri += '&field={}:{}'.format(self.parameterAttr, 'double')
-        self.uri += '&field={}:{}'.format("LablX", "double")
-        self.uri += '&field={}:{}'.format("LablY", "double")
+        for field in FieldsForLabels:
+            self.uri += field.memoryfield
+        
         layer = QgsVectorLayer(self.uri, layerName, "memory")
 
         self.readData(layer, groupSetId)
@@ -80,10 +82,12 @@ class ControlPointReader(ReaderBase):
         palyr.fieldName = 'parameter'
         palyr.placement = QgsPalLayerSettings.OverPoint
         palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
-        palyr.labelOffsetInMapUnits = True
+        palyr.labelOffsetInMapUnits = False
+        palyr.distInMapUnits = True
+        palyr.displayAll = True
+        palyr.fontSizeInMapUnits = False
+        palyr=layer_to_labeled(palyr)  #---enable EasyLabel            
         # palyr.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '8', '')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', 'LablX')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', 'LablY')
         palyr.writeToLayer(layer)
 
         layer.commitChanges()
