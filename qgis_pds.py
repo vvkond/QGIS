@@ -318,8 +318,13 @@ class QgisPDS(QObject):
                     layer.attributeValueChanged.disconnect(self.pdsLayerModified)
             except:
                 pass
-
+    #===============================================================================
+    # 
+    #===============================================================================
     def pdsLayerModified(self, FeatureId, idx, variant):
+        '''
+            @info: Function for update lablOffX,lablOffY instead of LablX,LablY
+        '''
         sender = self.sender()
         if not sender or not sender.type() == 0 or sender == self:
             return
@@ -984,6 +989,8 @@ class QgisPDS(QObject):
             dlg = QgisPDSPressure(self.currentProject, self.iface)
             if dlg.isInitialised():
                 result = dlg.exec_()
+            if dlg.layer is not None:
+                dlg.layer.attributeValueChanged.connect(self.pdsLayerModified)
         except Exception as e:
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
                 
@@ -992,6 +999,8 @@ class QgisPDS(QObject):
         try:
             dlg = QgisPDSZonationsDialog(self.currentProject, self.iface)
             dlg.exec_()
+            if dlg.layer is not None:
+                dlg.layer.attributeValueChanged.connect(self.pdsLayerModified)
         except Exception as e:
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
@@ -1035,6 +1044,9 @@ class QgisPDS(QObject):
                 return
             dlg = QgisPDSCPointsDialog(self.currentProject, self.iface, ControlPointReader(self.iface))
             dlg.exec_()
+            if dlg.layer is not None:
+                dlg.layer.attributeValueChanged.connect(self.pdsLayerModified)
+            
         except Exception as e:
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
             
