@@ -351,10 +351,10 @@ class QgisPDSPressure(QgisPDSPressureDialog):
         self.uri += '&field={}:{}'.format("top_zone", "string")
         self.uri += '&field={}:{}'.format("base_zone", "string")
         self.uri += '&field={}:{}'.format("reservoir", "string")
-        self.uri += '&field={}:{}'.format("LablX", "double")
-        self.uri += '&field={}:{}'.format("LablY", "double")
-        self.uri += '&field={}:{}'.format("LablOffX", "double")
-        self.uri += '&field={}:{}'.format("LablOffY", "double")
+
+        for field in FieldsForLabels:
+            self.uri += field.memoryfield
+        
         self.layer = QgsVectorLayer(self.uri, layerName, "memory")
 
         if self.layer is None:
@@ -372,16 +372,22 @@ class QgisPDSPressure(QgisPDSPressureDialog):
         palyr = QgsPalLayerSettings()
         palyr.readFromLayer(self.layer)
         palyr.enabled = True
-        palyr.fieldName = self.attrWellId
+        palyr.fieldName = self.attrPressure
         palyr.placement = QgsPalLayerSettings.OverPoint
         palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
         palyr.setDataDefinedProperty(QgsPalLayerSettings.OffsetXY, True, True,
                                      'format(\'%1,%2\', "LablOffX" , "LablOffY")', '')
         palyr.labelOffsetInMapUnits = False
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '8', '')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', 'LablX')
-        palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', 'LablY')
+        palyr.distInMapUnits = True
+        palyr.displayAll = True
+        palyr.fontSizeInMapUnits = False
+        palyr=layer_to_labeled(palyr)  #---enable EasyLabel             
+        
+        #palyr.setDataDefinedProperty(QgsPalLayerSettings.Size, True, True, '8', '')
+        #palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionX, True, False, '', 'LablX')
+        #palyr.setDataDefinedProperty(QgsPalLayerSettings.PositionY, True, False, '', 'LablY')
         palyr.writeToLayer(self.layer)
+        
         # self.layer.commitChanges()
 
 
