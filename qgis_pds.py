@@ -272,7 +272,10 @@ class QgisPDS(QObject):
 
         self.selectMapTool = None
         
-
+        #Action on change visible preset
+        self.onReadProject()
+        
+        
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         return QCoreApplication.translate('QgisPDS', message)
@@ -436,6 +439,27 @@ class QgisPDS(QObject):
 
         self.runAppAction.setEnabled(runAppEnabled)
 
+
+    def switchInvisibleLayersStyleOff(self,style_name=u"default"):
+        all_layers= self.iface.legendInterface().layers()
+        for lyr in all_layers: 
+            if not self.iface.legendInterface().isLayerVisible(lyr) and lyr.type() == QgsMapLayer.VectorLayer:
+                editLayerStyles=lyr.styleManager()
+                if style_name in editLayerStyles.styles():
+                    QgsMessageLog.logMessage(u"Switch style of layer \n'{}'\n\tto {}".format(lyr.name(),style_name), tag="QgisPDS")
+                    editLayerStyles.setCurrentStyle(style_name)
+                    
+    def connectVisiblePresetChangedEvent(self):  
+        visiblePreset=QgsProject.instance().visibilityPresetCollection()
+        visiblePreset.presetsChanged.connect(lambda:self.switchInvisibleLayersStyleOff())
+        
+    def onReadProject(self):
+        #for current project
+        self.connectVisiblePresetChangedEvent()
+        #for readed project  
+        QgsProject.instance().readProject.connect(lambda:self.connectVisiblePresetChangedEvent())
+        #for new project
+        QgsProject.instance().fileNameChanged.connect(lambda:self.connectVisiblePresetChangedEvent())
     
     #Save label positions
     def onTimer(self):
@@ -886,7 +910,7 @@ class QgisPDS(QObject):
         QgsExpression.registerFunction(makeMultilineFormatedLabel)
         QgsExpression.registerFunction(isValueInInterval)
         QgsExpression.registerFunction(isValueInIntervalWithSkeep)
-
+        
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -1167,7 +1191,7 @@ class QgisPDS(QObject):
                 wells = QgisPDSDeviation(self.iface, self.currentProject ,styleName=DEVI_STYLE,styleUserDir=USER_DEVI_STYLE_DIR  )
                 wells.setWellList(dlg.getWellIds())
                 layer = wells.createWellLayer()
-    
+
             # if layer is not None:
             #     layer.attributeValueChanged.connect(self.pdsLayerModified)
         except Exception as e:
