@@ -277,8 +277,8 @@ class QgisPDSDeviation(QObject, WithQtProgressBar):
                     startY = pt.y()
                     polyLine = [pt]
 
-                    blob_x = numpy.fromstring(self.db.blobToString(row[21]), '>f').astype('d')
-                    blob_y = numpy.fromstring(self.db.blobToString(row[22]), '>f').astype('d')
+                    blob_x = numpy.frombuffer(self.db.blobToString(row[21]), '>f').astype('d')
+                    blob_y = numpy.frombuffer(self.db.blobToString(row[22]), '>f').astype('d')
                     for ip in xrange(len(blob_x)):
                         dx = blob_x[ip]
                         dy = blob_y[ip]
