@@ -306,6 +306,7 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         records = self.db.execute(sql
                                   , well_id= wellId
                                   , zonation_id= zoneDef[1]
+                                  , skeep_last_n_zone=self.notUseLastZoneNum.value() if self.notUseLastZoneChkBox.isChecked() else None
                                   )
         result = []
         isTarget=False

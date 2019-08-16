@@ -1,4 +1,8 @@
 --- LAST INTERVAL POSITION(ORDER) FOR EACH WELL
+--- @param well_id - well name
+--- @param zonation_id - id of zonation
+--- @param skeep_last_n_zone - number of intervals in zonation description for don't use.
+
 with well_max_interval_pos as
 (
     SELECT
@@ -16,6 +20,16 @@ with well_max_interval_pos as
         ---VARIABLES
         AND wh.TIG_LATEST_WELL_NAME = :well_id
         AND z.DB_SLDNID = :zonation_id
+		AND (:skeep_last_n_zone IS NULL  OR i.tig_interval_order< ( 
+																SELECT max(I_TMP.tig_interval_order) 
+                                                                from tig_interval I_TMP
+                                                                	, tig_zonation Z_TMP
+                                                                where Z_TMP.DB_SLDNID= :zonation_id
+                                                                	AND 
+                                                                	I_TMP.tig_zonation_sldnid = Z_TMP.DB_SLDNID  --------SET ZONATION ID
+                                                                )-:skeep_last_n_zone+1   ---if skeep last intervals                                                                
+            )
+        
     group by 
         wh.TIG_LATEST_WELL_NAME, wh.DB_SLDNID
 )
