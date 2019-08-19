@@ -2315,7 +2315,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             if idx>0:
                 # join property select to other property selects
                 sql="""
-                    LEFT JOIN {}
+                    FULL OUTER JOIN {}
                     ON 1=1
                 """.format(sql)
             base_sql+=sql
