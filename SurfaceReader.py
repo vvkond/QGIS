@@ -70,27 +70,28 @@ class SurfaceReader(ReaderBase):
         fileName = None
         layerName = None
 
-        self.tig_projections = TigProjections(db=self.db)
-        proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
-        proj4String = ''
-        if proj is not None:
-            # sourceCrs = QgsCoordinateReferenceSystem()
-            # sourceCrs.createFromProj4(proj.qgis_string)
-            # destSrc = QgsCoordinateReferenceSystem('epsg:4326')
-            proj4String = proj.qgis_string
 
-            # xform = QgsCoordinateTransform(sourceCrs, destSrc)
-        else:
+        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
+        try:
+            self.tig_projections = TigProjections(db=self.db)
+            proj = self.tig_projections.get_projection(self.tig_projections.default_projection_id)
+            if proj is not None:
+                self.proj4String = 'PROJ4:'+proj.qgis_string
+                destSrc = QgsCoordinateReferenceSystem()
+                destSrc.createFromProj4(proj.qgis_string)
+                sourceCrs = None
+                self.xform=get_qgis_crs_transform(sourceCrs,destSrc,self.tig_projections.fix_id)
+        except Exception as e:
             self.iface.messageBar().pushMessage(self.tr('Error'),
-                self.tr(u'Project projection read error'), level=QgsMessageBar.CRITICAL)        
+                                                self.tr(u'Project projection read error {0}').format(
+                                                str(e)),
+                                                level=QgsMessageBar.CRITICAL)
 
         sqlFile = os.path.join(self.plugin_dir, 'db', 'Surface.sql')
         if os.path.exists(sqlFile):
             f = open(sqlFile, 'r')
             sql = f.read()
             f.close()
-
-            
 
             groups = self.db.execute(sql, group_id=groupSetId[0], set_id=groupSetId[1])
 
@@ -121,13 +122,15 @@ class SurfaceReader(ReaderBase):
                 TIG_MAP_SUBSET_GEOM,
                 TIG_MAP_SUBSET_GEOM_DATA) in groups:
 
-                x = numpy.fromstring(self.db.blobToString(TIG_MAP_X), '>d').astype('d')
-                y = numpy.fromstring(self.db.blobToString(TIG_MAP_Y), '>d').astype('d')
-                z = numpy.fromstring(self.db.blobToString(TIG_MAP_Z), '>d').astype('d')
+                x = numpy.frombuffer(self.db.blobToString(TIG_MAP_X), '>d').astype('d')
+                y = numpy.frombuffer(self.db.blobToString(TIG_MAP_Y), '>d').astype('d')
+                z = numpy.frombuffer(self.db.blobToString(TIG_MAP_Z), '>d').astype('d')
+                
+
                 min_x, max_x, step_x = x
                 min_y, max_y, step_y = y
-
-                values = numpy.fromstring(self.db.blobToString(TIG_MAP_PARAM_VRSHRT), '>f').astype('d')
+                
+                values = numpy.frombuffer(self.db.blobToString(TIG_MAP_PARAM_VRSHRT), '>f').astype('d')
 
                 size_x = int((max_x - min_x) / step_x + 1.005)
                 size_y = int((max_y - min_y) / step_y + 1.005)
@@ -136,7 +139,16 @@ class SurfaceReader(ReaderBase):
                 data = numpy.rot90(data)
                 nodata = 1E+10
                 numpy.minimum(data, nodata, out=data)
-
+                
+                if self.xform:
+                    pt = QgsPoint(min_x, min_y)
+                    pt = self.xform.transform(pt)
+                    min_x=pt.x()
+                    min_y=pt.y()
+                    pt = QgsPoint(max_x, max_y)
+                    pt = self.xform.transform(pt)
+                    max_x=pt.x()
+                    max_y=pt.y()
                 # geotransform=(min.x(), step_x, 0, max.y(), 0, -step_y)
                 geotransform=(min_x, step_x, 0, max_y, 0, -step_y)
                 driver = gdal.GetDriverByName('GTiff')
@@ -156,7 +168,7 @@ class SurfaceReader(ReaderBase):
                 output_raster.SetGeoTransform(geotransform)
                 srs = osr.SpatialReference()
                 # srs.ImportFromEPSG(4326)
-                srs.ImportFromProj4(proj4String)
+                srs.ImportFromProj4(self.proj4String)
                 output_raster.SetProjection( srs.ExportToWkt() )
 
                 output_raster = None
