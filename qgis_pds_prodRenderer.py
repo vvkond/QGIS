@@ -33,6 +33,7 @@ import os,sys
 import xml.etree.cElementTree as ET
 import ast
 import re
+from datetime import datetime
 
 try:
     from PyQt4.QtCore import QString
@@ -78,6 +79,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
     DEBUG=False
 
     def __init__(self, props):
+        ts=datetime.now()
         QgsMarkerSymbolLayerV2.__init__(self)
         self.radius = 4.0
         self.color = QColor(255,0,0)
@@ -138,9 +140,10 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                                 self.setDataDefinedProperty(expName, QgsDataDefined(exp))
                                 if not self.hasDataDefinedProperty(expName):
                                     self.setDataDefinedProperty(expName, QgsDataDefined('"{0}" + 0.0'.format(exp)))
-
+                                    
         except Exception as e:
             QgsMessageLog.logMessage('Evaluate diagram props: ' + str(e), 'BubbleSymbolLayer')
+        self.DEBUG and QgsMessageLog.logMessage('BubbleSymbolLayer rendered init in : {}'.format(str(datetime.now()-ts)), 'BubbleSymbolLayer')
 
         # try:
         #     if len(self.labelsStr) > 1:
@@ -231,6 +234,8 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
             if self.hasDataDefinedProperty(expName):
                 (val, ok) = self.evaluateDataDefinedProperty(expName, context, 0.0)
+                if val is None or val == NULL:
+                    break
                 colorStr = label['color']
                 showZero = label['showZero']
                 isNewLine = label['isNewLine']
@@ -259,6 +264,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         return templateStr
 
     def compileLabels(self, templateStr, sum, d, feature):
+        self.DEBUG and QgsMessageLog.logMessage('compileLabels:', 'BubbleSymbolLayer') #DEBUG
         showZero = False
         decimals = d['decimals']
         formatString = "{:."+str(decimals)+"f}"
@@ -289,8 +295,8 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                     percentStr = '%'
                 elif dailyProduction and days:
                     val *= days
+                self.DEBUG and QgsMessageLog.logMessage('slice val={} :{}'.format(str(val),str(type(val))), 'BubbleSymbolLayer') #DEBUG
                 strVal = formatString.format(val) + percentStr
-
             code = '"{0}"'.format(attr)
             if float(formatString.format(val)) != float(0) or showZero:
                 templateStr = templateStr.replace(code, '<span><font color="{0}">{1}</font></span>'.format(colorStr,
@@ -379,6 +385,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
 
                     if 'labels' in d:
                         labels = d['labels']
+                        self.DEBUG and QgsMessageLog.logMessage('labels: {}'.format(labels), 'BubbleSymbolLayer') #DEBUG
                         labelTemplate = labelTemplate + self.addLabels(context, labels)
                         templateStr = None
                     elif templateStr:
@@ -419,6 +426,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                             prnc = float_t(values.text)
                             # fn = values.attrib["fieldName"]
                             # slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc, fieldName=fn)
+                     
                             slice = DiagrammSlice(backColor=bc, lineColor=lc, percent=prnc)
                             slices.append(slice)
 
@@ -476,32 +484,33 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                     yVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float_t(attrs[self.mYIndex]), QgsSymbolV2.MM)
                 widthVal = 10
 
-                if xVal != 0 or yVal != 0:
-                    pt1 = point + QPointF(xVal, yVal)
-                    st = QStaticText(labelTemplate);
-                    opt = st.textOption()
-                    opt.setWrapMode(QTextOption.NoWrap)
-                    st.setTextOption(opt)
-                    st.prepare(p.transform(), p.font())
-                    widthVal = st.size().width()
+                #if xVal != 0 or yVal != 0:
+                pt1 = point + QPointF(xVal, yVal)
+                
+                st = QStaticText(labelTemplate);
+                opt = st.textOption()
+                opt.setWrapMode(QTextOption.NoWrap)
+                st.setTextOption(opt)
+                st.prepare(p.transform(), p.font())
+                widthVal = st.size().width()
+                
+                pt2 = point + QPointF(xVal + widthVal, yVal)
 
-                    pt2 = point + QPointF(xVal + widthVal, yVal)
-
-                    pen = QPen(Qt.black)
-                    pen.setWidth(2)
-                    p.setPen(pen)
-                    if point.x() < (pt1.x() + pt2.x()) / 2 :
-                        if self.showLineouts:
-                            p.drawLine(point, pt1)
-                            p.drawLine(pt1, pt2)
-                        if labelTemplate and labelTemplate != NULL and self.showLabels:
-                            p.drawStaticText(pt1.x(), pt1.y(), st)
-                    else:
-                        if self.showLineouts:
-                            p.drawLine(point, pt2)
-                            p.drawLine(pt2, pt1)
-                        if labelTemplate and labelTemplate != NULL and self.showLabels:
-                            p.drawStaticText(pt1.x(), pt1.y(), st)
+                pen = QPen(Qt.black)
+                pen.setWidth(2)
+                p.setPen(pen)
+                if point.x() < (pt1.x() + pt2.x()) / 2 :
+                    if self.showLineouts:
+                        p.drawLine(point, pt1)
+                        p.drawLine(pt1, pt2)
+                    if labelTemplate and labelTemplate != NULL and self.showLabels:
+                        p.drawStaticText(pt1.x(), pt1.y(), st)
+                else:
+                    if self.showLineouts:
+                        p.drawLine(point, pt2)
+                        p.drawLine(pt2, pt1)
+                    if labelTemplate and labelTemplate != NULL and self.showLabels:
+                        p.drawStaticText(pt1.x(), pt1.y(), st)
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -559,36 +568,36 @@ class BabbleSymbolLayerWidget(QgsSymbolLayerV2Widget, FORM_CLASS):
         return self.layer
     
     def on_editTemplateStr_txt_changed(self,val):
-        #QgsMessageLog.logMessage('on_editTemplateStr_txt_changed', 'BubbleSymbolLayer')
+        self.DEBUG and QgsMessageLog.logMessage('on_editTemplateStr_txt_changed', 'BubbleSymbolLayer')
         self.layer.templateStr=val
         self.emit(SIGNAL("changed()"))
         pass
 
     def on_editDiagrammStr_txt_changed(self):
-        #QgsMessageLog.logMessage('on_editDiagrammStr_txt_changed', 'BubbleSymbolLayer')
+        self.DEBUG and QgsMessageLog.logMessage('on_editDiagrammStr_txt_changed', 'BubbleSymbolLayer')
         self.layer.diagrammStr=self.editDiagrammStr.toPlainText()
         self.emit(SIGNAL("changed()"))
         
         pass
 
     def on_showLineouts_toggled(self, value):
-        #QgsMessageLog.logMessage('on_showLineouts_toggled', 'BubbleSymbolLayer')
+        self.DEBUG and QgsMessageLog.logMessage('on_showLineouts_toggled', 'BubbleSymbolLayer')
         self.layer.showLineouts = value
         self.emit(SIGNAL("changed()"))
 
     def on_showLabels_toggled(self, value):
-        #QgsMessageLog.logMessage('on_showLabels_toggled', 'BubbleSymbolLayer')
+        self.DEBUG and QgsMessageLog.logMessage('on_showLabels_toggled', 'BubbleSymbolLayer')
         self.layer.showLabels = value
         self.emit(SIGNAL("changed()"))
 
     def on_showDiagramms_toggled(self, value):
-        #QgsMessageLog.logMessage('on_showDiagramms_toggled', 'BubbleSymbolLayer')
+        self.DEBUG and QgsMessageLog.logMessage('on_showDiagramms_toggled', 'BubbleSymbolLayer')
         self.layer.showDiagramms = value
         self.emit(SIGNAL("changed()"))
 
     @pyqtSlot(float)
     def on_mLabelSizeSpinBox_valueChanged(self, value):
-        #QgsMessageLog.logMessage('on_mLabelSizeSpinBox_valueChanged', 'BubbleSymbolLayer')
+        self.DEBUG and QgsMessageLog.logMessage('on_mLabelSizeSpinBox_valueChanged', 'BubbleSymbolLayer')
         self.layer.labelSize = value
         self.emit(SIGNAL("changed()"))
 
