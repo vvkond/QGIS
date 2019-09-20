@@ -64,7 +64,8 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         self.notUseLastZoneChkBox.setVisible(False)
         self.notUseLastZoneNum.setVisible(False)
         self.isOnlyPublicDeviChkBox.setVisible(False)
-        self.isEnableFilterChkBox.setVisible(False)
+        if hasattr(self, 'isEnableFilterChkBox'):
+            self.isEnableFilterChkBox.setVisible(False)
 
 
     def zonationListWidget_itemSelectionChanged(self):
@@ -573,5 +574,4 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                     wellList.append(well)
                 except:
                     pass
-
         return wellList

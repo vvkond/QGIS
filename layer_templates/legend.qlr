@@ -1,0 +1,2756 @@
+<!DOCTYPE qgis-layer-definition>
+<qlr>
+  <layer-tree-group expanded="1" checked="Qt::Unchecked" name="">
+    <customproperties/>
+    <layer-tree-group expanded="1" checked="Qt::Unchecked" name="Легенда">
+      <customproperties/>
+      <layer-tree-layer expanded="0" providerKey="memory" checked="Qt::Unchecked" id="Polygons_2013_PSIII20190215185847917" source="memory?geometry=LineString&amp;field=set_no:(0,0)&amp;field=parameter_no:(0,0)&amp;field=subset_no:(0,0)&amp;field=set_name:(0,0)&amp;field=param_name:(0,0)&amp;field=subset_name:(0,0)&amp;field=parameter:(0,0)&amp;field=variable_name:(0,0)" name="Линейные слои">
+        <customproperties/>
+      </layer-tree-layer>
+      <layer-tree-layer expanded="0" providerKey="memory" checked="Qt::Unchecked" id="Cumulative_production___Ap2_Ap1_PSI_PSII_PSIII_PSIV_PSV20180122171455583" source="memory?geometry=MultiPoint&amp;crs=wkt:PROJCS%5B%22unnamed%22,GEOGCS%5B%22Krassovsky,%201942%22,DATUM%5B%22unknown%22,SPHEROID%5B%22krass%22,6378245,298.3%5D%5D,PRIMEM%5B%22Greenwich%22,0%5D,UNIT%5B%22degree%22,0.0174532925199433%5D%5D,PROJECTION%5B%22Transverse_Mercator%22%5D,PARAMETER%5B%22latitude_of_origin%22,0%5D,PARAMETER%5B%22central_meridian%22,51%5D,PARAMETER%5B%22scale_factor%22,1%5D,PARAMETER%5B%22false_easting%22,500000%5D,PARAMETER%5B%22false_northing%22,0%5D,UNIT%5B%22Meter%22,1%5D%5D&amp;field=well_id:string(255,0)&amp;field=Latitude:double(20,5)&amp;field=Longitude:double(20,5)&amp;field=SymbolID:string(255,0)&amp;field=SymbolName:string(255,0)&amp;field=SymbolCode:integer(-1,0)&amp;field=Days:double(20,5)&amp;field=LiftMethod:string(255,0)&amp;field=LablX:double(20,5)&amp;field=LablY:double(20,5)&amp;field=LablOffX:double(20,5)&amp;field=LablOffY:double(20,5)&amp;field=LablOffset:double(20,5)&amp;field=LablWidth:double(20,5)&amp;field=BubbleSize:double(20,5)&amp;field=BubbleFields:string(255,0)&amp;field=ScaleType:string(255,0)&amp;field=MovingRes:string(255,0)&amp;field=ResState:string(255,0)&amp;field=MultiProd:string(255,0)&amp;field=crude%20oil%20(volume):double(20,5)&amp;field=crude%20oil%20(mass):double(20,5)&amp;field=natural%20gas%20(volume):double(20,5)&amp;field=natural%20gas%20(mass):double(20,5)&amp;field=produced%20water%20(volume):double(20,5)&amp;field=produced%20water%20(mass):double(20,5)&amp;field=condensate%20(volume):double(20,5)&amp;field=condensate%20(mass):double(20,5)&amp;field=injected%20gas%20(volume):double(20,5)&amp;field=injected%20gas%20(mass):double(20,5)&amp;field=injected%20water%20(volume):double(20,5)&amp;field=injected%20water%20(mass):double(20,5)&amp;field=lift%20gas%20(volume):double(20,5)&amp;field=lift%20gas%20(mass):double(20,5)&amp;field=free%20gas%20(volume):double(20,5)&amp;field=free%20gas%20(mass):double(20,5)" name="Точечные слои">
+        <customproperties/>
+      </layer-tree-layer>
+    </layer-tree-group>
+  </layer-tree-group>
+  <maplayers>
+    <maplayer simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Line" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <id>Polygons_2013_PSIII20190215185847917</id>
+      <datasource>memory?geometry=LineString&amp;field=set_no:(0,0)&amp;field=parameter_no:(0,0)&amp;field=subset_no:(0,0)&amp;field=set_name:(0,0)&amp;field=param_name:(0,0)&amp;field=subset_name:(0,0)&amp;field=parameter:(0,0)&amp;field=variable_name:(0,0)</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>Линейные слои</layername>
+      <srs>
+        <spatialrefsys>
+          <proj4>+proj=tmerc +lat_0=0 +lon_0=51 +k=1 +x_0=500000 +y_0=0 +ellps=krass +units=m +no_defs</proj4>
+          <srsid>100005</srsid>
+          <srid>0</srid>
+          <authid>USER:100005</authid>
+          <description> * Создана система координат (+proj=tmerc +lat_0=0 +lon_0=51 +k=1 +x_0=500000 +y_0=0 +ellps=krass +units=m +no_defs)</description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym>krass</ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <provider encoding="UTF-8">memory</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <expressionfields/>
+      <map-layer-style-manager current="">
+        <map-layer-style name=""/>
+      </map-layer-style-manager>
+      <edittypes>
+        <edittype widgetv2type="TextEdit" name="set_no">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="parameter_no">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="subset_no">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="set_name">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="param_name">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="subset_name">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="parameter">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="variable_name">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+      </edittypes>
+      <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="0">
+        <rules key="{12f614d1-728f-4051-96df-d0243f87fed4}">
+          <rule key="{97edee3a-cb43-4b1f-ab74-c66d17344791}" symbol="0" label="Полигоны"/>
+          <rule key="{4f05fd7c-6170-4199-a99d-7ea5894c99f3}" symbol="1" label="Разломы"/>
+          <rule key="{ad982674-099d-4d34-898d-43a15dad0005}" symbol="2" label="Контуры"/>
+        </rules>
+        <symbols>
+          <symbol alpha="1" clip_to_extent="1" type="line" name="0">
+            <layer pass="0" class="SimpleLine" locked="0">
+              <prop k="capstyle" v="square"/>
+              <prop k="customdash" v="5;2"/>
+              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="customdash_unit" v="MM"/>
+              <prop k="draw_inside_polygon" v="0"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="line_color" v="0,0,255,255"/>
+              <prop k="line_style" v="dash"/>
+              <prop k="line_width" v="0.3"/>
+              <prop k="line_width_unit" v="MM"/>
+              <prop k="offset" v="0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="use_custom_dash" v="0"/>
+              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="line" name="1">
+            <layer pass="0" class="SimpleLine" locked="0">
+              <prop k="capstyle" v="square"/>
+              <prop k="customdash" v="5;2"/>
+              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="customdash_unit" v="MM"/>
+              <prop k="draw_inside_polygon" v="0"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="line_color" v="227,26,28,255"/>
+              <prop k="line_style" v="solid"/>
+              <prop k="line_width" v="0.26"/>
+              <prop k="line_width_unit" v="MM"/>
+              <prop k="offset" v="0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="use_custom_dash" v="0"/>
+              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="line" name="2">
+            <layer pass="0" class="SimpleLine" locked="0">
+              <prop k="capstyle" v="square"/>
+              <prop k="customdash" v="5;2"/>
+              <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="customdash_unit" v="MM"/>
+              <prop k="draw_inside_polygon" v="0"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="line_color" v="34,139,34,255"/>
+              <prop k="line_style" v="solid"/>
+              <prop k="line_width" v="0.26"/>
+              <prop k="line_width_unit" v="MM"/>
+              <prop k="offset" v="0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="use_custom_dash" v="0"/>
+              <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+            </layer>
+          </symbol>
+        </symbols>
+      </renderer-v2>
+      <labeling type="simple"/>
+      <customproperties>
+        <property key="labeling" value="pal"/>
+        <property key="labeling/addDirectionSymbol" value="false"/>
+        <property key="labeling/angleOffset" value="0"/>
+        <property key="labeling/blendMode" value="0"/>
+        <property key="labeling/bufferBlendMode" value="0"/>
+        <property key="labeling/bufferColorA" value="255"/>
+        <property key="labeling/bufferColorB" value="255"/>
+        <property key="labeling/bufferColorG" value="255"/>
+        <property key="labeling/bufferColorR" value="255"/>
+        <property key="labeling/bufferDraw" value="false"/>
+        <property key="labeling/bufferJoinStyle" value="64"/>
+        <property key="labeling/bufferNoFill" value="false"/>
+        <property key="labeling/bufferSize" value="1"/>
+        <property key="labeling/bufferSizeInMapUnits" value="false"/>
+        <property key="labeling/bufferSizeMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/bufferTransp" value="0"/>
+        <property key="labeling/centroidInside" value="false"/>
+        <property key="labeling/centroidWhole" value="false"/>
+        <property key="labeling/decimals" value="3"/>
+        <property key="labeling/displayAll" value="false"/>
+        <property key="labeling/dist" value="0"/>
+        <property key="labeling/distInMapUnits" value="false"/>
+        <property key="labeling/distMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/drawLabels" value="false"/>
+        <property key="labeling/enabled" value="false"/>
+        <property key="labeling/fieldName" value=""/>
+        <property key="labeling/fitInPolygonOnly" value="false"/>
+        <property key="labeling/fontCapitals" value="0"/>
+        <property key="labeling/fontFamily" value="MS Shell Dlg 2"/>
+        <property key="labeling/fontItalic" value="false"/>
+        <property key="labeling/fontLetterSpacing" value="0"/>
+        <property key="labeling/fontLimitPixelSize" value="false"/>
+        <property key="labeling/fontMaxPixelSize" value="10000"/>
+        <property key="labeling/fontMinPixelSize" value="3"/>
+        <property key="labeling/fontSize" value="7.8"/>
+        <property key="labeling/fontSizeInMapUnits" value="false"/>
+        <property key="labeling/fontSizeMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/fontStrikeout" value="false"/>
+        <property key="labeling/fontUnderline" value="false"/>
+        <property key="labeling/fontWeight" value="50"/>
+        <property key="labeling/fontWordSpacing" value="0"/>
+        <property key="labeling/formatNumbers" value="false"/>
+        <property key="labeling/isExpression" value="true"/>
+        <property key="labeling/labelOffsetInMapUnits" value="true"/>
+        <property key="labeling/labelOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/labelPerPart" value="false"/>
+        <property key="labeling/leftDirectionSymbol" value="&lt;"/>
+        <property key="labeling/limitNumLabels" value="false"/>
+        <property key="labeling/maxCurvedCharAngleIn" value="20"/>
+        <property key="labeling/maxCurvedCharAngleOut" value="-20"/>
+        <property key="labeling/maxNumLabels" value="2000"/>
+        <property key="labeling/mergeLines" value="false"/>
+        <property key="labeling/minFeatureSize" value="0"/>
+        <property key="labeling/multilineAlign" value="0"/>
+        <property key="labeling/multilineHeight" value="1"/>
+        <property key="labeling/namedStyle" value="Normal"/>
+        <property key="labeling/obstacle" value="true"/>
+        <property key="labeling/obstacleFactor" value="1"/>
+        <property key="labeling/obstacleType" value="0"/>
+        <property key="labeling/offsetType" value="0"/>
+        <property key="labeling/placeDirectionSymbol" value="0"/>
+        <property key="labeling/placement" value="2"/>
+        <property key="labeling/placementFlags" value="10"/>
+        <property key="labeling/plussign" value="false"/>
+        <property key="labeling/predefinedPositionOrder" value="TR,TL,BR,BL,R,L,TSR,BSR"/>
+        <property key="labeling/preserveRotation" value="true"/>
+        <property key="labeling/previewBkgrdColor" value="#ffffff"/>
+        <property key="labeling/priority" value="5"/>
+        <property key="labeling/quadOffset" value="4"/>
+        <property key="labeling/repeatDistance" value="0"/>
+        <property key="labeling/repeatDistanceMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/repeatDistanceUnit" value="1"/>
+        <property key="labeling/reverseDirectionSymbol" value="false"/>
+        <property key="labeling/rightDirectionSymbol" value=">"/>
+        <property key="labeling/scaleMax" value="10000000"/>
+        <property key="labeling/scaleMin" value="1"/>
+        <property key="labeling/scaleVisibility" value="false"/>
+        <property key="labeling/shadowBlendMode" value="6"/>
+        <property key="labeling/shadowColorB" value="0"/>
+        <property key="labeling/shadowColorG" value="0"/>
+        <property key="labeling/shadowColorR" value="0"/>
+        <property key="labeling/shadowDraw" value="false"/>
+        <property key="labeling/shadowOffsetAngle" value="135"/>
+        <property key="labeling/shadowOffsetDist" value="1"/>
+        <property key="labeling/shadowOffsetGlobal" value="true"/>
+        <property key="labeling/shadowOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shadowOffsetUnits" value="1"/>
+        <property key="labeling/shadowRadius" value="1.5"/>
+        <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
+        <property key="labeling/shadowRadiusMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shadowRadiusUnits" value="1"/>
+        <property key="labeling/shadowScale" value="100"/>
+        <property key="labeling/shadowTransparency" value="30"/>
+        <property key="labeling/shadowUnder" value="0"/>
+        <property key="labeling/shapeBlendMode" value="0"/>
+        <property key="labeling/shapeBorderColorA" value="255"/>
+        <property key="labeling/shapeBorderColorB" value="128"/>
+        <property key="labeling/shapeBorderColorG" value="128"/>
+        <property key="labeling/shapeBorderColorR" value="128"/>
+        <property key="labeling/shapeBorderWidth" value="0"/>
+        <property key="labeling/shapeBorderWidthMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeBorderWidthUnits" value="1"/>
+        <property key="labeling/shapeDraw" value="false"/>
+        <property key="labeling/shapeFillColorA" value="255"/>
+        <property key="labeling/shapeFillColorB" value="255"/>
+        <property key="labeling/shapeFillColorG" value="255"/>
+        <property key="labeling/shapeFillColorR" value="255"/>
+        <property key="labeling/shapeJoinStyle" value="64"/>
+        <property key="labeling/shapeOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeOffsetUnits" value="1"/>
+        <property key="labeling/shapeOffsetX" value="0"/>
+        <property key="labeling/shapeOffsetY" value="0"/>
+        <property key="labeling/shapeRadiiMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeRadiiUnits" value="1"/>
+        <property key="labeling/shapeRadiiX" value="0"/>
+        <property key="labeling/shapeRadiiY" value="0"/>
+        <property key="labeling/shapeRotation" value="0"/>
+        <property key="labeling/shapeRotationType" value="0"/>
+        <property key="labeling/shapeSVGFile" value=""/>
+        <property key="labeling/shapeSizeMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeSizeType" value="0"/>
+        <property key="labeling/shapeSizeUnits" value="1"/>
+        <property key="labeling/shapeSizeX" value="0"/>
+        <property key="labeling/shapeSizeY" value="0"/>
+        <property key="labeling/shapeTransparency" value="0"/>
+        <property key="labeling/shapeType" value="0"/>
+        <property key="labeling/textColorA" value="255"/>
+        <property key="labeling/textColorB" value="0"/>
+        <property key="labeling/textColorG" value="0"/>
+        <property key="labeling/textColorR" value="0"/>
+        <property key="labeling/textTransp" value="0"/>
+        <property key="labeling/upsidedownLabels" value="0"/>
+        <property key="labeling/wrapChar" value=""/>
+        <property key="labeling/xOffset" value="0"/>
+        <property key="labeling/yOffset" value="0"/>
+        <property key="labeling/zIndex" value="0"/>
+      </customproperties>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerTransparency>0</layerTransparency>
+      <displayfield>set_name</displayfield>
+      <label>0</label>
+      <labelattributes>
+        <label fieldname="" text="Подпись"/>
+        <family fieldname="" name="MS Shell Dlg 2"/>
+        <size fieldname="" units="pt" value="12"/>
+        <bold fieldname="" on="0"/>
+        <italic fieldname="" on="0"/>
+        <underline fieldname="" on="0"/>
+        <strikeout fieldname="" on="0"/>
+        <color fieldname="" red="0" blue="0" green="0"/>
+        <x fieldname=""/>
+        <y fieldname=""/>
+        <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+        <angle fieldname="" value="0" auto="0"/>
+        <alignment fieldname="" value="center"/>
+        <buffercolor fieldname="" red="255" blue="255" green="255"/>
+        <buffersize fieldname="" units="pt" value="1"/>
+        <bufferenabled fieldname="" on=""/>
+        <multilineenabled fieldname="" on=""/>
+        <selectedonly on=""/>
+      </labelattributes>
+      <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="-4.65661e-10">
+          <fontProperties description="MS Shell Dlg 2,7.8,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
+        </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
+      </SingleCategoryDiagramRenderer>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="2" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+      <annotationform>..</annotationform>
+      <aliases>
+        <alias field="set_no" index="0" name=""/>
+        <alias field="parameter_no" index="1" name=""/>
+        <alias field="subset_no" index="2" name=""/>
+        <alias field="set_name" index="3" name=""/>
+        <alias field="param_name" index="4" name=""/>
+        <alias field="subset_name" index="5" name=""/>
+        <alias field="parameter" index="6" name=""/>
+        <alias field="variable_name" index="7" name=""/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <attributeactions default="-1"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <editform>..</editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath>..</editforminitfilepath>
+      <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+Форма QGIS при открытии может обращаться к функции Python. 
+
+Используйте эту функцию, чтобы добавить логику в ваши формы.
+
+Введите имя функции в поле "Функция инициализации Python".
+Пример:
+"""
+from PyQt4.QtGui import QWidget
+
+def my_form_open(dialog, layer, feature):
+⇥geom = feature.geometry()
+⇥control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <widgets/>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <defaults>
+        <default field="set_no" expression=""/>
+        <default field="parameter_no" expression=""/>
+        <default field="subset_no" expression=""/>
+        <default field="set_name" expression=""/>
+        <default field="param_name" expression=""/>
+        <default field="subset_name" expression=""/>
+        <default field="parameter" expression=""/>
+        <default field="variable_name" expression=""/>
+      </defaults>
+      <previewExpression></previewExpression>
+    </maplayer>
+    <maplayer simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" geometry="Point" simplifyMaxScale="1" type="vector" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+      <id>Cumulative_production___Ap2_Ap1_PSI_PSII_PSIII_PSIV_PSV20180122171455583</id>
+      <datasource>memory?geometry=MultiPoint&amp;crs=wkt:PROJCS%5B%22unnamed%22,GEOGCS%5B%22Krassovsky,%201942%22,DATUM%5B%22unknown%22,SPHEROID%5B%22krass%22,6378245,298.3%5D%5D,PRIMEM%5B%22Greenwich%22,0%5D,UNIT%5B%22degree%22,0.0174532925199433%5D%5D,PROJECTION%5B%22Transverse_Mercator%22%5D,PARAMETER%5B%22latitude_of_origin%22,0%5D,PARAMETER%5B%22central_meridian%22,51%5D,PARAMETER%5B%22scale_factor%22,1%5D,PARAMETER%5B%22false_easting%22,500000%5D,PARAMETER%5B%22false_northing%22,0%5D,UNIT%5B%22Meter%22,1%5D%5D&amp;field=well_id:string(255,0)&amp;field=Latitude:double(20,5)&amp;field=Longitude:double(20,5)&amp;field=SymbolID:string(255,0)&amp;field=SymbolName:string(255,0)&amp;field=SymbolCode:integer(-1,0)&amp;field=Days:double(20,5)&amp;field=LiftMethod:string(255,0)&amp;field=LablX:double(20,5)&amp;field=LablY:double(20,5)&amp;field=LablOffX:double(20,5)&amp;field=LablOffY:double(20,5)&amp;field=LablOffset:double(20,5)&amp;field=LablWidth:double(20,5)&amp;field=BubbleSize:double(20,5)&amp;field=BubbleFields:string(255,0)&amp;field=ScaleType:string(255,0)&amp;field=MovingRes:string(255,0)&amp;field=ResState:string(255,0)&amp;field=MultiProd:string(255,0)&amp;field=crude%20oil%20(volume):double(20,5)&amp;field=crude%20oil%20(mass):double(20,5)&amp;field=natural%20gas%20(volume):double(20,5)&amp;field=natural%20gas%20(mass):double(20,5)&amp;field=produced%20water%20(volume):double(20,5)&amp;field=produced%20water%20(mass):double(20,5)&amp;field=condensate%20(volume):double(20,5)&amp;field=condensate%20(mass):double(20,5)&amp;field=injected%20gas%20(volume):double(20,5)&amp;field=injected%20gas%20(mass):double(20,5)&amp;field=injected%20water%20(volume):double(20,5)&amp;field=injected%20water%20(mass):double(20,5)&amp;field=lift%20gas%20(volume):double(20,5)&amp;field=lift%20gas%20(mass):double(20,5)&amp;field=free%20gas%20(volume):double(20,5)&amp;field=free%20gas%20(mass):double(20,5)</datasource>
+      <keywordList>
+        <value></value>
+      </keywordList>
+      <layername>Точечные слои</layername>
+      <srs>
+        <spatialrefsys>
+          <proj4>+a=6378245.0 +lon_0=51.0 +to_meter=1 +k=1.0 +y_0=0.0 +b=6356863.019 +proj=tmerc +x_0=500000.0 +lat_0=0.0 +no_defs</proj4>
+          <srsid>102129</srsid>
+          <srid>0</srid>
+          <authid></authid>
+          <description></description>
+          <projectionacronym>tmerc</projectionacronym>
+          <ellipsoidacronym></ellipsoidacronym>
+          <geographicflag>false</geographicflag>
+        </spatialrefsys>
+      </srs>
+      <provider encoding="System">memory</provider>
+      <vectorjoins/>
+      <layerDependencies/>
+      <expressionfields/>
+      <map-layer-style-manager current="легенда текущие отборы">
+        <map-layer-style name="">
+          <qgis version="2.18.28" simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+            <edittypes>
+              <edittype widgetv2type="TextEdit" name="well_id">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="Latitude">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="Longitude">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="SymbolID">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="SymbolName">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="SymbolCode">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="Days">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LiftMethod">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablX">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablY">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablOffX">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablOffY">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablOffset">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablWidth">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="BubbleSize">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="BubbleFields">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="ScaleType">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="MovingRes">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="ResState">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="MultiProd">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="crude oil (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="crude oil (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="natural gas (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="natural gas (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="produced water (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="produced water (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="condensate (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="condensate (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="injected gas (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="injected gas (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="injected water (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="injected water (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="lift gas (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="lift gas (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="free gas (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="free gas (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+            </edittypes>
+            <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
+              <rules key="{091f7117-a297-482f-80d1-d4494102f739}">
+                <rule filter="&quot;SymbolCode&quot;=-1" key="{dfd1f106-2d52-47c6-ad16-0d743b998995}" symbol="0" label="Сырая нефть"/>
+                <rule filter="&quot;SymbolCode&quot;=-1" key="{e5ff7fc1-f6f7-4f6e-b11a-c584d46fd752}" symbol="1" label="Закачка воды"/>
+                <rule filter="&quot;SymbolCode&quot;=-1" key="{e97fc3de-d786-44da-812a-e1594dc7b997}" symbol="2" label="Добыча воды"/>
+                <rule description="Фильтр для группы" filter="&quot;_filter_tops_well_id&quot;  is not Null" key="{e5a0be19-ff6c-43f3-81a5-7891094970b4}" label="фильтр по разбивкам">
+                  <rule key="{ce60aba9-c086-4e5d-8855-9d2a90ce316b}" label="Диаграмма жидкости 50&#xa;Диаграмма закачки 50"/>
+                  <rule key="{d0ea7d40-86fe-4d19-ba65-016a74d04ed0}" label="Скважины"/>
+                  <rule filter="&quot;SymbolCode&quot;=71" key="{0714b2e8-a9a8-41d2-949e-65ec4e7d9a41}" symbol="3" label="Транзитная скважина"/>
+                  <rule filter="&quot;SymbolCode&quot;=203" key="{23a4dad6-4194-4062-a8e5-d5142bff0814}" symbol="4" label="Добывающая скважина в бездействии"/>
+                  <rule filter="&quot;SymbolCode&quot;=204" key="{ce19f459-3579-4d1b-aacb-ffdb4019dfdb}" symbol="5" label="Нагнетательная скважина в бездействии"/>
+                  <rule filter="&quot;SymbolCode&quot;=238" key="{bbfccc01-e3d8-4aa1-bd4f-4555fa8758b6}" symbol="6" label="Водозаборная скважина в бездействии"/>
+                  <rule filter="&quot;SymbolCode&quot;=182 or &quot;SymbolCode&quot;=189" key="{cb627302-62ef-41b2-96c5-89b9df397a5b}" symbol="7" label="Добывающая скважина ликвидированная"/>
+                  <rule filter="&quot;SymbolCode&quot;=148" key="{5ab9e2e7-5dc0-4c34-8292-2b5239038738}" symbol="8" label="Добывающая скважина остановленная"/>
+                  <rule filter="&quot;SymbolCode&quot;=153" key="{a3fc6763-551f-44d9-aba5-e372909f3c13}" symbol="9" label="Нагнетательная скважина остановленная"/>
+                </rule>
+                <rule description="Фильтрация по списку действуюих" filter="&quot;_filter_active_type&quot; is not Null" key="{38be72b9-9d1d-44bb-8f88-df1f6ef2c296}" label="фильтр по списку действующих">
+                  <rule filter="&quot;SymbolCode&quot;in (82,212 ) or   &quot;_filter_active_type&quot; = 'prod' " key="{3e022abe-a69f-4ff4-9f6b-dc312915c1ec}" symbol="10" label="Добывающая скважина"/>
+                  <rule filter="&quot;SymbolCode&quot;=84 or   &quot;_filter_active_type&quot; =  'inj' " key="{6ea4f126-ff0a-4f6e-b021-ed32d01512c2}" symbol="11" label="Нагнетательная сважина"/>
+                </rule>
+                <rule key="{a528744f-533e-4703-9fc8-28a0a1addc71}" symbol="12" label="ГТМ успешно"/>
+                <rule key="{a82d5129-81aa-4af6-b78b-10ed312aff14}" symbol="13" label="ГТМ не успешн."/>
+                <rule key="{b04f4719-ab28-4e4d-bd72-c37c157c60eb}" label="нефть тыс.тонн - вода тыс.тонн/закачка воды тыс.м3"/>
+                <rule key="{4dee7036-2671-4c46-b409-5e6294856708}" label="нефть тонн/сутки -  вода % / закачка воды м3/сутки"/>
+              </rules>
+              <symbols>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="0">
+                  <layer pass="0" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="218,165,32,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="circle"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="4"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="1">
+                  <layer pass="0" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,255,255,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="circle"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="4"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="10">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol082.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="11">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol084.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="12">
+                  <layer pass="0" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="51,160,44,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="square"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="3"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="13">
+                  <layer pass="0" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="255,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="square"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="3"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="2">
+                  <layer pass="0" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="166,206,227,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="circle"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="4"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="3">
+                  <layer pass="1" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,0"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="circle"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0.4"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="1.2"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="4">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol203.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="5">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol204.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="6">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol238.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="4"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="7">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol182.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="8">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol148.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="9">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol153.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+              </symbols>
+              <orderby>
+                <orderByClause asc="0" nullsFirst="1">BubbleSize</orderByClause>
+              </orderby>
+            </renderer-v2>
+            <labeling type="simple"/>
+            <customproperties>
+              <property key="alwaysShowZero" value="0"/>
+              <property key="dailyProduction" value="0"/>
+              <property key="decimal" value="2"/>
+              <property key="defaultSymbolSize" value="4"/>
+              <property key="diagrammCount" value="2"/>
+              <property key="diagramm_fluids_1" value="1;0;1;0;0;0;0;0"/>
+              <property key="diagramm_fluids_2" value="0;0;0;0;0;1;0;0"/>
+              <property key="diagramm_name_1" value="Диаграмма жидкости"/>
+              <property key="diagramm_name_2" value="Диаграмма закачки"/>
+              <property key="diagramm_scale_1" value="50"/>
+              <property key="diagramm_scale_2" value="50"/>
+              <property key="diagramm_unitsType_1" value="0"/>
+              <property key="diagramm_unitsType_2" value="1"/>
+              <property key="diagramm_units_1" value="3"/>
+              <property key="diagramm_units_2" value="14"/>
+              <property key="fluid_background_condensate" value="174,222,144,255"/>
+              <property key="fluid_background_crude oil" value="218,165,32,255"/>
+              <property key="fluid_background_free gas" value="0,160,160,255"/>
+              <property key="fluid_background_injected gas" value="0,0,0,255"/>
+              <property key="fluid_background_injected water" value="0,255,255,255"/>
+              <property key="fluid_background_lift gas" value="0,0,170,255"/>
+              <property key="fluid_background_natural gas" value="228,228,118,255"/>
+              <property key="fluid_background_produced water" value="166,206,227,255"/>
+              <property key="fluid_inPercent_condensate" value="0"/>
+              <property key="fluid_inPercent_crude oil" value="0"/>
+              <property key="fluid_inPercent_free gas" value="0"/>
+              <property key="fluid_inPercent_injected gas" value="0"/>
+              <property key="fluid_inPercent_injected water" value="0"/>
+              <property key="fluid_inPercent_lift gas" value="0"/>
+              <property key="fluid_inPercent_natural gas" value="0"/>
+              <property key="fluid_inPercent_produced water" value="0"/>
+              <property key="fluid_label_color_condensate" value="124,222,63,255"/>
+              <property key="fluid_label_color_crude oil" value="107,79,14,255"/>
+              <property key="fluid_label_color_free gas" value="0,160,160,255"/>
+              <property key="fluid_label_color_injected gas" value="0,0,0,255"/>
+              <property key="fluid_label_color_injected water" value="0,173,173,255"/>
+              <property key="fluid_label_color_lift gas" value="0,0,170,255"/>
+              <property key="fluid_label_color_natural gas" value="143,143,74,255"/>
+              <property key="fluid_label_color_produced water" value="31,120,180,255"/>
+              <property key="fluid_line_color_condensate" value="174,222,144,255"/>
+              <property key="fluid_line_color_crude oil" value="218,165,32,255"/>
+              <property key="fluid_line_color_free gas" value="0,160,160,255"/>
+              <property key="fluid_line_color_injected gas" value="0,0,0,255"/>
+              <property key="fluid_line_color_injected water" value="31,120,180,255"/>
+              <property key="fluid_line_color_lift gas" value="0,0,170,255"/>
+              <property key="fluid_line_color_natural gas" value="228,228,118,255"/>
+              <property key="fluid_line_color_produced water" value="31,120,180,255"/>
+              <property key="labelSize" value="7"/>
+              <property key="labelTemplate" value="%1-%3/%6"/>
+              <property key="labeling" value="pal"/>
+              <property key="labeling/addDirectionSymbol" value="false"/>
+              <property key="labeling/angleOffset" value="0"/>
+              <property key="labeling/blendMode" value="0"/>
+              <property key="labeling/bufferBlendMode" value="0"/>
+              <property key="labeling/bufferColorA" value="255"/>
+              <property key="labeling/bufferColorB" value="255"/>
+              <property key="labeling/bufferColorG" value="255"/>
+              <property key="labeling/bufferColorR" value="255"/>
+              <property key="labeling/bufferDraw" value="false"/>
+              <property key="labeling/bufferJoinStyle" value="64"/>
+              <property key="labeling/bufferNoFill" value="false"/>
+              <property key="labeling/bufferSize" value="1"/>
+              <property key="labeling/bufferSizeInMapUnits" value="false"/>
+              <property key="labeling/bufferSizeMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/bufferTransp" value="0"/>
+              <property key="labeling/centroidInside" value="false"/>
+              <property key="labeling/centroidWhole" value="false"/>
+              <property key="labeling/dataDefined/OffsetXY" value="1~~1~~format('%1,%2', &quot;LablOffX&quot; , &quot;LablOffY&quot;)~~"/>
+              <property key="labeling/dataDefined/PositionX" value="1~~0~~~~LablX"/>
+              <property key="labeling/dataDefined/PositionY" value="1~~0~~~~LablY"/>
+              <property key="labeling/decimals" value="3"/>
+              <property key="labeling/displayAll" value="true"/>
+              <property key="labeling/dist" value="0"/>
+              <property key="labeling/distInMapUnits" value="true"/>
+              <property key="labeling/distMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/drawLabels" value="true"/>
+              <property key="labeling/enabled" value="true"/>
+              <property key="labeling/fieldName" value="well_id"/>
+              <property key="labeling/fitInPolygonOnly" value="false"/>
+              <property key="labeling/fontCapitals" value="0"/>
+              <property key="labeling/fontFamily" value="MS Shell Dlg 2"/>
+              <property key="labeling/fontItalic" value="false"/>
+              <property key="labeling/fontLetterSpacing" value="0"/>
+              <property key="labeling/fontLimitPixelSize" value="false"/>
+              <property key="labeling/fontMaxPixelSize" value="10000"/>
+              <property key="labeling/fontMinPixelSize" value="3"/>
+              <property key="labeling/fontSize" value="7"/>
+              <property key="labeling/fontSizeInMapUnits" value="false"/>
+              <property key="labeling/fontSizeMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/fontStrikeout" value="false"/>
+              <property key="labeling/fontUnderline" value="false"/>
+              <property key="labeling/fontWeight" value="50"/>
+              <property key="labeling/fontWordSpacing" value="0"/>
+              <property key="labeling/formatNumbers" value="false"/>
+              <property key="labeling/isExpression" value="false"/>
+              <property key="labeling/labelOffsetInMapUnits" value="false"/>
+              <property key="labeling/labelOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/labelPerPart" value="false"/>
+              <property key="labeling/leftDirectionSymbol" value="&lt;"/>
+              <property key="labeling/limitNumLabels" value="false"/>
+              <property key="labeling/maxCurvedCharAngleIn" value="20"/>
+              <property key="labeling/maxCurvedCharAngleOut" value="-20"/>
+              <property key="labeling/maxNumLabels" value="2000"/>
+              <property key="labeling/mergeLines" value="false"/>
+              <property key="labeling/minFeatureSize" value="0"/>
+              <property key="labeling/multilineAlign" value="0"/>
+              <property key="labeling/multilineHeight" value="1"/>
+              <property key="labeling/namedStyle" value="Normal"/>
+              <property key="labeling/obstacle" value="true"/>
+              <property key="labeling/obstacleFactor" value="1"/>
+              <property key="labeling/obstacleType" value="0"/>
+              <property key="labeling/offsetType" value="0"/>
+              <property key="labeling/placeDirectionSymbol" value="0"/>
+              <property key="labeling/placement" value="1"/>
+              <property key="labeling/placementFlags" value="10"/>
+              <property key="labeling/plussign" value="false"/>
+              <property key="labeling/predefinedPositionOrder" value="TR,TL,BR,BL,R,L,TSR,BSR"/>
+              <property key="labeling/preserveRotation" value="true"/>
+              <property key="labeling/previewBkgrdColor" value="#ffffff"/>
+              <property key="labeling/priority" value="5"/>
+              <property key="labeling/quadOffset" value="2"/>
+              <property key="labeling/repeatDistance" value="0"/>
+              <property key="labeling/repeatDistanceMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/repeatDistanceUnit" value="1"/>
+              <property key="labeling/reverseDirectionSymbol" value="false"/>
+              <property key="labeling/rightDirectionSymbol" value=">"/>
+              <property key="labeling/scaleMax" value="10000000"/>
+              <property key="labeling/scaleMin" value="1"/>
+              <property key="labeling/scaleVisibility" value="false"/>
+              <property key="labeling/shadowBlendMode" value="6"/>
+              <property key="labeling/shadowColorB" value="0"/>
+              <property key="labeling/shadowColorG" value="0"/>
+              <property key="labeling/shadowColorR" value="0"/>
+              <property key="labeling/shadowDraw" value="false"/>
+              <property key="labeling/shadowOffsetAngle" value="135"/>
+              <property key="labeling/shadowOffsetDist" value="1"/>
+              <property key="labeling/shadowOffsetGlobal" value="true"/>
+              <property key="labeling/shadowOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shadowOffsetUnits" value="1"/>
+              <property key="labeling/shadowRadius" value="1.5"/>
+              <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
+              <property key="labeling/shadowRadiusMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shadowRadiusUnits" value="1"/>
+              <property key="labeling/shadowScale" value="100"/>
+              <property key="labeling/shadowTransparency" value="30"/>
+              <property key="labeling/shadowUnder" value="0"/>
+              <property key="labeling/shapeBlendMode" value="0"/>
+              <property key="labeling/shapeBorderColorA" value="255"/>
+              <property key="labeling/shapeBorderColorB" value="128"/>
+              <property key="labeling/shapeBorderColorG" value="128"/>
+              <property key="labeling/shapeBorderColorR" value="128"/>
+              <property key="labeling/shapeBorderWidth" value="0"/>
+              <property key="labeling/shapeBorderWidthMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shapeBorderWidthUnits" value="1"/>
+              <property key="labeling/shapeDraw" value="false"/>
+              <property key="labeling/shapeFillColorA" value="255"/>
+              <property key="labeling/shapeFillColorB" value="255"/>
+              <property key="labeling/shapeFillColorG" value="255"/>
+              <property key="labeling/shapeFillColorR" value="255"/>
+              <property key="labeling/shapeJoinStyle" value="64"/>
+              <property key="labeling/shapeOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shapeOffsetUnits" value="1"/>
+              <property key="labeling/shapeOffsetX" value="0"/>
+              <property key="labeling/shapeOffsetY" value="0"/>
+              <property key="labeling/shapeRadiiMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shapeRadiiUnits" value="1"/>
+              <property key="labeling/shapeRadiiX" value="0"/>
+              <property key="labeling/shapeRadiiY" value="0"/>
+              <property key="labeling/shapeRotation" value="0"/>
+              <property key="labeling/shapeRotationType" value="0"/>
+              <property key="labeling/shapeSVGFile" value=""/>
+              <property key="labeling/shapeSizeMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shapeSizeType" value="0"/>
+              <property key="labeling/shapeSizeUnits" value="1"/>
+              <property key="labeling/shapeSizeX" value="0"/>
+              <property key="labeling/shapeSizeY" value="0"/>
+              <property key="labeling/shapeTransparency" value="0"/>
+              <property key="labeling/shapeType" value="0"/>
+              <property key="labeling/textColorA" value="255"/>
+              <property key="labeling/textColorB" value="0"/>
+              <property key="labeling/textColorG" value="0"/>
+              <property key="labeling/textColorR" value="255"/>
+              <property key="labeling/textTransp" value="0"/>
+              <property key="labeling/upsidedownLabels" value="0"/>
+              <property key="labeling/wrapChar" value=""/>
+              <property key="labeling/xOffset" value="0"/>
+              <property key="labeling/yOffset" value="0"/>
+              <property key="labeling/zIndex" value="0"/>
+              <property key="maxDiagrammSize" value="30"/>
+              <property key="minDiagrammSize" value="3"/>
+              <property key="pds_prod_PhaseFilter" value="[]"/>
+              <property key="pds_prod_SelectedReservoirs" value="[u'Ap2', u'Ap1', u'PSI', u'PSII', u'PSIII', u'PSIV', u'PSV']"/>
+              <property key="pds_prod_endDate" value="31/12/2017 00:00:00"/>
+              <property key="pds_project" value="{u'project': u'kelameddin', u'type': u'tigress', u'options': u'{&quot;user&quot;: &quot;system&quot;, &quot;host&quot;: &quot;poni&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;, &quot;sid&quot;: &quot;KARASU&quot;}'}"/>
+              <property key="qgis_pds_type" value="pds_cumulative_production"/>
+              <property key="showLineout" value="1"/>
+              <property key="variableNames"/>
+              <property key="variableValues"/>
+            </customproperties>
+            <blendMode>0</blendMode>
+            <featureBlendMode>0</featureBlendMode>
+            <layerTransparency>0</layerTransparency>
+            <displayfield>SymbolName</displayfield>
+            <label>0</label>
+            <labelattributes>
+              <label fieldname="" text="Подпись"/>
+              <family fieldname="" name="MS Shell Dlg 2"/>
+              <size fieldname="" units="pt" value="12"/>
+              <bold fieldname="" on="0"/>
+              <italic fieldname="" on="0"/>
+              <underline fieldname="" on="0"/>
+              <strikeout fieldname="" on="0"/>
+              <color fieldname="" red="0" blue="0" green="0"/>
+              <x fieldname=""/>
+              <y fieldname=""/>
+              <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+              <angle fieldname="" value="0" auto="0"/>
+              <alignment fieldname="" value="center"/>
+              <buffercolor fieldname="" red="255" blue="255" green="255"/>
+              <buffersize fieldname="" units="pt" value="1"/>
+              <bufferenabled fieldname="" on=""/>
+              <multilineenabled fieldname="" on=""/>
+              <selectedonly on=""/>
+            </labelattributes>
+            <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+              <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="0">
+                <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+                <attribute field="" color="#000000" label=""/>
+              </DiagramCategory>
+              <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+                <layer pass="0" class="SimpleMarker" locked="0">
+                  <prop k="angle" v="0"/>
+                  <prop k="color" v="255,0,0,255"/>
+                  <prop k="horizontal_anchor_point" v="1"/>
+                  <prop k="joinstyle" v="bevel"/>
+                  <prop k="name" v="circle"/>
+                  <prop k="offset" v="0,0"/>
+                  <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                  <prop k="offset_unit" v="MM"/>
+                  <prop k="outline_color" v="0,0,0,255"/>
+                  <prop k="outline_style" v="solid"/>
+                  <prop k="outline_width" v="0"/>
+                  <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                  <prop k="outline_width_unit" v="MM"/>
+                  <prop k="scale_method" v="diameter"/>
+                  <prop k="size" v="2"/>
+                  <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                  <prop k="size_unit" v="MM"/>
+                  <prop k="vertical_anchor_point" v="1"/>
+                </layer>
+              </symbol>
+            </SingleCategoryDiagramRenderer>
+            <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+            <annotationform>..</annotationform>
+            <aliases>
+              <alias field="well_id" index="0" name=""/>
+              <alias field="Latitude" index="1" name="latitude"/>
+              <alias field="Longitude" index="2" name="longitude"/>
+              <alias field="SymbolID" index="3" name="symbolid"/>
+              <alias field="SymbolName" index="4" name="symbolname"/>
+              <alias field="SymbolCode" index="5" name="symbolcode"/>
+              <alias field="Days" index="6" name="days"/>
+              <alias field="LiftMethod" index="7" name="liftmethod"/>
+              <alias field="LablX" index="8" name="lablx"/>
+              <alias field="LablY" index="9" name="lably"/>
+              <alias field="LablOffX" index="10" name="labloffx"/>
+              <alias field="LablOffY" index="11" name="labloffy"/>
+              <alias field="LablOffset" index="12" name="labloffset"/>
+              <alias field="LablWidth" index="13" name="lablwidth"/>
+              <alias field="BubbleSize" index="14" name="bubblesize"/>
+              <alias field="BubbleFields" index="15" name="bubblefields"/>
+              <alias field="ScaleType" index="16" name="scaletype"/>
+              <alias field="MovingRes" index="17" name="movingres"/>
+              <alias field="ResState" index="18" name="resstate"/>
+              <alias field="MultiProd" index="19" name="multiprod"/>
+              <alias field="crude oil (volume)" index="20" name=""/>
+              <alias field="crude oil (mass)" index="21" name=""/>
+              <alias field="natural gas (volume)" index="22" name=""/>
+              <alias field="natural gas (mass)" index="23" name=""/>
+              <alias field="produced water (volume)" index="24" name=""/>
+              <alias field="produced water (mass)" index="25" name=""/>
+              <alias field="condensate (volume)" index="26" name=""/>
+              <alias field="condensate (mass)" index="27" name=""/>
+              <alias field="injected gas (volume)" index="28" name=""/>
+              <alias field="injected gas (mass)" index="29" name=""/>
+              <alias field="injected water (volume)" index="30" name=""/>
+              <alias field="injected water (mass)" index="31" name=""/>
+              <alias field="lift gas (volume)" index="32" name=""/>
+              <alias field="lift gas (mass)" index="33" name=""/>
+              <alias field="free gas (volume)" index="34" name=""/>
+              <alias field="free gas (mass)" index="35" name=""/>
+            </aliases>
+            <excludeAttributesWMS/>
+            <excludeAttributesWFS/>
+            <attributeactions default="-1"/>
+            <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+              <columns/>
+            </attributetableconfig>
+            <editform>..</editform>
+            <editforminit/>
+            <editforminitcodesource>0</editforminitcodesource>
+            <editforminitfilepath>..</editforminitfilepath>
+            <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+Форма QGIS при открытии может обращаться к функции Python. 
+
+Используйте эту функцию, чтобы добавить логику в ваши формы.
+
+Введите имя функции в поле "Функция инициализации Python".
+Пример:
+"""
+from PyQt4.QtGui import QWidget
+
+def my_form_open(dialog, layer, feature):
+⇥geom = feature.geometry()
+⇥control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
+            <featformsuppress>0</featformsuppress>
+            <editorlayout>generatedlayout</editorlayout>
+            <widgets/>
+            <conditionalstyles>
+              <rowstyles/>
+              <fieldstyles/>
+            </conditionalstyles>
+            <defaults>
+              <default field="well_id" expression=""/>
+              <default field="Latitude" expression=""/>
+              <default field="Longitude" expression=""/>
+              <default field="SymbolID" expression=""/>
+              <default field="SymbolName" expression=""/>
+              <default field="SymbolCode" expression=""/>
+              <default field="Days" expression=""/>
+              <default field="LiftMethod" expression=""/>
+              <default field="LablX" expression=""/>
+              <default field="LablY" expression=""/>
+              <default field="LablOffX" expression=""/>
+              <default field="LablOffY" expression=""/>
+              <default field="LablOffset" expression=""/>
+              <default field="LablWidth" expression=""/>
+              <default field="BubbleSize" expression=""/>
+              <default field="BubbleFields" expression=""/>
+              <default field="ScaleType" expression=""/>
+              <default field="MovingRes" expression=""/>
+              <default field="ResState" expression=""/>
+              <default field="MultiProd" expression=""/>
+              <default field="crude oil (volume)" expression=""/>
+              <default field="crude oil (mass)" expression=""/>
+              <default field="natural gas (volume)" expression=""/>
+              <default field="natural gas (mass)" expression=""/>
+              <default field="produced water (volume)" expression=""/>
+              <default field="produced water (mass)" expression=""/>
+              <default field="condensate (volume)" expression=""/>
+              <default field="condensate (mass)" expression=""/>
+              <default field="injected gas (volume)" expression=""/>
+              <default field="injected gas (mass)" expression=""/>
+              <default field="injected water (volume)" expression=""/>
+              <default field="injected water (mass)" expression=""/>
+              <default field="lift gas (volume)" expression=""/>
+              <default field="lift gas (mass)" expression=""/>
+              <default field="free gas (volume)" expression=""/>
+              <default field="free gas (mass)" expression=""/>
+            </defaults>
+            <previewExpression>COALESCE( "SymbolName", '&lt;NULL>' )</previewExpression>
+            <layerGeometryType>0</layerGeometryType>
+          </qgis>
+        </map-layer-style>
+        <map-layer-style name="легенда накопленные отборы">
+          <qgis version="2.18.28" simplifyAlgorithm="0" minimumScale="-4.65661e-10" maximumScale="1e+08" simplifyDrawingHints="0" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+            <edittypes>
+              <edittype widgetv2type="TextEdit" name="well_id">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="Latitude">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="Longitude">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="SymbolID">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="SymbolName">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="SymbolCode">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="Days">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LiftMethod">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablX">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablY">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablOffX">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablOffY">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablOffset">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="LablWidth">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="BubbleSize">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="BubbleFields">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="ScaleType">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="MovingRes">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="ResState">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="MultiProd">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="crude oil (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="crude oil (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="natural gas (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="natural gas (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="produced water (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="produced water (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="condensate (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="condensate (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="injected gas (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="injected gas (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="injected water (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="injected water (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="lift gas (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="lift gas (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="free gas (volume)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+              <edittype widgetv2type="TextEdit" name="free gas (mass)">
+                <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+              </edittype>
+            </edittypes>
+            <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
+              <rules key="{9d6f7c05-e0f2-4052-bb0f-f04b7ff13cab}">
+                <rule key="{e9cd63ef-2f32-4726-8373-d93f18b89976}" label="нефть тыс.тонн -  вода тыс.тонн / закачка воды тыс.м3"/>
+                <rule filter="&quot;SymbolCode&quot;=-1" key="{d87a1799-361f-4a76-939c-1171508ddfa5}" symbol="0" label="Сырая нефть"/>
+                <rule filter="&quot;SymbolCode&quot;=-1" key="{033d7e3a-497e-4e4a-95c2-8a51e5f410a4}" symbol="1" label="Закачка воды"/>
+                <rule filter="&quot;SymbolCode&quot;=-1" key="{d49c6c67-a62d-4b0f-83f9-8d1ffbf5d99d}" symbol="2" label="Добыча воды"/>
+                <rule key="{acb70cb5-9db2-4993-a00d-5fa679e1b4e9}" label="Диаграмма добычи/ закачки"/>
+                <rule key="{c0479099-f101-4f1f-bda2-45516d308920}" label="Скважины">
+                  <rule filter="&quot;SymbolCode&quot;=71" key="{16560c5e-b4e1-41d4-ae61-102c713fe2ed}" symbol="3" label="Транзитная скважина"/>
+                  <rule filter="&quot;SymbolCode&quot;in (82,212 ) or   &quot;_filter_active_type&quot; = 'prod' " key="{aac596bf-a636-4549-9461-462dbabc5fc5}" symbol="4" label="Добывающая скважина"/>
+                  <rule filter="&quot;SymbolCode&quot;=148" key="{5bb10677-f8fe-43de-b5d4-27f808274420}" symbol="5" label="Добывающая скважина остановленная"/>
+                  <rule filter="&quot;SymbolCode&quot;=203" key="{db5bf4bb-1123-4ebe-a71d-c28d94f4db4c}" symbol="6" label="Добывающая скважина в бездействии"/>
+                  <rule filter="&quot;SymbolCode&quot;=182 or &quot;SymbolCode&quot;=189" key="{165102f5-bd66-42f1-92b1-acbb0daff1ae}" symbol="7" label="Добывающая скважина ликвидированная"/>
+                  <rule filter="&quot;SymbolCode&quot;=84 or   &quot;_filter_active_type&quot; =  'inj' " key="{df95ae0c-451e-4cd8-a778-645a09549a8f}" symbol="8" label="Нагнетательная сважина"/>
+                  <rule filter="&quot;SymbolCode&quot;=153 or &quot;SymbolCode&quot;=213" key="{0417bbb2-700f-488b-a803-9bde3e4d5cc1}" symbol="9" label="Нагнетательная скважина остановленная"/>
+                  <rule filter="&quot;SymbolCode&quot;=204" key="{9b09251f-35ce-489f-b447-4da5468def92}" symbol="10" label="Нагнетательная скважина в бездействии"/>
+                  <rule filter="&quot;SymbolCode&quot;=238" key="{3d3196f6-02dc-43f4-925e-8368b5d95324}" symbol="11" label="Водозаборная скважина в бездействии"/>
+                  <rule filter="&quot;SymbolCode&quot;=86" key="{84bd4829-1c84-4306-ad7e-debd8d7603af}" symbol="12" label="Контрольна скважина"/>
+                </rule>
+              </rules>
+              <symbols>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="0">
+                  <layer pass="0" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="218,165,32,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="circle"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="4"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="1">
+                  <layer pass="0" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,255,255,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="circle"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="4"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="10">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol204.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="11">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol238.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="4"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="12">
+                  <layer pass="0" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol086.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="4"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="2">
+                  <layer pass="0" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="166,206,227,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="circle"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="4"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="3">
+                  <layer pass="1" class="SimpleMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,0"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="joinstyle" v="bevel"/>
+                    <prop k="name" v="circle"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_style" v="solid"/>
+                    <prop k="outline_width" v="0.4"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="1.2"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="4">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol082.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="5">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol148.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="6">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol203.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="7">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol182.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="8">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol084.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+                <symbol alpha="1" clip_to_extent="1" type="marker" name="9">
+                  <layer pass="1" class="SvgMarker" locked="0">
+                    <prop k="angle" v="0"/>
+                    <prop k="color" v="0,0,0,255"/>
+                    <prop k="horizontal_anchor_point" v="1"/>
+                    <prop k="name" v="WellSymbol153.svg"/>
+                    <prop k="offset" v="0,0"/>
+                    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="offset_unit" v="MM"/>
+                    <prop k="outline_color" v="0,0,0,255"/>
+                    <prop k="outline_width" v="0.2"/>
+                    <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="outline_width_unit" v="MM"/>
+                    <prop k="scale_method" v="diameter"/>
+                    <prop k="size" v="5"/>
+                    <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                    <prop k="size_unit" v="MM"/>
+                    <prop k="vertical_anchor_point" v="1"/>
+                  </layer>
+                </symbol>
+              </symbols>
+              <orderby>
+                <orderByClause asc="0" nullsFirst="1">BubbleSize</orderByClause>
+              </orderby>
+            </renderer-v2>
+            <labeling type="simple"/>
+            <customproperties>
+              <property key="alwaysShowZero" value="0"/>
+              <property key="dailyProduction" value="0"/>
+              <property key="decimal" value="2"/>
+              <property key="defaultSymbolSize" value="4"/>
+              <property key="diagrammCount" value="2"/>
+              <property key="diagramm_fluids_1" value="1;0;1;0;0;0;0;0"/>
+              <property key="diagramm_fluids_2" value="0;0;0;0;0;1;0;0"/>
+              <property key="diagramm_name_1" value="Диаграмма жидкости"/>
+              <property key="diagramm_name_2" value="Диаграмма закачки"/>
+              <property key="diagramm_scale_1" value="50"/>
+              <property key="diagramm_scale_2" value="50"/>
+              <property key="diagramm_unitsType_1" value="0"/>
+              <property key="diagramm_unitsType_2" value="1"/>
+              <property key="diagramm_units_1" value="3"/>
+              <property key="diagramm_units_2" value="14"/>
+              <property key="fluid_background_condensate" value="174,222,144,255"/>
+              <property key="fluid_background_crude oil" value="218,165,32,255"/>
+              <property key="fluid_background_free gas" value="0,160,160,255"/>
+              <property key="fluid_background_injected gas" value="0,0,0,255"/>
+              <property key="fluid_background_injected water" value="0,255,255,255"/>
+              <property key="fluid_background_lift gas" value="0,0,170,255"/>
+              <property key="fluid_background_natural gas" value="228,228,118,255"/>
+              <property key="fluid_background_produced water" value="166,206,227,255"/>
+              <property key="fluid_inPercent_condensate" value="0"/>
+              <property key="fluid_inPercent_crude oil" value="0"/>
+              <property key="fluid_inPercent_free gas" value="0"/>
+              <property key="fluid_inPercent_injected gas" value="0"/>
+              <property key="fluid_inPercent_injected water" value="0"/>
+              <property key="fluid_inPercent_lift gas" value="0"/>
+              <property key="fluid_inPercent_natural gas" value="0"/>
+              <property key="fluid_inPercent_produced water" value="0"/>
+              <property key="fluid_label_color_condensate" value="124,222,63,255"/>
+              <property key="fluid_label_color_crude oil" value="107,79,14,255"/>
+              <property key="fluid_label_color_free gas" value="0,160,160,255"/>
+              <property key="fluid_label_color_injected gas" value="0,0,0,255"/>
+              <property key="fluid_label_color_injected water" value="0,173,173,255"/>
+              <property key="fluid_label_color_lift gas" value="0,0,170,255"/>
+              <property key="fluid_label_color_natural gas" value="143,143,74,255"/>
+              <property key="fluid_label_color_produced water" value="31,120,180,255"/>
+              <property key="fluid_line_color_condensate" value="174,222,144,255"/>
+              <property key="fluid_line_color_crude oil" value="218,165,32,255"/>
+              <property key="fluid_line_color_free gas" value="0,160,160,255"/>
+              <property key="fluid_line_color_injected gas" value="0,0,0,255"/>
+              <property key="fluid_line_color_injected water" value="31,120,180,255"/>
+              <property key="fluid_line_color_lift gas" value="0,0,170,255"/>
+              <property key="fluid_line_color_natural gas" value="228,228,118,255"/>
+              <property key="fluid_line_color_produced water" value="31,120,180,255"/>
+              <property key="labelSize" value="7"/>
+              <property key="labelTemplate" value="%1-%3/%6"/>
+              <property key="labeling" value="pal"/>
+              <property key="labeling/addDirectionSymbol" value="false"/>
+              <property key="labeling/angleOffset" value="0"/>
+              <property key="labeling/blendMode" value="0"/>
+              <property key="labeling/bufferBlendMode" value="0"/>
+              <property key="labeling/bufferColorA" value="255"/>
+              <property key="labeling/bufferColorB" value="255"/>
+              <property key="labeling/bufferColorG" value="255"/>
+              <property key="labeling/bufferColorR" value="255"/>
+              <property key="labeling/bufferDraw" value="false"/>
+              <property key="labeling/bufferJoinStyle" value="64"/>
+              <property key="labeling/bufferNoFill" value="false"/>
+              <property key="labeling/bufferSize" value="1"/>
+              <property key="labeling/bufferSizeInMapUnits" value="false"/>
+              <property key="labeling/bufferSizeMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/bufferTransp" value="0"/>
+              <property key="labeling/centroidInside" value="false"/>
+              <property key="labeling/centroidWhole" value="false"/>
+              <property key="labeling/dataDefined/OffsetXY" value="1~~1~~format('%1,%2', &quot;LablOffX&quot; , &quot;LablOffY&quot;)~~"/>
+              <property key="labeling/dataDefined/PositionX" value="1~~0~~~~LablX"/>
+              <property key="labeling/dataDefined/PositionY" value="1~~0~~~~LablY"/>
+              <property key="labeling/decimals" value="3"/>
+              <property key="labeling/displayAll" value="true"/>
+              <property key="labeling/dist" value="0"/>
+              <property key="labeling/distInMapUnits" value="true"/>
+              <property key="labeling/distMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/drawLabels" value="true"/>
+              <property key="labeling/enabled" value="true"/>
+              <property key="labeling/fieldName" value="well_id"/>
+              <property key="labeling/fitInPolygonOnly" value="false"/>
+              <property key="labeling/fontCapitals" value="0"/>
+              <property key="labeling/fontFamily" value="MS Shell Dlg 2"/>
+              <property key="labeling/fontItalic" value="false"/>
+              <property key="labeling/fontLetterSpacing" value="0"/>
+              <property key="labeling/fontLimitPixelSize" value="false"/>
+              <property key="labeling/fontMaxPixelSize" value="10000"/>
+              <property key="labeling/fontMinPixelSize" value="3"/>
+              <property key="labeling/fontSize" value="7"/>
+              <property key="labeling/fontSizeInMapUnits" value="false"/>
+              <property key="labeling/fontSizeMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/fontStrikeout" value="false"/>
+              <property key="labeling/fontUnderline" value="false"/>
+              <property key="labeling/fontWeight" value="50"/>
+              <property key="labeling/fontWordSpacing" value="0"/>
+              <property key="labeling/formatNumbers" value="false"/>
+              <property key="labeling/isExpression" value="false"/>
+              <property key="labeling/labelOffsetInMapUnits" value="false"/>
+              <property key="labeling/labelOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/labelPerPart" value="false"/>
+              <property key="labeling/leftDirectionSymbol" value="&lt;"/>
+              <property key="labeling/limitNumLabels" value="false"/>
+              <property key="labeling/maxCurvedCharAngleIn" value="20"/>
+              <property key="labeling/maxCurvedCharAngleOut" value="-20"/>
+              <property key="labeling/maxNumLabels" value="2000"/>
+              <property key="labeling/mergeLines" value="false"/>
+              <property key="labeling/minFeatureSize" value="0"/>
+              <property key="labeling/multilineAlign" value="0"/>
+              <property key="labeling/multilineHeight" value="1"/>
+              <property key="labeling/namedStyle" value="Normal"/>
+              <property key="labeling/obstacle" value="true"/>
+              <property key="labeling/obstacleFactor" value="1"/>
+              <property key="labeling/obstacleType" value="0"/>
+              <property key="labeling/offsetType" value="0"/>
+              <property key="labeling/placeDirectionSymbol" value="0"/>
+              <property key="labeling/placement" value="1"/>
+              <property key="labeling/placementFlags" value="10"/>
+              <property key="labeling/plussign" value="false"/>
+              <property key="labeling/predefinedPositionOrder" value="TR,TL,BR,BL,R,L,TSR,BSR"/>
+              <property key="labeling/preserveRotation" value="true"/>
+              <property key="labeling/previewBkgrdColor" value="#ffffff"/>
+              <property key="labeling/priority" value="5"/>
+              <property key="labeling/quadOffset" value="2"/>
+              <property key="labeling/repeatDistance" value="0"/>
+              <property key="labeling/repeatDistanceMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/repeatDistanceUnit" value="1"/>
+              <property key="labeling/reverseDirectionSymbol" value="false"/>
+              <property key="labeling/rightDirectionSymbol" value=">"/>
+              <property key="labeling/scaleMax" value="10000000"/>
+              <property key="labeling/scaleMin" value="1"/>
+              <property key="labeling/scaleVisibility" value="false"/>
+              <property key="labeling/shadowBlendMode" value="6"/>
+              <property key="labeling/shadowColorB" value="0"/>
+              <property key="labeling/shadowColorG" value="0"/>
+              <property key="labeling/shadowColorR" value="0"/>
+              <property key="labeling/shadowDraw" value="false"/>
+              <property key="labeling/shadowOffsetAngle" value="135"/>
+              <property key="labeling/shadowOffsetDist" value="1"/>
+              <property key="labeling/shadowOffsetGlobal" value="true"/>
+              <property key="labeling/shadowOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shadowOffsetUnits" value="1"/>
+              <property key="labeling/shadowRadius" value="1.5"/>
+              <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
+              <property key="labeling/shadowRadiusMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shadowRadiusUnits" value="1"/>
+              <property key="labeling/shadowScale" value="100"/>
+              <property key="labeling/shadowTransparency" value="30"/>
+              <property key="labeling/shadowUnder" value="0"/>
+              <property key="labeling/shapeBlendMode" value="0"/>
+              <property key="labeling/shapeBorderColorA" value="255"/>
+              <property key="labeling/shapeBorderColorB" value="128"/>
+              <property key="labeling/shapeBorderColorG" value="128"/>
+              <property key="labeling/shapeBorderColorR" value="128"/>
+              <property key="labeling/shapeBorderWidth" value="0"/>
+              <property key="labeling/shapeBorderWidthMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shapeBorderWidthUnits" value="1"/>
+              <property key="labeling/shapeDraw" value="false"/>
+              <property key="labeling/shapeFillColorA" value="255"/>
+              <property key="labeling/shapeFillColorB" value="255"/>
+              <property key="labeling/shapeFillColorG" value="255"/>
+              <property key="labeling/shapeFillColorR" value="255"/>
+              <property key="labeling/shapeJoinStyle" value="64"/>
+              <property key="labeling/shapeOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shapeOffsetUnits" value="1"/>
+              <property key="labeling/shapeOffsetX" value="0"/>
+              <property key="labeling/shapeOffsetY" value="0"/>
+              <property key="labeling/shapeRadiiMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shapeRadiiUnits" value="1"/>
+              <property key="labeling/shapeRadiiX" value="0"/>
+              <property key="labeling/shapeRadiiY" value="0"/>
+              <property key="labeling/shapeRotation" value="0"/>
+              <property key="labeling/shapeRotationType" value="0"/>
+              <property key="labeling/shapeSVGFile" value=""/>
+              <property key="labeling/shapeSizeMapUnitScale" value="0,0,0,0,0,0"/>
+              <property key="labeling/shapeSizeType" value="0"/>
+              <property key="labeling/shapeSizeUnits" value="1"/>
+              <property key="labeling/shapeSizeX" value="0"/>
+              <property key="labeling/shapeSizeY" value="0"/>
+              <property key="labeling/shapeTransparency" value="0"/>
+              <property key="labeling/shapeType" value="0"/>
+              <property key="labeling/textColorA" value="255"/>
+              <property key="labeling/textColorB" value="0"/>
+              <property key="labeling/textColorG" value="0"/>
+              <property key="labeling/textColorR" value="255"/>
+              <property key="labeling/textTransp" value="0"/>
+              <property key="labeling/upsidedownLabels" value="0"/>
+              <property key="labeling/wrapChar" value=""/>
+              <property key="labeling/xOffset" value="0"/>
+              <property key="labeling/yOffset" value="0"/>
+              <property key="labeling/zIndex" value="0"/>
+              <property key="maxDiagrammSize" value="30"/>
+              <property key="minDiagrammSize" value="3"/>
+              <property key="pds_prod_PhaseFilter" value="[]"/>
+              <property key="pds_prod_SelectedReservoirs" value="''"/>
+              <property key="pds_prod_endDate" value="31/12/2017 00:00:00"/>
+              <property key="pds_project" value="{u'project': u'kelameddin', u'type': u'tigress', u'options': u'{&quot;user&quot;: &quot;system&quot;, &quot;host&quot;: &quot;poni&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;, &quot;sid&quot;: &quot;KARASU&quot;}'}"/>
+              <property key="qgis_pds_type" value="''"/>
+              <property key="showLineout" value="1"/>
+              <property key="variableNames"/>
+              <property key="variableValues"/>
+            </customproperties>
+            <blendMode>0</blendMode>
+            <featureBlendMode>0</featureBlendMode>
+            <layerTransparency>0</layerTransparency>
+            <displayfield>SymbolName</displayfield>
+            <label>0</label>
+            <labelattributes>
+              <label fieldname="" text="Подпись"/>
+              <family fieldname="" name="MS Shell Dlg 2"/>
+              <size fieldname="" units="pt" value="12"/>
+              <bold fieldname="" on="0"/>
+              <italic fieldname="" on="0"/>
+              <underline fieldname="" on="0"/>
+              <strikeout fieldname="" on="0"/>
+              <color fieldname="" red="0" blue="0" green="0"/>
+              <x fieldname=""/>
+              <y fieldname=""/>
+              <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+              <angle fieldname="" value="0" auto="0"/>
+              <alignment fieldname="" value="center"/>
+              <buffercolor fieldname="" red="255" blue="255" green="255"/>
+              <buffersize fieldname="" units="pt" value="1"/>
+              <bufferenabled fieldname="" on=""/>
+              <multilineenabled fieldname="" on=""/>
+              <selectedonly on=""/>
+            </labelattributes>
+            <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+              <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="-4.65661e-10">
+                <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+                <attribute field="" color="#000000" label=""/>
+              </DiagramCategory>
+              <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+                <layer pass="0" class="SimpleMarker" locked="0">
+                  <prop k="angle" v="0"/>
+                  <prop k="color" v="255,0,0,255"/>
+                  <prop k="horizontal_anchor_point" v="1"/>
+                  <prop k="joinstyle" v="bevel"/>
+                  <prop k="name" v="circle"/>
+                  <prop k="offset" v="0,0"/>
+                  <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+                  <prop k="offset_unit" v="MM"/>
+                  <prop k="outline_color" v="0,0,0,255"/>
+                  <prop k="outline_style" v="solid"/>
+                  <prop k="outline_width" v="0"/>
+                  <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+                  <prop k="outline_width_unit" v="MM"/>
+                  <prop k="scale_method" v="diameter"/>
+                  <prop k="size" v="2"/>
+                  <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+                  <prop k="size_unit" v="MM"/>
+                  <prop k="vertical_anchor_point" v="1"/>
+                </layer>
+              </symbol>
+            </SingleCategoryDiagramRenderer>
+            <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+            <annotationform>.</annotationform>
+            <aliases>
+              <alias field="well_id" index="0" name=""/>
+              <alias field="Latitude" index="1" name=""/>
+              <alias field="Longitude" index="2" name=""/>
+              <alias field="SymbolID" index="3" name=""/>
+              <alias field="SymbolName" index="4" name=""/>
+              <alias field="SymbolCode" index="5" name=""/>
+              <alias field="Days" index="6" name=""/>
+              <alias field="LiftMethod" index="7" name=""/>
+              <alias field="LablX" index="8" name=""/>
+              <alias field="LablY" index="9" name=""/>
+              <alias field="LablOffX" index="10" name=""/>
+              <alias field="LablOffY" index="11" name=""/>
+              <alias field="LablOffset" index="12" name=""/>
+              <alias field="LablWidth" index="13" name=""/>
+              <alias field="BubbleSize" index="14" name=""/>
+              <alias field="BubbleFields" index="15" name=""/>
+              <alias field="ScaleType" index="16" name=""/>
+              <alias field="MovingRes" index="17" name=""/>
+              <alias field="ResState" index="18" name=""/>
+              <alias field="MultiProd" index="19" name=""/>
+              <alias field="crude oil (volume)" index="20" name=""/>
+              <alias field="crude oil (mass)" index="21" name=""/>
+              <alias field="natural gas (volume)" index="22" name=""/>
+              <alias field="natural gas (mass)" index="23" name=""/>
+              <alias field="produced water (volume)" index="24" name=""/>
+              <alias field="produced water (mass)" index="25" name=""/>
+              <alias field="condensate (volume)" index="26" name=""/>
+              <alias field="condensate (mass)" index="27" name=""/>
+              <alias field="injected gas (volume)" index="28" name=""/>
+              <alias field="injected gas (mass)" index="29" name=""/>
+              <alias field="injected water (volume)" index="30" name=""/>
+              <alias field="injected water (mass)" index="31" name=""/>
+              <alias field="lift gas (volume)" index="32" name=""/>
+              <alias field="lift gas (mass)" index="33" name=""/>
+              <alias field="free gas (volume)" index="34" name=""/>
+              <alias field="free gas (mass)" index="35" name=""/>
+            </aliases>
+            <excludeAttributesWMS/>
+            <excludeAttributesWFS/>
+            <attributeactions default="-1"/>
+            <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+              <columns/>
+            </attributetableconfig>
+            <editform>.</editform>
+            <editforminit/>
+            <editforminitcodesource>0</editforminitcodesource>
+            <editforminitfilepath>.</editforminitfilepath>
+            <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+Форма QGIS при открытии может обращаться к функции Python. 
+
+Используйте эту функцию, чтобы добавить логику в ваши формы.
+
+Введите имя функции в поле "Функция инициализации Python".
+Пример:
+"""
+from PyQt4.QtGui import QWidget
+
+def my_form_open(dialog, layer, feature):
+⇥geom = feature.geometry()
+⇥control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
+            <featformsuppress>0</featformsuppress>
+            <editorlayout>generatedlayout</editorlayout>
+            <widgets/>
+            <conditionalstyles>
+              <rowstyles/>
+              <fieldstyles/>
+            </conditionalstyles>
+            <defaults>
+              <default field="well_id" expression=""/>
+              <default field="Latitude" expression=""/>
+              <default field="Longitude" expression=""/>
+              <default field="SymbolID" expression=""/>
+              <default field="SymbolName" expression=""/>
+              <default field="SymbolCode" expression=""/>
+              <default field="Days" expression=""/>
+              <default field="LiftMethod" expression=""/>
+              <default field="LablX" expression=""/>
+              <default field="LablY" expression=""/>
+              <default field="LablOffX" expression=""/>
+              <default field="LablOffY" expression=""/>
+              <default field="LablOffset" expression=""/>
+              <default field="LablWidth" expression=""/>
+              <default field="BubbleSize" expression=""/>
+              <default field="BubbleFields" expression=""/>
+              <default field="ScaleType" expression=""/>
+              <default field="MovingRes" expression=""/>
+              <default field="ResState" expression=""/>
+              <default field="MultiProd" expression=""/>
+              <default field="crude oil (volume)" expression=""/>
+              <default field="crude oil (mass)" expression=""/>
+              <default field="natural gas (volume)" expression=""/>
+              <default field="natural gas (mass)" expression=""/>
+              <default field="produced water (volume)" expression=""/>
+              <default field="produced water (mass)" expression=""/>
+              <default field="condensate (volume)" expression=""/>
+              <default field="condensate (mass)" expression=""/>
+              <default field="injected gas (volume)" expression=""/>
+              <default field="injected gas (mass)" expression=""/>
+              <default field="injected water (volume)" expression=""/>
+              <default field="injected water (mass)" expression=""/>
+              <default field="lift gas (volume)" expression=""/>
+              <default field="lift gas (mass)" expression=""/>
+              <default field="free gas (volume)" expression=""/>
+              <default field="free gas (mass)" expression=""/>
+            </defaults>
+            <previewExpression/>
+            <layerGeometryType>0</layerGeometryType>
+          </qgis>
+        </map-layer-style>
+        <map-layer-style name="легенда текущие отборы"/>
+      </map-layer-style-manager>
+      <edittypes>
+        <edittype widgetv2type="TextEdit" name="well_id">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="Latitude">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="Longitude">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="SymbolID">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="SymbolName">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="SymbolCode">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="Days">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="LiftMethod">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="LablX">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="LablY">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="LablOffX">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="LablOffY">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="LablOffset">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="LablWidth">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="BubbleSize">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="BubbleFields">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="ScaleType">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="MovingRes">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="ResState">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="MultiProd">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="crude oil (volume)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="crude oil (mass)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="natural gas (volume)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="natural gas (mass)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="produced water (volume)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="produced water (mass)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="condensate (volume)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="condensate (mass)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="injected gas (volume)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="injected gas (mass)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="injected water (volume)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="injected water (mass)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="lift gas (volume)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="lift gas (mass)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="free gas (volume)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+        <edittype widgetv2type="TextEdit" name="free gas (mass)">
+          <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
+        </edittype>
+      </edittypes>
+      <renderer-v2 forceraster="0" symbollevels="0" type="RuleRenderer" enableorderby="1">
+        <rules key="{9d6f7c05-e0f2-4052-bb0f-f04b7ff13cab}">
+          <rule key="{e9cd63ef-2f32-4726-8373-d93f18b89976}" label="нефть тонн/сутки -  вода % / закачка воды м3/сутки"/>
+          <rule filter="&quot;SymbolCode&quot;=-1" key="{d87a1799-361f-4a76-939c-1171508ddfa5}" symbol="0" label="Сырая нефть"/>
+          <rule filter="&quot;SymbolCode&quot;=-1" key="{033d7e3a-497e-4e4a-95c2-8a51e5f410a4}" symbol="1" label="Закачка воды"/>
+          <rule filter="&quot;SymbolCode&quot;=-1" key="{d49c6c67-a62d-4b0f-83f9-8d1ffbf5d99d}" symbol="2" label="Добыча воды"/>
+          <rule key="{acb70cb5-9db2-4993-a00d-5fa679e1b4e9}" label="Диаграмма добычи/закачки 500"/>
+          <rule key="{c0479099-f101-4f1f-bda2-45516d308920}" label="Скважины">
+            <rule filter="&quot;SymbolCode&quot;=71" key="{5dbb2829-2ee3-4d0e-abf0-b2afe60536b8}" symbol="3" label="Транзитная скважина"/>
+            <rule filter="&quot;SymbolCode&quot;in (82,212 ) or   &quot;_filter_active_type&quot; = 'prod' " key="{abbddca8-5f19-4b1c-a084-bd03c1a34f87}" symbol="4" label="Добывающая скважина"/>
+            <rule filter="&quot;SymbolCode&quot;=148" key="{6838d4b1-8d07-42bc-913a-aee1d957467e}" symbol="5" label="Добывающая скважина остановленная"/>
+            <rule filter="&quot;SymbolCode&quot;=203" key="{7cab0120-3520-4289-9f4c-3b2ad6ef1a43}" symbol="6" label="Добывающая скважина в бездействии"/>
+            <rule filter="&quot;SymbolCode&quot;=182 or &quot;SymbolCode&quot;=189" key="{1f416a78-9de4-4547-911d-8e203bed98e5}" symbol="7" label="Добывающая скважина ликвидированная"/>
+            <rule filter="&quot;SymbolCode&quot;=84 or   &quot;_filter_active_type&quot; =  'inj' " key="{ae9b75ec-c536-4786-8f46-d448bb163966}" symbol="8" label="Нагнетательная сважина"/>
+            <rule filter="&quot;SymbolCode&quot;=153 or &quot;SymbolCode&quot;=213" key="{27ea843b-4283-4cfd-b4ef-51396833f6aa}" symbol="9" label="Нагнетательная скважина остановленная"/>
+            <rule filter="&quot;SymbolCode&quot;=204" key="{771807fa-82ee-43b2-9662-6c18924364c0}" symbol="10" label="Нагнетательная скважина в бездействии"/>
+            <rule filter="&quot;SymbolCode&quot;=238" key="{a567f893-63bf-4145-8a26-b1e4a81a3d36}" symbol="11" label="Водозаборная скважина в бездействии"/>
+            <rule filter="&quot;SymbolCode&quot;=86" key="{b681a0c4-f5ea-43d9-88f5-07e76fd7dcd5}" symbol="12" label="Контрольна скважина"/>
+          </rule>
+        </rules>
+        <symbols>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="0">
+            <layer pass="0" class="SimpleMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="218,165,32,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="name" v="circle"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_style" v="solid"/>
+              <prop k="outline_width" v="0"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="4"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="1">
+            <layer pass="0" class="SimpleMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,255,255,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="name" v="circle"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_style" v="solid"/>
+              <prop k="outline_width" v="0"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="4"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="10">
+            <layer pass="1" class="SvgMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="WellSymbol204.svg"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_width" v="0.2"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="5"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="11">
+            <layer pass="1" class="SvgMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="WellSymbol238.svg"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_width" v="0.2"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="4"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="12">
+            <layer pass="0" class="SvgMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="WellSymbol086.svg"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_width" v="0.2"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="4"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="2">
+            <layer pass="0" class="SimpleMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="166,206,227,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="name" v="circle"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_style" v="solid"/>
+              <prop k="outline_width" v="0"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="4"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="3">
+            <layer pass="1" class="SimpleMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,0"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="joinstyle" v="bevel"/>
+              <prop k="name" v="circle"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_style" v="solid"/>
+              <prop k="outline_width" v="0.4"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="1.2"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="4">
+            <layer pass="1" class="SvgMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="WellSymbol082.svg"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_width" v="0.2"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="5"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="5">
+            <layer pass="1" class="SvgMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="WellSymbol148.svg"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_width" v="0.2"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="5"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="6">
+            <layer pass="1" class="SvgMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="WellSymbol203.svg"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_width" v="0.2"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="5"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="7">
+            <layer pass="1" class="SvgMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="WellSymbol182.svg"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_width" v="0.2"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="5"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="8">
+            <layer pass="1" class="SvgMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="WellSymbol084.svg"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_width" v="0.2"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="5"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+          <symbol alpha="1" clip_to_extent="1" type="marker" name="9">
+            <layer pass="1" class="SvgMarker" locked="0">
+              <prop k="angle" v="0"/>
+              <prop k="color" v="0,0,0,255"/>
+              <prop k="horizontal_anchor_point" v="1"/>
+              <prop k="name" v="WellSymbol153.svg"/>
+              <prop k="offset" v="0,0"/>
+              <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="offset_unit" v="MM"/>
+              <prop k="outline_color" v="0,0,0,255"/>
+              <prop k="outline_width" v="0.2"/>
+              <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="outline_width_unit" v="MM"/>
+              <prop k="scale_method" v="diameter"/>
+              <prop k="size" v="5"/>
+              <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+              <prop k="size_unit" v="MM"/>
+              <prop k="vertical_anchor_point" v="1"/>
+            </layer>
+          </symbol>
+        </symbols>
+        <orderby>
+          <orderByClause asc="0" nullsFirst="1">BubbleSize</orderByClause>
+        </orderby>
+      </renderer-v2>
+      <labeling type="simple"/>
+      <customproperties>
+        <property key="alwaysShowZero" value="0"/>
+        <property key="dailyProduction" value="0"/>
+        <property key="decimal" value="2"/>
+        <property key="defaultSymbolSize" value="4"/>
+        <property key="diagrammCount" value="2"/>
+        <property key="diagramm_fluids_1" value="1;0;1;0;0;0;0;0"/>
+        <property key="diagramm_fluids_2" value="0;0;0;0;0;1;0;0"/>
+        <property key="diagramm_name_1" value="Диаграмма жидкости"/>
+        <property key="diagramm_name_2" value="Диаграмма закачки"/>
+        <property key="diagramm_scale_1" value="50"/>
+        <property key="diagramm_scale_2" value="50"/>
+        <property key="diagramm_unitsType_1" value="0"/>
+        <property key="diagramm_unitsType_2" value="1"/>
+        <property key="diagramm_units_1" value="3"/>
+        <property key="diagramm_units_2" value="14"/>
+        <property key="fluid_background_condensate" value="174,222,144,255"/>
+        <property key="fluid_background_crude oil" value="218,165,32,255"/>
+        <property key="fluid_background_free gas" value="0,160,160,255"/>
+        <property key="fluid_background_injected gas" value="0,0,0,255"/>
+        <property key="fluid_background_injected water" value="0,255,255,255"/>
+        <property key="fluid_background_lift gas" value="0,0,170,255"/>
+        <property key="fluid_background_natural gas" value="228,228,118,255"/>
+        <property key="fluid_background_produced water" value="166,206,227,255"/>
+        <property key="fluid_inPercent_condensate" value="0"/>
+        <property key="fluid_inPercent_crude oil" value="0"/>
+        <property key="fluid_inPercent_free gas" value="0"/>
+        <property key="fluid_inPercent_injected gas" value="0"/>
+        <property key="fluid_inPercent_injected water" value="0"/>
+        <property key="fluid_inPercent_lift gas" value="0"/>
+        <property key="fluid_inPercent_natural gas" value="0"/>
+        <property key="fluid_inPercent_produced water" value="0"/>
+        <property key="fluid_label_color_condensate" value="124,222,63,255"/>
+        <property key="fluid_label_color_crude oil" value="107,79,14,255"/>
+        <property key="fluid_label_color_free gas" value="0,160,160,255"/>
+        <property key="fluid_label_color_injected gas" value="0,0,0,255"/>
+        <property key="fluid_label_color_injected water" value="0,173,173,255"/>
+        <property key="fluid_label_color_lift gas" value="0,0,170,255"/>
+        <property key="fluid_label_color_natural gas" value="143,143,74,255"/>
+        <property key="fluid_label_color_produced water" value="31,120,180,255"/>
+        <property key="fluid_line_color_condensate" value="174,222,144,255"/>
+        <property key="fluid_line_color_crude oil" value="218,165,32,255"/>
+        <property key="fluid_line_color_free gas" value="0,160,160,255"/>
+        <property key="fluid_line_color_injected gas" value="0,0,0,255"/>
+        <property key="fluid_line_color_injected water" value="31,120,180,255"/>
+        <property key="fluid_line_color_lift gas" value="0,0,170,255"/>
+        <property key="fluid_line_color_natural gas" value="228,228,118,255"/>
+        <property key="fluid_line_color_produced water" value="31,120,180,255"/>
+        <property key="labelSize" value="7"/>
+        <property key="labelTemplate" value="%1-%3/%6"/>
+        <property key="labeling" value="pal"/>
+        <property key="labeling/addDirectionSymbol" value="false"/>
+        <property key="labeling/angleOffset" value="0"/>
+        <property key="labeling/blendMode" value="0"/>
+        <property key="labeling/bufferBlendMode" value="0"/>
+        <property key="labeling/bufferColorA" value="255"/>
+        <property key="labeling/bufferColorB" value="255"/>
+        <property key="labeling/bufferColorG" value="255"/>
+        <property key="labeling/bufferColorR" value="255"/>
+        <property key="labeling/bufferDraw" value="false"/>
+        <property key="labeling/bufferJoinStyle" value="64"/>
+        <property key="labeling/bufferNoFill" value="false"/>
+        <property key="labeling/bufferSize" value="1"/>
+        <property key="labeling/bufferSizeInMapUnits" value="false"/>
+        <property key="labeling/bufferSizeMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/bufferTransp" value="0"/>
+        <property key="labeling/centroidInside" value="false"/>
+        <property key="labeling/centroidWhole" value="false"/>
+        <property key="labeling/dataDefined/OffsetXY" value="1~~1~~format('%1,%2', &quot;LablOffX&quot; , &quot;LablOffY&quot;)~~"/>
+        <property key="labeling/dataDefined/PositionX" value="1~~0~~~~LablX"/>
+        <property key="labeling/dataDefined/PositionY" value="1~~0~~~~LablY"/>
+        <property key="labeling/decimals" value="3"/>
+        <property key="labeling/displayAll" value="true"/>
+        <property key="labeling/dist" value="0"/>
+        <property key="labeling/distInMapUnits" value="true"/>
+        <property key="labeling/distMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/drawLabels" value="true"/>
+        <property key="labeling/enabled" value="true"/>
+        <property key="labeling/fieldName" value="well_id"/>
+        <property key="labeling/fitInPolygonOnly" value="false"/>
+        <property key="labeling/fontCapitals" value="0"/>
+        <property key="labeling/fontFamily" value="MS Shell Dlg 2"/>
+        <property key="labeling/fontItalic" value="false"/>
+        <property key="labeling/fontLetterSpacing" value="0"/>
+        <property key="labeling/fontLimitPixelSize" value="false"/>
+        <property key="labeling/fontMaxPixelSize" value="10000"/>
+        <property key="labeling/fontMinPixelSize" value="3"/>
+        <property key="labeling/fontSize" value="7"/>
+        <property key="labeling/fontSizeInMapUnits" value="false"/>
+        <property key="labeling/fontSizeMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/fontStrikeout" value="false"/>
+        <property key="labeling/fontUnderline" value="false"/>
+        <property key="labeling/fontWeight" value="50"/>
+        <property key="labeling/fontWordSpacing" value="0"/>
+        <property key="labeling/formatNumbers" value="false"/>
+        <property key="labeling/isExpression" value="false"/>
+        <property key="labeling/labelOffsetInMapUnits" value="false"/>
+        <property key="labeling/labelOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/labelPerPart" value="false"/>
+        <property key="labeling/leftDirectionSymbol" value="&lt;"/>
+        <property key="labeling/limitNumLabels" value="false"/>
+        <property key="labeling/maxCurvedCharAngleIn" value="20"/>
+        <property key="labeling/maxCurvedCharAngleOut" value="-20"/>
+        <property key="labeling/maxNumLabels" value="2000"/>
+        <property key="labeling/mergeLines" value="false"/>
+        <property key="labeling/minFeatureSize" value="0"/>
+        <property key="labeling/multilineAlign" value="0"/>
+        <property key="labeling/multilineHeight" value="1"/>
+        <property key="labeling/namedStyle" value="Normal"/>
+        <property key="labeling/obstacle" value="true"/>
+        <property key="labeling/obstacleFactor" value="1"/>
+        <property key="labeling/obstacleType" value="0"/>
+        <property key="labeling/offsetType" value="0"/>
+        <property key="labeling/placeDirectionSymbol" value="0"/>
+        <property key="labeling/placement" value="1"/>
+        <property key="labeling/placementFlags" value="10"/>
+        <property key="labeling/plussign" value="false"/>
+        <property key="labeling/predefinedPositionOrder" value="TR,TL,BR,BL,R,L,TSR,BSR"/>
+        <property key="labeling/preserveRotation" value="true"/>
+        <property key="labeling/previewBkgrdColor" value="#ffffff"/>
+        <property key="labeling/priority" value="5"/>
+        <property key="labeling/quadOffset" value="2"/>
+        <property key="labeling/repeatDistance" value="0"/>
+        <property key="labeling/repeatDistanceMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/repeatDistanceUnit" value="1"/>
+        <property key="labeling/reverseDirectionSymbol" value="false"/>
+        <property key="labeling/rightDirectionSymbol" value=">"/>
+        <property key="labeling/scaleMax" value="10000000"/>
+        <property key="labeling/scaleMin" value="1"/>
+        <property key="labeling/scaleVisibility" value="false"/>
+        <property key="labeling/shadowBlendMode" value="6"/>
+        <property key="labeling/shadowColorB" value="0"/>
+        <property key="labeling/shadowColorG" value="0"/>
+        <property key="labeling/shadowColorR" value="0"/>
+        <property key="labeling/shadowDraw" value="false"/>
+        <property key="labeling/shadowOffsetAngle" value="135"/>
+        <property key="labeling/shadowOffsetDist" value="1"/>
+        <property key="labeling/shadowOffsetGlobal" value="true"/>
+        <property key="labeling/shadowOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shadowOffsetUnits" value="1"/>
+        <property key="labeling/shadowRadius" value="1.5"/>
+        <property key="labeling/shadowRadiusAlphaOnly" value="false"/>
+        <property key="labeling/shadowRadiusMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shadowRadiusUnits" value="1"/>
+        <property key="labeling/shadowScale" value="100"/>
+        <property key="labeling/shadowTransparency" value="30"/>
+        <property key="labeling/shadowUnder" value="0"/>
+        <property key="labeling/shapeBlendMode" value="0"/>
+        <property key="labeling/shapeBorderColorA" value="255"/>
+        <property key="labeling/shapeBorderColorB" value="128"/>
+        <property key="labeling/shapeBorderColorG" value="128"/>
+        <property key="labeling/shapeBorderColorR" value="128"/>
+        <property key="labeling/shapeBorderWidth" value="0"/>
+        <property key="labeling/shapeBorderWidthMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeBorderWidthUnits" value="1"/>
+        <property key="labeling/shapeDraw" value="false"/>
+        <property key="labeling/shapeFillColorA" value="255"/>
+        <property key="labeling/shapeFillColorB" value="255"/>
+        <property key="labeling/shapeFillColorG" value="255"/>
+        <property key="labeling/shapeFillColorR" value="255"/>
+        <property key="labeling/shapeJoinStyle" value="64"/>
+        <property key="labeling/shapeOffsetMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeOffsetUnits" value="1"/>
+        <property key="labeling/shapeOffsetX" value="0"/>
+        <property key="labeling/shapeOffsetY" value="0"/>
+        <property key="labeling/shapeRadiiMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeRadiiUnits" value="1"/>
+        <property key="labeling/shapeRadiiX" value="0"/>
+        <property key="labeling/shapeRadiiY" value="0"/>
+        <property key="labeling/shapeRotation" value="0"/>
+        <property key="labeling/shapeRotationType" value="0"/>
+        <property key="labeling/shapeSVGFile" value=""/>
+        <property key="labeling/shapeSizeMapUnitScale" value="0,0,0,0,0,0"/>
+        <property key="labeling/shapeSizeType" value="0"/>
+        <property key="labeling/shapeSizeUnits" value="1"/>
+        <property key="labeling/shapeSizeX" value="0"/>
+        <property key="labeling/shapeSizeY" value="0"/>
+        <property key="labeling/shapeTransparency" value="0"/>
+        <property key="labeling/shapeType" value="0"/>
+        <property key="labeling/textColorA" value="255"/>
+        <property key="labeling/textColorB" value="0"/>
+        <property key="labeling/textColorG" value="0"/>
+        <property key="labeling/textColorR" value="255"/>
+        <property key="labeling/textTransp" value="0"/>
+        <property key="labeling/upsidedownLabels" value="0"/>
+        <property key="labeling/wrapChar" value=""/>
+        <property key="labeling/xOffset" value="0"/>
+        <property key="labeling/yOffset" value="0"/>
+        <property key="labeling/zIndex" value="0"/>
+        <property key="maxDiagrammSize" value="30"/>
+        <property key="minDiagrammSize" value="3"/>
+        <property key="pds_prod_PhaseFilter" value="[]"/>
+        <property key="pds_prod_SelectedReservoirs" value="''"/>
+        <property key="pds_prod_endDate" value="31/12/2017 00:00:00"/>
+        <property key="pds_project" value="{u'project': u'kelameddin', u'type': u'tigress', u'options': u'{&quot;user&quot;: &quot;system&quot;, &quot;host&quot;: &quot;poni&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;, &quot;sid&quot;: &quot;KARASU&quot;}'}"/>
+        <property key="qgis_pds_type" value="''"/>
+        <property key="showLineout" value="1"/>
+        <property key="variableNames"/>
+        <property key="variableValues"/>
+      </customproperties>
+      <blendMode>0</blendMode>
+      <featureBlendMode>0</featureBlendMode>
+      <layerTransparency>0</layerTransparency>
+      <displayfield>SymbolName</displayfield>
+      <label>0</label>
+      <labelattributes>
+        <label fieldname="" text="Подпись"/>
+        <family fieldname="" name="MS Shell Dlg 2"/>
+        <size fieldname="" units="pt" value="12"/>
+        <bold fieldname="" on="0"/>
+        <italic fieldname="" on="0"/>
+        <underline fieldname="" on="0"/>
+        <strikeout fieldname="" on="0"/>
+        <color fieldname="" red="0" blue="0" green="0"/>
+        <x fieldname=""/>
+        <y fieldname=""/>
+        <offset x="0" y="0" units="pt" yfieldname="" xfieldname=""/>
+        <angle fieldname="" value="0" auto="0"/>
+        <alignment fieldname="" value="center"/>
+        <buffercolor fieldname="" red="255" blue="255" green="255"/>
+        <buffersize fieldname="" units="pt" value="1"/>
+        <bufferenabled fieldname="" on=""/>
+        <multilineenabled fieldname="" on=""/>
+        <selectedonly on=""/>
+      </labelattributes>
+      <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
+        <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="-4.65661e-10">
+          <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+          <attribute field="" color="#000000" label=""/>
+        </DiagramCategory>
+        <symbol alpha="1" clip_to_extent="1" type="marker" name="sizeSymbol">
+          <layer pass="0" class="SimpleMarker" locked="0">
+            <prop k="angle" v="0"/>
+            <prop k="color" v="255,0,0,255"/>
+            <prop k="horizontal_anchor_point" v="1"/>
+            <prop k="joinstyle" v="bevel"/>
+            <prop k="name" v="circle"/>
+            <prop k="offset" v="0,0"/>
+            <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="offset_unit" v="MM"/>
+            <prop k="outline_color" v="0,0,0,255"/>
+            <prop k="outline_style" v="solid"/>
+            <prop k="outline_width" v="0"/>
+            <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="outline_width_unit" v="MM"/>
+            <prop k="scale_method" v="diameter"/>
+            <prop k="size" v="2"/>
+            <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+            <prop k="size_unit" v="MM"/>
+            <prop k="vertical_anchor_point" v="1"/>
+          </layer>
+        </symbol>
+      </SingleCategoryDiagramRenderer>
+      <DiagramLayerSettings yPosColumn="-1" showColumn="0" linePlacementFlags="10" placement="0" dist="0" xPosColumn="-1" priority="0" obstacle="0" zIndex="0" showAll="1"/>
+      <annotationform>.</annotationform>
+      <aliases>
+        <alias field="well_id" index="0" name=""/>
+        <alias field="Latitude" index="1" name=""/>
+        <alias field="Longitude" index="2" name=""/>
+        <alias field="SymbolID" index="3" name=""/>
+        <alias field="SymbolName" index="4" name=""/>
+        <alias field="SymbolCode" index="5" name=""/>
+        <alias field="Days" index="6" name=""/>
+        <alias field="LiftMethod" index="7" name=""/>
+        <alias field="LablX" index="8" name=""/>
+        <alias field="LablY" index="9" name=""/>
+        <alias field="LablOffX" index="10" name=""/>
+        <alias field="LablOffY" index="11" name=""/>
+        <alias field="LablOffset" index="12" name=""/>
+        <alias field="LablWidth" index="13" name=""/>
+        <alias field="BubbleSize" index="14" name=""/>
+        <alias field="BubbleFields" index="15" name=""/>
+        <alias field="ScaleType" index="16" name=""/>
+        <alias field="MovingRes" index="17" name=""/>
+        <alias field="ResState" index="18" name=""/>
+        <alias field="MultiProd" index="19" name=""/>
+        <alias field="crude oil (volume)" index="20" name=""/>
+        <alias field="crude oil (mass)" index="21" name=""/>
+        <alias field="natural gas (volume)" index="22" name=""/>
+        <alias field="natural gas (mass)" index="23" name=""/>
+        <alias field="produced water (volume)" index="24" name=""/>
+        <alias field="produced water (mass)" index="25" name=""/>
+        <alias field="condensate (volume)" index="26" name=""/>
+        <alias field="condensate (mass)" index="27" name=""/>
+        <alias field="injected gas (volume)" index="28" name=""/>
+        <alias field="injected gas (mass)" index="29" name=""/>
+        <alias field="injected water (volume)" index="30" name=""/>
+        <alias field="injected water (mass)" index="31" name=""/>
+        <alias field="lift gas (volume)" index="32" name=""/>
+        <alias field="lift gas (mass)" index="33" name=""/>
+        <alias field="free gas (volume)" index="34" name=""/>
+        <alias field="free gas (mass)" index="35" name=""/>
+      </aliases>
+      <excludeAttributesWMS/>
+      <excludeAttributesWFS/>
+      <attributeactions default="-1"/>
+      <attributetableconfig actionWidgetStyle="dropDown" sortExpression="" sortOrder="0">
+        <columns/>
+      </attributetableconfig>
+      <editform>.</editform>
+      <editforminit/>
+      <editforminitcodesource>0</editforminitcodesource>
+      <editforminitfilepath>.</editforminitfilepath>
+      <editforminitcode><![CDATA[# -*- coding: utf-8 -*-
+"""
+Форма QGIS при открытии может обращаться к функции Python. 
+
+Используйте эту функцию, чтобы добавить логику в ваши формы.
+
+Введите имя функции в поле "Функция инициализации Python".
+Пример:
+"""
+from PyQt4.QtGui import QWidget
+
+def my_form_open(dialog, layer, feature):
+⇥geom = feature.geometry()
+⇥control = dialog.findChild(QWidget, "MyLineEdit")
+]]></editforminitcode>
+      <featformsuppress>0</featformsuppress>
+      <editorlayout>generatedlayout</editorlayout>
+      <widgets/>
+      <conditionalstyles>
+        <rowstyles/>
+        <fieldstyles/>
+      </conditionalstyles>
+      <defaults>
+        <default field="well_id" expression=""/>
+        <default field="Latitude" expression=""/>
+        <default field="Longitude" expression=""/>
+        <default field="SymbolID" expression=""/>
+        <default field="SymbolName" expression=""/>
+        <default field="SymbolCode" expression=""/>
+        <default field="Days" expression=""/>
+        <default field="LiftMethod" expression=""/>
+        <default field="LablX" expression=""/>
+        <default field="LablY" expression=""/>
+        <default field="LablOffX" expression=""/>
+        <default field="LablOffY" expression=""/>
+        <default field="LablOffset" expression=""/>
+        <default field="LablWidth" expression=""/>
+        <default field="BubbleSize" expression=""/>
+        <default field="BubbleFields" expression=""/>
+        <default field="ScaleType" expression=""/>
+        <default field="MovingRes" expression=""/>
+        <default field="ResState" expression=""/>
+        <default field="MultiProd" expression=""/>
+        <default field="crude oil (volume)" expression=""/>
+        <default field="crude oil (mass)" expression=""/>
+        <default field="natural gas (volume)" expression=""/>
+        <default field="natural gas (mass)" expression=""/>
+        <default field="produced water (volume)" expression=""/>
+        <default field="produced water (mass)" expression=""/>
+        <default field="condensate (volume)" expression=""/>
+        <default field="condensate (mass)" expression=""/>
+        <default field="injected gas (volume)" expression=""/>
+        <default field="injected gas (mass)" expression=""/>
+        <default field="injected water (volume)" expression=""/>
+        <default field="injected water (mass)" expression=""/>
+        <default field="lift gas (volume)" expression=""/>
+        <default field="lift gas (mass)" expression=""/>
+        <default field="free gas (volume)" expression=""/>
+        <default field="free gas (mass)" expression=""/>
+      </defaults>
+      <previewExpression></previewExpression>
+    </maplayer>
+  </maplayers>
+</qlr>

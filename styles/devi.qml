@@ -1,5 +1,5 @@
 <!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'>
-<qgis version="2.18.26" simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
+<qgis version="2.18.28" simplifyAlgorithm="0" minimumScale="0" maximumScale="1e+08" simplifyDrawingHints="1" minLabelScale="0" maxLabelScale="1e+08" simplifyDrawingTol="1" readOnly="0" simplifyMaxScale="1" hasScaleBasedVisibilityFlag="0" simplifyLocal="1" scaleBasedLabelVisibilityFlag="0">
   <edittypes>
     <edittype widgetv2type="TextEdit" name="well_id">
       <widgetv2config IsMultiline="0" fieldEditable="1" constraint="" UseHtml="0" labelOnTop="0" constraintDescription="" notNull="0"/>
@@ -126,7 +126,7 @@
               <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="outline_width_unit" v="MM"/>
               <prop k="scale_method" v="diameter"/>
-              <prop k="size" v="2"/>
+              <prop k="size" v="1"/>
               <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="size_unit" v="MM"/>
               <prop k="vertical_anchor_point" v="1"/>
@@ -163,7 +163,7 @@
               <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="outline_width_unit" v="MM"/>
               <prop k="scale_method" v="diameter"/>
-              <prop k="size" v="1"/>
+              <prop k="size" v="2"/>
               <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
               <prop k="size_unit" v="MM"/>
               <prop k="vertical_anchor_point" v="1"/>
@@ -317,7 +317,7 @@
     <property key="labeling/xOffset" value="0"/>
     <property key="labeling/yOffset" value="0"/>
     <property key="labeling/zIndex" value="0"/>
-    <property key="pds_project" value="{u'project': u'binagadi_north', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;BINAGADI&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
+    <property key="pds_project" value="{u'project': u'bin_n_20190126', u'type': u'tigress', u'options': u'{&quot;host&quot;: &quot;poni&quot;, &quot;user&quot;: &quot;system&quot;, &quot;sid&quot;: &quot;BINAGADI&quot;, &quot;path&quot;: &quot;&quot;, &quot;password&quot;: &quot;manager&quot;, &quot;port&quot;: &quot;1521&quot;}'}"/>
     <property key="qgis_pds_type" value="pds_well_deviations"/>
     <property key="variableNames"/>
     <property key="variableValues"/>
@@ -348,7 +348,7 @@
     <selectedonly on=""/>
   </labelattributes>
   <SingleCategoryDiagramRenderer diagramType="Pie" sizeLegend="0" attributeLegend="1">
-    <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="0">
+    <DiagramCategory penColor="#000000" labelPlacementMethod="XHeight" penWidth="0" diagramOrientation="Up" sizeScale="0,0,0,0,0,0" minimumSize="0" barWidth="5" penAlpha="255" maxScaleDenominator="1e+08" backgroundColor="#ffffff" transparency="0" width="15" scaleDependency="Area" backgroundAlpha="255" angleOffset="1440" scaleBasedVisibility="0" enabled="0" height="15" lineSizeScale="0,0,0,0,0,0" sizeType="MM" lineSizeType="MM" minScaleDenominator="inf">
       <fontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
       <attribute field="" color="#000000" label=""/>
     </DiagramCategory>

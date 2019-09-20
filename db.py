@@ -155,6 +155,7 @@ class Oracle(Base):
 
         self.schema = schema
         self._connection = None if lazy_connect else self._connect()
+        self._cached_cursors={}
 
     @classmethod
     def _make_server(cls, server, host, port, sid):
@@ -190,6 +191,7 @@ class Oracle(Base):
         if self.schema is not None:
             cursor = connection.cursor()
             cursor.execute('alter session set current_schema=%s' % self.schema)
+        self._cached_cursors={}
         return connection
 
     def cursor(self):
@@ -226,17 +228,23 @@ class Oracle(Base):
     ])
 
     def _is_reconnect_exception(self, e):
+        self._cached_cursors={}
         if not hasattr(e.args[0], 'code'):
             return False
         code = e.args[0].code
         return code in self._reconnection_exception_codes
 
-    def _execute(self, sql, **kwargs):
+    def _execute(self, sql, cursor_id=None,**kwargs):
         kwargs = {k.encode('ascii'): v.encode('ascii') if isinstance(v, unicode) else v for k, v in kwargs.iteritems()}
         attempts = 2
         while attempts > 0:
             attempts -= 1
-            cursor = self.cursor()
+            if cursor_id is not None and cursor_id in self._cached_cursors.keys():
+                cursor=self._cached_cursors[cursor_id]
+            else:
+                cursor = self.cursor()
+                if cursor_id is not None:
+                    self._cached_cursors[cursor_id]=cursor
             try:
                 cursor.execute(sql, kwargs)
                 return cursor

@@ -50,6 +50,7 @@ from qgis_pds_oracleSql import QgisOracleSql
 from qgis_pds_createIsolines import QgisPDSCreateIsolines
 from qgis_pds_transite import QgisPDSTransitionsDialog
 from qgis_pds_SelectMapTool import QgisPDSSelectMapTool
+from qgis_pds_dca import QgisPDSDCAForm
 from qgis_pds_wellsBrowserDialog import *
 # Import both Processing and CommanderWindow 
 #   classes from the Processing framework. 
@@ -98,6 +99,48 @@ def makeMultilineFormatedLabel(label,label_row,row_count,feature, parent):
     """
     res="\n"*(label_row)+'{}\n'.format(label)+"\n"*(row_count-label_row-1)
     return res
+
+@qgsfunction(args='auto', group='PumaPlus')
+def isValueInInterval(value, limit_min, limit_max, step, feature, parent):
+    """
+    <h4>Return</h4>Return True if value in interval
+    <p><h4>Syntax</h4>isValueInInterval( %value%, %limit_min%, %limit_max%, %step% )</p>
+    <p><h4>Argument</h4> %value% - field with values           </p>
+    <p><h4>Argument</h4> %limit_min% - left interval limit     </p>
+    <p><h4>Argument</h4> %limit_max% - right interval limit    </p>
+    <p><h4>Argument</h4> %step% - step from left to right      </p>
+    """
+    if limit_min<value<limit_max:
+        if (value-limit_min) % step>0:
+            return False
+        else:
+            return True
+    else:
+        return False
+@qgsfunction(args='auto', group='PumaPlus')
+def isValueInIntervalWithSkeep(value, limit_min, limit_max, step, skeep_each, feature, parent):
+    """
+    <h4>Return</h4>Return True if value in interval
+    <p><h4>Syntax</h4>isValueInInterval( %value%, %limit_min%, %limit_max%, %step%, %skeep_each% )</p>
+    <p><h4>Argument</h4> %value% - field with values           </p>
+    <p><h4>Argument</h4> %limit_min% - left interval limit     </p>
+    <p><h4>Argument</h4> %limit_max% - right interval limit    </p>
+    <p><h4>Argument</h4> %step% - step from left to right      </p>
+    <p><h4>Argument</h4> %skeep_each% - return False for each %skeep_each% value </p>
+    """
+    if limit_min<value<limit_max:
+        if (value-limit_min) % step>0:
+            return False
+        else:
+            if skeep_each>0 and (value-limit_min) / step % skeep_each>0:
+                return True
+            elif (not skeep_each>0) and (not (value-limit_min) % step>0):
+                return True
+            else:
+                return False
+    else:
+        return False
+
     
 @qgsfunction(args='auto', group='PumaPlus')
 def activeLayerReservoirs(feature, parent):
@@ -715,6 +758,13 @@ class QgisPDS(QObject):
             callback=self.calcStatistics,
             parent=self.iface.mainWindow())
 
+        icon_path = ':/plugins/QgisPDS/type_well.png'
+        self.actionRefreshLayer = self.add_action(
+            icon_path,
+            text=self.tr(u'DCA'),
+            callback=self.calcDCA,
+            parent=self.iface.mainWindow())
+
         icon_path = ':/plugins/QgisPDS/mActionFileSave.png'
         self.add_action(
             icon_path,
@@ -808,8 +858,8 @@ class QgisPDS(QObject):
         QgsExpression.registerFunction(activeLayerReservoirs)
         QgsExpression.registerFunction(activeLayerProductionType)
         QgsExpression.registerFunction(makeMultilineFormatedLabel)
-        
-
+        QgsExpression.registerFunction(isValueInInterval)
+        QgsExpression.registerFunction(isValueInIntervalWithSkeep)
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
@@ -823,6 +873,10 @@ class QgisPDS(QObject):
         QgsExpression.unregisterFunction('activeLayerReservoirs')
         QgsExpression.unregisterFunction('activeLayerProductionType')
         QgsExpression.unregisterFunction('makeMultilineFormatedLabel')
+        QgsExpression.unregisterFunction('isValueInInterval')
+        QgsExpression.unregisterFunction('isValueInIntervalWithSkeep')
+        
+        
 
         # QgsPluginLayerRegistry.instance().removePluginLayerType(QgisPDSProductionLayer.LAYER_TYPE)
 
@@ -1132,6 +1186,17 @@ class QgisPDS(QObject):
         dlg = QgisPDSStatisticsDialog(self.currentProject, self.iface)
         dlg.exec_()
         return
+
+    def calcDCA(self):
+#         if not QgsProject.instance().homePath():
+#             self.iface.messageBar().pushMessage(self.tr('Error'),
+#                         self.tr(u'Save project before using plugin'), level=QgsMessageBar.CRITICAL)
+#             return
+        dlg = QgisPDSDCAForm(self.currentProject, self.iface)
+        dlg.exec_()
+        #dlg.show()
+        return
+
 
     def saveLayerToPDS(self):
         currentLayer = self.iface.activeLayer()

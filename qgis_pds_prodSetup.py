@@ -283,8 +283,13 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
     #===========================================================================
     def mAddDiagramm_clicked(self):
         newName = u'Диаграмма {}'.format(len(self.layerDiagramms)+1)
-        d = MyStruct(name=newName, scale=300000, testval=1, unitsType=0, units=self.defaultUnitNum,
-                                            fluids=[0, 0, 0, 0, 0, 0, 0, 0, 0])
+        d = MyStruct(name=newName
+                     , scale=300000
+                     , testval=1
+                     , unitsType=0
+                     , units=self.defaultUnitNum
+                     , fluids=[0, 0, 0, 0, 0, 0, 0, 0, 0]
+                     )
         self.layerDiagramms.append(d)
 
         item = QtGui.QListWidgetItem(newName)
@@ -717,6 +722,10 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             allDiagramms.append(diagramm)
         diagrammStr = str(allDiagramms)        
         #---load user styles
+        if self.dailyProduction.isChecked():
+            load_styles_from_dir(layer=editLayer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_CURRENT_RENDER_STYLE_DIR),switchActiveStyle=False)
+        else:
+            load_styles_from_dir(layer=editLayer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_CUMMULATIVE_RENDER_STYLE_DIR),switchActiveStyle=False)
         load_styles_from_dir(layer=editLayer, styles_dir=os.path.join(plugin_path() ,STYLE_DIR, USER_PROD_RENDER_STYLE_DIR),switchActiveStyle=False)
         
         ########################################################

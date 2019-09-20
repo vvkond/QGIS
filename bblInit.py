@@ -34,6 +34,8 @@ USER_FONDWELL_STYLE_DIR='user_fondwell_styles'
 USER_FONDOBJ_STYLE_DIR='user_fondobject_styles'
 USER_PROD_STYLE_DIR='user_prod_styles'
 USER_PROD_RENDER_STYLE_DIR='user_prod_render_styles'
+USER_PROD_CUMMULATIVE_RENDER_STYLE_DIR='user_prod_curmmulative_render_styles'
+USER_PROD_CURRENT_RENDER_STYLE_DIR='user_prod_current_render_styles'
 USER_DEVI_STYLE_DIR='user_devi_styles'
 USER_WELL_STYLE_DIR='user_well_styles'
 USER_FAULT_STYLE_DIR="user_fault_styles"
@@ -65,10 +67,14 @@ class NAMES(MyStruct):
 class Debit(MyStruct):
     value=0
     dt=''
+    sort_attr='value'
     def __repr__(self):
         return u"'{}:{}'".format(self.dt.toString('yyyy.M.d'),self.value)
     def __str__(self):
         return self.__repr__()
+    def __lt__(self,other):
+        return getattr(self,self.sort_attr)<getattr(other,self.sort_attr)
+         
     
 
 #===============================================================================
@@ -82,7 +88,9 @@ class ProdDebit(object):
     filter_koef=3
     skeep_filter_koef=4
     debits=None
-    def __init__(self,records_limit=3,enable_bad_data_filter=False,filter_koef=3,skeep_filter_koef=3,log_msg_on_bad_data_filtered=''):
+    def __init__(self,records_limit=3,enable_bad_data_filter=False,filter_koef=3,skeep_filter_koef=3,log_msg_on_bad_data_filtered=''
+                 ,sort_descending=True
+                 ):
         """
             @param filter_koef: 
             @param skeep_filter_koef: different betweenn max/min for skeep filter use
@@ -96,11 +104,8 @@ class ProdDebit(object):
         self.filter_koef=filter_koef
         self.log_msg_on_bad_data_filtered=log_msg_on_bad_data_filtered
         self.skeep_filter_koef=skeep_filter_koef
+        self.sort_descending=sort_descending
         
-    def sorted_func(self,valueOld,valueNew):
-        #QgsMessageLog.logMessage(u"{}  {}".format(str(valueNew),str(valueOld)), tag="QgisPDS.debug")
-        return valueNew.value>valueOld.value #function applied to value for sorting item[0]-key,item[1]-value
-    
     def addDebit(self
                  ,debit # type: Debit
                  ,debit_type
@@ -111,12 +116,16 @@ class ProdDebit(object):
             else:
                 isInserted=False
                 for idx,debit_old in enumerate(self.debits[debit_type]):
-                    if self.sorted_func(debit_old,debit):
-                        self.debits[debit_type].insert(idx, debit)
+                    if debit_old.dt==debit.dt:
+                        self.debits[debit_type][idx].value+=debit.value
+                        isInserted=True
+                        break
+                    elif debit>debit_old:
+                        self.debits[debit_type].append(debit)
                         isInserted=True
                         break
                 if not isInserted and len(self.debits[debit_type])<self.records_limit: self.debits[debit_type].append(debit)
-                self.debits[debit_type]=self.debits[debit_type][:self.records_limit]
+                self.debits[debit_type]=sorted(self.debits[debit_type],reverse=self.sort_descending)[:self.records_limit]
         pass
     
     def bad_data_filter(self,items):
@@ -205,6 +214,7 @@ class ProductionWell(MyStruct):
     reservoirState = 'NO_MOVING'
     movingReservoir = ''
     maxDebits = []
+    firstDebits = []
     wRole="unknown"
     wStatus="unknown"
     wStatusInfo=""
@@ -217,9 +227,11 @@ TableUnit = namedtuple('TableUnit', ['table', 'unit'])
 # not used. Planed for QgsField.type association
 #===============================================================================
 FIELD_AND_TYPES={"string":QVariant.String
+             ,"integer":QVariant.Int
              ,"int":QVariant.Int
              ,"double":QVariant.Double
              ,"date":QVariant.String
+             ,"DateTime":QVariant.DateTime
              }
 #===============================================================================
 # 
@@ -240,7 +252,7 @@ class AttributeField():
                         ,field_alias=""
                  ):
         self.field=QgsField(name=field_name
-                        #, type= FIELD_TYPES[self.field_type]
+                        , type= FIELD_AND_TYPES[field_type]
                         , typeName=field_type  # char, varchar, text, int, serial, double. QVariant.Double,QVariant.Date,QVariant.String
                         , len=field_len
                         , prec=field_prec
@@ -576,15 +588,19 @@ class bblInit:
                     ),
                     ]
 
-    bblLiftMethods =  {u"flowing": LiftMethod(True, False),
-                            u"centrifugal pump": LiftMethod( False, True),
-                            u"diaphragm pump": LiftMethod( False, True),
-                            u"sucker-rod pump": LiftMethod( False, True),
-                            u"jet pump": LiftMethod( False, True),
-                            u"plunger pump": LiftMethod( False, True),
-                            u"gas lift": LiftMethod( False, False),
-                            u"spiral pump": LiftMethod( False, True),
-                            u"RED pump": LiftMethod( False, True)}
+    bblLiftMethods =  {
+                        u"flowing": LiftMethod(True, False),
+                        u"centrifugal pump": LiftMethod( False, True),
+                        u"diaphragm pump": LiftMethod( False, True),
+                        u"sucker-rod pump": LiftMethod( False, True),
+                        u"jet pump": LiftMethod( False, True),
+                        u"plunger pump": LiftMethod( False, True),
+                        u"gas lift": LiftMethod( False, False),
+                        u"spiral pump": LiftMethod( False, True),
+                        u"RED pump": LiftMethod( False, True),
+                        u"kompressor": LiftMethod( False, True),
+                        u"shvn": LiftMethod( False, True)
+                        }
 
     standardDiagramms = {
                     "1LIQUID_PRODUCTION"     : StandardDiagram(name=u"Диаграмма жидкости",   scale=300000,  unitsType=0, units=0, fluids=[1, 0, 1, 0, 0, 0, 0, 0, 0]),
@@ -801,6 +817,14 @@ class bblInit:
     @staticmethod
     def attrFluidMaxDebitDateVol(fluidCode):
         return fluidCode + u"maxd_v"
+    #
+    @staticmethod
+    def attrFluidFirstDebitMass(fluidCode):
+        return fluidCode + u"_f_m"
+    @staticmethod
+    def attrFluidFirstDebitVol(fluidCode):
+        return fluidCode + u"_f_v"
+    #
 
     @staticmethod
     def attrFluidMassOld(fluidCode):
@@ -833,6 +857,15 @@ class bblInit:
     @staticmethod
     def aliasFluidMaxDebitDateVol(fluidCode):
         return fluidCode + u" (дата макс. дебита по объему)"
+
+    @staticmethod
+    def aliasFluidFirstDebitMass(fluidCode):
+        return fluidCode + u" (начальный дебит по массе тонн)"
+
+    @staticmethod
+    def aliasFluidFirstDebitVol(fluidCode):
+        return fluidCode + u" (начальный дебит по объему м3)"
+    
     #===========================================================================
     # 
     #===========================================================================
@@ -854,7 +887,7 @@ class bblInit:
         if newIdx < 0:
             if layer.isEditable(): layer.commitChanges()            
             with edit_layer(layer):
-                provider.addAttributes([field])                
+                provider.addAttributes([qgsfield])    
     #===========================================================================
     # 
     #===========================================================================
@@ -921,6 +954,17 @@ class bblInit:
                 if newIdx < 0:
                     provider.addAttributes([QgsField(newName, QVariant.Date, QString(""), 50, 0)])
 
+                # Check first debit fields mass
+                newName = bblInit.attrFluidFirstDebitMass(fl.code)
+                newIdx = layer.fieldNameIndex(newName)
+                if newIdx < 0:
+                    provider.addAttributes([QgsField(newName, QVariant.Double, QString(""), 20, 5)])
+
+                # Check first debit fields volume
+                newName = bblInit.attrFluidFirstDebitVol(fl.code)
+                newIdx = layer.fieldNameIndex(newName)
+                if newIdx < 0:
+                    provider.addAttributes([QgsField(newName, QVariant.Double, QString(""), 20, 5)])
             #Check wellrole fields
             newName = u'wellrole'
             oldName =None
@@ -1026,6 +1070,20 @@ class bblInit:
             # Max debit date fields volume
             newName = bblInit.attrFluidMaxDebitDateVol(fl.code)
             alias = bblInit.aliasFluidMaxDebitDateVol(fl.alias)
+            idx = layer.fieldNameIndex(newName)
+            if idx >= 0:
+                layer.addAttributeAlias(idx, alias)
+
+            # First debit fields mass
+            newName = bblInit.attrFluidFirstDebitMass(fl.code)
+            alias = bblInit.aliasFluidFirstDebitMass(fl.alias)
+            idx = layer.fieldNameIndex(newName)
+            if idx >= 0:
+                layer.addAttributeAlias(idx, alias)
+
+            # First debit fields volume
+            newName = bblInit.attrFluidFirstDebitVol(fl.code)
+            alias = bblInit.aliasFluidFirstDebitVol(fl.alias)
             idx = layer.fieldNameIndex(newName)
             if idx >= 0:
                 layer.addAttributeAlias(idx, alias)
