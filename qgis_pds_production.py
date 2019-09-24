@@ -128,7 +128,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         # --- read global settings
         self.readSettings()
         # --- update GUI  on input parametrs and settings
-        self.mDynamicCheckBox.setEnabled(  (not self.isFondLayer) )
+        self.mDynamicCheckBox.setEnabled(  (not self.isFondLayer) and (not self.isCurrentProd) )
         self.mDynamicSumRelativeChkBx.setEnabled( self.mDynamicCheckBox.isChecked() and (not self.isCurrentProd) and (not self.isFondLayer))
         self.startDateEdit.setEnabled(not self.isFondLayer and (not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked())))
         self.firstDate.setEnabled(    not self.isFondLayer and (not self.isCurrentProd or (self.isCurrentProd and self.mDynamicCheckBox.isChecked())))
