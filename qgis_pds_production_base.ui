@@ -35,6 +35,9 @@
    </property>
    <item row="0" column="1">
     <widget class="QCheckBox" name="mUpdateWellLocation">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Координаты всех скважн будут обновлены согласно расположению устья&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Обновить координаты скважин</string>
      </property>
@@ -45,6 +48,9 @@
    </item>
    <item row="0" column="0">
     <widget class="QCheckBox" name="mAddAllWells">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;В слой будут прочитаны все скважины независимо от наличия добычи&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Добавить в слой все скважины</string>
      </property>
@@ -86,6 +92,9 @@
       <layout class="QHBoxLayout" name="fondBoxLayout">
        <item>
         <widget class="QRadioButton" name="fondByWellRdBtn">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Чтение фонда по каждой скважине идет &lt;/p&gt;&lt;p&gt;на последнюю дату работы скважины&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>По скважине</string>
          </property>
@@ -96,6 +105,9 @@
        </item>
        <item>
         <widget class="QRadioButton" name="fondByObjRdBtn">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Чтение фонда по каждой скважине идет &lt;/p&gt;&lt;p&gt;на последнюю дату работы на указанном объекте&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>По объекту</string>
          </property>
@@ -165,6 +177,9 @@
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="1">
           <widget class="QCheckBox" name="mDynamicCheckBox">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Прочитать добычу по месяцам за указанный интервал.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>Динамика добычи</string>
            </property>
@@ -177,6 +192,9 @@
            </property>
            <property name="displayFormat">
             <string>dd.MM.yyyy</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -198,6 +216,9 @@
           <widget class="QDateEdit" name="endDateEdit">
            <property name="displayFormat">
             <string>dd.MM.yyyy</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
            </property>
            <property name="timeSpec">
             <enum>Qt::LocalTime</enum>
@@ -264,6 +285,9 @@
        <horstretch>0</horstretch>
        <verstretch>1</verstretch>
       </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;При чтении максимальных дебитов проводить анализ значений на корректность и отсеивать не корректные значения&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="title">
       <string>Отсеивать выбросы максимальных дебитов</string>
@@ -336,6 +360,9 @@
    </item>
    <item row="6" column="1">
     <widget class="QCheckBox" name="isProfilingChkBox">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Включить замер времени выполнения кода&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Профайлинг</string>
      </property>
@@ -343,6 +370,9 @@
    </item>
    <item row="7" column="1">
     <widget class="QCheckBox" name="isDebugChkBox">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Включить вывод в консоль детальной информации&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Полное логирование</string>
      </property>
