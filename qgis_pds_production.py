@@ -351,7 +351,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
     #===========================================================================
     # 
     #===========================================================================
-    def on_buttonBox_accepted(self):
+    def on_buttonBox_accepted(self):  #default QDialog action
         self.process()
     #=======================================================================
     # 
@@ -884,10 +884,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             cSymbol =           self.layer.fieldNameIndex(Fields.Symbol.name           )
             cSymbolId =         self.layer.fieldNameIndex(Fields.SymbolId.name         )
             cSymbolName =       self.layer.fieldNameIndex(Fields.SymbolName.name       )
-            cResState =         self.layer.fieldNameIndex(Fields.resstate.name        )
-            cMovingRes =        self.layer.fieldNameIndex(Fields.movingres.name       )
-            cMultiProd =        self.layer.fieldNameIndex(Fields.multiprod.name       )
-            cStartDate =        self.layer.fieldNameIndex(Fields.startDate.name       )
+            cResState =         self.layer.fieldNameIndex(Fields.resstate.name         )
+            cMovingRes =        self.layer.fieldNameIndex(Fields.movingres.name        )
+            cMultiProd =        self.layer.fieldNameIndex(Fields.multiprod.name        )
+            cStartDate =        self.layer.fieldNameIndex(Fields.startDate.name        )
             cRole      =        self.layer.fieldNameIndex(Fields.WellRole.name         )
             cStatus    =        self.layer.fieldNameIndex(Fields.WellStatus.name       )
             cStatusReason    =  self.layer.fieldNameIndex(Fields.WellStatusReason.name )
@@ -899,10 +899,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 , [Fields.Symbol.name           ,cSymbol           ,  Fields.Symbol.name            ]
                 , [Fields.SymbolId.name         ,cSymbolId         ,  Fields.SymbolId.name          ]
                 , [Fields.SymbolName.name       ,cSymbolName       ,  Fields.SymbolName.name        ]
-                , [Fields.resstate.name         ,cResState         ,  Fields.resstate.name         ]
-                , [Fields.movingres.name        ,cMovingRes        ,  Fields.movingres.name        ]
-                , [Fields.multiprod.name        ,cMultiProd        ,  Fields.multiprod.name        ]
-                , [Fields.startDate.name        ,cStartDate        ,  Fields.startDate.name        ]
+                , [Fields.resstate.name         ,cResState         ,  Fields.resstate.name          ]
+                , [Fields.movingres.name        ,cMovingRes        ,  Fields.movingres.name         ]
+                , [Fields.multiprod.name        ,cMultiProd        ,  Fields.multiprod.name         ]
+                , [Fields.startDate.name        ,cStartDate        ,  Fields.startDate.name         ]
                 , [Fields.WellRole.name         ,cRole             ,  Fields.WellRole.name          ]
                 , [Fields.WellStatus.name       ,cStatus           ,  Fields.WellStatus.name        ]
                 , [Fields.WellStatusReason.name ,cStatusReason     ,  Fields.WellStatusReason.name  ]
@@ -1769,10 +1769,12 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         """
             @info: Load production wells, which work on selected reservoirs in that date limits
         """
-        if self.isCurrentProd  and not self.isFondLayer:
-            #--- Load only wells, which last work <=self.mEndDate on self.mSelectedReservoirs
+        if self.isCurrentProd  and not self.isFondLayer and self.fondLoadConfig.isWell:
+            #--- Load only wells, which has work <=self.mEndDate
+            #---  and last reservoir in (<=self.mEndDate) is self.mSelectedReservoirs
             # --- For CURRENT PROD 
             sql =u"""
+                ---GET WELLS, which has work <=self.mEndDate and last reservoir in (<=self.mEndDate) is self.mSelectedReservoirs
                 SELECT 
                     DISTINCT well.WELL_ID
                     {v_maxdt}
@@ -1799,7 +1801,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                             {start_time_filter} 
                         GROUP BY wellbore.WELL_S
                      )  md, ---MAX WELL PRODUCTION DATE
-                      
+                       
                     (SELECT wellbore_intv.geologic_ftr_s ftr_s
                         FROM earth_pos_rgn, wellbore_intv, topological_rel, reservoir_part 
                         WHERE earth_pos_rgn_s = topological_rel.prim_toplg_obj_s 
@@ -1824,10 +1826,71 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                           , start_time_filter=u"AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate)
                           , reservoir_group_filter=u"AND reservoir_part_code in ('" + u"','".join(reservoir_group_names) +u"')"
                           )
+        elif self.isCurrentProd  and not self.isFondLayer and self.fondLoadConfig.isObject:
+            #--- Load only wells, which last work <=self.mEndDate and work reservoir in self.mSelectedReservoirs
+            # --- For CURRENT PROD 
+            sql =u"""
+                ---GET WELLS, which has work <=self.mEndDate and has reservoir in (<=self.mEndDate) is self.mSelectedReservoirs
+                SELECT 
+                    DISTINCT well.WELL_ID
+                    {v_maxdt}
+                FROM  reservoir_part,
+                    wellbore_intv,
+                    wellbore,
+                    well,
+                    production_aloc,
+                    pfnu_prod_act_x,
+                    (
+                    SELECT
+                            wellbore.WELL_S w_s
+                            ,MAX(PRODUCTION_ALOC.START_TIME) max_time
+                            ,reservoir_part.reservoir_part_s
+                        FROM  reservoir_part,
+                            wellbore_intv,
+                            wellbore,
+                            production_aloc,
+                            pfnu_prod_act_x
+                        WHERE PRODUCTION_ALOC.PRODUCTION_ALOC_S = PFNU_PROD_ACT_X.PRODUCTION_ACT_S
+                            AND production_aloc.bsasc_source = 'Reallocated Production'
+                            AND reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s
+                            AND wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s
+                            AND wellbore.wellbore_s=wellbore_intv.wellbore_s
+                            {start_time_filter} 
+                        GROUP BY wellbore.WELL_S
+                                ,reservoir_part.reservoir_part_s
+                     )  md, ---MAX WELL RESERVOIR PRODUCTION DATE
+                      
+                    (
+                    SELECT wellbore_intv.geologic_ftr_s ftr_s
+                        FROM earth_pos_rgn, wellbore_intv, topological_rel, reservoir_part 
+                        WHERE earth_pos_rgn_s = topological_rel.prim_toplg_obj_s 
+                           AND wellbore_intv_s = topological_rel.sec_toplg_obj_s 
+                           AND earth_pos_rgn.geologic_ftr_s = reservoir_part_s 
+                           AND entity_type_nm = 'RESERVOIR_ZONE' 
+                           {reservoir_group_filter}
+                    ) res ---RESERVOIRS IN GROUP
+                    WHERE PRODUCTION_ALOC.PRODUCTION_ALOC_S = PFNU_PROD_ACT_X.PRODUCTION_ACT_S
+                        AND production_aloc.bsasc_source = 'Reallocated Production'
+                        AND reservoir_part.reservoir_part_s = pfnu_prod_act_x.pfnu_s
+                        AND PRODUCTION_ALOC.START_TIME = md.max_time               ---ONLY LAST WELL-RESEROIR PRODUCTION
+                        AND md.reservoir_part_s = reservoir_part.reservoir_part_s  ---ONLY LAST WELL-RESEROIR PRODUCTION
+                        ---{start_time_filter} 
+                        AND wellbore.WELL_S=md.w_s
+                        AND reservoir_part.reservoir_part_s = res.ftr_s
+                        AND wellbore_intv.geologic_ftr_s = reservoir_part.reservoir_part_s
+                        AND wellbore.wellbore_s=wellbore_intv.wellbore_s
+                        AND well.well_s=wellbore.well_s
+                    GROUP by well.WELL_ID    
+                      """.format(
+                          v_maxdt=u","+self.to_oracle_char("max(production_aloc.END_TIME)")
+                          , start_time_filter=u"AND PRODUCTION_ALOC.START_TIME <= " + self.to_oracle_date(self.mEndDate)
+                          , reservoir_group_filter=u"AND reservoir_part_code in ('" + u"','".join(reservoir_group_names) +u"')"
+                          )                      
         else:
             #--- Load only wells which works <=self.mEndDate >=self.mStartDate on  self.mSelectedReservoirs
             # --- For CUMMULATIVE_PROD and for FOND
             sql = u"""
+                ---GET WELLS, which has work <=self.mEndDate >=self.mStartDate and has reservoir in  self.mSelectedReservoirs
                 SELECT DISTINCT 
                     well.WELL_ID
                     {v_maxdt}
