@@ -3,13 +3,18 @@ from __future__ import division as division
 from datetime import datetime as datetime 
 from functools import total_ordering as total_ordering 
 from itertools import izip as izip 
-from os import environ as environ 
-from os .path import abspath as abspath 
+from os import environ, path
+from os.path import abspath as abspath
 from time import sleep as sleep 
 import logging as logging 
 import sqlite3 as sqlite3 
 
 environ ['NLS_LANG']='.AL32UTF8'
+import sys
+sys.path.append(str(path.join(
+                                path.dirname(path.abspath(__file__))
+                                ,r"libs\x86_64" if sys.maxsize > 2**32 else r"libs\i386"
+                            )))
 import cx_Oracle as cx_Oracle 
 
 
@@ -262,7 +267,7 @@ class Sqlite (Base ):
                 logging .exception ('!!! possible locked database, try reexecute')
                 sleep (reexecute_interval )
 
-        raise 
+        raise 'Error'
 
 
 

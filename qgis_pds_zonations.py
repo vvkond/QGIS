@@ -21,11 +21,12 @@ from qgis_pds_templateList import QgisPDSTemplateListDialog
 from qgis_pds_wellsBrowserForm import *
 from bblInit import layer_to_labeled, FieldsForLabels, Fields
 
-IS_DEBUG=False
+IS_DEBUG = False
 
-#===============================================================================
-# 
-#===============================================================================
+
+# ===============================================================================
+#
+# ===============================================================================
 class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
     def __init__(self, _project, _iface, parent=None):
         self.scheme = ''
@@ -48,10 +49,10 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         self.zonationListWidget.itemSelectionChanged.connect(self.zonationListWidget_itemSelectionChanged)
 
         settings = QSettings()
-        self.mUseElevation.setChecked(settings.value("/PDS/Zonations/UseElevation/v"+self.scheme, u'True') == u'True')
-        self.mUseErosion.setChecked(settings.value("/PDS/Zonations/UseErosion/v"+self.scheme, u'False') == u'True')
+        self.mUseElevation.setChecked(settings.value("/PDS/Zonations/UseElevation/v" + self.scheme, u'True') == u'True')
+        self.mUseErosion.setChecked(settings.value("/PDS/Zonations/UseErosion/v" + self.scheme, u'False') == u'True')
 
-        selectedParameters = QSettings().value("/PDS/Zonations/SelectedParameters/v"+self.scheme, [])
+        selectedParameters = QSettings().value("/PDS/Zonations/SelectedParameters/v" + self.scheme, [])
         self.selectedParameters = [int(z) for z in selectedParameters]
 
         self.fillParameters()
@@ -68,19 +69,19 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         if hasattr(self, 'isEnableFilterChkBox'):
             self.isEnableFilterChkBox.setVisible(False)
 
-
     def zonationListWidget_itemSelectionChanged(self):
         if not self.isInitialized:
             return
 
         self.wellsBrowser.refreshWells()
-    #===============================================================================
-    # 
-    #===============================================================================
+
+    # ===============================================================================
+    #
+    # ===============================================================================
     def process(self):
         global IS_DEBUG
-        IS_DEBUG=     self.isDebugChkBox.isChecked()
-        
+        IS_DEBUG = self.isDebugChkBox.isChecked()
+
         selectedZonations = []
         selectedZones = []
         for si in self.zonationListWidget.selectedItems():
@@ -104,14 +105,13 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         zoneName = zoneName.replace('/', '_')
         if self.createLayer(layerName):
-            
             IS_DEBUG and QgsMessageLog.logMessage(u'Start edit layer', tag="QgisPDS.qgis_pds_zonations")
             with edit_layer(self.layer):
-                #self.layer.startEditing()
-                self.execute(sel, paramId,layerName)
-                #self.layer.commitChanges()
+                # self.layer.startEditing()
+                self.execute(sel, paramId, layerName)
+                # self.layer.commitChanges()
             IS_DEBUG and QgsMessageLog.logMessage(u'End edit layer', tag="QgisPDS.qgis_pds_zonations")
-            
+
             IS_DEBUG and QgsMessageLog.logMessage(u'Save layer as shp', tag="QgisPDS.qgis_pds_zonations")
             self.layer = memoryToShp(self.layer, self.project['project'], layerName + '_' + zoneName)
 
@@ -119,30 +119,32 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
             palyr.readFromLayer(self.layer)
             palyr.enabled = True
             palyr.fieldName = layerName.strip()
-            palyr.placement = QgsPalLayerSettings.OverPoint #QgsPalLayerSettings.AroundPoint
+            palyr.placement = QgsPalLayerSettings.OverPoint  # QgsPalLayerSettings.AroundPoint
             palyr.quadOffset = QgsPalLayerSettings.QuadrantAboveRight
             palyr.labelOffsetInMapUnits = False
             palyr.distInMapUnits = True
             palyr.displayAll = True
             palyr.fontSizeInMapUnits = False
-            palyr=layer_to_labeled(palyr)  #---enable EasyLabel            
+            palyr = layer_to_labeled(palyr)  # ---enable EasyLabel
             palyr.writeToLayer(self.layer)
 
             QgsMapLayerRegistry.instance().addMapLayer(self.layer)
 
         try:
             settings = QSettings()
-            settings.setValue("/PDS/Zonations/SelectedZonations/v"+self.scheme, selectedZonations)
-            settings.setValue("/PDS/Zonations/selectedZones/v"+self.scheme, selectedZones)
-            settings.setValue("/PDS/Zonations/SelectedParameter/v"+self.scheme, paramId)
-            settings.setValue("/PDS/Zonations/UseElevation/v"+self.scheme, u'True' if self.mUseElevation.isChecked() else u'False')
-            settings.setValue("/PDS/Zonations/UseErosion/v"+self.scheme, u'True' if self.mUseErosion.isChecked() else u'False')
+            settings.setValue("/PDS/Zonations/SelectedZonations/v" + self.scheme, selectedZonations)
+            settings.setValue("/PDS/Zonations/selectedZones/v" + self.scheme, selectedZones)
+            settings.setValue("/PDS/Zonations/SelectedParameter/v" + self.scheme, paramId)
+            settings.setValue("/PDS/Zonations/UseElevation/v" + self.scheme,
+                              u'True' if self.mUseElevation.isChecked() else u'False')
+            settings.setValue("/PDS/Zonations/UseErosion/v" + self.scheme,
+                              u'True' if self.mUseErosion.isChecked() else u'False')
         except:
             return
 
-    #===============================================================================
-    # 
-    #===============================================================================
+    # ===============================================================================
+    #
+    # ===============================================================================
     def createLayer(self, name):
         try:
             uri = "Point?crs={}".format(self.proj4String)
@@ -162,9 +164,9 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                                                 level=QgsMessageBar.CRITICAL)
             return False
 
-    #===============================================================================
-    # 
-    #===============================================================================
+    # ===============================================================================
+    #
+    # ===============================================================================
     def execute(self, zoneDef, paramId, paramName):
         sql = self.get_sql('ZonationParams.sql')
         wellSql = self.get_sql('WellPaths.sql')
@@ -177,13 +179,19 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         wellsWithoutElev = ''
         for id in well_ids:
             IS_DEBUG and QgsMessageLog.logMessage(u'well_id:{}'.format(str(id)), tag="QgisPDS.qgis_pds_zonations")
-            records = self.db.execute(sql, well_id=id, parameter_id=paramId, zonation_id=zoneDef[1], base_order=zoneOrder)
+            records = self.db.execute(sql, well_id=id, parameter_id=paramId, zonation_id=zoneDef[1],
+                                      base_order=zoneOrder)
             hasRecords = False
             if records:
                 for input_row in records:
                     hasRecords = True
-                    x, y, value, intervalName, intervalId, topZoneValue = self.get_zone_coord_value(input_row, zoneDef[1], zoneDef[0])
-                    IS_DEBUG and QgsMessageLog.logMessage(u'\tx, y, value, intervalName, intervalId, topZoneValue={}'.format(str([x, y, value, intervalName, intervalId, topZoneValue])), tag="QgisPDS.qgis_pds_zonations")
+                    x, y, value, intervalName, intervalId, topZoneValue = self.get_zone_coord_value(input_row,
+                                                                                                    zoneDef[1],
+                                                                                                    zoneDef[0])
+                    IS_DEBUG and QgsMessageLog.logMessage(
+                        u'\tx, y, value, intervalName, intervalId, topZoneValue={}'.format(
+                            str([x, y, value, intervalName, intervalId, topZoneValue])),
+                        tag="QgisPDS.qgis_pds_zonations")
                     if x is not None and y is not None:
                         if useErosion or intervalId == zone_id:
                             if topZoneValue and intervalId != zone_id:
@@ -196,7 +204,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                             feat.setGeometry(l)
                             feat.setAttribute(Fields.WellId.name, wellName)
                             feat.setAttribute(u'interval', intervalName)
-                            
+
                             if self.mUseElevation.isChecked() and not input_row[22]:
                                 pass
                                 if len(wellsWithoutElev) > 0:
@@ -217,9 +225,8 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         if len(wellsWithoutElev):
             QtGui.QMessageBox.warning(None, self.tr(u'Warning'),
-                                       self.tr(u'No elevation in wells:') + '\n' + wellsWithoutElev,
-                                       QtGui.QMessageBox.Ok)
-
+                                      self.tr(u'No elevation in wells:') + '\n' + wellsWithoutElev,
+                                      QtGui.QMessageBox.Ok)
 
     def getWellBottom(self, sql, wellId):
         records = self.db.execute(sql, well_id=wellId)
@@ -238,7 +245,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
                 blob_x = numpy.fromstring(self.db.blobToString(rec[6]), '>f').astype('d')
                 blob_y = numpy.fromstring(self.db.blobToString(rec[7]), '>f').astype('d')
-                ip  = len(blob_x) - 1
+                ip = len(blob_x) - 1
                 dx = 0
                 dy = 0
                 if ip >= 0:
@@ -248,7 +255,6 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                 break
 
         return (pt, wellName)
-
 
     def getIntervalOrder(self, intervalId):
         result = 0
@@ -269,7 +275,6 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                 result = val
                 break
         return result
-
 
     @cached_property
     def zonation_id_column_index(self):
@@ -412,13 +417,12 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         for t in self.read_zonation_params(zonation_params):
             zonation_id, well_id, zone_id, name, type, value = t
             if (
-                zonation_id == _zonation_id and
-                well_id == _well_id and
-                zone_id == _zone_id and
-                name == _name
+                    zonation_id == _zonation_id and
+                    well_id == _well_id and
+                    zone_id == _zone_id and
+                    name == _name
             ):
                 return value
-
 
     def get_zone_coord_value(self, input_row, zonationId, zoneId):
         ZAV_INDT_LO = -1000.9
@@ -464,7 +468,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
 
         def read_floats(index):
             return numpy.frombuffer(self.db.blobToString(input_row[index]), dtype='>f')
-            #return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d')
+            # return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d')
 
         x = read_floats(self.deviation_x_column_index)
         y = read_floats(self.deviation_y_column_index)
@@ -517,10 +521,9 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         ret_y = pt.y() + yPosition
         return (ret_x, ret_y, value, intervalName, intervalId, erosionDepth)
 
-
     def fillParameters(self):
         settings = QSettings()
-        selectedParameter = int(settings.value("/PDS/Zonations/SelectedParameter/v"+self.scheme, -1))
+        selectedParameter = int(settings.value("/PDS/Zonations/SelectedParameter/v" + self.scheme, -1))
 
         self.mParamComboBox.clear()
         records = self.db.execute(self.get_sql('ZonationParams_parameter.sql'))
@@ -529,7 +532,7 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
                 if len(self.selectedParameters) == 0 or row[0] in self.selectedParameters:
                     self.mParamComboBox.addItem(row[1], int(row[0]))
                     if selectedParameter == int(row[0]):
-                        self.mParamComboBox.setCurrentIndex(self.mParamComboBox.count()-1)
+                        self.mParamComboBox.setCurrentIndex(self.mParamComboBox.count() - 1)
 
     def mParamToolButton_clicked(self):
         zonation_id = None
@@ -544,9 +547,8 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         dlg = QgisPDSZoneparamsDialog(self.project, self.iface, zonation_id, zone_id, well_ids, self)
         if dlg.exec_():
             self.selectedParameters = dlg.getSelected()
-            QSettings().setValue("/PDS/Zonations/SelectedParameters/v"+self.scheme, self.selectedParameters)
+            QSettings().setValue("/PDS/Zonations/SelectedParameters/v" + self.scheme, self.selectedParameters)
             self.fillParameters()
-
 
     def getZoneWells(self):
         wellList = []
@@ -566,17 +568,17 @@ class QgisPDSZonationsDialog(QgisPDSCoordFromZoneDialog):
         if records:
             for rec in records:
                 well = []
-                well.append(int(rec[0]))                                    #id (not shown)
-                well.append(rec[1])                                         #wellName
-                well.append(rec[2])                                         #Full name
-                well.append(rec[3])                                         #Operator
-                well.append(rec[4])                                         #API number
-                well.append(rec[5])                                         #Location
-                well.append(float(rec[6]) if rec[6] is not None else 0)     #Latitude
-                well.append(float(rec[7]) if rec[7] is not None else 0)     #Longitude
-                well.append(rec[8])                                         #Slot number
-                well.append(rec[9])                                         #Owner
-                dt = QDateTime.fromTime_t(0).addSecs(int(rec[10]))          #Date
+                well.append(int(rec[0]))  # id (not shown)
+                well.append(rec[1])  # wellName
+                well.append(rec[2])  # Full name
+                well.append(rec[3])  # Operator
+                well.append(rec[4])  # API number
+                well.append(rec[5])  # Location
+                well.append(float(rec[6]) if rec[6] is not None else 0)  # Latitude
+                well.append(float(rec[7]) if rec[7] is not None else 0)  # Longitude
+                well.append(rec[8])  # Slot number
+                well.append(rec[9])  # Owner
+                dt = QDateTime.fromTime_t(0).addSecs(int(rec[10]))  # Date
                 well.append(dt)
                 wellList.append(well)
 
