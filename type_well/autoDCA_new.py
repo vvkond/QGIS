@@ -769,6 +769,11 @@ class DCA():
                 #Find time for start and end of stream
                 iT=oil.loc[stream.index[0],'Time']
                 eT=oil.loc[stream.index[len(stream)-1],'Time']
+                #Sometimes there are more that 1 record per a time
+                if type(iT) <> np.int64:
+                    iT=oil.loc[stream.index[0],'Time'][0]
+                if type(eT) <> np.int64:
+                    eT=oil.loc[stream.index[len(stream)-1],'Time'][0]
                 log('iT= ', iT)
                 log('eT=', eT)
                 
@@ -1185,15 +1190,16 @@ class DCA():
                         lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').sum()
                         #Drop 1st year
                         lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
-                        comb_oil[well]=oil['Rate'].resample('Y').sum().append(lp_forecast1)
+                        #sum is replaced with mean - average daily rate in the year
+                        comb_oil[well]=oil['Rate'].resample('Y').mean().append(lp_forecast1)
                         #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
                             
                 else:
                     if len(lp_forecast)>0:
-                        lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').sum()
+                        lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').mean()
                         #Drop 1st year
                         lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
-                        comb_oil[well]=oil['Rate'].resample('Y').sum().append(lp_forecast1)
+                        comb_oil[well]=oil['Rate'].resample('Y').mean().append(lp_forecast1)
                         #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
                 wcount=wcount+1
                 #Append eur_list, skip wells without forecast to match comboil
@@ -1243,9 +1249,15 @@ class DCA():
             plt.legend(loc='best')
             plt.title('Historical and forecast rates for '+self.REG)
             self.show_plot(plt,block=True)
+            
+            #Trim comboil to lp_foracast start
+            #f_start=lp_forecast.index[0].year
+            #f_end=lp_forecast.index[len(lp_forecast)-1].year
                     
             #Export last point forecast to Excel
             out_f=os.path.join(out_dir,'TypeWell_'+self.REG+'.xlsx')
+            #comb_oil2=comb_oil1.loc[f_start:f_end]
+            
             comb_oil1.index=comb_oil1.index.year
             comb_oil1.transpose().to_excel(out_f)
             log( "END")
