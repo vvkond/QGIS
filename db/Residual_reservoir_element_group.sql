@@ -1,51 +1,85 @@
-SELECT
-    rp2.RESERVOIR_PART_S,
-    rp2.RESERVOIR_PART_NAME
+SELECT 
+    distinct
+    GRP_S,
+    GRP_NAME
+    
 FROM
-    reservoir_part rp2
-WHERE
-    rp2.ENTITY_TYPE_NM = 'RESERVOIR_ZONE'
-    AND EXISTS
-    (SELECT
-        *
-    FROM
-        (SELECT
-            *
-        FROM
-            P_STD_VOL_LQ
-        UNION
-        SELECT
-            *
-        FROM
-            P_STD_VOL_GAS
-        ) p,
-        PRODUCTION_ALOC pa,
-        PFNU_PROD_ACT_X ppax,
-        RESERVOIR_PART rp,
-        WELLBORE_INTV wbi,
-        WELLBORE wb,
-        WELL w,
-        TOPOLOGICAL_REL tr,
-        EARTH_POS_RGN epr,
-        RESERVOIR_PART grp,
-        TIG_WELL_HISTORY twh
-    WHERE
-        p.ACTIVITY_S = pa.PRODUCTION_ALOC_S
-        AND pa.PRODUCTION_ALOC_S = ppax.PRODUCTION_ACT_S
-        AND rp.RESERVOIR_PART_S = ppax.PFNU_S
-        AND wbi.GEOLOGIC_FTR_S = rp.RESERVOIR_PART_S
-        AND wb.WELLBORE_S = wbi.WELLBORE_S
-        AND w.WELL_S = wb.WELL_S
-        AND wbi.WELLBORE_INTV_S = tr.SEC_TOPLG_OBJ_S
-        AND epr.EARTH_POS_RGN_S = tr.PRIM_TOPLG_OBJ_S
-        AND grp.RESERVOIR_PART_S = epr.GEOLOGIC_FTR_S
-        AND w.WELL_ID = twh.TIG_LATEST_WELL_NAME
-        AND p.DATA_VALUE > 0
-        AND pa.BSASC_SOURCE = 'Reallocated Production'
-        AND p.BSASC_SOURCE = :bsasc_source
-        AND(NOT twh.TIG_LONGITUDE = 0
-        OR NOT twh.TIG_LATITUDE = 0)
-        AND grp.RESERVOIR_PART_S = rp2.RESERVOIR_PART_S
-    )
-ORDER BY
-    rp2.RESERVOIR_PART_NAME
+        ---- PRODUCTION RECORDS IN P_STD_VOL_LQ,P_STD_VOL_GAS FOR SELECTED PRODUCT 
+        (
+        SELECT distinct ACTIVITY_S from 
+            (
+            SELECT
+                distinct ACTIVITY_S
+            FROM
+                P_STD_VOL_LQ
+            WHERE DATA_VALUE > 0
+                AND ACTIVITY_T='PRODUCTION_ALOC'
+                AND BSASC_SOURCE = :bsasc_source
+                
+            UNION
+            SELECT
+                distinct ACTIVITY_S
+            FROM
+                P_STD_VOL_GAS
+            WHERE DATA_VALUE > 0
+                AND ACTIVITY_T='PRODUCTION_ALOC'
+                AND BSASC_SOURCE = :bsasc_source
+            ) p1
+        ) p
+        ---- PRODUCTION ALLOCATION FOR RESERVOIR_PARTS
+        INNER JOIN 
+            (
+            SELECT distinct PFNU_S
+                        ,PRODUCTION_ALOC_S
+            FROM PRODUCTION_ALOC pa
+            INNER JOIN PFNU_PROD_ACT_X ppax
+                ON pa.PRODUCTION_ALOC_S = ppax.PRODUCTION_ACT_S
+                AND pa.BSASC_SOURCE = 'Reallocated Production'
+                AND ppax.PFNU_T = 'RESERVOIR_PART'
+            ) reservoir_prods 
+        ON p.ACTIVITY_S = reservoir_prods.PRODUCTION_ALOC_S
+        ---- ALL WELL->RESERVOIR_PARTS->RESERVOIR_PART_GROUPS
+        INNER JOIN 
+            (
+                   -------------RESERVOIR PART AND GROUP
+                    select distinct 
+                        w.WELL_ID
+                        ,rp.RESERVOIR_PART_S
+                        ,rp.RESERVOIR_PART_NAME
+                        ,GRP.RESERVOIR_PART_S GRP_S
+                        ,GRP.RESERVOIR_PART_NAME GRP_NAME
+                    from 
+                        WELL w
+                        ,WELLBORE wb
+                        ,RESERVOIR_PART rp
+                        ,WELLBORE_INTV wbi
+                        ---get WELLBORE_INTERVAL(SEC_TOPLG_OBJ)->is topological in RESERVOIR_PART(PRIM_TOPLG_OBJ) 
+                        LEFT JOIN TOPOLOGICAL_REL 
+                            ON 
+                                TOPOLOGICAL_REL.SEC_TOPLG_OBJ_S = wbi.WELLBORE_INTV_S
+                                AND 
+                                TOPOLOGICAL_REL.SEC_TOPLG_OBJ_T = 'WELLBORE_INTV'
+                                AND
+                                TOPOLOGICAL_REL.PRIM_TOPLG_OBJ_T='EARTH_POS_RGN'
+                        LEFT JOIN EARTH_POS_RGN 
+                            ON 
+                                TOPOLOGICAL_REL.PRIM_TOPLG_OBJ_S =EARTH_POS_RGN.EARTH_POS_RGN_S
+                                AND
+                                EARTH_POS_RGN.GEOLOGIC_FTR_T='RESERVOIR_PART'
+                        LEFT JOIN RESERVOIR_PART GRP 
+                            ON 
+                                EARTH_POS_RGN.GEOLOGIC_FTR_S=GRP.RESERVOIR_PART_S
+                    ----            
+                    where 
+                        wbi.WELLBORE_S=wb.WELLBORE_S
+                        ---get RESERVOIR_PART of WELLBORE_INTERVAL
+                        and wbi.GEOLOGIC_FTR_T='RESERVOIR_PART'
+                        and rp.RESERVOIR_PART_S=wbi.GEOLOGIC_FTR_S
+                        and w.WELL_S=wb.WELL_S
+                        and GRP.RESERVOIR_PART_S is not Null   ----ONLY RESERVOIRS WITH GROUPS!!!!!
+                ) well_reservoirs_groups
+        ON reservoir_prods.PFNU_S = well_reservoirs_groups.RESERVOIR_PART_S
+order by GRP_NAME
+
+ 
+   
