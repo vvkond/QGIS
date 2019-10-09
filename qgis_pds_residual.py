@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from os.path import basename, dirname
-import tempfile
+import tempfile, time
 from datetime import timedelta
 
 from qgis.core import *
@@ -30,6 +30,7 @@ from qgis_processing import *
 from tig_projection import *
 from qgis_pds_wellFilter import QgisWellFilterDialog
 
+IS_DEBUG=False
 class Item(StrictInit):
     id = None
     begin = None
@@ -166,13 +167,18 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         self.mSaturationLineEdit.setValidator(validator)
         self.mShrinkageLineEdit.setValidator(validator)
 
+        try:
+            self.restoreSettings()
+        except Exception as e:
+            self.iface.messageBar().pushMessage(self.tr("Warning")
+                                                , self.tr(u'Cant restore last config: {}').format(str(e))
+                                                , level=QgsMessageBar.CRITICAL
+                                                )
         self.fillRasterLayers()
-
-        self.restoreSettings()
-
         self.fillReservoirs()
         self.fillZonations()
-
+        self.fillZones()
+        
         self.mStartDateComboBox.addItem(str(self.start_date), self.start_date)
         self.mEndDateComboBox.addItem(str(self.endDate), self.endDate)
 
@@ -180,6 +186,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
 
         # self.setStartDate()
         # self.setEndDate()
+
 
     def setZoneWidgetVisible(self):
         self.mZoneLabel.setVisible(self.well_coords == 'well_zone')
@@ -208,27 +215,39 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
 
     @property
     def zonationId(self):
-        idx = self.mZonationComboBox.currentIndex()
-        if idx < 0:
-            return 0
-        else:
-            return int(self.mZonationComboBox.itemData(idx))
-
+        try:
+            idx = self.mZonationComboBox.currentIndex()
+            if idx < 0:
+                return 0
+            else:
+                return int(self.mZonationComboBox.itemData(idx))
+        except Exception as e:
+            QgsMessageLog.logMessage(u"Error get zonationId: {}".format(str(e)), tag="QgisPDS.Error")
+            raise e
+        
     @property
     def zoneId(self):
-        idx = self.mZoneComboBox.currentIndex()
-        if idx < 0:
-            return 0
-        else:
-            return int(self.mZoneComboBox.itemData(idx)[0])
+        try:
+            idx = self.mZoneComboBox.currentIndex()
+            if idx < 0:
+                return 0
+            else:
+                return int(self.mZoneComboBox.itemData(idx).data(Qt.UserRole)[0])
+        except Exception as e:
+            QgsMessageLog.logMessage(u"Error get zoneId: {}".format(str(e)), tag="QgisPDS.Error")
+            raise e
 
     @property
     def zoneOrder(self):
-        idx = self.mZoneComboBox.currentIndex()
-        if idx < 0:
-            return 0
-        else:
-            return int(self.mZoneComboBox.itemData(idx)[2])
+        try:
+            idx = self.mZoneComboBox.currentIndex()
+            if idx < 0:
+                return 0
+            else:
+                return int(self.mZoneComboBox.itemData(idx).data(Qt.UserRole)[2])
+        except Exception as e:
+            QgsMessageLog.logMessage(u"Error get zoneOrder: {}".format(str(e)), tag="QgisPDS.Error")
+            raise e
 
 
     @property
@@ -309,8 +328,8 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
             blob_x = row[4]
             blob_y = row[5]
             if blob_x is not None and blob_y is not None:
-                xx = numpy.fromstring(self.db.blobToString(blob_x), '>f').astype('d')
-                yy = numpy.fromstring(self.db.blobToString(blob_y), '>f').astype('d')
+                xx = numpy.frombuffer(self.db.blobToString(blob_x), dtype='>f').astype('d') #xx = numpy.fromstring(self.db.blobToString(blob_x), '>f').astype('d')
+                yy = numpy.frombuffer(self.db.blobToString(blob_y), dtype='>f').astype('d') #yy = numpy.fromstring(self.db.blobToString(blob_y), '>f').astype('d')
                 size_x = len(xx)
                 size_y = len(yy)
 
@@ -330,7 +349,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
 
     def _getCoords(self, lon, lat, idZonation, idZone, wellId):
         def read_floats(index):
-            return numpy.fromstring(self.db.blobToString(input_row[index]), '>f').astype('d')
+            return numpy.frombuffer(self.db.blobToString(input_row[index]), dtype='>f').astype('d') 
 
 
         sql = self.get_sql('ZonationCoords.sql')
@@ -388,6 +407,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         }
 
     def get_all_wells(self):
+        IS_DEBUG and QgsMessageLog.logMessage(u"Execute get_all_wells for {}\n".format(self.well_coords), tag="QgisPDS.residual")
         get_raw_wells = self.well_coords_methods[self.well_coords]
         wells = {}
         unique_positions = set()
@@ -395,7 +415,12 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         for well in get_raw_wells():
             pos = well.pos
             if self.well_coords == 'well_zone':
-                pos = self._getCoords(pos[0], pos[1], self.zonationId, self.zoneId, well.name)
+                try:
+                    pos = self._getCoords(pos[0], pos[1], self.zonationId, self.zoneId, well.name)
+                except Exception as e:
+                    QgsMessageLog.logMessage(u"Error in _getCoords({},{},{},{},{}): {}".format(pos[0], pos[1], self.zonationId, self.zoneId, well.name ,str(e)), tag="QgisPDS.Error")
+                    raise e
+
             if pos in unique_positions:
                 radius = 1e-5  # ~ 1m
                 while True:
@@ -520,21 +545,27 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
     def create_temp_points(self):
         uri = "Point?crs={}".format(self.proj4String)
         uri += "&field=ID:integer"
+        IS_DEBUG and QgsMessageLog.logMessage(u"Try load memory layer: {} : {}\n".format("temp_points",uri), tag="QgisPDS.residual")
         self.temp_points = QgsVectorLayer(uri, "temp_points", "memory")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
         QgsMapLayerRegistry.instance().addMapLayer(self.temp_points)
         self.iface.legendInterface().setLayerVisible(self.temp_points, False)
 
     def create_temp_raster_polygons(self):
         uri = "Polygon?crs={}".format(self.proj4String)
         uri += "&field=ID:integer"
+        IS_DEBUG and QgsMessageLog.logMessage(u"Try load memory layer: {} : {}\n".format("temp_raster_polygons",uri), tag="QgisPDS.residual")
         self.temp_raster_polygons_path = QgsVectorLayer(uri, "temp_raster_polygons", "memory")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
         # QgsMapLayerRegistry.instance().addMapLayer(self.temp_raster_polygons_path)
 
     def create_output_nfpt_class(self):
         uri = "Point?crs={}".format(self.proj4String)
         uri += "&field=ID:integer"
         uri += "&field=Well:string"
+        IS_DEBUG and QgsMessageLog.logMessage(u"Try load memory layer: {} : {}\n".format("TEMP_NFPT",uri), tag="QgisPDS.residual")
         self.nfpt_output_class = QgsVectorLayer(uri, "TEMP_NFPT", "memory")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
         QgsMapLayerRegistry.instance().addMapLayer(self.nfpt_output_class)
 
 
@@ -574,7 +605,9 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
             well.buffer = geom.buffer(mr, 50)
             
 
-#Execute
+    #===============================================================================
+    # Execute
+    #===============================================================================
     def execute(self):
         #Set variables
         self.porosity = float(self.mPorosityLineEdit.text())
@@ -615,46 +648,61 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         # self.addMessage(self.tr('Input raster volume: m^3'), input_raster.sum() * cell_area * self.initial_multiplier)
         self.csvWriter.writerow([self.tr('Input raster volume: m^3'), input_raster.sum() * cell_area * self.initial_multiplier])
         self.progress.setValue(0)
+        QCoreApplication.processEvents();time.sleep(0.02)
 
         self.progress.setFormat( self.tr('Creating temp feature class for polygons...') )
+        QCoreApplication.processEvents();time.sleep(0.02)
         self.create_temp_raster_polygons()
 
         self.progress.setFormat( self.tr('Creating temp feature class...') )
+        QCoreApplication.processEvents();time.sleep(0.02)
         self.create_temp_points()
 
         self.progress.setFormat( self.tr('Loading wells...') )
+        QCoreApplication.processEvents();time.sleep(0.02)
         all_wells = self.get_all_wells()
         
         self.progress.setFormat( self.tr('Copying wells to temp feature class...') )
+        QCoreApplication.processEvents();time.sleep(0.02)
         self.copy_wells_to_temp_points(all_wells.itervalues())
 
         self.progress.setFormat( self.tr('Buffering wells...') )
+        QCoreApplication.processEvents();time.sleep(0.02)
         # QgsGeometryAnalyzer().buffer(self.temp_points_path, self.temp_polygons_path, 0.02, False, False, -1)
         self.buffer_wells(all_wells.itervalues(), self.maxRadius)
 
         self.progress.setFormat( self.tr('Creating output feature class...') )
+        QCoreApplication.processEvents();time.sleep(0.02)
         uri = "Polygon?crs={}".format(self.proj4String)
         uri += "&field=ID:integer&field=NAME:string&field=VALUE:double&field=START_DATE:date&field=END_DATE:date"
+        IS_DEBUG and QgsMessageLog.logMessage(u"Try load memory layer: {} : {}\n".format(self.out_feature_path,uri), tag="QgisPDS.residual")
         self.out_path = QgsVectorLayer(uri, basename(self.out_feature_path), "memory")
+        IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
         QgsMapLayerRegistry.instance().addMapLayer(self.out_path)
         self.iface.legendInterface().setLayerVisible(self.out_path, False)
 
         self.progress.setFormat( self.tr('Loading intervals...') )
+        QCoreApplication.processEvents();time.sleep(0.02)
         first_time, times = self.get_times()
 
         events = self.get_events(first_time)    
 
         self.progress.setFormat(self.tr('Processing intervals %p%'))
+        QCoreApplication.processEvents();time.sleep(0.02)
 
         wellWithProduction = {}
         production_volume = 0
         intervals_count = len(times) - 1
+        '''
+        # ------- PROCESS EACH TIME INTERVAL AND MAKE SHP WITH POLYGONS
+        '''
+        IS_DEBUG and QgsMessageLog.logMessage(u"Start process time intervals: {} \n".format(intervals_count), tag="QgisPDS.residual")
         for i, items in enumerate(split(times, events)):
             if items:
-                # print  'Processing interval {} of {}...'.format(i + 1, intervals_count) 
+                IS_DEBUG and QgsMessageLog.logMessage(u"interval with {} items\n".format(len(items)), tag="QgisPDS.residual")
                 progr = float(i+1)/float(intervals_count) * 100
                 self.progress.setValue(progr)
-                QApplication.processEvents()
+                QCoreApplication.processEvents();time.sleep(0.02)
 
                 items_by_id = {item.id: item for item in items}
                 item_index_by_id = {item.id: i + 1 for i, item in enumerate(items)}
@@ -678,33 +726,38 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
                 self.DeleteRows_management(self.temp_raster_polygons_path)
                 if self.temp_points.featureCount() > 1:
                     extStr = '%f,%f,%f,%f' % (extent.xMinimum(), extent.xMaximum(), extent.yMinimum(), extent.yMaximum())
+                    
                     processing.runalg("grass7:v.voronoi", self.temp_points, 'False', 'False', extStr,
                                       -1, 0.000100, 3, self.temp_polygons_path, progress=self)
-
+                    IS_DEBUG and QgsMessageLog.logMessage(u"Try load layer: {}\n".format(self.temp_polygons_path), tag="QgisPDS.residual")
                     temp_polygons = QgsVectorLayer(self.temp_polygons_path, 'temp_polygons', 'ogr')
+                    IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
                     with edit(self.temp_raster_polygons_path):
                         f_raster = QgsFeature(self.temp_raster_polygons_path.fields())
                         with edit(self.out_path):
                             f_out = QgsFeature(self.out_path.fields())
                             for f_voronoy in temp_polygons.getFeatures():
-                                well = all_wells[f_voronoy[0]]
-                                wellWithProduction[f_voronoy[0]] = well
-                                item = items_by_id[well.id]
-                                voronoi_poly = f_voronoy.geometry()
-                                buffer_poly = well.buffer
-                                clipped_poly = voronoi_poly.intersection(buffer_poly)
-                                # add output feature
-                                f_out.setGeometry(clipped_poly)
-                                f_out.setAttribute('ID', well.id)
-                                f_out.setAttribute('NAME', well.name)
-                                f_out.setAttribute('VALUE', item.value)
-                                f_out.setAttribute('START_DATE', (first_time+timedelta(seconds=item.begin)).strftime('%Y-%m-%d') )
-                                f_out.setAttribute('END_DATE', (first_time + timedelta(seconds=item.end) - timedelta(days=1)).strftime('%Y-%m-%d') )
-                                self.out_path.addFeatures([f_out])
-                                #add to raster polygon
-                                f_raster.setGeometry(clipped_poly)
-                                f_raster.setAttribute('ID', item_index_by_id[well.id])
-                                self.temp_raster_polygons_path.addFeatures([f_raster])
+                                try:
+                                    well = all_wells[f_voronoy[0]]
+                                    wellWithProduction[f_voronoy[0]] = well
+                                    item = items_by_id[well.id]
+                                    voronoi_poly = f_voronoy.geometry()
+                                    buffer_poly = well.buffer
+                                    clipped_poly = voronoi_poly.intersection(buffer_poly)
+                                    # add output feature
+                                    f_out.setGeometry(clipped_poly)
+                                    f_out.setAttribute('ID', well.id)
+                                    f_out.setAttribute('NAME', well.name)
+                                    f_out.setAttribute('VALUE', item.value)
+                                    f_out.setAttribute('START_DATE', (first_time+timedelta(seconds=item.begin)).strftime('%Y-%m-%d') )
+                                    f_out.setAttribute('END_DATE', (first_time + timedelta(seconds=item.end) - timedelta(days=1)).strftime('%Y-%m-%d') )
+                                    self.out_path.addFeatures([f_out])
+                                    #add to raster polygon
+                                    f_raster.setGeometry(clipped_poly)
+                                    f_raster.setAttribute('ID', item_index_by_id[well.id])
+                                    self.temp_raster_polygons_path.addFeatures([f_raster])
+                                except Exception as e:
+                                    QgsMessageLog.logMessage(u"Error process f_voronoy {0}: {1}".format(str(f_voronoy), str(e)), tag="QgisPDS.Error")
                 else:
                     with edit(self.temp_raster_polygons_path):
                         f_raster = QgsFeature(self.temp_raster_polygons_path.fields())
@@ -733,67 +786,96 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
 
                 self.temp_raster_polygons_path.removeSelection()
                 temp_polygons = None
-
+                '''
+                # ------- MAKE RASTER FROM POLYGONS LAYER
+                '''
                 r = QgisProcessing()
                 r.rasterizeLayer(self.temp_raster_polygons_path, gdal_input_raster, rasterCrs, cols, rows)
 
                 def process(input_raster):
+                    '''
+                        READ RASTER BANDS TO NUMPY
+                    '''
+                    IS_DEBUG and QgsMessageLog.logMessage(u"Try load layer: {}\n".format(self.temp_path + '/temp_raster.tif'), tag="QgisPDS.residual")
                     gdal_layer_raster = gdal.Open(self.temp_path + '/temp_raster.tif')
+                    IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
                     band = gdal_layer_raster.GetRasterBand(1)
                     layer_raster = numpy.array(band.ReadAsArray()) 
                     noDataValue = band.GetNoDataValue()
                     layer_raster[layer_raster == noDataValue] = 0
-                    assert len(layer_raster.shape) == 2
+                    assert len(layer_raster.shape) == 2,'Error.Raster with more than 2 dimensions!!!!'
                     if layer_raster.shape[0] < input_raster.shape[0] or layer_raster.shape[1] < input_raster.shape[1]:
                         self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'PolygonToRaster_conversion made raster of size {0} which is less than input raster of size {1}').format(
                                                 layer_raster.shape, input_raster.shape),
                                                 level=QgsMessageBar.CRITICAL)
+                        QgsMessageLog.logMessage(self.tr(u'PolygonToRaster_conversion made raster of size {0} which is less than input raster of size {1}').format(
+                                                layer_raster.shape, input_raster.shape)
+                                                , tag="QgisPDS.error"
+                                                )
                         return False
                     if layer_raster.shape != input_raster.shape:
                         layer_raster = layer_raster[-input_raster.shape[0]:, -input_raster.shape[1]:]
                     layer_raster[input_raster <= 0] = 0
                     flattened = layer_raster.ravel()
-                    counts = numpy.bincount(flattened)
-                    sums = numpy.bincount(flattened, input_raster.ravel())
-                    values = numpy.zeros(counts.size, dtype='f')
-                    for i in xrange(1, counts.size):
-                        values[i] = items[i - 1].value
-                    values *= (self.value_multiplier / cell_area)
-                    multipliers = ((sums - values) / sums).astype('f')
-                    multipliers[0] = 1
-                    multipliers_raster = multipliers[layer_raster]
-                    input_raster *= multipliers_raster
+                    try:
+                        counts = numpy.bincount(flattened)
+                        sums = numpy.bincount(flattened, input_raster.ravel())
+                        values = numpy.zeros(counts.size, dtype='f')
+                        for i in xrange(1, counts.size):
+                            values[i] = items[i - 1].value
+                        values *= (self.value_multiplier / cell_area)
+                        multipliers = ((sums - values) / sums).astype('f')
+                        multipliers[0] = 1
+                        multipliers_raster = multipliers[layer_raster]
+                        input_raster *= multipliers_raster
+                    except Exception as e:
+                        QgsMessageLog.logMessage(u"Error process: {}".format( str(e)), tag="QgisPDS.Error")
+                        raise e
                     return True
-
                 if not process(input_raster):
                     return
-        
+        '''
+        # ------- CALCULATE PRODUCTION INFO VALUES
+        '''
         self.csvWriter.writerow(['Subsurface production volume: m^3', production_volume * self.value_multiplier * self.initial_multiplier])
         self.csvWriter.writerow(['Surface production volume: m^3', production_volume])
         self.csvWriter.writerow(['Output raster volume: m^3', input_raster.sum() * cell_area * self.initial_multiplier])
 
+        '''
+        # ------- CREATE TAKEN PRODUCTION RASTER(*_raster.tiff)
+        '''
         out_raster = input_raster * self.initial_multiplier
 
         r = QgisProcessing()
+        IS_DEBUG and QgsMessageLog.logMessage(u"Save taken production raster and load it: {}\n".format(self.out_raster_path), tag="QgisPDS.residual")
         r.saveRaster(self.out_raster_path, gdal_input_raster.GetGeoTransform(), 0, rasterCrs.toWkt(), cols, rows, out_raster)
         layer = QgsRasterLayer(self.out_raster_path, basename(self.out_raster_path))
+        IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
         layer_out_raster_path=layer
         if layer is None:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Raster layer add error'),
                                                 level=QgsMessageBar.CRITICAL)
+            QgsMessageLog.logMessage(u"Error process: {}".format( self.tr(u'Raster layer add error')), tag="QgisPDS.Error")
         else:
             QgsMapLayerRegistry.instance().addMapLayer(layer)
-
+        '''
+        # ------- CREATE OZ PRODUCTION RASTER(*_production_raster.tiff)
+        '''
+        OZ_NEGATIVE_VALUE_REPLACE=0.1
+        IS_DEBUG and QgsMessageLog.logMessage(u"Calculate oz production raster and load it: {}\n".format(self.out_production_raster_path), tag="QgisPDS.residual")
         out_raster = numpy.copy(saved_input_raster)
         for i in xrange(out_raster.shape[0]):
             for j in xrange(out_raster.shape[1]):
                 if out_raster[i,j] != noDataValue:
                     out_raster[i, j] = (out_raster[i, j] - input_raster[i, j] )* self.initial_multiplier
+                    if out_raster[i, j]<0:
+                        out_raster[i, j]=OZ_NEGATIVE_VALUE_REPLACE
         r.saveRaster(self.out_production_raster_path, gdal_input_raster.GetGeoTransform(), noDataValue, rasterCrs.toWkt(), cols, rows,
                      out_raster)
         layer = QgsRasterLayer(self.out_production_raster_path, basename(self.out_production_raster_path))
+        IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
         if layer is None:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Raster layer add error'),
@@ -801,6 +883,10 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         else:
             QgsMapLayerRegistry.instance().addMapLayer(layer)
 
+        '''
+        # ------- CREATE INITIAL PRODUCTION RASTER(*_initial_raster.tiff)
+        '''
+        IS_DEBUG and QgsMessageLog.logMessage(u"Calculate initial production raster and load layer: {}\n".format(self.initial_raster_path), tag="QgisPDS.residual")
         out_raster = numpy.copy(saved_input_raster)
         for i in xrange(out_raster.shape[0]):
             for j in xrange(out_raster.shape[1]):
@@ -809,20 +895,23 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         r.saveRaster(self.initial_raster_path, gdal_input_raster.GetGeoTransform(), noDataValue, rasterCrs.toWkt(), cols, rows,
                      out_raster)
         layer = QgsRasterLayer(self.initial_raster_path, basename(self.initial_raster_path))
+        IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
         if layer is None:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 self.tr(u'Raster layer add error'),
                                                 level=QgsMessageBar.CRITICAL)
+            QgsMessageLog.logMessage(u"Error create initial production raster layer:{}\n".format(str(e)), tag="QgisPDS.error")
         else:
             QgsMapLayerRegistry.instance().addMapLayer(layer)
 
         QgsMapLayerRegistry.instance().removeMapLayers( [self.temp_points.id()] )
 
         del gdal_input_raster
-
         out_pipe.close()
 
-        #Create residual polygons
+        '''
+        # ------- CREATE RESIDIALS POLYGONS
+        '''
         self.progress.setFormat(self.tr('Creating residuals feature class...'))
         self.create_output_nfpt_class()
         self.progress.setFormat(self.tr('Copying wells to residuals feature class...'))
@@ -831,7 +920,9 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         try:
             processing.runalg("grass7:v.voronoi", self.nfpt_output_class, 'False', 'False', extStr,
                               -1, 0.000100, 3, self.out_nfpt_path, progress=self)
+            IS_DEBUG and QgsMessageLog.logMessage(u"Try load layer: {}\n".format(self.out_nfpt_path), tag="QgisPDS.residual")
             layer = QgsVectorLayer(self.out_nfpt_path, basename(self.out_nfpt_path), 'ogr')
+            IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
             if layer:
                 QgsMapLayerRegistry.instance().addMapLayer(layer)
                 # usage - 'QgsZonalStatistics(QgsVectorLayer, Rastr full path QString, QString attributePrefix="", int rasterBand=1, QgsZonalStatistics.Statistics stats=QgsZonalStatistics.Statistics(QgsZonalStatistics.Count|QgsZonalStatistics.Sum|QgsZonalStatistics.Mean))'
@@ -852,20 +943,25 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 str(e), level=QgsMessageBar.CRITICAL)
+            QgsMessageLog.logMessage(u"Error create residials polygons layer:{}\n".format(str(e)), tag="QgisPDS.error")
 
-        #add CSV layer
+        '''
+        # ------- ADD CSV LAYER WITH PRODUCTION INFO
+        '''
         fileparts = os.path.split(csvFileName)
         try:
+            IS_DEBUG and QgsMessageLog.logMessage(u"Try load csv info layer: {}\n".format(uri), tag="QgisPDS.residual")
             layerList = QgsMapLayerRegistry.instance().mapLayersByName(fileparts[1])
             QgsMapLayerRegistry.instance().removeMapLayers(layerList)
 
             uri = 'file:///%s?type=csv&geomType=none&subsetIndex=no&watchFile=no' % (csvFileName)
             bh = QgsVectorLayer(uri, fileparts[1], "delimitedtext")
+            IS_DEBUG and QgsMessageLog.logMessage(u"Loaded\n", tag="QgisPDS.residual")
             QgsMapLayerRegistry.instance().addMapLayer(bh)
         except Exception as e:
             self.iface.messageBar().pushMessage(self.tr("Error"),
                                                 str(e), level=QgsMessageBar.CRITICAL)
-
+            QgsMessageLog.logMessage(u"Error add csv layer:{}\n".format(str(e)), tag="QgisPDS.error")
         return
 
 #Methods
@@ -998,7 +1094,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
             for i_id, i_desc, i_name, i_order, i_level in records:
                 item = QListWidgetItem(to_unicode(i_desc))
                 item.setData(Qt.UserRole, [i_id, i_name, i_order, i_level])
-                self.mZoneComboBox.addItem(item)
+                self.mZoneComboBox.addItem(i_name,item)
                 #self.mZoneComboBox.addItem(to_unicode("".join(i_desc)), id)
                 if i_id == self.currentZone:
                     self.mZoneComboBox.setCurrentIndex(self.mZoneComboBox.count() - 1)
@@ -1075,7 +1171,9 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         except:
             return self.db.stringToSqlDate(QDateTime().currentDateTime())
 
-    #SLOTS
+    #===========================================================================
+    # SLOTS
+    #===========================================================================
     def on_buttonBox_accepted(self):
         
         self.no_devi_wells=[]
