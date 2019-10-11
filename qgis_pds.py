@@ -72,7 +72,7 @@ import json
 from qgis.core import QgsMapLayerRegistry
 from qgis.utils import qgsfunction
 from qgis.core import QgsExpression
-from utils import getenv_system
+from utils import getenv_system, qgs_get_all_rules
 
 
 @qgsfunction(args='auto', group='PumaPlus')
@@ -199,8 +199,18 @@ def activeLayerProductionType(feature, parent):
     return " и ".decode('utf-8',errors='replace').join(set(result))
 
 
-
-
+#===============================================================================
+# showDeviSymbols
+#===============================================================================
+def setLayerSymbolsVisible(lyr,description_check_func=lambda val:True,isActive=True):
+    if lyr:
+        layerCurrentStyleRendere=lyr.rendererV2()
+        if type(layerCurrentStyleRendere)==QgsRuleBasedRendererV2:
+            rootRule=layerCurrentStyleRendere.rootRule()
+            for rule in qgs_get_all_rules(rootRule):
+                if description_check_func(rule.description()):
+                    rule.setActive(isActive)
+    pass
 
 #===============================================================================
 # 
@@ -274,7 +284,6 @@ class QgisPDS(QObject):
         
         #Action on change visible preset
         self.onReadProject()
-        
         
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -640,6 +649,9 @@ class QgisPDS(QObject):
         return action
 
 
+    #===============================================================================
+    # 
+    #===============================================================================
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
 
@@ -910,7 +922,87 @@ class QgisPDS(QObject):
         QgsExpression.registerFunction(makeMultilineFormatedLabel)
         QgsExpression.registerFunction(isValueInInterval)
         QgsExpression.registerFunction(isValueInIntervalWithSkeep)
+
+        #----###########################################################################
+        """Generate the context menu entries """
+        menu_grp_name=self.tr(u"&Devi")
+        #----
+        action = QAction(QIcon(), self.tr(u"&*******Show*******"), self.iface.legendInterface())
+        action.triggered.connect(lambda : setLayerSymbolsVisible(
+                                                            self.iface.legendInterface().currentLayer()
+                                                            ,description_check_func= lambda desc: desc.split(".")[0]==u'devi'
+                                                            ,isActive=True
+                                                            )
+                                )                                                                                    
+        self.iface.legendInterface().addLegendLayerAction( action, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        #----
+        action = QAction(QIcon(), self.tr(u"&TH"), iface.legendInterface())
+        action.triggered.connect(lambda : setLayerSymbolsVisible(
+                                                            self.iface.legendInterface().currentLayer()
+                                                            ,description_check_func= lambda desc: desc.split(".")[0]==u'devi_start'
+                                                            ,isActive=True
+                                                            )
+                                )                                                                                    
+        self.iface.legendInterface().addLegendLayerAction( action, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        #----
+        action = QAction(QIcon(), self.tr(u"&Tracks"), self.iface.legendInterface())
+        action.triggered.connect(lambda : setLayerSymbolsVisible(
+                                                            self.iface.legendInterface().currentLayer()
+                                                            ,description_check_func= lambda desc: desc.split(".")[0]==u'devi_line'
+                                                            ,isActive=True
+                                                            )
+                                )                                                                                    
+        iface.legendInterface().addLegendLayerAction( action, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        #----
+        action = QAction(QIcon(), self.tr(u"&BH"), self.iface.legendInterface())
+        action.triggered.connect(lambda : setLayerSymbolsVisible(
+                                                            self.iface.legendInterface().currentLayer()
+                                                            ,description_check_func= lambda desc: desc.split(".")[0]==u'devi_end'
+                                                            ,isActive=True
+                                                            )
+                                )                                                                                    
+        self.iface.legendInterface().addLegendLayerAction( action, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        #----###########################################################################
+        #----
+        action = QAction(QIcon(), self.tr(u"&*******Hide*******"), self.iface.legendInterface())
+        action.triggered.connect(lambda : setLayerSymbolsVisible(
+                                                            self.iface.legendInterface().currentLayer()
+                                                            ,description_check_func= lambda desc: desc.split(".")[0]==u'devi'
+                                                            ,isActive=False
+                                                            )
+                                )
+        self.iface.legendInterface().addLegendLayerAction( action, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        #----
+        action = QAction(QIcon(), self.tr(u"&TH"), self.iface.legendInterface())
+        action.triggered.connect(lambda : setLayerSymbolsVisible(
+                                                            self.iface.legendInterface().currentLayer()
+                                                            ,description_check_func= lambda desc: desc.split(".")[0]==u'devi_start'
+                                                            ,isActive=False
+                                                            )
+                                )
+        self.iface.legendInterface().addLegendLayerAction( action, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        #----
+        action = QAction(QIcon(), self.tr(u"&Tracks"), self.iface.legendInterface())
+        action.triggered.connect(lambda : setLayerSymbolsVisible(
+                                                            self.iface.legendInterface().currentLayer()
+                                                            ,description_check_func= lambda desc: desc.split(".")[0]==u'devi_line'
+                                                            ,isActive=False
+                                                            )
+                                )
+        self.iface.legendInterface().addLegendLayerAction( action, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        #----
+        action = QAction(QIcon(), self.tr(u"&BH"), self.iface.legendInterface())
+        action.triggered.connect(lambda : setLayerSymbolsVisible(
+                                                            self.iface.legendInterface().currentLayer()
+                                                            ,description_check_func= lambda desc: desc.split(".")[0]==u'devi_end'
+                                                            ,isActive=False
+                                                            )
+                                )
+        self.iface.legendInterface().addLegendLayerAction( action, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
         
+    #===========================================================================
+    # unload
+    #===========================================================================
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
