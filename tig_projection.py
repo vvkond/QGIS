@@ -360,10 +360,6 @@ PROJCS["UTM_Zone_0_Northern_Hemisphere",
     @cached_property
     def qgis_string(self):
         p = self.proj4_args
-        if p.south:
-            return
-        if p.a < 0 or p.a - p.b <= 0:
-            return
         return self._qgis.format(**p)
 
 
@@ -443,8 +439,6 @@ PROJCS["Transverse_Mercator",
     @cached_property
     def qgis_string(self):
         p = self.proj4_args
-        if p.a < 0 or p.a - p.b <= 0:
-            return
         return self._qgis.format(**p)
 
 
