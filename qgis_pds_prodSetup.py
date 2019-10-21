@@ -13,7 +13,7 @@ import xml.etree.cElementTree as ET
 import re
 import time
 from utils import plugin_path, start_edit_layer, qgs_get_last_child_rules, qgs_set_symbol_render_level
-from qgis_pds_prodRenderer import BubbleSymbolLayer
+from qgis_pds_prodRenderer import BubbleSymbolLayer, float_t
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -1296,6 +1296,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             self.templateExpression.setText(tmpStr + '-%' + str(row+1))
 
     def on_maxDiagrammSize_valueChanged(self, val):
+        val=float_t(val)
         if val<self.minDiagrammSize.value():
             self.minDiagrammSize.setValue(val)
         if type(val) is float:
@@ -1307,10 +1308,11 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         if row < 0:
             return
         conf=self.mDiagrammsListWidget.item(row).data(Qt.UserRole)
-        conf.diagSize=[conf.diagSize[0], self.maxDiagrammSize.value()]
+        conf.diagSize=[float_t(conf.diagSize[0]), self.maxDiagrammSize.value()]
         self.mDiagrammsListWidget.item(row).setData(Qt.UserRole,conf)
 
     def on_minDiagrammSize_valueChanged(self, val):
+        val=float_t(val)
         if val>self.maxDiagrammSize.value():
             self.maxDiagrammSize.setValue(val)
         
@@ -1447,8 +1449,13 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             val.fluids =    QgsSymbolLayerV2Utils.decodeRealVector(self.currentLayer.customProperty('diagramm_fluids_' + d))
             val.diagSize=   QgsSymbolLayerV2Utils.decodeRealVector(self.currentLayer.customProperty('diagramm_sizes_' + d))
             # update from old structure of diagramm size
+            try:
+                val.diagSize=map(float_t,val.diagSize)
+            except:
+                val.diagSize=[0.0]
             if val.diagSize==[0.0]:
-                val.diagSize=[float(self.currentLayer.customProperty('minDiagrammSize', 3.0)), float(self.currentLayer.customProperty('maxDiagrammSize', 15)) ]
+                val.diagSize=[float_t(self.currentLayer.customProperty('minDiagrammSize', 3.0)), float_t(self.currentLayer.customProperty('maxDiagrammSize', 15.0)) ]
+            
 
             self.layerDiagramms.append(val)
 
