@@ -59,13 +59,17 @@ class DiagrammDesc:
         return self.__repr__()
 
 
-def float_t(val):
+def float_t(val,on_error=0.0):
     if (type(val) is QPyNullVariant and val.isNull()) or val is None:   #PyQt4.QtCore.QPyNullVariant:
         val=0.0
     try:
         return float(val)
     except Exception as e:
-        QgsMessageLog.logMessage("incorrect val for float {}={}\n{}".format(type(val),val,str(e)), 'BubbleSymbolLayer')
+        QgsMessageLog.logMessage("incorrect val for float:", 'BubbleSymbolLayer')
+        try:
+            QgsMessageLog.logMessage("\t{}={}\n{}".format(type(val),val,str(e)), 'BubbleSymbolLayer')
+        except:pass
+        return on_error
         #raise Exception("incorrect val for float {}={}\n{}".format(type(val),val,str(e)))
 
 class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
