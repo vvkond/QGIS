@@ -623,7 +623,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
                                                 level=QgsMessageBar.CRITICAL)
             return
         extent = raster_lay.extent()
-        gdal_input_raster = gdal.Open(raster_lay.source())
+        gdal_input_raster = gdal.Open(raster_lay.source()) # Input NPT raster
         rasterCrs=raster_lay.crs()
 
         csvFileName = os.path.splitext(self.out_feature_path)[0] + '.csv'
@@ -631,7 +631,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         self.csvWriter = csv.writer(out_pipe)
         self.csvWriter.writerow(['attribute', 'value'])
 
-        input_raster = numpy.array(gdal_input_raster.GetRasterBand(1).ReadAsArray()) 
+        input_raster = numpy.array(gdal_input_raster.GetRasterBand(1).ReadAsArray()) # raster for taken production
         assert len(input_raster.shape) == 2
 
         noDataValue = gdal_input_raster.GetRasterBand(1).GetNoDataValue()
@@ -865,7 +865,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         '''
         OZ_NEGATIVE_VALUE_REPLACE=0.1
         IS_DEBUG and QgsMessageLog.logMessage(u"Calculate oz production raster and load it: {}\n".format(self.out_production_raster_path), tag="QgisPDS.residual")
-        out_raster = numpy.copy(saved_input_raster)
+        out_raster = numpy.copy(saved_input_raster) # NPT raster
         for i in xrange(out_raster.shape[0]):
             for j in xrange(out_raster.shape[1]):
                 if out_raster[i,j] != noDataValue:
@@ -887,7 +887,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         # ------- CREATE INITIAL PRODUCTION RASTER(*_initial_raster.tiff)
         '''
         IS_DEBUG and QgsMessageLog.logMessage(u"Calculate initial production raster and load layer: {}\n".format(self.initial_raster_path), tag="QgisPDS.residual")
-        out_raster = numpy.copy(saved_input_raster)
+        out_raster = numpy.copy(saved_input_raster)  # NPT raster
         for i in xrange(out_raster.shape[0]):
             for j in xrange(out_raster.shape[1]):
                 if out_raster[i, j] != noDataValue:
@@ -926,7 +926,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
             if layer:
                 QgsMapLayerRegistry.instance().addMapLayer(layer)
                 # usage - 'QgsZonalStatistics(QgsVectorLayer, Rastr full path QString, QString attributePrefix="", int rasterBand=1, QgsZonalStatistics.Statistics stats=QgsZonalStatistics.Statistics(QgsZonalStatistics.Count|QgsZonalStatistics.Sum|QgsZonalStatistics.Mean))'
-                zoneStat = QgsZonalStatistics(layer, self.out_raster_path, '', 1, QgsZonalStatistics.Sum)
+                zoneStat = QgsZonalStatistics(layer, self.out_production_raster_path, '', 1, QgsZonalStatistics.Sum)
                 zoneStat.calculateStatistics(None)
                 #--recalculate zoneStat result by multiple it to raster cell size in current map unit!!!!
                 sum_col=layer.fieldNameIndex('sum')
