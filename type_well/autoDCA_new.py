@@ -710,6 +710,8 @@ class DCA():
         #Calculate forecasts workflow well by well
         wcount=0
         eur_list=[]
+        #Remaining reserves stack
+        rR_list=[]
         for well in wlist:
             log( '\n'*2)
             log( '='*40)
@@ -1202,9 +1204,10 @@ class DCA():
                         comb_oil[well]=oil['Rate'].resample('Y').mean().append(lp_forecast1)
                         #comb_oil[well]=oil['Rate'].append(lp_forecast[primary_product+'Rate'])
                 wcount=wcount+1
-                #Append eur_list, skip wells without forecast to match comboil
+                #Append eur_list and rR list, skip wells without forecast to match comboil
                 if len(lp_forecast)>0:
                     eur_list.append((well, lp_Tr))
+                    rR_list.append((well, rR, lp_Tr))
             except Exception as e:
                 log( '===========================')
                 log( 'WARNING!!!')
@@ -1220,6 +1223,8 @@ class DCA():
             #Create eur dataframe
             eur=pd.DataFrame(eur_list, columns=('WELL', 'EUR'))
             #log(eur)
+            #Create rR (Remaining Reserves) dataframe
+            rR_frame=pd.DataFrame(rR_list, columns=('WELL', 'OZ', 'EUR'))
             
             Tweight=self.typewell(eur)
             
@@ -1234,6 +1239,8 @@ class DCA():
                     #log('Tweight='+Tweight['WELL'].iloc[i])
                     
                     comb_oil1['TypeWell']=comb_oil1['TypeWell']+comb_oil1[Tweight['WELL'].iloc[i]]*Tweight['TWeight'].iloc[i]
+                    comb_oil1['AnnualProd']=comb_oil1['TypeWell']*365
+                    #comb_oil1['CumForecast']=comb_oil1['AnnualProd'].cumsum()
             
             
             
@@ -1251,15 +1258,17 @@ class DCA():
             self.show_plot(plt,block=True)
             
             #Trim comboil to lp_foracast start
-            #f_start=lp_forecast.index[0].year
-            #f_end=lp_forecast.index[len(lp_forecast)-1].year
+            f_start=lp_forecast.index[0]
+            f_end=lp_forecast.index[len(lp_forecast)-1]
                     
             #Export last point forecast to Excel
             out_f=os.path.join(out_dir,'TypeWell_'+self.REG+'.xlsx')
-            #comb_oil2=comb_oil1.loc[f_start:f_end]
-            
-            comb_oil1.index=comb_oil1.index.year
-            comb_oil1.transpose().to_excel(out_f)
+            comb_oil2=comb_oil1.loc[f_start:f_end]
+            comb_oil2.index=comb_oil2.index.year
+            comb_oil2.transpose().to_excel(out_f)
+
+            out_f=join(dir+'\\Reports','RemainingReserves_'+self.REG+'.xlsx')
+            rR_frame.to_excel(out_f)
             log( "END")
         webbrowser.open(os.path.realpath(out_dir))
         pass
