@@ -17,6 +17,9 @@ import xml.etree.cElementTree as ET
 import re
 import sip
 import inspect
+import traceback
+
+IS_DEBUG=False
 
 #Table model for attribute TableView
 class AttributeTableModel(QAbstractTableModel):
@@ -541,7 +544,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.filteredModel.setFilter(self.currentDiagrammId)
         self.labelFilteredModel.setFilter(self.currentDiagrammId)
 
-    #Delete current diagramm
+    #===========================================================================
+    # Delete current diagramm
+    #===========================================================================
     def mDeleteDiagramm_clicked(self):
         if len(self.layerDiagramms) < 2:
             return
@@ -559,7 +564,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         self.mDeleteDiagramm.setEnabled(len(self.layerDiagramms) > 1)
 
-    #Import diagramm from other layer
+    #===========================================================================
+    # Import diagramm from other layer
+    #===========================================================================
     def mImportFromLayer_clicked(self):
         layers = self.mIface.legendInterface().layers()
 
@@ -762,16 +769,17 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                         diagramm.append(slice)
                 diagramms.append(diagramm)
 
-            #Add labels
+            '''
+            Add labels to current feature
+            '''
             try:
                 templateStr = self.addLabels(context, feature)
                 if diagrammSize >= d.scaleMinRadius and templateStr:
                     ET.SubElement(root, "label", labelText=templateStr)
                     # editLayer.changeAttributeValue(FeatureId, editLayerProvider.fieldNameIndex('bbllabels'), templateStr)
             except Exception as e:
-                QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
+                QtGui.QMessageBox.critical(None, self.tr(u'Error add label expression'), traceback.format_exc(), QtGui.QMessageBox.Ok)
                 break
-
 
             offset = diagrammSize if diagrammSize < d.scaleMaxRadius else d.scaleMaxRadius
             LablOffset = feature.attribute('labloffset')
@@ -912,39 +920,49 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         return
 
+    #===============================================================================
+    # 
+    #===============================================================================
     def addLabels(self, context, feature):
         templateStr = u''
         for row in xrange(self.labelAttributeModel.rowCount()):
-            index = self.labelAttributeModel.index(row, AttributeTableModel.ExpressionColumn)
-            expression = self.labelAttributeModel.data(index, Qt.DisplayRole)
-
-            index = self.labelAttributeModel.index(row, AttributeTableModel.ColorColumn)
-            color =  QColor(self.labelAttributeModel.data(index, Qt.DisplayRole))
-            colorStr = color.name()
-
-            index = self.labelAttributeModel.index(row, AttributeLabelTableModel.ShowZeroColumn)
-            showZero = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
-
-            index = self.labelAttributeModel.index(row, AttributeLabelTableModel.NewLineColumn)
-            isNewLine = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
-
-            exp = QgsExpression(expression)
-            exp.prepare(context)
-            val = 0.0
-            if not exp.hasEvalError():
-                context.setFeature(feature)
-                val = exp.evaluate(context)
-            else:
-                val = feature[expression]
-
-            if val or (not val and showZero):
-                if isNewLine:
-                    templateStr += '<div><span><font color="{0}">{1}</font></span></div>'.format(colorStr, str(val))
+            try:
+                index = self.labelAttributeModel.index(row, AttributeTableModel.ExpressionColumn)
+                expression = self.labelAttributeModel.data(index, Qt.DisplayRole)
+    
+                index = self.labelAttributeModel.index(row, AttributeTableModel.ColorColumn)
+                color =  QColor(self.labelAttributeModel.data(index, Qt.DisplayRole))
+                colorStr = color.name()
+    
+                index = self.labelAttributeModel.index(row, AttributeLabelTableModel.ShowZeroColumn)
+                showZero = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
+    
+                index = self.labelAttributeModel.index(row, AttributeLabelTableModel.NewLineColumn)
+                isNewLine = self.labelAttributeModel.data(index, Qt.CheckStateRole) == Qt.Checked
+                
+                exp = QgsExpression(expression)
+                
+                IS_DEBUG and QgsMessageLog.logMessage(u"Try add label expression: {}\n".format(expression), tag="QgisPDS.bubbleSetup")
+                exp.prepare(context)
+                val = 0.0
+                if not exp.hasEvalError():
+                    context.setFeature(feature)
+                    val = exp.evaluate(context)
                 else:
-                    templateStr += '<span><font color="{0}">{1}</font></span>'.format(colorStr, str(val))
-
+                    val = feature[expression]
+                if val or (not val and showZero):
+                    if isNewLine:
+                        templateStr += '<div><span><font color="{0}">{1}</font></span></div>'.format(colorStr, str(val))
+                    else:
+                        templateStr += '<span><font color="{0}">{1}</font></span>'.format(colorStr, str(val))
+            except Exception as e:
+                IS_DEBUG and QgsMessageLog.logMessage(u"Error add label expression\n", tag="QgisPDS.bubbleSetup")
+                raise e
         return templateStr
-
+    
+    #===============================================================================
+    # 
+    #===============================================================================
     def getLabels(self, rows):
         labels = []
 
@@ -976,7 +994,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         return labels
 
-
+    #===============================================================================
+    # 
+    #===============================================================================
     def readSettings(self):
         count = int(self.currentLayer.customProperty("PDS/diagrammCount", 0))
         if count < 1:
@@ -986,6 +1006,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.labelSizeEdit.setValue(float(self.currentLayer.customProperty("PDS/labelSize", 7)))
         self.showLineouts.setChecked(True if self.currentLayer.customProperty("PDS/showLineouts", 'true') == 'true' else False)
 
+        '''
+            Add bubbles
+        '''
         self.layerDiagramms = []
         for num in xrange(count):
             d = str(num+1)
@@ -1003,38 +1026,56 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
             except:
                 pass
 
+        '''
+            Add attributes
+        '''
         count = int(self.currentLayer.customProperty('PDS/diagramm_attributeCount', 0))
         self.attributeModel.clearRows()
-        self.attributeModel.insertRows(0, count)
         for row in xrange(count):
-            self.attributeModel.setDiagramm(row, int(self.currentLayer.customProperty('PDS/diagramm_filter_' + str(row))))
-            for col in xrange(self.attributeModel.columnCount()):
-                try:
-                    idxStr = '{0}_{1}'.format(row, col)
-                    data = self.currentLayer.customProperty('PDS/diagramm_attribute_' + idxStr,'')
-                    index = self.attributeModel.index(row, col)
-                    self.attributeModel.setData(index, data, Qt.EditRole)
-                except:
-                    pass
-
+            try:
+                diagrammId=int(self.currentLayer.customProperty('PDS/diagramm_filter_' + str(row)))
+            except:
+                continue
+            if diagrammId in map(lambda v: v.diagrammId,self.layerDiagramms): # add config only if diagram for it presented
+                self.attributeModel.insertRows(self.attributeModel.rowCount(), 1)
+                rowId=self.attributeModel.rowCount()-1
+                self.attributeModel.setDiagramm(rowId,diagrammId)
+                for col in xrange(self.attributeModel.columnCount()):
+                    try:
+                        idxStr = '{0}_{1}'.format(rowId, col)
+                        data = self.currentLayer.customProperty('PDS/diagramm_attribute_' + idxStr,'')
+                        index = self.attributeModel.index(rowId, col)
+                        self.attributeModel.setData(index, data, Qt.EditRole)
+                    except:
+                        pass
+        '''
+            Add labels
+        '''
         count = int(self.currentLayer.customProperty('PDS/diagramm_labelCount', 0))
         self.labelAttributeModel.clearRows()
-        self.labelAttributeModel.insertRows(0, count)
         for row in xrange(count):
-            self.labelAttributeModel.setDiagramm(row, int(self.currentLayer.customProperty('PDS/diagramm_labelfilter_' + str(row))))
-            for col in xrange(self.labelAttributeModel.columnCount()):
-                index = self.labelAttributeModel.index(row, col)
-                idxStr = '{0}_{1}'.format(row, col)
-                data = self.currentLayer.customProperty('PDS/diagramm_labelAttribute_' + idxStr)
-                if data:
-                    if col > AttributeTableModel.ColorColumn:
-                        self.labelAttributeModel.setData(index, int(data), Qt.CheckStateRole)
-                    else:
-                        self.labelAttributeModel.setData(index, data, Qt.EditRole)
-
+            try:
+                diagrammId=int(self.currentLayer.customProperty('PDS/diagramm_labelfilter_' + str(row)))
+            except:
+                continue
+            if diagrammId in map(lambda v: v.diagrammId,self.layerDiagramms): # add config only if diagram for it presented
+                self.labelAttributeModel.insertRows(self.labelAttributeModel.rowCount(), 1)
+                rowId=self.labelAttributeModel.rowCount()-1
+                self.labelAttributeModel.setDiagramm(rowId,diagrammId )
+                for col in xrange(self.labelAttributeModel.columnCount()):
+                    index = self.labelAttributeModel.index(rowId, col)
+                    idxStr = '{0}_{1}'.format(rowId, col)
+                    data = self.currentLayer.customProperty('PDS/diagramm_labelAttribute_' + idxStr)
+                    if data:
+                        if col > AttributeTableModel.ColorColumn:
+                            self.labelAttributeModel.setData(index, int(data), Qt.CheckStateRole)
+                        else:
+                            self.labelAttributeModel.setData(index, data, Qt.EditRole)
         return True
 
-
+    #===============================================================================
+    # 
+    #===============================================================================
     def saveSettings(self):
         self.currentLayer.setCustomProperty("PDS/diagrammCount", len(self.layerDiagramms))
         # self.currentLayer.setCustomProperty("PDS/symbolSize", self.mSymbolSize.value())
@@ -1078,8 +1119,12 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 idxStr = '{0}_{1}'.format(row, col)
                 self.currentLayer.setCustomProperty('PDS/diagramm_labelAttribute_' + idxStr, data)
 
+    #===========================================================================
+    # 
+    #===========================================================================
     def saveSettingsToFile(self, fileName):
         settings = QSettings(fileName, QSettings.IniFormat)
+        settings.clear()
 
         settings.setValue("PDS/diagrammCount", len(self.layerDiagramms))
         # settings.setValue("PDS/symbolSize", self.mSymbolSize.value())
@@ -1123,8 +1168,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 idxStr = '{0}_{1}'.format(row, col)
                 settings.setValue('PDS/diagramm_labelAttribute_' + idxStr, data)
 
-
-
+    #===============================================================================
+    # 
+    #===============================================================================
     def readSettingsFromFile(self, fileName):
         settings = QSettings(fileName, QSettings.IniFormat)
 
@@ -1137,6 +1183,9 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
         self.showLineouts.setChecked(
             True if settings.value("PDS/showLineouts", 'true') == 'true' else False)
 
+        '''
+            Add bubbles
+        '''
         self.layerDiagramms = []
         for num in xrange(count):
             d = str(num + 1)
@@ -1153,36 +1202,53 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
                 self.layerDiagramms.append(val)
             except:
                 pass
-
+        '''
+            Add attributes
+        '''
         count = int(settings.value('PDS/diagramm_attributeCount', 0))
         self.attributeModel.clearRows()
-        self.attributeModel.insertRows(0, count)
         for row in xrange(count):
-            self.attributeModel.setDiagramm(row,
-                                            int(settings.value('PDS/diagramm_filter_' + str(row))))
-            for col in xrange(self.attributeModel.columnCount()):
-                try:
-                    idxStr = '{0}_{1}'.format(row, col)
-                    data = settings.value('PDS/diagramm_attribute_' + idxStr)
-                    index = self.attributeModel.index(row, col)
-                    self.attributeModel.setData(index, data, Qt.EditRole)
-                except:
-                    pass
-
+            try:
+                diagrammId=int(settings.value('PDS/diagramm_filter_' + str(row)))
+            except:
+                continue
+            if diagrammId in map(lambda v: v.diagrammId,self.layerDiagramms): # add config only if diagram for it presented
+                self.attributeModel.insertRows(self.attributeModel.rowCount(), 1)
+                rowId=self.attributeModel.rowCount()-1
+                self.attributeModel.setDiagramm(rowId, diagrammId)
+                for col in xrange(self.attributeModel.columnCount()):
+                    try:
+                        data = settings.value('PDS/diagramm_attribute_' + '{0}_{1}'.format(row, col))
+                        index = self.attributeModel.index(rowId, col)
+                        self.attributeModel.setData(index, data, Qt.EditRole)
+                    except:
+                        pass
+        '''
+            Add labels
+        '''
         count = int(settings.value('PDS/diagramm_labelCount', 0))
         self.labelAttributeModel.clearRows()
-        self.labelAttributeModel.insertRows(0, count)
         for row in xrange(count):
-            self.labelAttributeModel.setDiagramm(row, int(
-                settings.value('PDS/diagramm_labelfilter_' + str(row))))
-            for col in xrange(self.labelAttributeModel.columnCount()):
-                index = self.labelAttributeModel.index(row, col)
-                idxStr = '{0}_{1}'.format(row, col)
-                data = settings.value('PDS/diagramm_labelAttribute_' + idxStr)
-                if data:
-                    if col > AttributeTableModel.ColorColumn:
-                        self.labelAttributeModel.setData(index, int(data), Qt.CheckStateRole)
-                    else:
-                        self.labelAttributeModel.setData(index, data, Qt.EditRole)
+            try:
+                diagrammId=int(int(settings.value('PDS/diagramm_labelfilter_' + str(row))))
+            except:
+                continue
+            if diagrammId in map(lambda v: v.diagrammId,self.layerDiagramms): # add config only if diagram for it presented
+                self.labelAttributeModel.insertRows(self.labelAttributeModel.rowCount(), 1)
+                rowId=self.labelAttributeModel.rowCount()-1
+                self.labelAttributeModel.setDiagramm(rowId, diagrammId)
+                for col in xrange(self.labelAttributeModel.columnCount()):
+                    index = self.labelAttributeModel.index(rowId, col)
+                    data = settings.value('PDS/diagramm_labelAttribute_' + '{0}_{1}'.format(row, col))
+                    if data:
+                        if col > AttributeTableModel.ColorColumn:
+                            self.labelAttributeModel.setData(index, int(data), Qt.CheckStateRole)
+                        else:
+                            self.labelAttributeModel.setData(index, data, Qt.EditRole)
 
         return True
+    
+    
+    
+    
+    
