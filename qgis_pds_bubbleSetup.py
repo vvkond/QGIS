@@ -915,9 +915,14 @@ class QgisPDSBubbleSetup(QtGui.QDialog, FORM_CLASS):
 
         editLayer.setRendererV2(renderer)
 
+        palyr = QgsPalLayerSettings()
+        palyr.readFromLayer(editLayer)
+        palyr=layer_to_labeled(palyr)  #---enable EasyLabel
+        palyr.writeToLayer(editLayer)
+
         editLayer.triggerRepaint()
         self.mIface.layerTreeView().refreshLayerSymbology(editLayer.id())
-
+        
         return
 
     #===============================================================================
