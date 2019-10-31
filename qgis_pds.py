@@ -24,6 +24,9 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from qgis.core import *
 from qgis.gui import QgsVertexMarker
+from qgis.gui import QgsLayerTreeViewMenuProvider
+from qgis.gui import QgsMapLayerComboBox
+from qgis.gui import QgsFieldComboBox
 # Initialize Qt resources from file resources.py
 import resources
 # Import the code for the dialog
@@ -57,6 +60,7 @@ from qgis_pds_wellsBrowserDialog import *
 #   classes from the Processing framework. 
 from processing.core.Processing import Processing
 from processing.gui.CommanderWindow import CommanderWindow
+from processing import runalg
 
 import os
 import os.path
@@ -64,7 +68,115 @@ import ast
 import json
 
 
+#===============================================================================
+# 
+#===============================================================================
+class UndestroyableQWidgetAction(QWidgetAction):
+    '''
+        @info: Class for use QWidgetAction with custom createWidget function(Create visual widget only once)
+    '''
+    def setDefaultWidget(self,widget):
+        self._widgetClass=widget
+        pass
+    def createWidget(self,parent):
+        try:
+            self._widgetObj
+            self._widgetObj.setParent(parent)
+        except:
+            self._widgetObj=self._widgetClass(parent)
+        return self._widgetObj
+    @property
+    def widgetObj(self):
+        return self._widgetObj
+    @widgetObj.setter
+    def widgetObj(self,widget):
+        self._widgetObj=widget
+#=======================================================================
+# 
+#=======================================================================
+class FocusedLineEdit(QLineEdit):
+    focussed=pyqtSignal(bool)
+    def focusInEvent(self,e):
+        super(QLineEdit,self).focusInEvent(e)
+        self.focussed.emit(True)
+        pass
+    def focusOutEvent(self,e):
+        super(QLineEdit,self).focusOutEvent(e)
+        self.focussed.emit(False)
+        pass
+#===============================================================================
+# 
+#===============================================================================
+class QgsSelectLayerFieldCBox(QWidget):
+    def __init__(self
+                 ,lyrLbl="Devi layer"
+                 ,fieldLbl="Devi field"
+                 ,fieldDefault=u'devi'
+                 ,lyrTypes=QgsMapLayerProxyModel.LineLayer
+                 ,parent=None):
+        super(QgsSelectLayerFieldCBox, self).__init__(parent)
+        #self.setupUi(self)
+        self._mainLyt=QVBoxLayout(self)
+        lbl1=QLabel(lyrLbl)
+        lbl2=QLabel(fieldLbl)
+        self.fieldDefault=fieldDefault
+        
+        self._LyrCBox=QgsMapLayerComboBox()
+        self._LyrCBox.setFilters(lyrTypes)
+        self._FieldCBox=QgsFieldComboBox()
+        self._LyrCBox.layerChanged.connect(self.onLyrChanged)
+        
+        self._mainLyt.addWidget(lbl1)
+        self._mainLyt.addWidget(self._LyrCBox)
+        self._mainLyt.addWidget(lbl2)
+        self._mainLyt.addWidget(self._FieldCBox)
+        
+        self.onLyrChanged(None)
+    def onLyrChanged(self,lyr):
+        self._FieldCBox.setLayer(self._LyrCBox.currentLayer())
+        self._FieldCBox.setField(self.fieldDefault)
+    pass 
 
+#=======================================================================
+# 
+#=======================================================================
+class QgsWellSearchWidget(FocusedLineEdit):
+    def __init__(self,iface,lbl=u"&Find well",txtMaxLength=40,parent=None):
+        super(QgsWellSearchWidget,self).__init__(parent)
+        #self._wellSearchLineEdit=FocusedLineEdit(self.tr(u"&Find well"),self)
+        self.setText(lbl)
+        self.setMaxLength(txtMaxLength)
+        self.focussed.connect(self.on_focussed)
+        #self.wellSearchLineEdit.textEdited.connect(self.search_well)
+        self.returnPressed.connect(self.on_return)
+        self.iface=iface
+        #         AraKey = ['a','ab','abc']
+        #         ModAra = QStringListModel()
+        #         ModAra.setStringList(AraKey)
+        #         ComAra = QCompleter()
+        #         ComAra.setModel(ModAra)
+        #         wellSearch.setCompleter(ComAra)
+    def on_focussed(self,isFocus):
+        if isFocus:
+            pass
+    def on_return(self):
+        self.search_well(self.text())
+    def search_well(self,txt):
+        txt=txt.strip()
+        QgsMessageLog.logMessage(u"search_well {}".format(txt), tag="QgisPDS.debug")
+        lyr=self.iface.activeLayer()
+        if lyr:
+            items=txt.split(",")
+            exp_txt=" OR ".join( map(lambda val:"\"well_id\" ILIKE \'{}\'".format(val.strip()), items) )
+            expr = QgsExpression(exp_txt)
+            QgsMessageLog.logMessage(u"lyr: {} expression: {}".format(lyr.name(),exp_txt), tag="QgisPDS.debug")
+            #QgsMessageLog.logMessage(u"expression: {}".format("\"well_id\" ILIKE \'{}\'".format(txt)), tag="QgisPDS.debug")
+            it = lyr.getFeatures(QgsFeatureRequest(expr))
+            ids = [i.id() for i in it] #select only the features for which the expression is true
+            if len(ids)>0:
+                lyr.selectByIds(ids)
+                self.iface.actionZoomToSelected().trigger() if len(ids)>1 else self.iface.actionPanToSelected().trigger()
+        pass
 
 #===============================================================================
 # --- REGISTER USER FUNCTIONS.CALL @qgsfunction MUST BE IN 1st level,not in def/class
@@ -469,6 +581,8 @@ class QgisPDS(QObject):
         QgsProject.instance().readProject.connect(lambda:self.connectVisiblePresetChangedEvent())
         #for new project
         QgsProject.instance().fileNameChanged.connect(lambda:self.connectVisiblePresetChangedEvent())
+        
+        IS_DEBUG and QgsMessageLog.logMessage(u"Active project {}\n\n".format(str(self.currentProject)), tag="QgisPDS")
     
     #Save label positions
     def onTimer(self):
@@ -880,7 +994,8 @@ class QgisPDS(QObject):
                 callback=lambda :cw.runAlgorithm(alg_mv),
                 parent=self.iface.mainWindow())
 
-
+        
+        
         applicationMenu = QMenu(self.iface.mainWindow())
         action = QAction(self.tr(u'Well Correlation && Zonation'), applicationMenu)
         applicationMenu.addAction(action)
@@ -915,6 +1030,14 @@ class QgisPDS(QObject):
 
         self._metadata = BabbleSymbolLayerMetadata()
         QgsSymbolLayerV2Registry.instance().addSymbolLayerType(self._metadata)
+        #----###########################################################################
+        #---FAST WELL SEARCH LineEdit
+        wellSearch=QgsWellSearchWidget(lbl=self.tr(u"&Find well"),iface=self.iface)        
+        self.actionWellSearch=QWidgetAction(self.iface.legendInterface())
+        self.actionWellSearch.setDefaultWidget(wellSearch)
+        self.toolbar.addAction(self.actionWellSearch)
+        
+        #----###########################################################################
         #---REGISTER USER EXPRESSIONS
         QgsExpression.registerFunction(activeLayerCustomProperty)        
         QgsExpression.registerFunction(activeLayerReservoirs)
@@ -924,9 +1047,44 @@ class QgisPDS(QObject):
         QgsExpression.registerFunction(isValueInIntervalWithSkeep)
 
         #----###########################################################################
-        """Generate the context menu entries """
+        #---LAYERS CONTEXT MENU
         menu_grp_name=self.tr(u"&Devi")
         #----
+        '''Widget for select devi layer/field '''
+        self._deviActionParentObject = QObject()
+        self.actionSelectDeviLayer = UndestroyableQWidgetAction(self._deviActionParentObject)
+        deviLyrFieldSelector=QgsSelectLayerFieldCBox(lyrLbl=self.tr(u'&Devi layer'), fieldLbl=self.tr(u'&Devi field'), fieldDefault=u'devi', lyrTypes=QgsMapLayerProxyModel.LineLayer)
+        self.actionSelectDeviLayer.widgetObj=deviLyrFieldSelector
+        self.iface.legendInterface().addLegendLayerAction( self.actionSelectDeviLayer, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        '''Join devi action button'''
+        btn=QPushButton(self.tr(u"&Join devi"))  
+        btn.clicked.connect(
+                          lambda :runalg("pumaplus:joindevilayer"
+                                                                           ,{
+                                                                             'LAYER_TO':self.iface.activeLayer()
+                                                                            ,'FIELD_A':u'well_id'
+                                                                            ,'LAYER_FROM':self.actionSelectDeviLayer.widgetObj._LyrCBox.currentLayer()
+                                                                            ,'FIELD_B':u'well_id'
+                                                                            ,'FIELD_TO_JOIN':self.actionSelectDeviLayer.widgetObj._FieldCBox.currentField()
+                                                                            ,'PREFIX':'_'
+                                                                            ,'ENABLE_DEVI':True
+                                                                            ,'ENABLE_DEVI_ST':True
+                                                                            ,'ENABLE_DEVI_LINE':True
+                                                                            ,'ENABLE_DEVI_END':True
+                                                                            ,'USE_CACHE':True
+                                                                            }        
+                                                                           )            
+            )
+        self.actionDeviJoin = UndestroyableQWidgetAction(self._deviActionParentObject)
+        self.actionDeviJoin.widgetObj=btn
+        self.iface.legendInterface().addLegendLayerAction( self.actionDeviJoin, menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        #----        
+        '''Menu separator'''
+        sep=QAction(self.iface.legendInterface())
+        sep.setSeparator(True)
+        self.iface.legendInterface().addLegendLayerAction( sep  , menu_grp_name,"01", QgsMapLayer.VectorLayer,True )
+        #----
+        '''Devi style options'''
         action = QAction(QIcon(), self.tr(u"&*******Show*******"), self.iface.legendInterface())
         action.triggered.connect(lambda : setLayerSymbolsVisible(
                                                             self.iface.legendInterface().currentLayer()
