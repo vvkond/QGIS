@@ -35,6 +35,8 @@ import ast
 import re
 from datetime import datetime
 
+IS_DEBUG=False
+
 try:
     from PyQt4.QtCore import QString
 except ImportError:
@@ -80,7 +82,6 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
     LABEL_OFFSETY = 'labloffy'
     BUBBLE_SIZE = 'bubblesize'
     DIAGRAMM_LABELS = 'bbllabels'
-    DEBUG=False
 
     def __init__(self, props):
         ts=datetime.now()
@@ -147,7 +148,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                                     
         except Exception as e:
             QgsMessageLog.logMessage('Evaluate diagram props: ' + str(e), 'BubbleSymbolLayer')
-        self.DEBUG and QgsMessageLog.logMessage('BubbleSymbolLayer rendered init in : {}'.format(str(datetime.now()-ts)), 'BubbleSymbolLayer')
+        IS_DEBUG and QgsMessageLog.logMessage('BubbleSymbolLayer rendered init in : {}'.format(str(datetime.now()-ts)), 'BubbleSymbolLayer')
 
         # try:
         #     if len(self.labelsStr) > 1:
@@ -268,7 +269,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         return templateStr
 
     def compileLabels(self, templateStr, sum, d, feature):
-        self.DEBUG and QgsMessageLog.logMessage('compileLabels:', 'BubbleSymbolLayer') #DEBUG
+        IS_DEBUG and QgsMessageLog.logMessage('compileLabels:', 'BubbleSymbolLayer') #DEBUG
         showZero = False
         decimals = d['decimals']
         formatString = "{:."+str(decimals)+"f}"
@@ -299,7 +300,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                     percentStr = '%'
                 elif dailyProduction and days:
                     val *= days
-                self.DEBUG and QgsMessageLog.logMessage('slice val={} :{}'.format(str(val),str(type(val))), 'BubbleSymbolLayer') #DEBUG
+                IS_DEBUG and QgsMessageLog.logMessage('slice val={} :{}'.format(str(val),str(type(val))), 'BubbleSymbolLayer') #DEBUG
                 strVal = formatString.format(val) + percentStr
             code = '"{0}"'.format(attr)
             if float(formatString.format(val)) != float(0) or showZero:
@@ -341,9 +342,9 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                 diagrammSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, size, QgsSymbolV2.MM)
 
                 templateStr = self.templateStr
-                self.DEBUG and QgsMessageLog.logMessage('#'*30, 'BubbleSymbolLayer') #DEBUG
+                IS_DEBUG and QgsMessageLog.logMessage('#'*30, 'BubbleSymbolLayer') #DEBUG
                 for d in self.diagrammProps:
-                    self.DEBUG and QgsMessageLog.logMessage('*'*10, 'BubbleSymbolLayer') #DEBUG
+                    IS_DEBUG and QgsMessageLog.logMessage('*'*10, 'BubbleSymbolLayer') #DEBUG
                     slices = d['slices']
                     scaleType = int(d['scaleType'])
                     scaleMaxRadius = float_t(d['scaleMaxRadius'])
@@ -359,7 +360,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                             if self.hasDataDefinedProperty(expName):
                                 (val, ok) = self.evaluateDataDefinedProperty(expName, context, 0.0 )
                                 if val != NULL:
-                                    self.DEBUG and QgsMessageLog.logMessage('val={},koef={},scale={} '.format(val, koef, scale), 'BubbleSymbolLayer') #DEBUG                                   
+                                    IS_DEBUG and QgsMessageLog.logMessage('val={},koef={},scale={} '.format(val, koef, scale), 'BubbleSymbolLayer') #DEBUG                                   
                                     sum = sum + val
                                     bc = QgsSymbolLayerV2Utils.decodeColor(slice['backColor'])
                                     lc = QgsSymbolLayerV2Utils.decodeColor(slice['lineColor'])
@@ -374,7 +375,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                                 ds = fixedSize
                             else:
                                 ds = scaleMinRadius + sum * koef
-                                self.DEBUG and QgsMessageLog.logMessage('ds={} '.format(ds), 'BubbleSymbolLayer') #DEBUG
+                                IS_DEBUG and QgsMessageLog.logMessage('ds={} '.format(ds), 'BubbleSymbolLayer') #DEBUG
                                 if ds > scaleMaxRadius:
                                     ds = scaleMaxRadius
                                 if ds < scaleMinRadius:
@@ -383,13 +384,13 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                                 slice.percent = slice.percent / sum
 
                             ds = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, ds, QgsSymbolV2.MM)
-                            self.DEBUG and QgsMessageLog.logMessage('ds={} '.format(ds), 'BubbleSymbolLayer') #DEBUG
+                            IS_DEBUG and QgsMessageLog.logMessage('ds={} '.format(ds), 'BubbleSymbolLayer') #DEBUG
                             diagramm = DiagrammDesc(ds, newSlices, sum * koef )
                             diagramms.append(diagramm)
 
                     if 'labels' in d:
                         labels = d['labels']
-                        self.DEBUG and QgsMessageLog.logMessage('labels: {}'.format(labels), 'BubbleSymbolLayer') #DEBUG
+                        IS_DEBUG and QgsMessageLog.logMessage('labels: {}'.format(labels), 'BubbleSymbolLayer') #DEBUG
                         labelTemplate = labelTemplate + self.addLabels(context, labels)
                         templateStr = None
                     elif templateStr:
@@ -443,14 +444,14 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
             Draw diagram for current feature
             '''
             diagramms = sorted(diagramms, key=lambda diagramm: [diagramm.mDiagrammSize,diagramm.mRealSize], reverse=True)
-            self.DEBUG and QgsMessageLog.logMessage("\n".join(map(str,diagramms)), 'BubbleSymbolLayer') #DEBUG
+            IS_DEBUG and QgsMessageLog.logMessage("\n".join(map(str,diagramms)), 'BubbleSymbolLayer') #DEBUG
             if self.showDiagramms:
                 for idx,desc in enumerate(diagramms):
                     #--- Fix for diagramms with identicaly size
                     if diagramms[idx-1].mDiagrammSize==desc.mDiagrammSize or (idx>0 and diagramms[idx-1].mDiagrammSize<desc.mDiagrammSize):
                         desc.mDiagrammSize=desc.mDiagrammSize*0.8
                         if desc.mDiagrammSize<=0:desc.mDiagrammSize=1
-                    self.DEBUG and QgsMessageLog.logMessage("diagram {} size:{}".format(str(idx),str(desc.mDiagrammSize)), 'BubbleSymbolLayer') #DEBUG
+                    IS_DEBUG and QgsMessageLog.logMessage("diagram {} size:{}".format(str(idx),str(desc.mDiagrammSize)), 'BubbleSymbolLayer') #DEBUG
                     rect = QRectF(point, QSizeF(desc.mDiagrammSize, desc.mDiagrammSize))
                     rect.translate(-desc.mDiagrammSize / 2, -desc.mDiagrammSize / 2)
                     startAngle = 90.0
@@ -572,36 +573,36 @@ class BabbleSymbolLayerWidget(QgsSymbolLayerV2Widget, FORM_CLASS):
         return self.layer
     
     def on_editTemplateStr_txt_changed(self,val):
-        self.DEBUG and QgsMessageLog.logMessage('on_editTemplateStr_txt_changed', 'BubbleSymbolLayer')
+        IS_DEBUG and QgsMessageLog.logMessage('on_editTemplateStr_txt_changed', 'BubbleSymbolLayer')
         self.layer.templateStr=val
         self.emit(SIGNAL("changed()"))
         pass
 
     def on_editDiagrammStr_txt_changed(self):
-        self.DEBUG and QgsMessageLog.logMessage('on_editDiagrammStr_txt_changed', 'BubbleSymbolLayer')
+        IS_DEBUG and QgsMessageLog.logMessage('on_editDiagrammStr_txt_changed', 'BubbleSymbolLayer')
         self.layer.diagrammStr=self.editDiagrammStr.toPlainText()
         self.emit(SIGNAL("changed()"))
         
         pass
 
     def on_showLineouts_toggled(self, value):
-        self.DEBUG and QgsMessageLog.logMessage('on_showLineouts_toggled', 'BubbleSymbolLayer')
+        IS_DEBUG and QgsMessageLog.logMessage('on_showLineouts_toggled', 'BubbleSymbolLayer')
         self.layer.showLineouts = value
         self.emit(SIGNAL("changed()"))
 
     def on_showLabels_toggled(self, value):
-        self.DEBUG and QgsMessageLog.logMessage('on_showLabels_toggled', 'BubbleSymbolLayer')
+        IS_DEBUG and QgsMessageLog.logMessage('on_showLabels_toggled', 'BubbleSymbolLayer')
         self.layer.showLabels = value
         self.emit(SIGNAL("changed()"))
 
     def on_showDiagramms_toggled(self, value):
-        self.DEBUG and QgsMessageLog.logMessage('on_showDiagramms_toggled', 'BubbleSymbolLayer')
+        IS_DEBUG and QgsMessageLog.logMessage('on_showDiagramms_toggled', 'BubbleSymbolLayer')
         self.layer.showDiagramms = value
         self.emit(SIGNAL("changed()"))
 
     @pyqtSlot(float)
     def on_mLabelSizeSpinBox_valueChanged(self, value):
-        self.DEBUG and QgsMessageLog.logMessage('on_mLabelSizeSpinBox_valueChanged', 'BubbleSymbolLayer')
+        IS_DEBUG and QgsMessageLog.logMessage('on_mLabelSizeSpinBox_valueChanged', 'BubbleSymbolLayer')
         self.layer.labelSize = value
         self.emit(SIGNAL("changed()"))
 
