@@ -1297,17 +1297,42 @@ class QgisPDS(QObject):
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
 
-    def refreshProduction(self, layer, project, isCurrentProd=False ,isOnlyFond=False):
-        try:        
-            dlg = QgisPDSProductionDialog(project, self.iface, isCP=isCurrentProd, isOnlyFond=isOnlyFond, _layer=layer)
-            if dlg.isInitialised():
-                result = dlg.exec_()
-                if result and layer and not isOnlyFond:
-                    prodSetup = QgisPDSProdSetup(self.iface, layer)
-                    prodSetup.setup(layer)
-            del dlg
-        except Exception as e:
-            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+    #===========================================================================
+    # refreshProduction
+    #===========================================================================
+    def refreshProduction(self, layers, project, isCurrentProd=False ,isOnlyFond=False):
+        '''
+            @param layers: layer or list of layers for update
+        '''
+        if not type(layers) is list:
+            layers=[layers]
+             
+        dlg=None   
+        for currentLayer in layers:
+            currentLayer.blockSignals(True)
+            filter_str=currentLayer.subsetString()
+            currentLayer.setSubsetString(None)
+            #--------------------
+            try:  
+                if dlg is None:      
+                    dlg = QgisPDSProductionDialog(project, self.iface, isCP=isCurrentProd, isOnlyFond=isOnlyFond, _layer=currentLayer)
+                    if dlg.isInitialised():
+                        result = dlg.exec_()
+                        if result and currentLayer and not isOnlyFond:
+                            prodSetup = QgisPDSProdSetup(self.iface, currentLayer)
+                            prodSetup.setup(currentLayer)
+                else:
+                    dlg.layer=currentLayer
+                    dlg.mSelectedReservoirs = ast.literal_eval(dlg.layer.customProperty("pds_prod_SelectedReservoirs"))
+                    dlg.fillReservoirListWidget()
+                    dlg.process()
+            except Exception as e:
+                QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            #--------------------
+            currentLayer.setSubsetString(filter_str)
+            currentLayer.blockSignals(False)
+        del dlg
+        
 
 
     def createCPointsLayer(self):
@@ -1534,11 +1559,13 @@ class QgisPDS(QObject):
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
         
 
+    #===========================================================================
+    # refreshLayer
+    #===========================================================================
     def refreshLayer(self):
         try:
     #        threads = []
-            for currentLayer in self.iface.legendInterface().selectedLayers():
-                self.refreshcurrentLayer(currentLayer)
+            self.refreshcurrentLayer(self.iface.legendInterface().selectedLayers())
     #             process = Thread(target=self.refreshcurrentLayer, args=[currentLayer])
     #             process.start()
     #             threads.append(process)
@@ -1547,45 +1574,91 @@ class QgisPDS(QObject):
     
         
         
-    def refreshcurrentLayer( self,currentLayer=None):
+    #===========================================================================
+    # refreshcurrentLayer
+    #===========================================================================
+    def refreshcurrentLayer( self,selected_layers=None):
+        '''
+            @param currentLayer: layer or layers list for refresh
+        '''
         try:
-            if currentLayer is None:  currentLayer = self.iface.activeLayer()
-            if currentLayer.type() != QgsMapLayer.VectorLayer:
-                return
-            pr = currentLayer.dataProvider()
-    
-            projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
-            proj = ast.literal_eval(projStr)
-    
-            currentLayer.blockSignals(True)
-            filter_str=currentLayer.subsetString()
-            currentLayer.setSubsetString(None)
+            grouped_layers={}
             
-            prop = currentLayer.customProperty("qgis_pds_type")
-            layerWellIds,_=currentLayer.getValues(Fields.Sldnid.name)
+            #--- Group layuers by PROP
+            if not type(selected_layers) is list:
+                selected_layers=[selected_layers]
+            for currentLayer in selected_layers:
+                if currentLayer is None:  currentLayer = self.iface.activeLayer()
+                if currentLayer.type() != QgsMapLayer.VectorLayer:
+                    continue
+                pr = currentLayer.dataProvider()
+        
+                projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
+                proj = ast.literal_eval(projStr)
+                prop = currentLayer.customProperty("qgis_pds_type")
+                if prop in grouped_layers.keys():
+                    grouped_layers[prop].append(currentLayer)
+                else:
+                    grouped_layers[prop]=[currentLayer]
+                    
+            #--- For each layer group run update
+            for prop,layers in grouped_layers.items():
+                if prop == "pds_wells":
+                    for currentLayer in  layers:
+                        currentLayer.blockSignals(True)
+                        filter_str=currentLayer.subsetString()
+                        currentLayer.setSubsetString(None)
+                        #--------------------
+                        layerWellIds,_=currentLayer.getValues(Fields.Sldnid.name)
+                        dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
+                        if dlg.exec_():
+                            self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
+                                              dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
+                                              ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
+                                              )
+                        #--------------------
+                        currentLayer.setSubsetString(filter_str)
+                        currentLayer.blockSignals(False)
+                    
+                elif prop == "pds_fond":
+                    for currentLayer in  layers:
+                        currentLayer.blockSignals(True)
+                        filter_str=currentLayer.subsetString()
+                        currentLayer.setSubsetString(None)
+                        #--------------------
+                        self.refreshProduction(currentLayer, self.currentProject, isOnlyFond=True)
+                        #--------------------
+                        currentLayer.setSubsetString(filter_str)
+                        currentLayer.blockSignals(False)
+
+                elif prop == "pds_current_production":
+                    #--------------------
+                    self.refreshProduction(layers, self.currentProject, isCurrentProd=True)
+                    #--------------------
+
+                elif prop == "pds_cumulative_production":
+                    #--------------------
+                    self.refreshProduction(layers, self.currentProject, isCurrentProd=False)
+                    #--------------------
+
+                elif prop == "pds_well_deviations":
+                    for currentLayer in  layers:
+                        currentLayer.blockSignals(True)
+                        filter_str=currentLayer.subsetString()
+                        currentLayer.setSubsetString(None)
+                        #--------------------
+                        layerWellIds,_=currentLayer.getValues(Fields.Sldnid.name)
+                        dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
+                        if dlg.exec_():
+                            self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords,
+                                                    dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
+                                                    ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
+                                                    )
+                        
+                        #--------------------
+                        currentLayer.setSubsetString(filter_str)
+                        currentLayer.blockSignals(False)
             
-            if prop == "pds_wells":
-                dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
-                if dlg.exec_():
-                    self.refreshWells(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                      dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
-                                      ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
-                                      )
-            elif prop == "pds_fond":
-                self.refreshProduction(currentLayer, self.currentProject, isOnlyFond=True)                
-            elif prop == "pds_current_production":
-                self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=True)
-            elif prop == "pds_cumulative_production":
-                self.refreshProduction(currentLayer, self.currentProject, isCurrentProd=False)
-            elif prop == "pds_well_deviations":
-                dlg = QgisPDSRefreshSetup(self.iface, self.currentProject, filterWellIds=layerWellIds)
-                if dlg.exec_():
-                    self.loadWellDeviations(currentLayer, self.currentProject, dlg.isRefreshKoords,
-                                            dlg.isRefreshData, dlg.isSelectedOnly, dlg.isAddMissing, dlg.isDeleteMissing
-                                            ,filterWellIds=dlg.filterWellIds if dlg.isNeedFilterWellIds else None
-                                            )
-            currentLayer.setSubsetString(filter_str)
-            currentLayer.blockSignals(False)
         except Exception as e:
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
             

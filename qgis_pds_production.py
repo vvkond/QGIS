@@ -164,8 +164,22 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
 
         self.readReservoirOrders() # USED FOR LOWWER-UPPER analis.... @TODO: change it to use self._getReservoirs() result 
 
+        self.fillReservoirListWidget()
+        self.onFondByWellRdBtn()
+        
+        self.realEndDate = self.realStartDate = QDate()  #temporary,used only in GUI
+        self.fondStartDate = self.fondEndDate = QDate()  #fond load date diapazon 
+
+        self.bbl_getproduction_period(True)
+
+        self.initialised = True
+    #=======================================================================
+    # 
+    #=======================================================================
+    def fillReservoirListWidget(self):
         reservoirs = self._getReservoirs()
         self.reservoirs = []
+        self.reservoirsListWidget.clear()
         if reservoirs is not None:
             for reservoir_part_code,order_num in reservoirs:
                 reservoirName = to_unicode("".join(reservoir_part_code))
@@ -177,15 +191,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                     self.reservoirsListWidget.setItemSelected(item, isSelected)
                 elif isSelected:
                     self.reservoirsListWidget.addItem(item)
-
-        self.onFondByWellRdBtn()
         
-        self.realEndDate = self.realStartDate = QDate()  #temporary,used only in GUI
-        self.fondStartDate = self.fondEndDate = QDate()  #fond load date diapazon 
-
-        self.bbl_getproduction_period(True)
-
-        self.initialised = True
     #=======================================================================
     # 
     #=======================================================================
