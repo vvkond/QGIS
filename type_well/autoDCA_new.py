@@ -1189,7 +1189,7 @@ class DCA():
                     if len(lp_forecast)>0:
                         comb_dates=pd.date_range(reg_dataframe[cPROD_START_TIME].min(),lp_forecast.index.max(),freq='Y')
                         comb_oil=pd.DataFrame(index=comb_dates)
-                        lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').sum()
+                        lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').mean()
                         #Drop 1st year
                         lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
                         #sum is replaced with mean - average daily rate in the year
