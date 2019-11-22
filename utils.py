@@ -11,6 +11,7 @@ from processing.tools.vector import VectorWriter
 import os
 import json
 import sys
+import ast
 
 
 MAX_FILE_NAME_SIZE=224- 24- 50# -24 in some clients can't copy 224 named files
@@ -59,6 +60,9 @@ class LayersHider():
             layer.triggerRepaint()
         
 
+#===============================================================================
+# cached_property
+#===============================================================================
 class cached_property(object):
 
     def __init__(self, func, name=None, doc=None):
@@ -74,7 +78,9 @@ class cached_property(object):
         setattr(obj, self.__name__, value)
         return value
         
-
+#===============================================================================
+# 
+#===============================================================================
 def set_layer_variable(layer,var,val):
     """
         @info: set variable for registered in MapLayerRegistry layer. Variable stored in current layer style!!!!
@@ -101,6 +107,54 @@ def read_layer_variable(layer,var):
         res=read_layer_property(layer, var)
     return res
 
+#===============================================================================
+# 
+#===============================================================================
+def saveSetting(settings,layer,name,value,store_in_global=True):
+    '''
+        @param store_in_global: store setting in global settings
+    '''
+    value=json.dumps(value)
+    QgsMessageLog.logMessage(u"saveSetting: {}={}".format(name,value), tag="QgisPDS.debug")
+    #---store in layer
+    layer.setCustomProperty(name,value)
+    #---store in global
+    if store_in_global:
+        QgsMessageLog.logMessage(u"saveSetting in global: {}={}".format(name,value), tag="QgisPDS.debug")
+        settings.setValue(name, value)
+    return True
+def loadSetting(settings,layer,name,default=None,check_global=True):
+    res=None
+    #---restore from layer
+    if layer is not None:
+        res=layer.customProperty(name)
+        QgsMessageLog.logMessage(u"loadSetting.layer: {}={}".format(name,res), tag="QgisPDS.debug")
+    if res in [None,'None']:
+        if check_global:
+            #---restore from global
+            res=settings.value(name, default)
+            QgsMessageLog.logMessage(u"loadSetting.global: {}={}".format(name,res), tag="QgisPDS.debug")
+        else:
+            res=default
+    if res!=default:
+        try:
+            res=json.loads(res)
+        except:
+            try:
+                res=ast.literal_eval(res)
+            except:
+                res=default
+    return res
+#===============================================================================
+# 
+#===============================================================================
+def listWidgetItemsIterator(listwidget):
+    for i in range(listwidget.count()):
+        yield listwidget.item(i)    
+
+#===============================================================================
+# WithQtProgressBar
+#===============================================================================
 class WithQtProgressBar():
     """
         @info: in base class must be self.iface
