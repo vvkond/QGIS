@@ -13,7 +13,8 @@ from QgisPDS.db import Oracle
 from connections import create_connection
 from QgisPDS.utils import to_unicode
 from QgisPDS.tig_projection import *
-from utils import edit_layer,WithQtProgressBar
+from utils import edit_layer,WithQtProgressBar, loadSetting, saveSetting,\
+    listWidgetItemsIterator
 from tig_projection import QgisProjectionConfig
 from bblInit import Fields
 import ast
@@ -27,12 +28,6 @@ USTJE=-1
 ZABOY=-2
 C_ZONE='zone'
 
-#===============================================================================
-# 
-#===============================================================================
-def listWidgetItemsIterator(listwidget):
-    for i in range(listwidget.count()):
-        yield listwidget.item(i)    
 
 #===============================================================================
 # 
@@ -58,8 +53,8 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
         self.settings = QSettings()
         
         self.selectedLayers =_editLayers if isinstance(_editLayers, (list, tuple)) else [_editLayers]
-        self.editLayer =None if isinstance(_editLayers, (list, tuple)) else _editLayers # for support in present subclass
-        self.selectedZonations=self.selectedZones=None
+        self.editLayer =self.selectedLayers[0] #if isinstance(_editLayers, (list, tuple)) else _editLayers # for support in present subclass
+        self.selectedZonations=self.selectedZones=[]
         
 
         if _project:
@@ -96,24 +91,25 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                                                 level=QgsMessageBar.CRITICAL)
         self._fillZonations()
         self.restoreZoneSelection()
+    #===========================================================================
+    # 
+    #===========================================================================
+    @property 
+    def v_selectedZonations(self):
+        return "/PDS/Zonations/SelectedZonations_"+self.__class__.__name__
+    @property 
+    def v_selectedZones(self):
+        return "/PDS/Zonations/selectedZones_"+self.__class__.__name__
+    @property 
+    def v_useOnlyPublicDevi(self):
+        return "/PDS/Zonations/useOnlyPublicDevi_"+self.__class__.__name__
+    
     #=======================================================================
     # 
     #=======================================================================
     def _restoreZoneSelectionFromLayer(self):
-        selectedZonations = ast.literal_eval(str(self.selectedLayers[0].customProperty("pds_Zonation_"+self.__class__.__name__)))
-        selectedZones =     ast.literal_eval(str(self.selectedLayers[0].customProperty("pds_Zone_"+self.__class__.__name__)))
-        if selectedZonations is not None and selectedZones is not None:
-            self.selectedZonations = map(int,selectedZonations)
-            self.selectedZones = map(int,selectedZones)
-            return True
-        return False
-        
-    #===========================================================================
-    # 
-    #===========================================================================
-    def _restoreZoneSelectionFromGlobal(self):
-        selectedZonations = ast.literal_eval(self.settings.value("/PDS/Zonations/SelectedZonations/v"+self.scheme, []))
-        selectedZones = ast.literal_eval(self.settings.value("/PDS/Zonations/selectedZones/v"+self.scheme, []))
+        selectedZonations=loadSetting(settings=self.settings, layer=self.selectedLayers[0], name=self.v_selectedZonations, default=None, check_global=False)
+        selectedZones    =loadSetting(settings=self.settings, layer=self.selectedLayers[0], name=self.v_selectedZones    , default=None, check_global=False)
         if selectedZonations is not None and selectedZones is not None:
             self.selectedZonations = map(int,selectedZonations)
             self.selectedZones = map(int,selectedZones)
@@ -124,10 +120,22 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     # 
     #===========================================================================
     def restoreZoneSelection(self):
-        if not self._restoreZoneSelectionFromLayer():
-            self._restoreZoneSelectionFromGlobal()    
-        self.isOnlyPublicDeviChkBox.setChecked(self.settings.value("/PDS/Zonations/useOnlyPublicDevi ", 'True')== 'True')
+        selectedZonations=loadSetting(settings=self.settings, layer=self.selectedLayers[0], name=self.v_selectedZonations, default=None, check_global=True)
+        selectedZones    =loadSetting(settings=self.settings, layer=self.selectedLayers[0], name=self.v_selectedZones    , default=None, check_global=True)
+        if selectedZonations is not None and selectedZones is not None:
+            self.selectedZonations = map(int,selectedZonations)
+            self.selectedZones = map(int,selectedZones)
+        self.isOnlyPublicDeviChkBox.setChecked(loadSetting(settings=self.settings, layer=self.selectedLayers[0], name=self.v_useOnlyPublicDevi, default=False, check_global=True))
         self.updZonationSelection()
+
+    #===============================================================
+    # 
+    #===============================================================
+    def saveConfig(self):
+        saveSetting(settings=self.settings, layer=self.editLayer, name=self.v_selectedZonations, value=self.selectedZonations)
+        saveSetting(settings=self.settings, layer=self.editLayer, name=self.v_selectedZones    , value=self.selectedZones)
+        saveSetting(settings=self.settings, layer=self.editLayer, name=self.v_useOnlyPublicDevi, value=self.isOnlyPublicDeviChkBox.isChecked())
+        return True
         
     #===========================================================================
     # 
@@ -231,16 +239,6 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                 QgsMessageLog.logMessage(self.tr(u"\t Deviation is private or no deviation in wells: {} ").format(",".join(self.no_devi_wells)), tag="QgisPDS.coordFromZone")
             else:
                 QgsMessageLog.logMessage(self.tr(u"\t No deviation in wells: {} ").format(",".join(self.no_devi_wells)), tag="QgisPDS.coordFromZone")
-    #===============================================================
-    # 
-    #===============================================================
-    def saveConfig(self):
-        self.settings.setValue("/PDS/Zonations/SelectedZonations/v"+self.scheme, str(self.selectedZonations))
-        self.settings.setValue("/PDS/Zonations/selectedZones/v"+self.scheme, str(self.selectedZones))
-        self.settings.setValue("/PDS/Zonations/useOnlyPublicDevi ", 'True' if self.isOnlyPublicDeviChkBox.isChecked() else 'False' )
-        #------------------------
-        self.editLayer.setCustomProperty("pds_Zonation_"+self.__class__.__name__, str(self.selectedZonations))
-        self.editLayer.setCustomProperty("pds_Zone_"+self.__class__.__name__    , str(self.selectedZones)    )
         
     #===========================================================================
     # 

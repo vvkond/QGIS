@@ -15,13 +15,14 @@ from .connections import create_connection
 from .utils import to_unicode, makeShpFileName
 from .tig_projection import *
 from .qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
-from utils import edit_layer, LayersHider
+from utils import edit_layer, LayersHider, saveSetting, loadSetting
 from bblInit import layer_to_labeled, Fields
 
 
 IS_DEBUG=False
 C_TRANSITE='transite'
 C_TARGET='target'
+
 #===============================================================================
 # 
 #===============================================================================
@@ -34,7 +35,6 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         self.setWindowTitle(newTitle)
 
         self.mTwoLayers.setVisible(True)
-
         self.mTwoLayers.setEnabled(allow_split_layer)
 
         self.clearTargetFieldChkBox=QCheckBox(u'очистить столбец target')
@@ -53,12 +53,40 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         self.notUseLastZoneChkBox.stateChanged.connect(self.notUseLastZoneChkBoxChecked)
         self.notUseLastZoneNum.valueChanged.connect(self.notUseLastZoneNumChanged)
         self.zonationListWidget.itemSelectionChanged.connect(self.notUseLastZoneNumChanged)
+        
+        self.restoreConfig()
 
-        self.mTwoLayers.setChecked(             self.settings.value("/PDS/Zonations/TwoLayers", 'True') == 'True')
-        self.notUseLastZoneChkBox.setChecked(   self.settings.value("/PDS/Zonations/notUseLastZone", 'False') == 'True')
-        self.notUseLastZoneNum.setValue(int(    self.settings.value("/PDS/Zonations/notUseLastZoneNum", '0')))
-        self.clearTargetFieldChkBox.setChecked( self.settings.value("/PDS/Zonations/clearTargetField", 'True') == 'True')
-        self.enableFilterChkBox.setChecked(     self.settings.value("/PDS/Zonations/enableFilter", 'True') == 'True')
+    #===============================================================
+    # 
+    #===============================================================
+    def saveConfig(self):
+        super(QgisPDSTransitionsDialog,self).saveConfig()
+        for var,val in [
+                        ["/PDS/Zonations/TwoLayers"         ,True if self.twoLayers else False]
+                        ,["/PDS/Zonations/notUseLastZone"   ,True if self.notUseLastZoneChkBox.isChecked() else False]
+                        ,["/PDS/Zonations/notUseLastZoneNum",self.notUseLastZoneNum.value()]
+                        ,["/PDS/Zonations/clearTargetField" ,True if self.clearTargetFieldChkBox.isChecked() else False]
+                        ,["/PDS/Zonations/enableFilter"     ,True if self.enableFilterChkBox.isChecked() else False]
+                        ]:
+            saveSetting(settings=self.settings, layer=self.editLayer, name=var, value=val)
+        #------------------------
+        for var,val in [
+                        ["pds_Zonation_"+self.__class__.__name__, self.selectedZonations]
+                        ,["pds_Zone_"+self.__class__.__name__    , self.selectedZones]
+                        ]:
+            saveSetting(settings=self.settings, layer=self.editLayer, name=var, value=val,store_in_global=False)
+        #------------------------
+
+    #===========================================================================
+    # 
+    #===========================================================================
+    def restoreConfig(self):
+        self.mTwoLayers.setChecked(            loadSetting(settings=self.settings, layer=self.editLayer,name="/PDS/Zonations/TwoLayers"        ,default=False))
+        self.notUseLastZoneChkBox.setChecked(  loadSetting(settings=self.settings, layer=self.editLayer,name="/PDS/Zonations/notUseLastZone"   ,default=False))
+        self.notUseLastZoneNum.setValue(       loadSetting(settings=self.settings, layer=self.editLayer,name="/PDS/Zonations/notUseLastZoneNum",default=0))
+        self.clearTargetFieldChkBox.setChecked(loadSetting(settings=self.settings, layer=self.editLayer,name="/PDS/Zonations/clearTargetField" ,default=True))
+        self.enableFilterChkBox.setChecked(    loadSetting(settings=self.settings, layer=self.editLayer,name="/PDS/Zonations/enableFilter"     ,default=False))
+        return True
     
     #===========================================================================
     # notUseLastZoneChkBoxChecked
@@ -145,7 +173,7 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
         else:
             self.editLayer.setSubsetString(subsetStr)
 
-        return selectedZonations, selectedZones
+        return [selectedZonations, selectedZones]
 
     #===========================================================================
     # 
@@ -263,13 +291,7 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
                     self.selectedZonations, self.selectedZones = self.performOperationTwoLayers()
                 else:
                     self.selectedZonations, self.selectedZones = self.performOperation(clear_target=self.clearTargetFieldChkBox.isChecked())
-        
-                self.settings.setValue("/PDS/Zonations/TwoLayers",         'True' if self.twoLayers else 'False')
-                self.settings.setValue("/PDS/Zonations/notUseLastZone",    'True' if self.notUseLastZoneChkBox.isChecked() else 'False')
-                self.settings.setValue("/PDS/Zonations/notUseLastZoneNum", str(self.notUseLastZoneNum.value()))
-                self.settings.setValue("/PDS/Zonations/clearTargetField",  'True' if self.clearTargetFieldChkBox.isChecked() else 'False')
-                self.settings.setValue("/PDS/Zonations/enableFilter",      'True' if self.enableFilterChkBox.isChecked() else 'False')
-                
+                self.saveConfig()
             except Exception as e:
                 QtGui.QMessageBox.critical(None, self.tr(u'Error'), str(e), QtGui.QMessageBox.Ok)
     
