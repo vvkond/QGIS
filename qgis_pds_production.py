@@ -25,6 +25,7 @@ from itertools import chain
 from copy import copy
 from qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 import traceback
+from qgis_pds_transite import QgisPDSTransitionsDialog
 
 
 IS_DEBUG=False
@@ -89,6 +90,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.isFondLayer= isOnlyFond   # indicator that layer is Fond
         self.coordFromZone=QCheckBox(u'Расположение согласно разбивок')
         self.coordFromZone.setChecked(False)
+        self.useTransite=QCheckBox(u'Обновить список транзитных')
+        self.useTransite.setChecked(False)
         self.fondLoadConfig = fondLoadConfig(isWell=False,isObject=False)
         self.layer = _layer
         self._db = None
@@ -161,6 +164,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 self.mStartDate=QDateTime(1900,01,01,00,00)
                 self.mEndDate=  QDateTime().currentDateTime()
             self.baseConfigGrpBox.layout().addWidget(self.coordFromZone)
+            self.baseConfigGrpBox.layout().addWidget(self.useTransite)
+            
             
         self.fondByWellRdBtn.toggled.connect(self.onFondByWellRdBtn)
         self.endDateEdit.setDateTime(self.mEndDate)
@@ -399,17 +404,38 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             s = open(os.path.join(home,'qgispds.prof.log'), 'r')            
             QgsMessageLog.logMessage(u"profile: \n{}".format(''.join(s.readlines())), tag="QgisPDS.profile")
         
-        #--- update location from Zones if need 
+        #--- update location from Zones if need
         if self.coordFromZone.isChecked():
             try:
                 dlg  = QgisPDSCoordFromZoneDialog(self.project, self.iface, self.layer)
                 if dlg._restoreZoneSelectionFromLayer():
                     if dlg.updZonationSelection():
                         dlg.process()
+                    else:
+                        dlg.exec_()
                 else:
                     QgsMessageLog.logMessage(u"No associated zonation for layer: \n{}".format(u''.join(self.layer.name())), tag="QgisPDS.Error")
             except:
                 QgsMessageLog.logMessage(u"Error update well location from zonation for layer: \n{} \n{}".format(u''.join(self.layer.name()),traceback.format_exc()), tag="QgisPDS.Error")
+        #--- update transite from Zones if need 
+        if self.useTransite.isChecked():
+            try:
+                dlg  = QgisPDSTransitionsDialog(self.project, self.iface, self.layer)
+                dlg.restoreConfig()
+                if dlg._restoreZoneSelectionFromLayer():
+                    if dlg.updZonationSelection():
+                        dlg.mTwoLayers.setChecked(False)
+                        dlg.clearTargetFieldChkBox.setChecked(True)
+                        dlg.enableFilterChkBox.setChecked(False)
+                        dlg.process()
+                    else:
+                        dlg.exec_()
+                else:
+                    QgsMessageLog.logMessage(u"No associated transite zonation for layer: \n{}".format(u''.join(self.layer.name())), tag="QgisPDS.Error")
+            except:
+                QgsMessageLog.logMessage(u"Error update transite wells from zonation for layer: \n{} \n{}".format(u''.join(self.layer.name()),traceback.format_exc()), tag="QgisPDS.Error")
+
+
 
                 
             
