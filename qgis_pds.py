@@ -61,6 +61,7 @@ from qgis_pds_wellsBrowserDialog import *
 from processing.core.Processing import Processing
 from processing.gui.CommanderWindow import CommanderWindow
 from processing import runalg
+import traceback
 
 import os
 import os.path
@@ -1523,6 +1524,9 @@ class QgisPDS(QObject):
         
 
 
+    #===========================================================================
+    # wellCoordFromZone
+    #===========================================================================
     def wellCoordFromZone(self):
         try:
             selectedLayers = self.iface.legendInterface().selectedLayers()
@@ -1534,13 +1538,12 @@ class QgisPDS(QObject):
             #projStr = currentLayer.customProperty("pds_project", str(self.currentProject))
             #proj = ast.literal_eval(projStr)
             if len(selectedLayers)>0:
-        
                 dlg  = QgisPDSCoordFromZoneDialog(self.currentProject, self.iface, selectedLayers)
                 dlg.exec_()
             map(lambda currentLayer:currentLayer.blockSignals(False),selectedLayers)
             return
         except Exception as e:
-            QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
+            QgsMessageLog.logMessage(u"{}".format(traceback.format_exc()), tag="QgisPDS.error")  
 
 
     def transiteWells(self):

@@ -16,6 +16,7 @@ from QgisPDS.tig_projection import *
 from utils import edit_layer,WithQtProgressBar
 from tig_projection import QgisProjectionConfig
 from bblInit import Fields
+import ast
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'qgis_pds_zonations_base.ui'))
@@ -24,6 +25,15 @@ IS_USE_PUBLIC_DEVI_ONLY=True
 
 USTJE=-1
 ZABOY=-2
+C_ZONE='zone'
+
+#===============================================================================
+# 
+#===============================================================================
+def listWidgetItemsIterator(listwidget):
+    for i in range(listwidget.count()):
+        yield listwidget.item(i)    
+
 #===============================================================================
 # 
 #===============================================================================
@@ -45,9 +55,11 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
         self.plugin_dir = os.path.dirname(__file__)
         self.iface = _iface
         self.project = _project
+        self.settings = QSettings()
         
         self.selectedLayers =_editLayers if isinstance(_editLayers, (list, tuple)) else [_editLayers]
         self.editLayer =None if isinstance(_editLayers, (list, tuple)) else _editLayers # for support in present subclass
+        self.selectedZonations=self.selectedZones=None
         
 
         if _project:
@@ -82,17 +94,40 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                                                 self.tr(u'Project projection read error {0}: {1}').format(
                                                 scheme, str(e)),
                                                 level=QgsMessageBar.CRITICAL)
-
-        settings = QSettings()
-        selectedZonations = settings.value("/PDS/Zonations/SelectedZonations/v"+self.scheme, [])
-        selectedZones = settings.value("/PDS/Zonations/selectedZones/v"+self.scheme, [])
-        self.isOnlyPublicDeviChkBox.setChecked(settings.value("/PDS/Zonations/useOnlyPublicDevi ", 'True')== 'True')
+        self._fillZonations()
+        self.restoreZoneSelection()
+    #=======================================================================
+    # 
+    #=======================================================================
+    def _restoreZoneSelectionFromLayer(self):
+        selectedZonations = ast.literal_eval(str(self.selectedLayers[0].customProperty("pds_Zonation")))
+        selectedZones =     ast.literal_eval(str(self.selectedLayers[0].customProperty("pds_Zone")))
+        if selectedZonations is not None and selectedZones is not None:
+            self.selectedZonations = map(int,selectedZonations)
+            self.selectedZones = map(int,selectedZones)
+            return True
+        return False
         
-        self.selectedZonations = [int(z) for z in selectedZonations]
-        self.selectedZones = [int(z) for z in selectedZones]
-
-
-        self.fillZonations()
+    #===========================================================================
+    # 
+    #===========================================================================
+    def _restoreZoneSelectionFromGlobal(self):
+        selectedZonations = ast.literal_eval(self.settings.value("/PDS/Zonations/SelectedZonations/v"+self.scheme, []))
+        selectedZones = ast.literal_eval(self.settings.value("/PDS/Zonations/selectedZones/v"+self.scheme, []))
+        if selectedZonations is not None and selectedZones is not None:
+            self.selectedZonations = map(int,selectedZonations)
+            self.selectedZones = map(int,selectedZones)
+            return True
+        return False
+        
+    #===========================================================================
+    # 
+    #===========================================================================
+    def restoreZoneSelection(self):
+        if not self._restoreZoneSelectionFromLayer():
+            self._restoreZoneSelectionFromGlobal()    
+        self.isOnlyPublicDeviChkBox.setChecked(self.settings.value("/PDS/Zonations/useOnlyPublicDevi ", 'True')== 'True')
+        self.updZonationSelection()
         
     #===========================================================================
     # 
@@ -113,13 +148,6 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
         for _editLayer in self.selectedLayers:
             self.editLayer=_editLayer
             self.process()
-            if self.editLayer:
-                field = QgsField( 'x', QVariant.Double )
-                self.editLayer.addExpressionField( '  $x  ', field )
-                field = QgsField( 'y', QVariant.Double )
-                self.editLayer.addExpressionField( '  $y  ', field )
-            
-        
     #===========================================================================
     # 
     #===========================================================================
@@ -130,18 +158,29 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
         selectedZonations = []
         selectedZones = []
         self.no_devi_wells=[]
+        #------------------------
+        fieldIdx={}
+        for fieldName,fieldType in [
+                                     [C_ZONE,QVariant.String]
+                                    ]:
+            fieldIdx[fieldName] = self.editLayer.dataProvider().fieldNameIndex(fieldName)
+            if fieldIdx[fieldName] < 0:
+                with edit_layer(self.editLayer):
+                    self.editLayer.dataProvider().addAttributes([QgsField(fieldName, fieldType)])
+                    fieldIdx[fieldName] = self.editLayer.dataProvider().fieldNameIndex(fieldName)
+        #------------------------
+        dataProvider = self.editLayer.dataProvider()
+        #------------------------
         for si in self.zonationListWidget.selectedItems():
             selectedZonations.append(int(si.data(Qt.UserRole)))
-
-        dataProvider = self.editLayer.dataProvider()
-
         sel = None
         for zones in self.zoneListWidget.selectedItems():
             sel = zones.data(Qt.UserRole)
             selectedZones.append(sel[0])
-
         if sel is None:
             return
+        self.selectedZonations=selectedZonations
+        self.selectedZones=selectedZones
 
         idxMd = dataProvider.fieldNameIndex('MD')
         idxTvd = dataProvider.fieldNameIndex('TVD')
@@ -165,21 +204,32 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                 coords=None
                 if sel[0]==USTJE:
                     coords = self._getCoordsFromDevi(tigWellId,point_idx=0)
+                    self.editLayer.changeAttributeValue(feature.id(), fieldIdx[C_ZONE], str(USTJE))
                 elif sel[0]==ZABOY:
                     coords = self._getCoordsFromDevi(tigWellId,point_idx=-1)
+                    self.editLayer.changeAttributeValue(feature.id(), fieldIdx[C_ZONE], str(ZABOY))
                 else:
                     coords = self._getCoords(sel, tigWellId)
+                    self.editLayer.changeAttributeValue(feature.id(), fieldIdx[C_ZONE], str(sel))
                 if coords is not None:
                     IS_DEBUG and QgsMessageLog.logMessage(u"\t move well {} to {}".format(tigWellId,coords), tag="QgisPDS.coordFromZone")
                     geom = QgsGeometry.fromPoint(coords)
                     self.editLayer.changeGeometry(feature.id(), geom)
                     #self.editLayer.commitChanges()  #--- commit each row
                     #self.editLayer.startEditing()   #--- and start edit again
-
-        settings = QSettings()
-        settings.setValue("/PDS/Zonations/SelectedZonations/v"+self.scheme, selectedZonations)
-        settings.setValue("/PDS/Zonations/selectedZones/v"+self.scheme, selectedZones)
-        settings.setValue("/PDS/Zonations/useOnlyPublicDevi ", 'True' if self.isOnlyPublicDeviChkBox.isChecked() else 'False' )
+        #------------------------
+        self.settings.setValue("/PDS/Zonations/SelectedZonations/v"+self.scheme, str(self.selectedZonations))
+        self.settings.setValue("/PDS/Zonations/selectedZones/v"+self.scheme, str(self.selectedZones))
+        self.settings.setValue("/PDS/Zonations/useOnlyPublicDevi ", 'True' if self.isOnlyPublicDeviChkBox.isChecked() else 'False' )
+        #------------------------
+        if self.editLayer:
+            field = QgsField( 'x', QVariant.Double )
+            self.editLayer.addExpressionField( '  $x  ', field )
+            field = QgsField( 'y', QVariant.Double )
+            self.editLayer.addExpressionField( '  $y  ', field )
+        self.editLayer.setCustomProperty("pds_Zonation", str(self.selectedZonations))
+        self.editLayer.setCustomProperty("pds_Zone"    , str(self.selectedZones)    )
+        #------------------------
         if len(self.no_devi_wells)>0:
             if self.isOnlyPublicDeviChkBox.isChecked():
                 QgsMessageLog.logMessage(self.tr(u"\t Deviation is private or no deviation in wells: {} ").format(",".join(self.no_devi_wells)), tag="QgisPDS.coordFromZone")
@@ -333,7 +383,10 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
     #===========================================================================
     # 
     #===========================================================================
-    def fillZonations(self):
+    def _fillZonations(self):
+        '''
+            @info: Load list of zonations from db to widget
+        '''
         sqlFile = os.path.join(self.plugin_dir, 'db', 'ZonationParams_zonation.sql')
         if os.path.exists(sqlFile):
             f = open(sqlFile, 'r')
@@ -347,15 +400,8 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                 item = QListWidgetItem(to_unicode(desc))
                 item.setData(Qt.UserRole, id)
                 self.zonationListWidget.addItem(item)
-
-                if id in self.selectedZonations:
-                    item.setSelected(True)
-                    if scrollToItem is None:
-                        scrollToItem = item
-
-            self.zonationListWidget.scrollToItem(scrollToItem)
-
         return
+    
     #===========================================================================
     # 
     #===========================================================================
@@ -374,14 +420,39 @@ class QgisPDSCoordFromZoneDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar):
                 item.setData(Qt.UserRole, [i_id, zonationId, i_order, i_level])
                 self.zoneListWidget.addItem(item)
 
-                if i_id in self.selectedZones:
+                if self.selectedZones is not None and i_id in self.selectedZones:
                     item.setSelected(True)
                     if scrollToItem is None:
                         scrollToItem = item
                              
             self.zoneListWidget.scrollToItem(scrollToItem)
-
         return
+    
+    #===========================================================================
+    #
+    #===========================================================================
+    def updZonationSelection(self):
+        '''
+            @info: select zonation in self.zonationListWidget and self.zoneListWidget
+        '''
+        scrollToItem=None
+        haveSelection=False
+        for item in  listWidgetItemsIterator(self.zonationListWidget):
+            id=item.data(Qt.UserRole)
+            if id in self.selectedZonations:
+                item.setSelected(True)
+                scrollToItem = item
+                self.zonationListWidget.scrollToItem(scrollToItem)
+            
+        for item in  listWidgetItemsIterator(self.zoneListWidget):
+            id, zonationId, i_order, i_level=item.data(Qt.UserRole)
+            if id in self.selectedZones:
+                item.setSelected(True)
+                scrollToItem = item
+                self.zoneListWidget.scrollToItem(scrollToItem)
+                haveSelection=True
+        return haveSelection
+    
     #===========================================================================
     # 
     #===========================================================================
