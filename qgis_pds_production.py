@@ -23,6 +23,8 @@ import time
 import sys
 from itertools import chain
 from copy import copy
+from qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
+import traceback
 
 
 IS_DEBUG=False
@@ -85,6 +87,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.setupUi(self)
         self.isCurrentProd = isCP # indicator that layer is with current prod
         self.isFondLayer= isOnlyFond   # indicator that layer is Fond
+        self.coordFromZone=QCheckBox(u'Расположение согласно разбивок')
+        self.coordFromZone.setChecked(False)
         self.fondLoadConfig = fondLoadConfig(isWell=False,isObject=False)
         self.layer = _layer
         self._db = None
@@ -156,6 +160,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             except:
                 self.mStartDate=QDateTime(1900,01,01,00,00)
                 self.mEndDate=  QDateTime().currentDateTime()
+            self.baseConfigGrpBox.layout().addWidget(self.coordFromZone)
+            
         self.fondByWellRdBtn.toggled.connect(self.onFondByWellRdBtn)
         self.endDateEdit.setDateTime(self.mEndDate)
         self.startDateEdit.setDateTime(self.mStartDate)
@@ -392,6 +398,21 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             ps=pstats.Stats(_profiler, stream=s).strip_dirs().sort_stats('cumulative').print_stats()
             s = open(os.path.join(home,'qgispds.prof.log'), 'r')            
             QgsMessageLog.logMessage(u"profile: \n{}".format(''.join(s.readlines())), tag="QgisPDS.profile")
+        
+        #--- update location from Zones if need 
+        if self.coordFromZone.isChecked():
+            try:
+                dlg  = QgisPDSCoordFromZoneDialog(self.project, self.iface, self.layer)
+                if dlg._restoreZoneSelectionFromLayer():
+                    if dlg.updZonationSelection():
+                        dlg.process()
+                else:
+                    QgsMessageLog.logMessage(u"No associated zonation for layer: \n{}".format(u''.join(self.layer.name())), tag="QgisPDS.Error")
+            except:
+                QgsMessageLog.logMessage(u"Error update well location from zonation for layer: \n{} \n{}".format(u''.join(self.layer.name()),traceback.format_exc()), tag="QgisPDS.Error")
+
+                
+            
 
 
         
