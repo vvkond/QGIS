@@ -497,6 +497,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                             -состояние у всех скважин
                     
         """
+        isNewLayer=False
         self.mStartDate = self.startDateEdit.dateTime()
         self.mEndDate = self.endDateEdit.dateTime()
         # --- FOND READ SETTINGS
@@ -506,6 +507,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                                              )
         # --- IF NEW LAYER 
         if self.layer is None:
+            isNewLayer=True
             self.mSelectedReservoirs = self.getSelectedReservoirs()
             self.mPhaseFilter = self.getSelectedFluids()
 
@@ -633,6 +635,11 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         QgsMapLayerRegistry.instance().addMapLayer(self.layer)
         bblInit.setAliases(self.layer)
         setLayerFieldsAliases(self.layer,force=True)
+        
+        # --- ADD CALCULATED FIELDS
+        if isNewLayer:
+            field = QgsField( 'volwcut', QVariant.Double )
+            self.layer.addExpressionField( 'CASE WHEN "iwvol">0  THEN 100 ELSE ("pwvol"/"pflvol")*100 END', field )
         
         self.writeSettings()
     #===========================================================================

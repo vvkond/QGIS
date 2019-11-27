@@ -584,7 +584,7 @@ class bblInit:
                                     TableUnit(u"p_std_vol_lq",   u"Volume"), 
                                     TableUnit(u"p_q_mass_basis", u"Mass")
                                 ]                                 
-                                ,subComponentIds=["produced water","crude oil"]
+                                ,subComponentIds=["produced water","crude oil","condensate"]
                     ),
                     ]
 
