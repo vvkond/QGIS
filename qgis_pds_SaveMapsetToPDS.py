@@ -344,9 +344,9 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
             for idx,field in enumerate(self.currentLayer.fields()):
                 if self.parameterFieldIndex<0 and field.name()==self.parameterFieldName:
                     self.parameterFieldIndex=idx
-                elif self.subsetFieldIndex<0  and field.name()==self.subsetFieldName:
+                if self.subsetFieldIndex<0  and field.name()==self.subsetFieldName:
                     self.subsetFieldIndex=idx
-                elif self.keyFieldIndex<0     and field.name()==self.keyFieldName:
+                if self.keyFieldIndex<0     and field.name()==self.keyFieldName:
                     self.keyFieldIndex=idx
 
             if self.mapSetType == 0 and self.keyFieldIndex < 0:
