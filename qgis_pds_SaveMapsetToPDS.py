@@ -333,11 +333,21 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         else:
             provider = self.currentLayer.dataProvider()
             self.subsetFieldName = self.mSubsetFields.currentText()
-            self.parameterFieldName = self.mParameterFields.currentText()
-            self.keyFieldName = self.mKeyFields.currentText()
             self.subsetFieldIndex = provider.fieldNameIndex(self.subsetFieldName)
-            self.parameterFieldIndex = provider.fieldNameIndex(self.parameterFieldName)
+            
+            self.keyFieldName = self.mKeyFields.currentText()
             self.keyFieldIndex = provider.fieldNameIndex(self.keyFieldName)
+            
+            self.parameterFieldName = self.mParameterFields.currentText()
+            self.parameterFieldIndex = provider.fieldNameIndex(self.parameterFieldName)
+            
+            for idx,field in enumerate(self.currentLayer.fields()):
+                if self.parameterFieldIndex<0 and field.name()==self.parameterFieldName:
+                    self.parameterFieldIndex=idx
+                elif self.subsetFieldIndex<0  and field.name()==self.subsetFieldName:
+                    self.subsetFieldIndex=idx
+                elif self.keyFieldIndex<0     and field.name()==self.keyFieldName:
+                    self.keyFieldIndex=idx
 
             if self.mapSetType == 0 and self.keyFieldIndex < 0:
                 if QtGui.QMessageBox.question(self, self.tr(u'Save to PDS'), self.tr(u'Key field name is not found. Proceed?'),
