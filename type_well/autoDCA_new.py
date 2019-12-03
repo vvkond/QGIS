@@ -181,8 +181,10 @@ GasReservoirProp=namedtuple('GasReservoirProp',[
                                             ,"BOE"
                                             ,"WetGasShrink"
                                           ])
-
-def get_reservoir_prop(REG):
+#===============================================================================
+# get_reservoir_prop
+#===============================================================================
+def get_reservoir_prop_from_xls(REG):
     """    
         @return:
     """
@@ -223,6 +225,50 @@ def get_reservoir_prop(REG):
                 ,propan_liq_dens=520 #kg/m3
                 ,BOE=6.3 #Barrel oil equivalent
                 ,WetGasShrink=reg_string['WetGasShrink'].iloc[0]
+                )
+#===============================================================================
+# get_reservoir_prop
+#===============================================================================
+def get_reservoir_prop(
+        primary_product
+        ,**kwargs
+        ):
+    """    
+        @return:
+    """
+    def chk_kwa(name,default=None):
+        if name in kwargs.keys():
+            return kwargs[name]
+        else: 
+            return default
+        
+    if primary_product==u'oil':
+        return OilReservoirProp(
+                primary_product=cOIL_VOL
+                ,primdiv=1
+                ,secondary_product=cNAT_GAS
+                ,secdiv=1000                                        #Gas is stored in m3, need to be comverted to Mm3
+                ,units=', m3'
+                ,calcRF=False
+                ,propan_fraction=   chk_kwa('propan_fraction',0)    #This must be taken frpm REG attributes
+                ,GOR=               chk_kwa('GOR',0)
+                ,FF=                chk_kwa('FF',0)                 #Oil shrinkage formation factor
+            )
+    elif primary_product==u'gas':
+        return GasReservoirProp(    
+                primary_product=cNAT_GAS    
+                ,primdiv=1000                                       #Gas is stored in m3, need to be comverted to Mm3
+                ,secondary_product=cCOND_VOL
+                ,secdiv=1
+                ,units=', Mm3'
+                ,calcRF=True
+                ,cond_RFi=          chk_kwa('cond_RFi',0)/1000      #Used to calculate EUR of condensate from Gas EUR at t0, Mm3/Mm3
+                ,propan_fraction=   chk_kwa('propan_fraction',0)    #This must be taken frpm REG attributes
+                ,FF=                chk_kwa('FF',0)                 #Gas expansion formation factor
+                ,propan_dens=2.3                                    #kg/m3]
+                ,propan_liq_dens=520                                #kg/m3
+                ,BOE=6.3                                            #Barrel oil equivalent
+                ,WetGasShrink=      chk_kwa('WetGasShrink',0)
                 )
 #=======================================================================
 # 
@@ -306,16 +352,22 @@ def get_connection(
 class DCA():
     def __init__(self
                  , reservoir_group
+                 , reservoir_group_prop
                  , well_names=None
                  , conn=None
                  , config=get_config()
                  ):
+        '''
+            @param reservoir_group_prop: Result of 'get_reservoir_prop'
+            
+            
+        '''
         self.is_terminated=False
         self.REG=reservoir_group
         self.WELLS=well_names
         log("Read DCA config")
         self.config=config
-        self.reservoir_prop=get_reservoir_prop(self.REG)
+        self.reservoir_prop=reservoir_group_prop
         if not self.reservoir_prop:
             log("Error. Can't read reservoir group '{}' property".format(self.REG))
             self.is_terminated=True
