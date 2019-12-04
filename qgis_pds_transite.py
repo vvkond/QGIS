@@ -150,9 +150,9 @@ class QgisPDSTransitionsDialog(QgisPDSCoordFromZoneDialog):
             wellIdIdx = self.editLayer.dataProvider().fieldNameIndex(Fields.WellId.name)
         
         subsetStr=self.editLayer.subsetString()
+        self.editLayer.setSubsetString('')
         
         with edit_layer(self.editLayer):
-            self.editLayer.setSubsetString('')
             fCount = float(self.editLayer.featureCount()) + 1.0
             index = 0
             for index,feature in enumerate(self.editLayer.dataProvider().getFeatures()):
