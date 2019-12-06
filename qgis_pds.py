@@ -67,6 +67,13 @@ import os
 import os.path
 import ast
 import json
+from qgis_filter_layer import QgsFilterLoaderDialog
+from qgis.core import QgsMapLayerRegistry
+from qgis.utils import qgsfunction
+from qgis.core import QgsExpression
+from utils import getenv_system, qgs_get_all_rules, restore_layer_filter,\
+    store_layer_filter
+
 
 
 #===============================================================================
@@ -182,12 +189,6 @@ class QgsWellSearchWidget(FocusedLineEdit):
 #===============================================================================
 # --- REGISTER USER FUNCTIONS.CALL @qgsfunction MUST BE IN 1st level,not in def/class
 #===============================================================================
-from qgis.core import QgsMapLayerRegistry
-from qgis.utils import qgsfunction
-from qgis.core import QgsExpression
-from utils import getenv_system, qgs_get_all_rules
-
-
 @qgsfunction(args='auto', group='PumaPlus')
 def activeLayerCustomProperty(value1,feature, parent):
     """
@@ -1049,6 +1050,12 @@ class QgisPDS(QObject):
 
         #----###########################################################################
         #---LAYERS CONTEXT MENU
+        shortcut = QShortcut(QKeySequence(Qt.ControlModifier + Qt.AltModifier + Qt.Key_F), iface.mainWindow())
+        shortcut.setContext(Qt.ApplicationShortcut)
+        shortcut.activated.connect(lambda: self.setLayersFilter())
+
+        #----###########################################################################
+        #---LAYERS CONTEXT MENU
         menu_grp_name=self.tr(u"&Devi")
         #----
         '''Widget for select devi layer/field '''
@@ -1390,6 +1397,9 @@ class QgisPDS(QObject):
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
 
+    #===========================================================================
+    # createFaultsLayer
+    #===========================================================================
     def createFaultsLayer(self):
         try:
             if not QgsProject.instance().homePath():
@@ -1402,6 +1412,9 @@ class QgisPDS(QObject):
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
             
     
+    #===========================================================================
+    # markLayers
+    #===========================================================================
     def markLayers(self):
         try:
             for currentLayer in self.iface.legendInterface().selectedLayers():
@@ -1410,6 +1423,9 @@ class QgisPDS(QObject):
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
 
         
+    #===========================================================================
+    # markWells
+    #===========================================================================
     def markWells(self,currentLayer=None):
         try:
             if currentLayer is None or (not isinstance(currentLayer,QgsMapLayer))  :  currentLayer = self.iface.activeLayer()
@@ -1909,3 +1925,18 @@ class QgisPDS(QObject):
             pass
 
         return result
+    
+    #===========================================================================
+    # setLayersFilter
+    #===========================================================================
+    def setLayersFilter(self):
+        try:
+            dlg=QgsFilterLoaderDialog(iface=self.iface, Lbl=u"Select filter preset", default_selection=u"default")
+            result = dlg.exec_()
+            if result:
+                QgsMessageLog.logMessage(u"exit dialog", tag="QgisPDS.debug")
+        except:
+            QgsMessageLog.logMessage(u"{}".format(traceback.format_exc()), tag="QgisPDS.error")
+        pass
+    
+    
