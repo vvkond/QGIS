@@ -1315,7 +1315,8 @@ class QgisPDS(QObject):
         if not type(layers) is list:
             layers=[layers]
              
-        dlg=None   
+        dlg=None  
+        result=0 
         for currentLayer in layers:
             currentLayer.blockSignals(True)
             filter_str=currentLayer.subsetString()
@@ -1329,7 +1330,7 @@ class QgisPDS(QObject):
                         if result and currentLayer and not isOnlyFond:
                             prodSetup = QgisPDSProdSetup(self.iface, currentLayer)
                             prodSetup.setup(currentLayer)
-                else:
+                elif result: # run only if user not CLOSE/TERMINATE config window
                     dlg.layer=currentLayer
                     dlg.mSelectedReservoirs = ast.literal_eval(dlg.layer.customProperty("pds_prod_SelectedReservoirs"))
                     dlg.fillReservoirListWidget()
@@ -1339,6 +1340,8 @@ class QgisPDS(QObject):
             #--------------------
             currentLayer.setSubsetString(filter_str)
             currentLayer.blockSignals(False)
+            if not result:  # exit if user presed CLOSE config window
+                break
         del dlg
         
 
