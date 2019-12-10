@@ -226,12 +226,12 @@ TableUnit = namedtuple('TableUnit', ['table', 'unit'])
 #===============================================================================
 # not used. Planed for QgsField.type association
 #===============================================================================
-FIELD_AND_TYPES={"string":QVariant.String
-             ,"integer":QVariant.Int
-             ,"int":QVariant.Int
-             ,"double":QVariant.Double
-             ,"date":QVariant.String
-             ,"DateTime":QVariant.DateTime
+FIELD_AND_TYPES={"string"   :QVariant.String
+                 ,"integer" :QVariant.Int
+                 ,"int"     :QVariant.Int
+                 ,"double"  :QVariant.Double
+                 ,"date"    :QVariant.String
+                 ,"DateTime":QVariant.DateTime
              }
 #===============================================================================
 # 
@@ -588,18 +588,18 @@ class bblInit:
                     ),
                     ]
 
-    bblLiftMethods =  {
-                        u"flowing": LiftMethod(True, False),
-                        u"centrifugal pump": LiftMethod( False, True),
-                        u"diaphragm pump": LiftMethod( False, True),
-                        u"sucker-rod pump": LiftMethod( False, True),
-                        u"jet pump": LiftMethod( False, True),
-                        u"plunger pump": LiftMethod( False, True),
-                        u"gas lift": LiftMethod( False, False),
-                        u"spiral pump": LiftMethod( False, True),
-                        u"RED pump": LiftMethod( False, True),
-                        u"kompressor": LiftMethod( False, True),
-                        u"shvn": LiftMethod( False, True)
+    bblLiftMethods =  {                               #'isFlowing', 'isPump' 
+                        u"flowing":             LiftMethod(True,   False),
+                        u"centrifugal pump":    LiftMethod( False, True ),
+                        u"diaphragm pump":      LiftMethod( False, True ),
+                        u"sucker-rod pump":     LiftMethod( False, True ),
+                        u"jet pump":            LiftMethod( False, True ),
+                        u"plunger pump":        LiftMethod( False, True ),
+                        u"gas lift":            LiftMethod( False, False),
+                        u"spiral pump":         LiftMethod( False, True ),
+                        u"RED pump":            LiftMethod( False, True ),
+                        u"kompressor":          LiftMethod( False, True ),
+                        u"shvn":                LiftMethod( False, True )
                         }
 
     standardDiagramms = {
@@ -1090,11 +1090,11 @@ class bblInit:
 
         #other fields
         for name,alias in [
-                            [Fields.WellRole.name,Fields.WellRole.alias              ]
-                            ,[Fields.WellStatus.name,Fields.WellStatus.alias         ]
-                            ,[Fields.WellStatusInfo.name,Fields.WellStatusInfo.alias ]
-                            ,[Fields.WellStatusReason.name,Fields.WellStatusReason.alias]
-                            ,[Fields.WellInitRole.name,Fields.WellInitRole.alias     ]
+                            [Fields.WellRole.name           ,Fields.WellRole.alias        ]
+                            ,[Fields.WellStatus.name        ,Fields.WellStatus.alias      ]
+                            ,[Fields.WellStatusInfo.name    ,Fields.WellStatusInfo.alias  ]
+                            ,[Fields.WellStatusReason.name  ,Fields.WellStatusReason.alias]
+                            ,[Fields.WellInitRole.name      ,Fields.WellInitRole.alias    ]
                              #[u'wellrole'  ,u'назначение'           ]
                             #,[u'wellstatus',u'статус'               ]
                             #,[u'wsinfo'    ,u'уточнение статуса'    ]
