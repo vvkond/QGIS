@@ -637,10 +637,12 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         setLayerFieldsAliases(self.layer,force=True)
         
         # --- ADD CALCULATED FIELDS
-        if not (self.layer.fieldNameIndex('volwcut')>=0):
-            field = QgsField( 'volwcut', QVariant.Double )
-            self.layer.addExpressionField( 'CASE WHEN "iwvol">0  THEN 100 ELSE ("pwvol"/"pflvol")*100 END', field )
-        
+        if not (self.layer.fieldNameIndex(u'volwcut')>=0):
+            field = QgsField( u'volwcut', QVariant.Double )
+            self.layer.addExpressionField( u'CASE WHEN "iwvol">0  THEN 100 ELSE ("pwvol"/"pflvol")*100 END', field )
+        if not (self.layer.fieldNameIndex(u'plfact')>=0):            
+            field = QgsField( u'plfact', QVariant.Int )
+            self.layer.addExpressionField( u'"symbolcode"-71', field )
         self.writeSettings()
     #===========================================================================
     # 
