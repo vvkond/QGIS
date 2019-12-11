@@ -1451,6 +1451,7 @@ class QgisPDS(QObject):
             del dlg
             currentLayer.setSubsetString(filter_str)
             currentLayer.blockSignals(False)
+            currentLayer.triggerRepaint()
         except Exception as e:
             QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.error")  
       

@@ -8,7 +8,6 @@ from PyQt4 import QtGui, uic
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from QgisPDS.connections import create_connection
 from utils import *
 from QgisPDS.tig_projection import *
 from qgis_pds_wellsBrowserDialog import QgisPDSWellsBrowserDialog
@@ -72,12 +71,12 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
     #===============================================================================
     #SLOT
     def on_buttonBox_accepted(self):
-        #QgsMessageLog.logMessage(u"accept", tag="QgisPDS.debug")
+        QgsMessageLog.logMessage(u"accept", tag="QgisPDS.debug")
         self.writeSettings()
         self.process()
     #SLOT
     def on_buttonBox_clicked(self, btn):
-        #QgsMessageLog.logMessage(u"apply", tag="QgisPDS.debug")
+        QgsMessageLog.logMessage(u"apply", tag="QgisPDS.debug")
         if self.buttonBox.buttonRole(btn) == QDialogButtonBox.ApplyRole:
             self.writeSettings()
             self.process()
@@ -88,11 +87,23 @@ class QgisPDSWellsMarkDialog(QtGui.QDialog, FORM_CLASS):
     def process(self): #default QDialog action
         #--- check enabled widgets
         fields_info=[field_info for field_info in self.fields_info if field_info[4].isEnabled()]
-        #QgsMessageLog.logMessage(u"Marks :{}".format(str(field_info)), tag="QgisPDS.markWells")
+        QgsMessageLog.logMessage(u"Marks :{}".format(str(field_info)), tag="QgisPDS.markWells")
         
         pr = self.layer.dataProvider()
         #---1 clear column if need
-        if self.chkBoxClearOldMark.isChecked():
+        if self.chkBoxClearAllMark.isChecked():
+            f_ids=[]
+            for field_info in self.fields_info:
+                f_name= field_info[0]
+                field_index = self.layer.fields().indexFromName(f_name)
+                if field_index > -1:
+                    f_ids.append(field_index)
+            pr.deleteAttributes(f_ids)            
+            self.layer.updateFields() # tell the vector layer to fetch changes from the provider
+            self.layer.blockSignals(False)
+            self.layer.triggerRepaint()
+            self.layer.blockSignals(True)
+        elif self.chkBoxClearOldMark.isChecked():
             f_ids=[]
             for field_info in fields_info:
                 f_name= field_info[0]
