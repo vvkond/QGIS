@@ -399,6 +399,10 @@ class QgisPDS(QObject):
         #Action on change visible preset
         self.onReadProject()
         
+        self.canvas=self.iface.mapCanvas()
+        self.canvas.renderStarting.connect(self.onRenderStart)
+
+        
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         return QCoreApplication.translate('QgisPDS', message)
@@ -576,6 +580,22 @@ class QgisPDS(QObject):
         visiblePreset=QgsProject.instance().visibilityPresetCollection()
         visiblePreset.presetsChanged.connect(lambda:self.switchInvisibleLayersStyleOff())
         
+    def onRenderStart(self):   
+        '''
+            @info: work on start map render. 
+        ''' 
+        #QgsMessageLog.logMessage('\n{}'.format(str(canvas.scale())), 'BubbleSymbolLayer') #DEBUG
+        #QgsMessageLog.logMessage('{}'.format(str(canvas.mapUnitsPerPixel())), 'BubbleSymbolLayer') #DEBUG
+        #dpi=utils.iface.mainWindow().physicalDpiX()
+        #QgsMessageLog.logMessage('{}'.format(str(dpi)), 'BubbleSymbolLayer') #DEBUG
+        
+        QgsMessageLog.logMessage('{}'.format(str('onZoomChange')), 'QgisPDS.debug') #DEBUG
+        #zoomlevel=scale
+        scale=self.canvas.scale()
+        zoomlevel=scale/1000.0*0.264583333603/self.canvas.mapUnitsPerPixel()
+        QgsMessageLog.logMessage('{}'.format(str(zoomlevel)), 'QgisPDS.debug') #DEBUG
+        BubbleSymbolLayer.ZOOM_SCALE=zoomlevel
+
     def onReadProject(self):
         #for current project
         self.connectVisiblePresetChangedEvent()

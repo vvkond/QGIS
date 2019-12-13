@@ -82,6 +82,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
     LABEL_OFFSETY = 'labloffy'
     BUBBLE_SIZE = 'bubblesize'
     DIAGRAMM_LABELS = 'bbllabels'
+    ZOOM_SCALE=1  # zoom coefficient
 
     def __init__(self, props):
         ts=datetime.now()
@@ -474,7 +475,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
             '''
             Draw diagram label for current feature
             '''
-            labelSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, self.labelSize, QgsSymbolV2.Pixel)
+            labelSize = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, self.labelSize, QgsSymbolV2.Pixel) * BubbleSymbolLayer.ZOOM_SCALE
 
             font = QFont()
             font.setPointSizeF(labelSize);
@@ -487,7 +488,6 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                     xVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float_t(attrs[self.mXIndex]), QgsSymbolV2.MM)
                 if attrs[self.mYIndex]:
                     yVal = QgsSymbolLayerV2Utils.convertToPainterUnits(ctx, float_t(attrs[self.mYIndex]), QgsSymbolV2.MM)
-                widthVal = 10
 
                 #if xVal != 0 or yVal != 0:
                 pt1 = point + QPointF(xVal, yVal)
@@ -498,10 +498,12 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
                 st.setTextOption(opt)
                 st.prepare(p.transform(), p.font())
                 widthVal = st.size().width()
+                if widthVal==0 and self.mWell>=0:  #set default size for label without production text
+                    widthVal=len(str(attrs[self.mWell]))*8 * BubbleSymbolLayer.ZOOM_SCALE 
                 
                 pt2 = point + QPointF(xVal + widthVal, yVal)
 
-                pen = QPen(Qt.black)
+                pen = QPen(Qt.lightGray)
                 pen.setWidth(2)
                 p.setPen(pen)
                 if point.x() < (pt1.x() + pt2.x()) / 2 :
@@ -528,6 +530,7 @@ class BubbleSymbolLayer(QgsMarkerSymbolLayerV2):
         if self.fields:
             self.mXIndex = self.fields.fieldNameIndex("labloffx")    #LablOffX
             self.mYIndex = self.fields.fieldNameIndex("labloffy")    #LablOffY
+            self.mWell = self.fields.fieldNameIndex('well_id')
             self.mDiagrammIndex = self.fields.fieldNameIndex(OLD_NEW_FIELDNAMES[0])
             if self.mDiagrammIndex < 0:
                 self.mDiagrammIndex = self.fields.fieldNameIndex(OLD_NEW_FIELDNAMES[1])
