@@ -301,6 +301,8 @@ class Fields:
     SymbolId =         AttributeField( field_name=u'symbolid'   ,field_type="string" ,field_alias=u""                          ,field_len=400 ,field_prec=0)
     Symbol =           AttributeField( field_name=u'symbolcode' ,field_type="integer",field_alias=u""                          ,field_len=10 ,field_prec=0)
     SymbolName =       AttributeField( field_name=u'symbolname' ,field_type="string" ,field_alias=u""                          ,field_len=100 ,field_prec=0)
+    Plfact   =         AttributeField( field_name=u'plfact'     ,field_type="string" ,field_alias=u""                          ,field_len=400 ,field_prec=0)
+    Gor      =         AttributeField( field_name=u'gor'        ,field_type="string" ,field_alias=u""                          ,field_len=400 ,field_prec=0)
                                                                                                                
     TigWellSymbol =    AttributeField( field_name=u'symbol'     ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)    
     TigLatestWellState=AttributeField( field_name=u'status'     ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)
@@ -321,6 +323,7 @@ class Fields:
     multiprod =        AttributeField( field_name=u"multiprod"  ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)
                                                                                                                           
     startDate =        AttributeField( field_name=u'startdate'  ,field_type="date"   ,field_alias=u"дата начала"               ,field_len=50 ,field_prec=0)
+    endDate =          AttributeField( field_name=u'enddate'    ,field_type="date"   ,field_alias=u"дата окончания"            ,field_len=50 ,field_prec=0)
                                                                                                                           
     IsGlobal =         AttributeField( field_name=u'global_pri' ,field_type="string" ,field_alias=u""                          ,field_len=20 ,field_prec=0)    
     Owner    =         AttributeField( field_name=u'owner'      ,field_type="string" ,field_alias=u"владелец данных"           ,field_len=20 ,field_prec=0)    
@@ -404,6 +407,7 @@ FieldsProdLayer=[
             ,Fields.WellStatusInfo
             ,Fields.WellInitRole
             ,Fields.startDate
+            ,Fields.endDate
             ,Fields.Days
             ,Fields.LiftMethod
             ,Fields.bubblesize
@@ -411,6 +415,8 @@ FieldsProdLayer=[
             ,Fields.movingres
             ,Fields.resstate
             ,Fields.multiprod
+            ,Fields.Plfact
+            ,Fields.Gor
             ]
 
 #===============================================================================

@@ -23,6 +23,7 @@ import time
 import sys
 from itertools import chain
 from copy import copy
+import pandas as pd
 from qgis_pds_CoordFromZone import QgisPDSCoordFromZoneDialog
 import traceback
 from qgis_pds_transite import QgisPDSTransitionsDialog
@@ -667,6 +668,14 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         self.fondStartDate,self.fondEndDate = fondStartDate, fondEndDate
         self.mSelectedReservoirs = reservoirs
         
+        #--- ADD PLFACT
+        self._m1_well_status={}
+        self._m1_well_role={}
+        try:
+            self._m1_well_status,self._m1_well_role=self.getM1Status()
+        except:
+            QgsMessageLog.logMessage(u"Error plfact load: \n{} \n{}".format(u''.join(self.layer.name()),traceback.format_exc()), tag="QgisPDS.Error")
+            
         # #--- READ PROJECT FROM LAYER
         # prjStr = layer.customProperty("pds_project")
         # self.project = ast.literal_eval(prjStr)
@@ -780,7 +789,7 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             try:
                 self.calcProductionSum(pdw)
             except:
-                QgsMessageLog.logMessage(u"Error in calcProductionSum for {}".format(str(pdw)), tag="QgisPDS.error")
+                QgsMessageLog.logMessage(u"Error in calcProductionSum for {}".format(str(pdw)), tag="QgisPDS.Error")
         IS_DEBUG and QgsMessageLog.logMessage(u"bubble calculated in  in {}".format((time.time() - time_start)/60), tag="QgisPDS.readProduction");time_start=time.time()
         
         #--- READ ALL WELLS INFO FROM BASE ON SELECTED DATE
@@ -804,25 +813,27 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             cSymbol    =        self.layer.fieldNameIndex(Fields.Symbol.name           )
             cSymbolId  =        self.layer.fieldNameIndex(Fields.SymbolId.name         )
             cSymbolName=        self.layer.fieldNameIndex(Fields.SymbolName.name       )
-            cResState  =        self.layer.fieldNameIndex(Fields.resstate.name        )
-            cMovingRes =        self.layer.fieldNameIndex(Fields.movingres.name       )
-            cMultiProd =        self.layer.fieldNameIndex(Fields.multiprod.name       )
-            cStartDate =        self.layer.fieldNameIndex(Fields.startDate.name       )
+            cResState  =        self.layer.fieldNameIndex(Fields.resstate.name         )
+            cMovingRes =        self.layer.fieldNameIndex(Fields.movingres.name        )
+            cMultiProd =        self.layer.fieldNameIndex(Fields.multiprod.name        )
+            cStartDate =        self.layer.fieldNameIndex(Fields.startDate.name        )
+            cEndDate   =        self.layer.fieldNameIndex(Fields.endDate.name          )
             cRole      =        self.layer.fieldNameIndex(Fields.WellRole.name         )
             cStatus    =        self.layer.fieldNameIndex(Fields.WellStatus.name       )
-            cStatusReason    =  self.layer.fieldNameIndex(Fields.WellStatusReason.name )
-            cStatusInfo       = self.layer.fieldNameIndex(Fields.WellStatusInfo.name   )
-            cInitRole  =        self.layer.fieldNameIndex(Fields.WellInitRole.name     )
+            cStatusReason =     self.layer.fieldNameIndex(Fields.WellStatusReason.name )
+            cStatusInfo   =     self.layer.fieldNameIndex(Fields.WellStatusInfo.name   )
+            cInitRole     =     self.layer.fieldNameIndex(Fields.WellInitRole.name     )
                         
             attr_2_upd=[  ###old column             old_col_id       new_col    
                           [Fields.Days.name             ,cDays             ,  Fields.Days.name              ]
                         , [Fields.Symbol.name           ,cSymbol           ,  Fields.Symbol.name            ]
                         , [Fields.SymbolId.name         ,cSymbolId         ,  Fields.SymbolId.name          ]
                         , [Fields.SymbolName.name       ,cSymbolName       ,  Fields.SymbolName.name        ]
-                        , [Fields.resstate.name        ,cResState         ,  Fields.resstate.name         ]
-                        , [Fields.movingres.name       ,cMovingRes        ,  Fields.movingres.name        ]
-                        , [Fields.multiprod.name       ,cMultiProd        ,  Fields.multiprod.name        ]
-                        , [Fields.startDate.name       ,cStartDate        ,  Fields.startDate.name        ]
+                        , [Fields.resstate.name         ,cResState         ,  Fields.resstate.name          ]
+                        , [Fields.movingres.name        ,cMovingRes        ,  Fields.movingres.name         ]
+                        , [Fields.multiprod.name        ,cMultiProd        ,  Fields.multiprod.name         ]
+                        , [Fields.startDate.name        ,cStartDate        ,  Fields.startDate.name         ]
+                        , [Fields.endDate.name          ,cEndDate          ,  Fields.endDate.name           ]
                         , [Fields.WellRole.name         ,cRole             ,  Fields.WellRole.name          ]
                         , [Fields.WellStatus.name       ,cStatus           ,  Fields.WellStatus.name        ]
                         , [Fields.WellStatusReason.name ,cStatusReason     ,  Fields.WellStatusReason.name  ]
@@ -840,6 +851,15 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 searchRes = self.layer.getFeatures(QgsFeatureRequest(expr))
                 num = 0
                 IS_DEBUG and QgsMessageLog.logMessage(u"update attribute of well {}".format(feature.attribute(Fields.WellId.name)), tag="QgisPDS.debug")
+                #--- set PLFACT in query result
+                _plfact=_gor=None
+                
+                if feature.attribute(Fields.WellId.name) in list(self._m1_well_status.keys()): 
+                    _plfact=self._m1_well_status[feature.attribute(Fields.WellId.name)]
+                    _gor=self._m1_well_role[feature.attribute(Fields.WellId.name)]
+                feature.setAttribute (Fields.Plfact.name, _plfact                                                  )
+                feature.setAttribute (Fields.Gor.name,    _gor                                                     )
+                    
                 for f in searchRes:             #--- iterate over each row in base layer for current well
                     is_refreshed = True
                     #--- update coord if checked
@@ -851,6 +871,10 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                             self.layer.changeAttributeValue(f.id(), c_old_idx      , feature.attribute(c_new_name))  #f.setAttribute( c_old       , feature.attribute(c_new) )## ---incorrect, not update feature in layer
                     if liftMethodIdx >= 0:                               #--- update liftmetho id
                         self.layer.changeAttributeValue(f.id(), liftMethodIdx, feature.attribute(Fields.LiftMethod.name))
+                    #--- update PLFACT/GOR in old layer feature
+                    self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(Fields.Plfact.name),   feature.attribute(Fields.Plfact.name)  )
+                    self.layer.changeAttributeValue(f.id(), self.layer.fieldNameIndex(Fields.Gor.name),      feature.attribute(Fields.Gor.name)     )
+                    #--- update PROD in old layer feature
                     for fl in bblInit.fluidCodes:                        #--- update production attributes
                         attrMass             = bblInit.attrFluidMass(             fl.code)
                         attrVol              = bblInit.attrFluidVolume(           fl.code)
@@ -1245,14 +1269,23 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
         sumMass = [0 for c in bblInit.fluidCodes]
         sumVols = [0 for c in bblInit.fluidCodes]
         sumDays = 0
+        startDt =None 
+        endDt   =None
         for prod in prodWell.prods:
             sumDays = sumDays + self.calcProd(prod, prodWell.name, sumMass, sumVols)
+            if startDt is None or prod.stadat < startDt :
+                startDt = prod.stadat
+            if endDt is None or prod.enddat > endDt   :
+                endDt   = prod.enddat
+        startDt=startDt.date() if startDt is not None else None 
+        endDt=endDt.date() if endDt is not None else None
 
-        self.setWellAttribute(prodWell.name, Fields.Days.name              , sumDays                 )
-        self.setWellAttribute(prodWell.name, Fields.resstate.name         , prodWell.reservoirState )
-        self.setWellAttribute(prodWell.name, Fields.movingres.name        , prodWell.movingReservoir)
-        self.setWellAttribute(prodWell.name, Fields.multiprod.name        , prodWell.lastReservoirs )
-        self.setWellAttribute(prodWell.name, Fields.startDate.name        , self.mStartDate.date()  )
+        self.setWellAttribute(prodWell.name, Fields.Days.name               , sumDays                )
+        self.setWellAttribute(prodWell.name, Fields.resstate.name          , prodWell.reservoirState )
+        self.setWellAttribute(prodWell.name, Fields.movingres.name         , prodWell.movingReservoir)
+        self.setWellAttribute(prodWell.name, Fields.multiprod.name         , prodWell.lastReservoirs )
+        self.setWellAttribute(prodWell.name, Fields.startDate.name         , startDt                 )
+        self.setWellAttribute(prodWell.name, Fields.endDate.name           , endDt                   )
         self.setWellAttribute(prodWell.name, Fields.WellRole.name          , prodWell.wRole          )
         self.setWellAttribute(prodWell.name, Fields.WellStatus.name        , prodWell.wStatus        )
         self.setWellAttribute(prodWell.name, Fields.WellStatusReason.name  , prodWell.wStatusReason  )
@@ -2318,7 +2351,9 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
 #        result = self.db.execute(sql)
 #        for id in result:
 #            data_val = id[0]
-        return SYMBOL('unknown well', 70),wellRole,wellStatus,wellStatusReason, wellStatusInfo, initialWellRole, liftMethod
+        if wellStatus[:4]==u'code':
+            return SYMBOL(u'unknown status', int(wellStatus.replace(u'code','').strip())+70 ) ,wellRole,wellStatus,wellStatusReason, wellStatusInfo, initialWellRole, liftMethod
+        return SYMBOL(u'unknown well', 70),wellRole,wellStatus,wellStatusReason, wellStatusInfo, initialWellRole, liftMethod
 
     
     #===========================================================================
@@ -2374,6 +2409,237 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
             self.mWells[well_name] = well
             
 
+    #===========================================================================
+    # getM1Status
+    #===========================================================================
+    def getM1Status(self):
+        sql = """
+            ----------------------------------------------------------------------------
+            ---VIEW with reconciled parametrs
+            --- need V_PROD
+            create or replace view V_PROD_PARAM as
+            select
+                2.0                    as VIEW_VERSION
+                ,well.WELL_ID                 as well_id
+                    ,w_c.WELL_S                 as well_s
+                    ,pp_ax.PFNU_PROD_ACT_X_S as pfnu_pax_s 
+                    ,w_c.WELL_COMPLETION_S       as well_completion_s
+                ,w_c.WELL_COMPLETION_ID            as hor
+                ,p_a.PROD_START_TIME             as prod_start_time
+                ,p_a.PROD_END_TIME             as prod_end_time
+                ,gors.P_FLUID_CMPN_RTO_S            as GOR_P_FLUID_CMPN_RTO_S
+                ,gors.DATA_VALUE            as gor
+                ,plfacts.DATA_VALUE            as plfact
+                ,w_c_s.R_CMPL_STA_NAME            as cnstat
+                ,t_w_h.TIG_LATEST_WELL_STATE_NO      as wellstat
+                ,t_w_h.TIG_DESCRIPTION              as dns_kns
+                ,t_w_h.TIG_HOLE_SHORT_NAME         as own_arend
+                ,EXTRACT(DAY FROM LAST_DAY(prod_start_time))     as month_days    
+                ,t_w_h.TIG_EPWDB_CODE                as block
+                ,t_w_h.TIG_CLIENT_WELL_NAME          as adm_rayon    
+                ,w_c.DESCRIPTION            as kupol
+                ,t_w_h.TIG_API_NUMBER            as kust
+                ---data that can be without row    
+                ------# well work days in month from Reconciled only. 
+                ---slowww
+            ---    ,(select 
+            ---        max(v_pr.PROD_START_TIME+v_pr.PROD_DAYS)-min(v_pr.PROD_START_TIME)
+            ---          FROM V_PROD v_pr
+            ---          WHERE 
+            ---        v_pr.WELL_ID=w_c.WELL_ID
+            ---        AND extract(year from v_pr.PROD_START_TIME)=extract(year from p_a.PROD_START_TIME)
+            ---        AND extract(month from v_pr.PROD_START_TIME)=extract(month from p_a.PROD_START_TIME)
+            ---        AND v_pr.WORK_TYPE=(case when gors.DATA_VALUE in ('1','3','4') then 'production' 
+            ---                    when gors.DATA_VALUE in ('2','5') then 'water injection'
+            ---                    end
+            ---                   )
+            ---        AND v_pr.prod_value_period='monthly' ---only from Reconciled records
+            ---          GROUP BY v_pr.WELL_ID
+            ---            ,v_pr.WORK_TYPE
+            ---            ,extract(year from v_pr.PROD_START_TIME)
+            ---            ,extract(month from v_pr.PROD_START_TIME)    
+            ---    ) as well_work_days
+                ------# THFLPR as in PBA
+                ,(select (case when DATA_VALUE=-999 then -999 else DATA_VALUE/101325 end)
+                        from P_TRPR p_trpr
+                        where     p_trpr.BSASC_SOURCE='flowing tubing pressure'
+                            and    p_trpr.ACTIVITY_T='PRODUCTION_ALOC'
+                            and     p_trpr.ACTIVITY_S=p_a.PRODUCTION_ALOC_S
+                ) as THFLPR
+                ,(select P_TRPR_S
+                        from P_TRPR p_trpr
+                        where     p_trpr.BSASC_SOURCE='flowing tubing pressure'
+                            and    p_trpr.ACTIVITY_T='PRODUCTION_ALOC'
+                            and     p_trpr.ACTIVITY_S=p_a.PRODUCTION_ALOC_S
+                ) as P_TRPR_S    
+                ------# CHOKE as in PBA
+                ,(select (case when QUANTITY_VALUE=-999 then -999 else QUANTITY_VALUE*100 end)
+                        from P_EQUIPMENT_FCL p_e_fcl
+                        where     p_e_fcl.BSASC_SOURCE='choke diameter'
+                            and    p_e_fcl.ACTIVITY_T='PRODUCTION_ALOC'
+                            and     p_e_fcl.ACTIVITY_S=p_a.PRODUCTION_ALOC_S
+                ) as CHOKE 
+                ------# SCHDO in hours(in base in second)
+                ------# (FIN_DAY-START_DAY)/SCHDO in day
+                ,(select (case when DATA_VALUE>0 then DATA_VALUE else 0 end)/60/60
+                        from P_WELL_CMPL_DNTM p_w_c_dt 
+                        where     p_w_c_dt.R_DOWNTIME_RSN_NM='scheduled'
+                            and    p_w_c_dt.ACTIVITY_T='PRODUCTION_ALOC'
+                            and     p_w_c_dt.ACTIVITY_S=p_a.PRODUCTION_ALOC_S
+                            and    p_w_c_dt.R_TRANSIENT_PD_NM='monthly' --- from RECONCILED ONLY
+                ) as SCHDO
+                -----# USCHDO in hours(in base in second*24,but load in PBA in hours(hours*24*60*60 when load from PBA))
+                ,(select (case when DATA_VALUE>0 then DATA_VALUE else 0 end)/60/60/24
+                        from P_WELL_CMPL_DNTM p_w_c_dt 
+                        where     p_w_c_dt.R_DOWNTIME_RSN_NM='unscheduled'
+                            and    p_w_c_dt.ACTIVITY_T='PRODUCTION_ALOC'
+                            and     p_w_c_dt.ACTIVITY_S=p_a.PRODUCTION_ALOC_S
+                            and    p_w_c_dt.R_TRANSIENT_PD_NM='monthly' --- from RECONCILED ONLY
+                ) as USCHDO
+                ------# USCHDO_ID
+                ,(select P_WELL_CMPL_DNTM_S
+                        from P_WELL_CMPL_DNTM p_w_c_dt 
+                        where     p_w_c_dt.R_DOWNTIME_RSN_NM='unscheduled'
+                            and    p_w_c_dt.ACTIVITY_T='PRODUCTION_ALOC'
+                            and     p_w_c_dt.ACTIVITY_S=p_a.PRODUCTION_ALOC_S
+                            and    p_w_c_dt.R_TRANSIENT_PD_NM='monthly' --- from RECONCILED ONLY
+                ) as USCHDO_P_WELL_CMPL_DNTM_S    
+                ---next used for fast get id in tables while correcting data in sql
+                ------# PRODUCTION_ALOC_S in RECONCILED    
+                ,p_a.PRODUCTION_ALOC_S       as PRODUCTION_ALOC_S_RECONCILED 
+                ------# PRODUCTION_ALOC_S in GENERAL
+            --    ,(select distinct ACTIVITY_S
+            --          FROM V_PROD v_pr
+            --          WHERE 
+            --        v_pr.WELL_ID=w_c.WELL_ID
+            --        AND v_pr.PROD_START_TIME=p_a.PROD_START_TIME
+            --        AND v_pr.PROD_END_TIME=p_a.PROD_END_TIME
+            --        AND v_pr.HOR=w_c.WELL_COMPLETION_ID
+            --        AND v_pr.PROD_VALUE_PERIOD='event'
+            --    ) as PRODUCTION_ALOC_S_GENERAL                    --production allocate GENERAL id
+                ------# P_ALLOC_FACTOR_S     
+                ,plfacts.P_ALLOC_FACTOR_S as plfact_P_ALLOC_FACTOR_S   --plfact record id
+                ,w_c_s.WELL_CMPL_STA_S            as WELL_CMPL_STA_S --CNSTAT
+            -----------------------    
+            from
+                WELL well
+                ,WELL_COMPLETION w_c
+                ,PFNU_PROD_ACT_X pp_ax
+                ,PRODUCTION_ALOC p_a
+                ,P_FLUID_CMPN_RTO gors
+                ,P_ALLOC_FACTOR plfacts
+                ,FLW_STRM_ALOC_FCT fs_af
+                ,ALOC_FLW_STRM a_fs
+                ,WELL_CMPL_STA w_c_s
+                ,TIG_WELL_HISTORY t_w_h
+            where
+                --ONLY FOR RECONCILED!!!!!
+                p_a.BSASC_SOURCE= 'Reconciled Production'
+                --well_name->well_hor
+                and
+                well.WELL_S=w_c.WELL_S
+                and
+                ---###well->well history
+                ---w_c.WELL_ID=t_w_h.TIG_LATEST_WELL_NAME
+                well.WELL_ID=t_w_h.TIG_LATEST_WELL_NAME
+                and
+                ---###well hor->PFNU_PROD
+                w_c.WELL_COMPLETION_S=pp_ax.PFNU_S
+                and
+                (pp_ax.PFNU_T='well_completion' or pp_ax.PFNU_T='WELL_COMPLETION')
+                ---###PFNU_PROD -> PROD ALOC
+                and
+                pp_ax.PRODUCTION_ACT_S=p_a.PRODUCTION_ALOC_S
+                and
+                pp_ax.PRODUCTION_ACT_T='PRODUCTION_ALOC'
+                ---###PROD ALOC ->GOR
+                and
+                p_a.PRODUCTION_ALOC_S=gors.ACTIVITY_S
+                and
+                gors.ACTIVITY_T='PRODUCTION_ALOC'
+                and
+                gors.BSASC_SOURCE='gas-oil ratio'
+                ---###PROD ALOC ->PLFACT (for one ACTIVITY_S many records)
+                ---
+                and
+                p_a.PRODUCTION_ALOC_S=plfacts.ACTIVITY_S
+                and
+                plfacts.ACTIVITY_T='PRODUCTION_ALOC'
+                and 
+                plfacts.BSASC_SOURCE='reconciled factor'
+                ---PLFACT ->FLOW_STRM_ALOC_FCT
+                and
+                plfacts.OBJECT_S=fs_af.FLW_STRM_ALOC_FCT_S
+                and
+                plfacts.OBJECT_T='FLW_STRM_ALOC_FCT'
+                ---FLOW_STRM_ALOC_FCT -> ALOC_FLW_STRM
+                and
+                fs_af.INLET_ALOC_FLW_STRM_S=a_fs.ALOC_FLW_STRM_S
+                and 
+                fs_af.DESCRIPTION='reconciled factor'
+                ---only PIPELINE (PLFACT)
+                and 
+                a_fs.FL_PSEUDO_CMPN_ID='pipeline'
+                ---###PROD ALOC ->WELL_CMPL_STA
+                and 
+                p_a.PRODUCTION_ALOC_S=w_c_s.CAUSED_BY_S
+                and
+                w_c_s.CAUSED_BY_T='PRODUCTION_ALOC'
+                ---------- FILTER FOR PRODSYNC COMPLETION!!!!
+                and w_c.WELL_COMPLETION_ID<>'_' 
+        """
+        self.db.execute(sql)
+        
+        sql = """
+            WITH last_dt as (
+                    SELECT
+                        WELL_ID 
+                        ,max(PROD_START_TIME) PROD_START_TIME
+                    from V_PROD_PARAM
+                        WHERE 
+                            1=1
+                            AND HOR in {hors}
+                            ---AND PROD_START_TIME<TO_DATE('{year}.{month}.01','YYYY.MM.DD')
+                            AND PROD_START_TIME<={end_dt}
+                    GROUP BY WELL_ID         
+                    )    
+            SELECT
+                WELL_ID
+                ,LISTAGG(PLFACT, ',') WITHIN GROUP (ORDER BY PLFACT) AS PLFACTS
+                ,LISTAGG(GOR, ',')    WITHIN GROUP (ORDER BY GOR)    AS GORS
+            FROM (            
+                SELECT distinct 
+                    vpp.WELL_ID
+                    ,vpp.PLFACT
+                    ,vpp.GOR
+                FROM V_PROD_PARAM vpp
+                    left join last_dt
+                        on vpp.PROD_START_TIME=last_dt.PROD_START_TIME
+                        AND vpp.WELL_ID=last_dt.WELL_ID
+                WHERE 
+                    1=1
+                    AND vpp.HOR in {hors}
+                    AND last_dt.WELL_ID is not NULL
+             )
+            GROUP BY WELL_ID
+                    """.format(
+                            hors="('" + u"','".join(self.mSelectedReservoirs) +u"')"
+                           ,year="EXTRACT(YEAR FROM {})".format(self.to_oracle_date(self.mEndDate))
+                           ,month="EXTRACT(MONTH FROM {})".format(self.to_oracle_date(self.mEndDate))
+                           ,end_dt=self.to_oracle_date(self.mEndDate)
+                           )
+        name=inspect.currentframe().f_code.co_name
+        QgsMessageLog.logMessage(u"Execute {f_name}: {sql}\\n\n".format( f_name=name, sql=sql ), tag="QgisPDS.sql")   
+        result = pd.read_sql(sql, con=self.db.connection)
+        QgsMessageLog.logMessage(u"df: {}\\n\n".format( result ), tag="QgisPDS.debug")
+        well_plfact={}
+        well_gor={}
+        for idx,row in result.iterrows():
+            well_plfact[str(row["WELL_ID"])]= row["PLFACTS"]
+            well_gor[   str(row["WELL_ID"])]= row["GORS"]
+        #QgsMessageLog.logMessage(u"res_dict: {}\\n\n".format( well_plfact ), tag="QgisPDS.debug")
+        return well_plfact, well_gor
+        pass
     #===========================================================================
     # Read equipment value of well
     #===========================================================================
