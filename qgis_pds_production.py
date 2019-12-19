@@ -1510,8 +1510,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 for fluid in fluid_fields:
                     debit=row_dict[fluid.field]/days
                     if fluid.unit=="Mass":
-                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat)                    ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
-                        prodWell.firstDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat,sort_attr='dt')   ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000.0,dt=stadat)                    ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
+                        prodWell.firstDebits[fluid.idx].addDebit(Debit(value=debit/1000.0,dt=stadat,sort_attr='dt')   ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
 #                         if prodWell.maxDebits[fluid.idx].massValue < debit:
 #                             prodWell.maxDebits[fluid.idx].massValue = debit
 #                             prodWell.maxDebits[fluid.idx].massDebitDate = stadat
@@ -1778,8 +1778,8 @@ class QgisPDSProductionDialog(QtGui.QDialog, FORM_CLASS, WithQtProgressBar ):
                 for fluid in fluid_fields:
                     debit=row_dict[fluid.field]/days
                     if fluid.unit=="Mass":
-                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat)                    ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
-                        prodWell.firstDebits[fluid.idx].addDebit(Debit(value=debit/1000,dt=stadat,sort_attr='dt')   ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
+                        prodWell.maxDebits[fluid.idx].addDebit(Debit(value=debit/1000.0,dt=stadat)                    ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
+                        prodWell.firstDebits[fluid.idx].addDebit(Debit(value=debit/1000.0,dt=stadat,sort_attr='dt')   ,debit_type=ProdDebit.DEBIT_TYPE_MASS)
 #                         if prodWell.maxDebits[fluid.idx].massValue < debit:
 #                             prodWell.maxDebits[fluid.idx].massValue = debit/1000
 #                             prodWell.maxDebits[fluid.idx].massDebitDate = stadat
