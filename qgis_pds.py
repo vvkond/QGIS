@@ -589,12 +589,7 @@ class QgisPDS(QObject):
         #dpi=utils.iface.mainWindow().physicalDpiX()
         #QgsMessageLog.logMessage('{}'.format(str(dpi)), 'BubbleSymbolLayer') #DEBUG
         
-        QgsMessageLog.logMessage('{}'.format(str('onZoomChange')), 'QgisPDS.debug') #DEBUG
-        #zoomlevel=scale
-        scale=self.canvas.scale()
-        zoomlevel=scale/1000.0*0.264583333603/self.canvas.mapUnitsPerPixel()
-        QgsMessageLog.logMessage('{}'.format(str(zoomlevel)), 'QgisPDS.debug') #DEBUG
-        BubbleSymbolLayer.ZOOM_SCALE=zoomlevel
+        QgsMessageLog.logMessage('{}'.format(str('onRenderStart')), 'QgisPDS.debug') #DEBUG
 
     def onReadProject(self):
         #for current project
