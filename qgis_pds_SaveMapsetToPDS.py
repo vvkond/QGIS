@@ -454,7 +454,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                 paramName = f.attribute(self.subsetFieldName)
             if self.parameterFieldIndex >= 0:
                 par = f.attribute(self.parameterFieldName)
-                if par:
+                if par is not None:
                     parameter = float(par)
 
             geom = f.geometry()
@@ -523,7 +523,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                 paramName = f.attribute(self.subsetFieldName)
             if self.parameterFieldIndex >= 0:
                 par = f.attribute(self.parameterFieldName)
-                if par:
+                if par is not None:
                     parameter = float(par)
 
             geom = f.geometry()
