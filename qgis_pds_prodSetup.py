@@ -13,7 +13,8 @@ import xml.etree.cElementTree as ET
 import re
 import time
 from utils import plugin_path, start_edit_layer, qgs_get_last_child_rules, qgs_set_symbol_render_level
-from qgis_pds_prodRenderer import BubbleSymbolLayer, float_t
+from qgis_pds_prodRenderer import BubbleSymbolLayer, float_t,\
+    P_DIAGRAMMS_CONFIGS_STR, P_LABELS_TEMPLATE_STR
 
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
@@ -93,7 +94,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             registry = QgsSymbolLayerV2Registry.instance()
             bubbleMeta = registry.symbolLayerMetadata('BubbleDiagramm')
             if bubbleMeta is not None:
-                bubbleLayer = bubbleMeta.createSymbolLayer({})
+                bubbleLayer = bubbleMeta.createSymbolLayer( {} )
                 if bubbleLayer:
                     self.bubbleProps = bubbleLayer.properties()
 
@@ -283,8 +284,8 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
         #@TODO: min/max diagram sizes
         self.minDiagrammSize.blockSignals(True)
         self.maxDiagrammSize.blockSignals(True)
-        self.minDiagrammSize.setValue(diagramm.diagSize[0])
-        self.maxDiagrammSize.setValue(diagramm.diagSize[1])
+        self.minDiagrammSize.setValue(float(diagramm.diagSize[0]))
+        self.maxDiagrammSize.setValue(float(diagramm.diagSize[1]))
         self.maxDiagrammSize.blockSignals(False)
         self.minDiagrammSize.blockSignals(False)
     #===========================================================================
@@ -711,6 +712,7 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
             multiplier = 1.0 / mm
 
             diagramm = {}
+            #diagramm['name']=d.name
             diagramm['scaleMinRadius'] = d.diagSize[0]
             diagramm['scaleMaxRadius'] = d.diagSize[1]
             diagramm['scale'] = d.scale * multiplier if self.useScaleGroupBox.isChecked() else multiplier * maxSum
@@ -764,10 +766,9 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                             for symblayer in rulesymbolslayer:
                                 if symblayer is None:continue
                                 if type(symblayer)==BubbleSymbolLayer:
-                                    IS_DEBUG and QgsMessageLog.logMessage(u"#"*20, tag="QgisPDS.prodSetup") and QgsMessageLog.logMessage(u"{}".format(symblayer), tag="QgisPDS.prodSetup") and  QgsMessageLog.logMessage(u"before: diagrammStr={}\ntemplateStr={}".format(symblayer.diagrammStr,symblayer.templateStr), tag="QgisPDS.prodSetup")
-                                    symblayer.diagrammStr = diagrammStr
-                                    symblayer.templateStr = templateStr
-                                    IS_DEBUG and QgsMessageLog.logMessage(u"after: diagrammStr={}\ntemplateStr={}".format(symblayer.diagrammStr,symblayer.templateStr), tag="QgisPDS.prodSetup")
+                                    IS_DEBUG and QgsMessageLog.logMessage(u"#"*20, tag="QgisPDS.prodSetup") and QgsMessageLog.logMessage(u"{}".format(symblayer), tag="QgisPDS.prodSetup") and  QgsMessageLog.logMessage(u"before: cfg={}".format(symblayer.cfg), tag="QgisPDS.prodSetup")
+                                    symblayer.cfg.update( {P_DIAGRAMMS_CONFIGS_STR:diagrammStr,P_LABELS_TEMPLATE_STR:templateStr} )
+                                    IS_DEBUG and QgsMessageLog.logMessage(u"after: cfg={}".format(symblayer.cfg), tag="QgisPDS.prodSetup")
                                     #rule.setLabel(u'123456')
                     except Exception as e:
                         QgsMessageLog.logMessage(u"{}".format(str(e)), tag="QgisPDS.prodSetup")  
@@ -791,12 +792,13 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                         if bubbleMeta is not None:
                             bubbleProps = {}
                             bubbleProps['showLineouts'] = self.showLineouts.isChecked()
-                            bubbleProps['showLabels'] = 'True'
-                            bubbleProps['showDiagramms'] = 'True'
-                            bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                            bubbleProps['showLabels'] = True
+                            bubbleProps['showDiagramms'] = True
+                            bubbleProps['labelSize'] = self.labelSizeEdit.value()
                             bubbleProps['diagrammStr'] = diagrammStr
                             bubbleProps['templateStr'] = templateStr
-                            bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                            
+                            bubbleLayer = bubbleMeta.createSymbolLayer( {'cfg':json.dumps(bubbleProps)} )
                             if bubbleLayer:
                                 bubbleLayer.setSize(3)
                                 bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
@@ -818,12 +820,12 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                     if bubbleMeta is not None:
                         bubbleProps = {}
                         bubbleProps['showLineouts'] = self.showLineouts.isChecked()
-                        bubbleProps['showLabels'] = 'True'
-                        bubbleProps['showDiagramms'] = 'True'
-                        bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                        bubbleProps['showLabels'] = True
+                        bubbleProps['showDiagramms'] = True
+                        bubbleProps['labelSize'] = self.labelSizeEdit.value()
                         bubbleProps['diagrammStr'] = diagrammStr
                         bubbleProps['templateStr'] = templateStr
-                        bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                        bubbleLayer = bubbleMeta.createSymbolLayer( {'cfg':json.dumps(bubbleProps)} )
                         if bubbleLayer:
                             bubbleLayer.setSize(3)
                             bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
@@ -905,13 +907,13 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 symbol = QgsMarkerSymbolV2()
                 if bubbleMeta is not None:
                     bubbleProps = {}
-                    bubbleProps['showLineouts'] = 'False' if self.showLineouts.isChecked() else 'True'
-                    bubbleProps['showLabels'] = 'True'
-                    bubbleProps['showDiagramms'] = 'True'
-                    bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                    bubbleProps['showLineouts'] = not self.showLineouts.isChecked()
+                    bubbleProps['showLabels'] = True
+                    bubbleProps['showDiagramms'] = True
+                    bubbleProps['labelSize'] = self.labelSizeEdit.value()
                     bubbleProps['diagrammStr'] = diagrammStr
                     bubbleProps['templateStr'] = templateStr
-                    bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                    bubbleLayer = bubbleMeta.createSymbolLayer( {'cfg':json.dumps(bubbleProps)} )
                     if bubbleLayer:
                         bubbleLayer.setSize(3)
                         bubbleLayer.setSizeUnit(QgsSymbolV2.MM)
@@ -925,13 +927,13 @@ class QgisPDSProdSetup(QtGui.QDialog, FORM_CLASS):
                 #------LINES
                 if bubbleMeta and self.showLineouts.isChecked():
                     bubbleProps = {}
-                    bubbleProps['showLineouts'] = 'True' if self.showLineouts.isChecked() else 'False'
-                    bubbleProps['showLabels'] = 'False'
-                    bubbleProps['showDiagramms'] = 'False'
-                    bubbleProps['labelSize'] = str(self.labelSizeEdit.value())
+                    bubbleProps['showLineouts'] = self.showLineouts.isChecked()
+                    bubbleProps['showLabels'] = False
+                    bubbleProps['showDiagramms'] = False
+                    bubbleProps['labelSize'] = self.labelSizeEdit.value()
                     bubbleProps['diagrammStr'] = diagrammStr
                     bubbleProps['templateStr'] = templateStr
-                    bubbleLayer = bubbleMeta.createSymbolLayer(bubbleProps)
+                    bubbleLayer = bubbleMeta.createSymbolLayer( {'cfg':json.dumps(bubbleProps)} )
                     if bubbleLayer:
                         bubbleLayer.setSize(3)
                         bubbleLayer.setSizeUnit(QgsSymbolV2.MM)

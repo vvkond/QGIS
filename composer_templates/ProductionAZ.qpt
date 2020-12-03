@@ -1,4 +1,4 @@
-<Composer title="карта отборов" visible="1">
+<Composer title="Test" visible="1">
  <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" worldFileMap="{600b97ca-66a4-4b24-80b6-4c889488fb60}" alignmentSnap="1" printResolution="300" paperWidth="405" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="5" printAsRaster="0" generateWorldFile="0" paperHeight="780" numPages="1" snapGridResolution="10" resizeToContentsMarginBottom="0">
   <symbol alpha="1" clip_to_extent="1" type="fill" name="">
    <layer pass="0" class="SimpleFill" locked="0">
@@ -16,13 +16,22 @@
    </layer>
   </symbol>
   <ComposerItemGroup>
-   <ComposerItemGroupElement uuid="{1941d53b-eb30-48a8-956d-6481ba46229f}"/>
-   <ComposerItemGroupElement uuid="{093d4b16-7876-462d-9ec0-6c78f6828278}"/>
-   <ComposerItemGroupElement uuid="{0c63c384-f95b-457c-972e-53b05860b024}"/>
-   <ComposerItemGroupElement uuid="{1157aee7-6850-4d6c-9eb0-cada08fde0e0}"/>
-   <ComposerItemGroupElement uuid="{8519347b-94d8-4b81-8872-776705b50960}"/>
-   <ComposerItemGroupElement uuid="{4c0fd14a-2fb9-4c29-8806-3e4c5ecb2b25}"/>
-   <ComposerItem pagey="699.414" page="1" id="_Штамп_группа" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="246.399" y="699.414" visibility="1" zValue="14" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="155.064" outlineWidth="0.3" excludeFromExports="0" uuid="{f4967d3f-8d70-4fe6-83d2-2d91f6e23b13}" height="76.5436" itemRotation="0" frame="false" pagex="246.399">
+   <ComposerItemGroupElement uuid="{d766aa31-9521-409d-b035-e652b028a3c6}"/>
+   <ComposerItemGroupElement uuid="{97ded35a-9bf6-43b0-80dd-82ee56b556ab}"/>
+   <ComposerItem pagey="699.414" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="245.956" y="699.414" visibility="1" zValue="90" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="155.064" outlineWidth="0.3" excludeFromExports="0" uuid="{b43040fc-2ca3-4943-a0d6-e752f9638c6c}" height="76.5436" itemRotation="0" frame="false" pagex="245.956">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerItemGroup>
+  <ComposerItemGroup>
+   <ComposerItemGroupElement uuid="{ce02c420-6a8c-4a76-96e5-39f03590b98a}"/>
+   <ComposerItemGroupElement uuid="{8a77b136-d914-48c0-b0e6-c69613a4e3b8}"/>
+   <ComposerItemGroupElement uuid="{cf52e8a6-a77c-459e-be83-5da5aeae5ba3}"/>
+   <ComposerItemGroupElement uuid="{79d1a952-a74e-425b-b9de-8c94f05491e2}"/>
+   <ComposerItemGroupElement uuid="{4a066220-d31d-48a4-87e3-46f85983ad92}"/>
+   <ComposerItemGroupElement uuid="{57dfc40e-9168-4554-b22c-e5ea25dc67ac}"/>
+   <ComposerItem pagey="699.414" page="1" id="_Штамп_группа" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="245.956" y="699.414" visibility="1" zValue="14" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="155.064" outlineWidth="0.3" excludeFromExports="0" uuid="{97ded35a-9bf6-43b0-80dd-82ee56b556ab}" height="76.5436" itemRotation="0" frame="false" pagex="245.956">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
@@ -31,7 +40,7 @@
   <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Месторождение  [% @project %] : Карта [%CASE &#xa;&#x9;WHEN  @map_type ='GTM'  THEN   'планируемых ГТМ  '&#xa;&#x9;WHEN  @map_type ='PROD'  THEN  concat( getVisiblePDSProdType(),' отборов')&#xa;END%]&#xa;по горизонту [%getVisiblePDSProd()%] &#xa;на [% @map_date %]" htmlState="0" halign="4">
    <LabelFont description="MS Shell Dlg 2,26,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="255" green="0"/>
-   <ComposerItem pagey="-3.31" page="1" id="_Заголовок_вариант2" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="2.02679e-16" y="-3.31" visibility="1" zValue="13" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="405" outlineWidth="0.3" excludeFromExports="0" uuid="{e748b67b-f2b9-4470-b0f2-4e258afeee6d}" height="69.8195" itemRotation="0" frame="false" pagex="2.02679e-16">
+   <ComposerItem pagey="-3.31" page="1" id="_Заголовок_вариант2" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="2.02679e-16" y="-3.31" visibility="1" zValue="13" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="405" outlineWidth="0.3" excludeFromExports="0" uuid="{30ee60fc-73be-426b-b2de-bc1079945317}" height="69.8195" itemRotation="0" frame="false" pagex="2.02679e-16">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
@@ -40,7 +49,7 @@
   <ComposerLabel valign="32" marginX="1" marginY="1" labelText="Карта [% activeLayerProductionType() %]  отборов  по [% activeLayerReservoirs() %] месторождения  [% @project %]" htmlState="0" halign="4">
    <LabelFont description="Times New Roman,26,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
-   <ComposerItem pagey="26.0772" page="1" id="_Заголовок_вариант1" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="195.579" y="26.0772" visibility="0" zValue="12" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="298.265" outlineWidth="0.3" excludeFromExports="0" uuid="{779b960c-6fef-451a-8abf-0ca614956945}" height="16.3055" itemRotation="0" frame="false" pagex="195.579">
+   <ComposerItem pagey="26.0772" page="1" id="_Заголовок_вариант1" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="195.579" y="26.0772" visibility="0" zValue="12" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="298.265" outlineWidth="0.3" excludeFromExports="0" uuid="{0b39d3b4-f840-48b1-b8c8-70208f90a800}" height="16.3055" itemRotation="0" frame="false" pagex="195.579">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
@@ -70,28 +79,28 @@
      <customproperties>
       <property key="legend/title-style" value="hidden"/>
      </customproperties>
-     <layer-tree-layer expanded="1" providerKey="memory" checked="Qt::Checked" id="Polygons_2013_PSIII20190215185847917" source="memory?geometry=LineString&amp;field=set_no:(0,0)&amp;field=parameter_no:(0,0)&amp;field=subset_no:(0,0)&amp;field=set_name:(0,0)&amp;field=param_name:(0,0)&amp;field=subset_name:(0,0)&amp;field=parameter:(0,0)&amp;field=variable_name:(0,0)" name="Линейные слои">
-      <customproperties>
-       <property key="legend/title-style" value="hidden"/>
-      </customproperties>
-     </layer-tree-layer>
-     <layer-tree-layer expanded="1" providerKey="memory" checked="Qt::Checked" id="Cumulative_production___Ap2_Ap1_PSI_PSII_PSIII_PSIV_PSV20180122171455583" source="memory?geometry=MultiPoint&amp;crs=wkt:PROJCS%5B%22unnamed%22,GEOGCS%5B%22Krassovsky,%201942%22,DATUM%5B%22unknown%22,SPHEROID%5B%22krass%22,6378245,298.3%5D%5D,PRIMEM%5B%22Greenwich%22,0%5D,UNIT%5B%22degree%22,0.0174532925199433%5D%5D,PROJECTION%5B%22Transverse_Mercator%22%5D,PARAMETER%5B%22latitude_of_origin%22,0%5D,PARAMETER%5B%22central_meridian%22,51%5D,PARAMETER%5B%22scale_factor%22,1%5D,PARAMETER%5B%22false_easting%22,500000%5D,PARAMETER%5B%22false_northing%22,0%5D,UNIT%5B%22Meter%22,1%5D%5D&amp;field=well_id:string(255,0)&amp;field=Latitude:double(20,5)&amp;field=Longitude:double(20,5)&amp;field=SymbolID:string(255,0)&amp;field=SymbolName:string(255,0)&amp;field=SymbolCode:integer(-1,0)&amp;field=Days:double(20,5)&amp;field=LiftMethod:string(255,0)&amp;field=LablX:double(20,5)&amp;field=LablY:double(20,5)&amp;field=LablOffX:double(20,5)&amp;field=LablOffY:double(20,5)&amp;field=LablOffset:double(20,5)&amp;field=LablWidth:double(20,5)&amp;field=BubbleSize:double(20,5)&amp;field=BubbleFields:string(255,0)&amp;field=ScaleType:string(255,0)&amp;field=MovingRes:string(255,0)&amp;field=ResState:string(255,0)&amp;field=MultiProd:string(255,0)&amp;field=crude%20oil%20(volume):double(20,5)&amp;field=crude%20oil%20(mass):double(20,5)&amp;field=natural%20gas%20(volume):double(20,5)&amp;field=natural%20gas%20(mass):double(20,5)&amp;field=produced%20water%20(volume):double(20,5)&amp;field=produced%20water%20(mass):double(20,5)&amp;field=condensate%20(volume):double(20,5)&amp;field=condensate%20(mass):double(20,5)&amp;field=injected%20gas%20(volume):double(20,5)&amp;field=injected%20gas%20(mass):double(20,5)&amp;field=injected%20water%20(volume):double(20,5)&amp;field=injected%20water%20(mass):double(20,5)&amp;field=lift%20gas%20(volume):double(20,5)&amp;field=lift%20gas%20(mass):double(20,5)&amp;field=free%20gas%20(volume):double(20,5)&amp;field=free%20gas%20(mass):double(20,5)" name="Точечные слои">
+     <layer-tree-layer expanded="0" providerKey="memory" checked="Qt::Checked" id="Cumulative_production___Ap2_Ap1_PSI_PSII_PSIII_PSIV_PSV20190201902019120311171880817190" source="memory?geometry=MultiPoint&amp;crs=wkt:PROJCS%5B%22unnamed%22,GEOGCS%5B%22Krassovsky,%201942%22,DATUM%5B%22unknown%22,SPHEROID%5B%22krass%22,6378245,298.3%5D%5D,PRIMEM%5B%22Greenwich%22,0%5D,UNIT%5B%22degree%22,0.0174532925199433%5D%5D,PROJECTION%5B%22Transverse_Mercator%22%5D,PARAMETER%5B%22latitude_of_origin%22,0%5D,PARAMETER%5B%22central_meridian%22,51%5D,PARAMETER%5B%22scale_factor%22,1%5D,PARAMETER%5B%22false_easting%22,500000%5D,PARAMETER%5B%22false_northing%22,0%5D,UNIT%5B%22Meter%22,1%5D%5D&amp;field=well_id:string(255,0)&amp;field=Latitude:double(20,5)&amp;field=Longitude:double(20,5)&amp;field=SymbolID:string(255,0)&amp;field=SymbolName:string(255,0)&amp;field=SymbolCode:integer(-1,0)&amp;field=Days:double(20,5)&amp;field=LiftMethod:string(255,0)&amp;field=LablX:double(20,5)&amp;field=LablY:double(20,5)&amp;field=LablOffX:double(20,5)&amp;field=LablOffY:double(20,5)&amp;field=LablOffset:double(20,5)&amp;field=LablWidth:double(20,5)&amp;field=BubbleSize:double(20,5)&amp;field=BubbleFields:string(255,0)&amp;field=ScaleType:string(255,0)&amp;field=MovingRes:string(255,0)&amp;field=ResState:string(255,0)&amp;field=MultiProd:string(255,0)&amp;field=crude%20oil%20(volume):double(20,5)&amp;field=crude%20oil%20(mass):double(20,5)&amp;field=natural%20gas%20(volume):double(20,5)&amp;field=natural%20gas%20(mass):double(20,5)&amp;field=produced%20water%20(volume):double(20,5)&amp;field=produced%20water%20(mass):double(20,5)&amp;field=condensate%20(volume):double(20,5)&amp;field=condensate%20(mass):double(20,5)&amp;field=injected%20gas%20(volume):double(20,5)&amp;field=injected%20gas%20(mass):double(20,5)&amp;field=injected%20water%20(volume):double(20,5)&amp;field=injected%20water%20(mass):double(20,5)&amp;field=lift%20gas%20(volume):double(20,5)&amp;field=lift%20gas%20(mass):double(20,5)&amp;field=free%20gas%20(volume):double(20,5)&amp;field=free%20gas%20(mass):double(20,5)" name="Точечные слои">
       <customproperties>
        <property key="legend/title-style" value="hidden"/>
       </customproperties>
      </layer-tree-layer>
     </layer-tree-group>
+    <layer-tree-layer expanded="1" providerKey="memory" checked="Qt::Checked" id="Polygons_2013_PSIII201920190201912031117188086137" source="memory?geometry=LineString&amp;field=set_no:(0,0):string(255,0)&amp;field=parameter_no:(0,0):string(255,0)&amp;field=subset_no:(0,0):string(255,0)&amp;field=set_name:(0,0):string(255,0)&amp;field=param_name:(0,0):string(255,0)&amp;field=subset_name:(0,0):string(255,0)&amp;field=parameter:(0,0):string(255,0)&amp;field=variable_name:(0,0):string(255,0)" name="Линейные слои">
+     <customproperties>
+      <property key="legend/title-style" value="hidden"/>
+     </customproperties>
+    </layer-tree-layer>
    </layer-tree-group>
-   <ComposerItem pagey="644.708" page="1" id="_Легенда" lastValidViewScaleFactor="-1" positionMode="6" positionLock="false" x="3.68696" y="644.708" visibility="1" zValue="11" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="115.8" outlineWidth="0.3" excludeFromExports="0" uuid="{a4a33a6b-1d0e-4972-8fd6-6077f5de2c86}" height="131.1" itemRotation="0" frame="true" pagex="3.68696">
+   <ComposerItem pagey="595.708" page="1" id="_Легенда" lastValidViewScaleFactor="-1" positionMode="6" positionLock="false" x="3.68696" y="595.708" visibility="1" zValue="11" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="115.8" outlineWidth="0.3" excludeFromExports="0" uuid="{188755cc-0b34-4e2f-8419-e437b7539dbc}" height="180.1" itemRotation="0" frame="true" pagex="3.68696">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
    </ComposerItem>
   </ComposerLegend>
   <ComposerItemGroup>
-   <ComposerItemGroupElement uuid="{29b19fec-75cb-4e56-80a4-92e411c1bfe6}"/>
-   <ComposerItemGroupElement uuid="{c48f7972-888c-47db-8ed3-d2cfb4adc3c7}"/>
-   <ComposerItem pagey="755.246" page="1" id="_Штамп_группа_масштаб" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="249.936" y="755.246" visibility="1" zValue="10" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="82.3922" outlineWidth="0.3" excludeFromExports="0" uuid="{3ed7ce46-f05e-4cf9-a248-fbe0b21f2508}" height="8.11842" itemRotation="0" frame="false" pagex="249.936">
+   <ComposerItemGroupElement uuid="{751fbc12-6f23-4bdd-8fd6-4b3bdc3fbd6a}"/>
+   <ComposerItemGroupElement uuid="{3566767d-b9c6-4e4c-96d9-4550c38b94d7}"/>
+   <ComposerItem pagey="748.371" page="1" id="_Штамп_группа_масштаб" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="248.127" y="748.371" visibility="1" zValue="10" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="82.3922" outlineWidth="0.3" excludeFromExports="0" uuid="{d766aa31-9521-409d-b035-e652b028a3c6}" height="8.11842" itemRotation="0" frame="false" pagex="248.127">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
@@ -100,7 +109,7 @@
   <ComposerLabel valign="128" marginX="1" marginY="1" labelText="Горизонт [% activeLayerReservoirs() %]" htmlState="0" halign="4">
    <LabelFont description="Times New Roman,16,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
-   <ComposerItem pagey="731.744" page="1" id="_Штамп__горизонт" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="294.359" y="731.744" visibility="1" zValue="9" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="59.1506" outlineWidth="0.3" excludeFromExports="0" uuid="{8519347b-94d8-4b81-8872-776705b50960}" height="16.0801" itemRotation="0" frame="false" pagex="294.359">
+   <ComposerItem pagey="731.744" page="1" id="_Штамп__горизонт" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="293.916" y="731.744" visibility="1" zValue="9" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="59.1506" outlineWidth="0.3" excludeFromExports="0" uuid="{79d1a952-a74e-425b-b9de-8c94f05491e2}" height="16.0801" itemRotation="0" frame="false" pagex="293.916">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
@@ -109,31 +118,31 @@
   <ComposerLabel valign="128" marginX="1" marginY="1" labelText="на [% @map_date %]" htmlState="0" halign="4">
    <LabelFont description="MS Shell Dlg 2,18,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
-   <ComposerItem pagey="747.824" page="1" id="_Штамп_дата" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="348.599" y="747.824" visibility="1" zValue="8" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="52.864" outlineWidth="0.3" excludeFromExports="0" uuid="{093d4b16-7876-462d-9ec0-6c78f6828278}" height="13.9863" itemRotation="0" frame="false" pagex="348.599">
+   <ComposerItem pagey="747.824" page="1" id="_Штамп_дата" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="348.156" y="747.824" visibility="1" zValue="8" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="52.864" outlineWidth="0.3" excludeFromExports="0" uuid="{4a066220-d31d-48a4-87e3-46f85983ad92}" height="13.9863" itemRotation="0" frame="false" pagex="348.156">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerScaleBar lineCapStyle="square" style="Single Box" numMapUnitsPerScaleBarUnit="1000" segmentSizeMode="0" alignment="0" numSegments="6" segmentMillimeters="10.0124" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="50" units="1" labelBarSpace="3" outlineWidth="0.3" numSegmentsLeft="5" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel="км">
+  <ComposerScaleBar lineCapStyle="square" style="Single Box" numMapUnitsPerScaleBarUnit="1000" segmentSizeMode="0" alignment="0" numSegments="6" segmentMillimeters="10.0169" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="50" units="1" labelBarSpace="3" outlineWidth="0.3" numSegmentsLeft="5" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel="км">
    <scaleBarFont description="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0" style=""/>
    <fillColor alpha="255" red="0" blue="0" green="0"/>
    <fillColor2 alpha="255" red="255" blue="255" green="255"/>
    <strokeColor alpha="255" red="0" blue="0" green="0"/>
    <textColor alpha="255" red="0" blue="0" green="0"/>
-   <ComposerItem pagey="759.194" page="1" id="_Штамп_масштабная_линейка" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="246.399" y="759.194" visibility="1" zValue="7" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="85.8366" outlineWidth="0.3" excludeFromExports="0" uuid="{1157aee7-6850-4d6c-9eb0-cada08fde0e0}" height="16.7636" itemRotation="0" frame="false" pagex="246.399">
+   <ComposerItem pagey="759.194" page="1" id="_Штамп_масштабная_линейка" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="245.956" y="759.194" visibility="1" zValue="7" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="85.868" outlineWidth="0.3" excludeFromExports="0" uuid="{8a77b136-d914-48c0-b0e6-c69613a4e3b8}" height="16.7636" itemRotation="0" frame="false" pagex="245.956">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
    </ComposerItem>
   </ComposerScaleBar>
-  <ComposerScaleBar lineCapStyle="square" style="Numeric" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="0" alignment="0" numSegments="4" segmentMillimeters="50.0619" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="250" units="1" labelBarSpace="3" outlineWidth="0.3" numSegmentsLeft="2" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel="м">
+  <ComposerScaleBar lineCapStyle="square" style="Numeric" numMapUnitsPerScaleBarUnit="1" segmentSizeMode="0" alignment="0" numSegments="4" segmentMillimeters="50.0843" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="250" units="1" labelBarSpace="3" outlineWidth="0.3" numSegmentsLeft="2" maxBarWidth="150" height="3" boxContentSpace="1" mapId="0" unitLabel="м">
    <scaleBarFont description="MS Shell Dlg 2,16,-1,5,50,0,0,0,0,0" style=""/>
    <fillColor alpha="255" red="0" blue="0" green="0"/>
    <fillColor2 alpha="255" red="255" blue="255" green="255"/>
    <strokeColor alpha="255" red="0" blue="0" green="0"/>
    <textColor alpha="255" red="0" blue="0" green="0"/>
-   <ComposerItem pagey="755.246" page="1" id="_Штамп_масштаб" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="280.496" y="755.246" visibility="1" zValue="6" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="51.8322" outlineWidth="0.3" excludeFromExports="0" uuid="{29b19fec-75cb-4e56-80a4-92e411c1bfe6}" height="8.11842" itemRotation="0" frame="false" pagex="280.496">
+   <ComposerItem pagey="748.371" page="1" id="_Штамп_масштаб" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="278.687" y="748.371" visibility="1" zValue="6" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="51.8322" outlineWidth="0.3" excludeFromExports="0" uuid="{751fbc12-6f23-4bdd-8fd6-4b3bdc3fbd6a}" height="8.11842" itemRotation="0" frame="false" pagex="278.687">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
@@ -142,14 +151,14 @@
   <ComposerLabel valign="32" marginX="1" marginY="1" labelText="Масштаб -" htmlState="0" halign="2">
    <LabelFont description="MS Shell Dlg 2,16,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
-   <ComposerItem pagey="755.246" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="249.936" y="755.246" visibility="1" zValue="5" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="30.5531" outlineWidth="0.3" excludeFromExports="0" uuid="{c48f7972-888c-47db-8ed3-d2cfb4adc3c7}" height="8.11842" itemRotation="0" frame="false" pagex="249.936">
+   <ComposerItem pagey="748.371" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="248.127" y="748.371" visibility="1" zValue="5" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="30.5531" outlineWidth="0.3" excludeFromExports="0" uuid="{3566767d-b9c6-4e4c-96d9-4550c38b94d7}" height="8.11842" itemRotation="0" frame="false" pagex="248.127">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
    </ComposerItem>
   </ComposerLabel>
-  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="21.4403" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="emblem.png" northOffset="0" pictureHeight="24.2925" mapId="-1" anchorPoint="4">
-   <ComposerItem pagey="699.414" page="1" id="_Эмблема" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="246.559" y="699.414" visibility="1" zValue="4" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="25.3372" outlineWidth="0.3" excludeFromExports="0" uuid="{1941d53b-eb30-48a8-956d-6481ba46229f}" height="24.2925" itemRotation="0" frame="true" pagex="246.559">
+  <ComposerPicture resizeMode="0" svgBorderWidth="0.2" pictureRotation="0" pictureWidth="24.1444" svgFillColor="255,255,255,255" svgBorderColor="0,0,0,255" northMode="0" file="emblem.png" northOffset="0" pictureHeight="24.2925" mapId="-1" anchorPoint="4">
+   <ComposerItem pagey="699.414" page="1" id="_Эмблема" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="246.116" y="699.414" visibility="1" zValue="4" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="25.3372" outlineWidth="0.3" excludeFromExports="0" uuid="{ce02c420-6a8c-4a76-96e5-39f03590b98a}" height="24.2925" itemRotation="0" frame="true" pagex="246.116">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <dataDefinedSource expr="concat(@project_folder,'\\', @emblem)" field="" active="true" useExpr="true"/>
@@ -159,7 +168,7 @@
   <ComposerLabel valign="32" marginX="1" marginY="1" labelText="Карта [% activeLayerProductionType() %] отборов " htmlState="0" halign="4">
    <LabelFont description="MS Shell Dlg 2,18,-1,5,50,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
-   <ComposerItem pagey="724.044" page="1" id="_Штамп_блок_описание" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="246.559" y="724.044" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="154.75" outlineWidth="0.3" excludeFromExports="0" uuid="{0c63c384-f95b-457c-972e-53b05860b024}" height="51.7509" itemRotation="0" frame="true" pagex="246.559">
+   <ComposerItem pagey="724.044" page="1" id="_Штамп_блок_описание" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="246.116" y="724.044" visibility="1" zValue="3" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="154.75" outlineWidth="0.3" excludeFromExports="0" uuid="{57dfc40e-9168-4554-b22c-e5ea25dc67ac}" height="51.7509" itemRotation="0" frame="true" pagex="246.116">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
@@ -168,7 +177,7 @@
   <ComposerLabel valign="128" marginX="1" marginY="1" labelText="[% @company_name%]" htmlState="0" halign="4">
    <LabelFont description="MS Shell Dlg 2,26,-1,5,75,0,0,0,0,0" style=""/>
    <FontColor red="0" blue="0" green="0"/>
-   <ComposerItem pagey="699.414" page="1" id="_Штамп_блок_компания" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="272.199" y="699.414" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="129.103" outlineWidth="0.3" excludeFromExports="0" uuid="{4c0fd14a-2fb9-4c29-8806-3e4c5ecb2b25}" height="24.2925" itemRotation="0" frame="true" pagex="272.199">
+   <ComposerItem pagey="699.414" page="1" id="_Штамп_блок_компания" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="271.756" y="699.414" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="129.103" outlineWidth="0.3" excludeFromExports="0" uuid="{cf52e8a6-a77c-459e-be83-5da5aeae5ba3}" height="24.2925" itemRotation="0" frame="true" pagex="271.756">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <customproperties/>
@@ -227,7 +236,7 @@
     <annotationFontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
    </ComposerMapGrid>
    <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
-   <ComposerItem pagey="-3.06" page="1" id="" lastValidViewScaleFactor="0.599411" positionMode="0" positionLock="false" x="0.25" y="-3.06" visibility="1" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="404.5" outlineWidth="0.5" excludeFromExports="0" uuid="{1ef900a7-b601-47d2-9bad-de84f4d8c6d3}" height="782.81" itemRotation="0" frame="true" pagex="0.25">
+   <ComposerItem pagey="-3.06" page="1" id="" lastValidViewScaleFactor="2.76359" positionMode="0" positionLock="false" x="0.25" y="-3.06" visibility="0" zValue="1" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="404.5" outlineWidth="0.5" excludeFromExports="0" uuid="{a4e45dab-0336-4756-adf9-2b6167467974}" height="782.81" itemRotation="0" frame="true" pagex="0.25">
     <FrameColor alpha="255" red="0" blue="0" green="0"/>
     <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
     <dataDefinedMapScale expr="5000" field="" active="true" useExpr="true"/>

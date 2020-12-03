@@ -17,6 +17,7 @@ import numpy as np
 import cx_Oracle
 from QgisPDS.utils import to_unicode
 from osgeo import gdal
+import traceback
 
 class FeatureRecord(MyStruct):
     points = []
@@ -27,77 +28,81 @@ FORM_CLASS, _ = uic.loadUiType(os.path.join(
 
 class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
     def __init__(self, project, iface, layerToSave, parent=None):
-        super(QgisSaveMapsetToPDS, self).__init__(parent)
-
-        self.setupUi(self)
-
-        self.currentLayer = layerToSave
-        self.iface = iface
-        self.project = project
-        self.groupFile = 'ControlPoints_group.sql'
-        self.setFile = 'ControlPoints_set.sql'
-        self.mapSetType = 0
-        self.mapSetCpSource = 1
-        self.plugin_dir = os.path.dirname(__file__)
-        self.xform = None
-
-        # prjStr = self.currentLayer.customProperty("pds_project")
-        # if prjStr:
-        #     self.project = ast.literal_eval(prjStr)
-        self.setWindowTitle(self.windowTitle() + ' - ' + self.project['project'])
-        self.mEmptyValue.setValue(float(QSettings().value('PDS/SaveToPDS/EmptyValue', '-9999')))
-
-        self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
-        self.db = None
-
-        if not self.initDb():
-            btnOK = self.buttonBox.button(self.buttonBox.Ok)
-            btnOK.setEnabled(False)
-            btnCancel = self.buttonBox.button(self.buttonBox.Cancel)
-            return
-
-        self.prop = self.currentLayer.customProperty("qgis_pds_type")
-        if self.prop == 'pds_contours':
-            self.groupFile = "Contours_group.sql"
-            self.setFile = "Contours_set.sql"
-            self.mapSetCpSource = 4
-            self.mSaveAsComboBox.setCurrentIndex(2)
-        elif self.prop == 'pds_polygon':
-            self.groupFile = "Polygons_group.sql"
-            self.setFile = "Polygons_set.sql"
-            self.mSaveAsComboBox.setCurrentIndex(3)
-        elif self.prop == 'pds_faults':
-            self.groupFile = "Faults_group.sql"
-            self.setFile = "Faults_set.sql"
-            self.mSaveAsComboBox.setCurrentIndex(1)
-        elif self.prop == 'qgis_surface':
-            self.groupFile = 'Surface_group.sql'
-            self.setFile = 'Surface_set.sql'
-            self.mapSetType = 4
-        else:
-            self.mEmptyValue.setEnabled(True)
-
-        self.interpreter = int(QSettings().value('PDS/SaveToPDS/InterpreterId', -1))
-
-        self.updateInterpreters()
-        if self.currentLayer.type() == QgsMapLayer.VectorLayer:
-            self.updateFieldsComboBox()
-        else:
-            self.mSaveAsComboBox.setEnabled(False)
-            self.mSetFieldsCroupBox.setEnabled(False)
-            self.mapSetType = 3
-            self.groupFile = "Surface_group.sql"
-            self.setFile = "Surface_set.sql"
-
-        name = self.currentLayer.name()
-        self.mGroupLineEdit.setText(name)
-        self.mSetLineEdit.setText(name)
-        names = name.split('/')
-        if len(names) > 0:
-            self.mGroupLineEdit.setText(names[0])
-        if len(names) > 1:
-            self.mSetLineEdit.setText(names[1])
-
+        try:
+            super(QgisSaveMapsetToPDS, self).__init__(parent)
+    
+            self.setupUi(self)
+    
+            self.currentLayer = layerToSave
+            self.iface = iface
+            self.project = project
+            self.groupFile = 'ControlPoints_group.sql'
+            self.setFile = 'ControlPoints_set.sql'
+            self.mapSetType = 0
+            self.mapSetCpSource = 1
+            self.plugin_dir = os.path.dirname(__file__)
+            self.xform = None
+    
+            # prjStr = self.currentLayer.customProperty("pds_project")
+            # if prjStr:
+            #     self.project = ast.literal_eval(prjStr)
+            self.setWindowTitle(self.windowTitle() + ' - ' + self.project['project'])
+            self.mEmptyValue.setValue(float(QSettings().value('PDS/SaveToPDS/EmptyValue', '-9999')))
+    
+            self.proj4String = QgisProjectionConfig.get_default_layer_prj_epsg()
+            self.db = None
+    
+            if not self.initDb():
+                btnOK = self.buttonBox.button(self.buttonBox.Ok)
+                btnOK.setEnabled(False)
+                btnCancel = self.buttonBox.button(self.buttonBox.Cancel)
+                return
+    
+            self.prop = self.currentLayer.customProperty("qgis_pds_type")
+            if self.prop == 'pds_contours':
+                self.groupFile = "Contours_group.sql"
+                self.setFile = "Contours_set.sql"
+                self.mapSetCpSource = 4
+                self.mSaveAsComboBox.setCurrentIndex(2)
+            elif self.prop == 'pds_polygon':
+                self.groupFile = "Polygons_group.sql"
+                self.setFile = "Polygons_set.sql"
+                self.mSaveAsComboBox.setCurrentIndex(3)
+            elif self.prop == 'pds_faults':
+                self.groupFile = "Faults_group.sql"
+                self.setFile = "Faults_set.sql"
+                self.mSaveAsComboBox.setCurrentIndex(1)
+            elif self.prop == 'qgis_surface':
+                self.groupFile = 'Surface_group.sql'
+                self.setFile = 'Surface_set.sql'
+                self.mapSetType = 4
+            else:
+                self.mEmptyValue.setEnabled(True)
+    
+            self.interpreter = int(QSettings().value('PDS/SaveToPDS/InterpreterId', -1))
+    
+            self.updateInterpreters()
+            if self.currentLayer.type() == QgsMapLayer.VectorLayer:
+                self.updateFieldsComboBox()
+            else:
+                self.mSaveAsComboBox.setEnabled(False)
+                self.mSetFieldsCroupBox.setEnabled(False)
+                self.mapSetType = 3
+                self.groupFile = "Surface_group.sql"
+                self.setFile = "Surface_set.sql"
+    
+            name = self.currentLayer.name()
+            self.mGroupLineEdit.setText(name)
+            self.mSetLineEdit.setText(name)
+            names = name.split('/')
+            if len(names) > 0:
+                self.mGroupLineEdit.setText(names[0])
+            if len(names) > 1:
+                self.mSetLineEdit.setText(names[1])
+        except:
+            QgsMessageLog.logMessage(traceback.format_exc(), tag="QgisPDS.Error")
+            raise
+            
 
     def on_buttonBox_accepted(self):
         # try:
@@ -172,12 +177,18 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
 
     def updateInterpreters(self):
         self.mInterpreter.clear()
-        sql = 'select tig_user_id, tig_login_name from  tig_interpreter'
+        #---try get user from global
+        sql = 'select tig_user_id, tig_login_name from  global.tig_interpreter order by tig_login_name,tig_user_id'
         users = self.db.execute(sql)
+        #---if cant get from global get user from local. But it incorrect for new data saving...
+        if not users:
+            sql = 'select tig_user_id, tig_login_name from  tig_interpreter order by tig_login_name,tig_user_id'
+            users = self.db.execute(sql)
+            
         if users:
             for user in users:
                 sldnid = int(user[0])
-                self.mInterpreter.addItem(to_unicode(user[1]), sldnid)
+                self.mInterpreter.addItem(u'{}/{}'.format( to_unicode(user[1]) , to_unicode(str(user[0])) ), sldnid)
                 if self.interpreter == sldnid:
                     self.mInterpreter.setCurrentIndex(self.mInterpreter.count() - 1)
 
@@ -333,11 +344,21 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
         else:
             provider = self.currentLayer.dataProvider()
             self.subsetFieldName = self.mSubsetFields.currentText()
-            self.parameterFieldName = self.mParameterFields.currentText()
-            self.keyFieldName = self.mKeyFields.currentText()
             self.subsetFieldIndex = provider.fieldNameIndex(self.subsetFieldName)
-            self.parameterFieldIndex = provider.fieldNameIndex(self.parameterFieldName)
+            
+            self.keyFieldName = self.mKeyFields.currentText()
             self.keyFieldIndex = provider.fieldNameIndex(self.keyFieldName)
+            
+            self.parameterFieldName = self.mParameterFields.currentText()
+            self.parameterFieldIndex = provider.fieldNameIndex(self.parameterFieldName)
+            
+            for idx,field in enumerate(self.currentLayer.fields()):
+                if self.parameterFieldIndex<0 and field.name()==self.parameterFieldName:
+                    self.parameterFieldIndex=idx
+                if self.subsetFieldIndex<0  and field.name()==self.subsetFieldName:
+                    self.subsetFieldIndex=idx
+                if self.keyFieldIndex<0     and field.name()==self.keyFieldName:
+                    self.keyFieldIndex=idx
 
             if self.mapSetType == 0 and self.keyFieldIndex < 0:
                 if QtGui.QMessageBox.question(self, self.tr(u'Save to PDS'), self.tr(u'Key field name is not found. Proceed?'),
@@ -444,7 +465,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                 paramName = f.attribute(self.subsetFieldName)
             if self.parameterFieldIndex >= 0:
                 par = f.attribute(self.parameterFieldName)
-                if par:
+                if par is not None:
                     parameter = float(par)
 
             geom = f.geometry()
@@ -513,7 +534,7 @@ class QgisSaveMapsetToPDS(QtGui.QDialog, FORM_CLASS):
                 paramName = f.attribute(self.subsetFieldName)
             if self.parameterFieldIndex >= 0:
                 par = f.attribute(self.parameterFieldName)
-                if par:
+                if par is not None:
                     parameter = float(par)
 
             geom = f.geometry()

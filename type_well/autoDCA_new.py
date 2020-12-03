@@ -181,8 +181,10 @@ GasReservoirProp=namedtuple('GasReservoirProp',[
                                             ,"BOE"
                                             ,"WetGasShrink"
                                           ])
-
-def get_reservoir_prop(REG):
+#===============================================================================
+# get_reservoir_prop
+#===============================================================================
+def get_reservoir_prop_from_xls(REG):
     """    
         @return:
     """
@@ -223,6 +225,50 @@ def get_reservoir_prop(REG):
                 ,propan_liq_dens=520 #kg/m3
                 ,BOE=6.3 #Barrel oil equivalent
                 ,WetGasShrink=reg_string['WetGasShrink'].iloc[0]
+                )
+#===============================================================================
+# get_reservoir_prop
+#===============================================================================
+def get_reservoir_prop(
+        primary_product
+        ,**kwargs
+        ):
+    """    
+        @return:
+    """
+    def chk_kwa(name,default=None):
+        if name in kwargs.keys():
+            return kwargs[name]
+        else: 
+            return default
+        
+    if primary_product==u'oil':
+        return OilReservoirProp(
+                primary_product=cOIL_VOL
+                ,primdiv=1
+                ,secondary_product=cNAT_GAS
+                ,secdiv=1000                                        #Gas is stored in m3, need to be comverted to Mm3
+                ,units=', m3'
+                ,calcRF=False
+                ,propan_fraction=   chk_kwa('propan_fraction',0)    #This must be taken frpm REG attributes
+                ,GOR=               chk_kwa('GOR',0)
+                ,FF=                chk_kwa('FF',0)                 #Oil shrinkage formation factor
+            )
+    elif primary_product==u'gas':
+        return GasReservoirProp(    
+                primary_product=cNAT_GAS    
+                ,primdiv=1000                                       #Gas is stored in m3, need to be comverted to Mm3
+                ,secondary_product=cCOND_VOL
+                ,secdiv=1
+                ,units=', Mm3'
+                ,calcRF=True
+                ,cond_RFi=          chk_kwa('cond_RFi',0)/1000      #Used to calculate EUR of condensate from Gas EUR at t0, Mm3/Mm3
+                ,propan_fraction=   chk_kwa('propan_fraction',0)    #This must be taken frpm REG attributes
+                ,FF=                chk_kwa('FF',0)                 #Gas expansion formation factor
+                ,propan_dens=2.3                                    #kg/m3]
+                ,propan_liq_dens=520                                #kg/m3
+                ,BOE=6.3                                            #Barrel oil equivalent
+                ,WetGasShrink=      chk_kwa('WetGasShrink',0)
                 )
 #=======================================================================
 # 
@@ -306,16 +352,22 @@ def get_connection(
 class DCA():
     def __init__(self
                  , reservoir_group
+                 , reservoir_group_prop
                  , well_names=None
                  , conn=None
                  , config=get_config()
                  ):
+        '''
+            @param reservoir_group_prop: Result of 'get_reservoir_prop'
+            
+            
+        '''
         self.is_terminated=False
         self.REG=reservoir_group
         self.WELLS=well_names
         log("Read DCA config")
         self.config=config
-        self.reservoir_prop=get_reservoir_prop(self.REG)
+        self.reservoir_prop=reservoir_group_prop
         if not self.reservoir_prop:
             log("Error. Can't read reservoir group '{}' property".format(self.REG))
             self.is_terminated=True
@@ -542,7 +594,7 @@ class DCA():
     ###################################################################
     #Calculate forecast at last point, end of fitted curve or last date
     ###################################################################
-    def forecast(self,data, primary_product, regr_type, forecast_type, forecast_start, forecast_end, Qi, eT):
+    def forecast(self,data, primary_product, regr_type, forecast_type, forecast_start, forecast_end, Qi, eT, dT):
         forecast_dates=pd.date_range(forecast_start, forecast_end, freq='M')
         forecast=pd.DataFrame(index=forecast_dates)
         forecast['Time']=forecast.index.days_in_month*self.config.perhour*self.config.persecond
@@ -567,7 +619,8 @@ class DCA():
             oil_forecast=2.72**(regr_type.coef_[0]*np_FcstTime+regr_type.intercept_[0])
         if forecast_type=='last_point':
             #oil_forecast=Qi*2.72**(regr_type.coef_[0]*np_FcstTime)
-            oil_forecast=2.72**(regr_type.coef_[0]*np_FcstTime+np.log(Qi))
+            #oil_forecast=2.72**(regr_type.coef_[0]*(np_FcstTime+dT)+np.log(Qi))
+            oil_forecast=Qi*2.72**(regr_type.coef_[0]*(np_FcstTime+dT))
         forecast[primary_product+'Rate']=oil_forecast
         return forecast, forecast_dates
     
@@ -911,25 +964,31 @@ class DCA():
                 ############################
                 #Apply forecast at Last date
                 ############################
-                #Create forecast dataframe, start forecast on the following year from last production
-                forecast_start=str(oil.index.max().year+1)
+                #Create forecast dataframe
+                """
+                forecast_start=oil.index.max()
                 data=oil
                 forecast_type='last_date'
                 Qi=1
                 #forecast(data, regr_type, forecast_type, forecast_start, forecast_end, Qi=1,Intercept=0)
                 ld_forecast, forecast_dates=self.forecast(data, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start, self.config.forecast_end, Qi, eT)
+                """
+                
             
                 ##################################################
                 #Apply forecast at Last point: Rate is No 4 column
                 ##################################################
                 #forecast_start=str(oil.index.max().year+1)
-                forecast_start=str(oil.index.max())
+                #forecast_start=str(oil.index.max())
+                #Use latest production date from all selected wells
+                forecast_start=df['PROD_END_TIME'].max()
                 forecast_type='last_point'
-                #Qi=oil.iat[len(oil)-1,4]
+                #In case of difference between date of last production and forecast_start
+                dT=(reg_dataframe.PROD_END_TIME.max()-oil.PROD_END_TIME.max()).days
                 Qi=oil['Rate'].iloc[len(oil)-1]
-                lp_forecast, forecast_dates=self.forecast(oil, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start,self.config.forecast_end, Qi, eT)
+                lp_forecast, forecast_dates=self.forecast(oil, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start,self.config.forecast_end, Qi, eT, dT)
                 #Drop first row as it is equals to historical data
-                lp_forecast=lp_forecast[1:len(lp_forecast)]
+                #lp_forecast=lp_forecast[1:len(lp_forecast)]
                 log( '==============================='                   )
                 log( 'Last point forecast parameters for well:',well, self.REG)
                 log( '-------------------------'                         )
@@ -961,7 +1020,13 @@ class DCA():
                 #iC=oil['CumOil'].iloc[len(oil)-1]
                 lp_forecast['CumOil']=lp_forecast[self.reservoir_prop.primary_product+'Rate']*lp_forecast.index.days_in_month*self.config.perhour*self.config.persecond
                 lp_forecast['CumOil']=lp_forecast['CumOil'].cumsum()
-                rR=lp_forecast['CumOil'].iloc[len(lp_forecast)-1]
+                ##########################################################
+                # Do not calculate remaining reserves for abandoned wells
+                ##########################################################
+                if oil.PROD_END_TIME.max().year-1 >= reg_dataframe.PROD_END_TIME.max().year-1:
+                    rR=lp_forecast['CumOil'].iloc[len(lp_forecast)-1]
+                else:
+                    rR = 0
                 log( 'Remaining reserves,: ', rR, self.reservoir_prop.units)
                 lp_Tr=iC+rR
                 log( 'Estimated ultimate recovery: ',lp_Tr, self.reservoir_prop.units)
@@ -1025,11 +1090,13 @@ class DCA():
                 ######################################
                 #Apply forecast at end of fitted curve
                 ######################################
-                forecast_start=str(stream.index.max().year+1)
+                """
+                forecast_start=stream.index.max()
                 data=oil
                 forecast_type='end_fit'
                 Qi=1
                 fc_forecast, fc_forecast_dates=self.forecast(data, self.reservoir_prop.primary_product, regr_type, forecast_type, forecast_start, self.config.forecast_end, Qi, eT)
+                """
             
                 #########################################
                 #Call regression function for cumulative
@@ -1046,7 +1113,8 @@ class DCA():
                 log( '-------------------------'                                   )
             
                 #Decline rate by cumulative plot
-                log( 'Decline rate from cumulative, %: ', cumregr.coef_[0][0]*365.25*-100)
+                cumD = cumregr.coef_[0][0]*365.25*-100
+                log( 'Decline rate from cumulative, %: ', cumD )
             
                 #Initial rate
                 cumQi=cumoil_fit[0][0]
@@ -1116,6 +1184,8 @@ class DCA():
             
                 out_f=os.path.join(out_dir,well+'_forecast_'+self.REG+'.xlsx')
                 report_forecast=report_forecast.resample('Y').sum()
+                # Print from next year after current, because current year may not cantain 12 months
+                #report_forecast=report_forecast.iloc[1:]
                 
                 if wor_workflow:
                     if not self.reservoir_prop.calcRF: #Liquid is oil+WATER
@@ -1189,7 +1259,7 @@ class DCA():
                     if len(lp_forecast)>0:
                         comb_dates=pd.date_range(reg_dataframe[cPROD_START_TIME].min(),lp_forecast.index.max(),freq='Y')
                         comb_oil=pd.DataFrame(index=comb_dates)
-                        lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').sum()
+                        lp_forecast1=lp_forecast[self.reservoir_prop.primary_product+'Rate'].resample('Y').mean()
                         #Drop 1st year
                         lp_forecast1=lp_forecast1[1:len(lp_forecast1)]
                         #sum is replaced with mean - average daily rate in the year
@@ -1207,7 +1277,8 @@ class DCA():
                 #Append eur_list and rR list, skip wells without forecast to match comboil
                 if len(lp_forecast)>0:
                     eur_list.append((well, lp_Tr))
-                    rR_list.append((well, rR, lp_Tr))
+                    rR_list.append((well, self.reservoir_prop.primary_product, forecast_start.year, self.config.forecast_end,\
+                                    Qi, iC, cumD, edr, rR, lp_Tr))
             except Exception as e:
                 log( '===========================')
                 log( 'WARNING!!!')
@@ -1224,30 +1295,35 @@ class DCA():
             eur=pd.DataFrame(eur_list, columns=('WELL', 'EUR'))
             #log(eur)
             #Create rR (Remaining Reserves) dataframe
-            rR_frame=pd.DataFrame(rR_list, columns=('WELL', 'OZ', 'EUR'))
+            rR_frame=pd.DataFrame(rR_list, columns=('Well', 'Product', 'FcstStart', 'FcstEnd', 'Qi'+self.reservoir_prop.units+'/D',\
+                                                    'CumProd'+self.reservoir_prop.units, 'Dqcum', 'Dqtime','OZ'+self.reservoir_prop.units, 'EUR'+self.reservoir_prop.units))
             
             Tweight=self.typewell(eur)
             
             
             #Calculate type well profile
-            comb_oil1=comb_oil.copy()
-            comb_oil1['TypeWell']=0
+            #comb_oil1=comb_oil.copy()
+            comb_oil1=pd.DataFrame(index=comb_dates)            
             comb_oil1=comb_oil1.fillna(value=0)
-            
+            tweight_list=[]
+            # Add posotive wells to dataframe
+            for i in range(len(Tweight)):
+                if Tweight['TWeight'].iloc[i] > 0:                    
+                    #Append only wells with positive TWeight
+                    tweight_list.append(Tweight['WELL'].iloc[i])
+                    comb_oil1[Tweight['WELL'].iloc[i]]=comb_oil[Tweight['WELL'].iloc[i]]          
+            comb_oil1['TypeWell']=0            
             for i in range(len(Tweight)):
                 if Tweight['TWeight'].iloc[i] > 0:
-                    #log('Tweight='+Tweight['WELL'].iloc[i])
-                    
+                    #Select only positive TWeight
                     comb_oil1['TypeWell']=comb_oil1['TypeWell']+comb_oil1[Tweight['WELL'].iloc[i]]*Tweight['TWeight'].iloc[i]
-                    comb_oil1['AnnualProd']=comb_oil1['TypeWell']*365
-                    #comb_oil1['CumForecast']=comb_oil1['AnnualProd'].cumsum()
-            
-            
+                    comb_oil1['AnnualProd']=comb_oil1['TypeWell']*365.25
+                    #comb_oil1['CumForecast']=comb_oil1['AnnualProd'].cumsum()            
             
             #Final chart
             log( "SHOW FINAL GRAPH")
-            plt.figure(3, figsize=(12,8))#All rates and forecasts vs Years
-            for well in comb_oil1.columns:
+            plt.figure(4, figsize=(12,8))#All rates and forecasts vs Years
+            for well in tweight_list:
                 plt.plot(comb_oil1.index, comb_oil1[well], linewidth=1,label=well)
                 pass
             plt.plot(comb_oil1.index, comb_oil1.TypeWell,'b--',label='Type Well') 
@@ -1265,6 +1341,8 @@ class DCA():
             out_f=os.path.join(out_dir,'TypeWell_'+self.REG+'.xlsx')
             comb_oil2=comb_oil1.loc[f_start:f_end]
             comb_oil2.index=comb_oil2.index.year
+            #Print from the following year
+            comb_oil2=comb_oil2.iloc[1:]
             comb_oil2.transpose().to_excel(out_f)
 
             out_f=join(dir+'\\Reports','RemainingReserves_'+self.REG+'.xlsx')

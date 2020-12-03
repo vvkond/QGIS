@@ -226,12 +226,12 @@ TableUnit = namedtuple('TableUnit', ['table', 'unit'])
 #===============================================================================
 # not used. Planed for QgsField.type association
 #===============================================================================
-FIELD_AND_TYPES={"string":QVariant.String
-             ,"integer":QVariant.Int
-             ,"int":QVariant.Int
-             ,"double":QVariant.Double
-             ,"date":QVariant.String
-             ,"DateTime":QVariant.DateTime
+FIELD_AND_TYPES={"string"   :QVariant.String
+                 ,"integer" :QVariant.Int
+                 ,"int"     :QVariant.Int
+                 ,"double"  :QVariant.Double
+                 ,"date"    :QVariant.String
+                 ,"DateTime":QVariant.DateTime
              }
 #===============================================================================
 # 
@@ -301,6 +301,8 @@ class Fields:
     SymbolId =         AttributeField( field_name=u'symbolid'   ,field_type="string" ,field_alias=u""                          ,field_len=400 ,field_prec=0)
     Symbol =           AttributeField( field_name=u'symbolcode' ,field_type="integer",field_alias=u""                          ,field_len=10 ,field_prec=0)
     SymbolName =       AttributeField( field_name=u'symbolname' ,field_type="string" ,field_alias=u""                          ,field_len=100 ,field_prec=0)
+    Plfact   =         AttributeField( field_name=u'plfact'     ,field_type="string" ,field_alias=u""                          ,field_len=400 ,field_prec=0)
+    Gor      =         AttributeField( field_name=u'gor'        ,field_type="string" ,field_alias=u""                          ,field_len=400 ,field_prec=0)
                                                                                                                
     TigWellSymbol =    AttributeField( field_name=u'symbol'     ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)    
     TigLatestWellState=AttributeField( field_name=u'status'     ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)
@@ -321,6 +323,7 @@ class Fields:
     multiprod =        AttributeField( field_name=u"multiprod"  ,field_type="string" ,field_alias=u""                          ,field_len=50 ,field_prec=0)
                                                                                                                           
     startDate =        AttributeField( field_name=u'startdate'  ,field_type="date"   ,field_alias=u"дата начала"               ,field_len=50 ,field_prec=0)
+    endDate =          AttributeField( field_name=u'enddate'    ,field_type="date"   ,field_alias=u"дата окончания"            ,field_len=50 ,field_prec=0)
                                                                                                                           
     IsGlobal =         AttributeField( field_name=u'global_pri' ,field_type="string" ,field_alias=u""                          ,field_len=20 ,field_prec=0)    
     Owner    =         AttributeField( field_name=u'owner'      ,field_type="string" ,field_alias=u"владелец данных"           ,field_len=20 ,field_prec=0)    
@@ -404,6 +407,7 @@ FieldsProdLayer=[
             ,Fields.WellStatusInfo
             ,Fields.WellInitRole
             ,Fields.startDate
+            ,Fields.endDate
             ,Fields.Days
             ,Fields.LiftMethod
             ,Fields.bubblesize
@@ -411,6 +415,8 @@ FieldsProdLayer=[
             ,Fields.movingres
             ,Fields.resstate
             ,Fields.multiprod
+            ,Fields.Plfact
+            ,Fields.Gor
             ]
 
 #===============================================================================
@@ -584,22 +590,22 @@ class bblInit:
                                     TableUnit(u"p_std_vol_lq",   u"Volume"), 
                                     TableUnit(u"p_q_mass_basis", u"Mass")
                                 ]                                 
-                                ,subComponentIds=["produced water","crude oil"]
+                                ,subComponentIds=["produced water","crude oil","condensate"]
                     ),
                     ]
 
-    bblLiftMethods =  {
-                        u"flowing": LiftMethod(True, False),
-                        u"centrifugal pump": LiftMethod( False, True),
-                        u"diaphragm pump": LiftMethod( False, True),
-                        u"sucker-rod pump": LiftMethod( False, True),
-                        u"jet pump": LiftMethod( False, True),
-                        u"plunger pump": LiftMethod( False, True),
-                        u"gas lift": LiftMethod( False, False),
-                        u"spiral pump": LiftMethod( False, True),
-                        u"RED pump": LiftMethod( False, True),
-                        u"kompressor": LiftMethod( False, True),
-                        u"shvn": LiftMethod( False, True)
+    bblLiftMethods =  {                               #'isFlowing', 'isPump' 
+                        u"flowing":             LiftMethod(True,   False),
+                        u"centrifugal pump":    LiftMethod( False, True ),
+                        u"diaphragm pump":      LiftMethod( False, True ),
+                        u"sucker-rod pump":     LiftMethod( False, True ),
+                        u"jet pump":            LiftMethod( False, True ),
+                        u"plunger pump":        LiftMethod( False, True ),
+                        u"gas lift":            LiftMethod( False, False),
+                        u"spiral pump":         LiftMethod( False, True ),
+                        u"RED pump":            LiftMethod( False, True ),
+                        u"kompressor":          LiftMethod( False, True ),
+                        u"shvn":                LiftMethod( False, True )
                         }
 
     standardDiagramms = {
@@ -1090,11 +1096,11 @@ class bblInit:
 
         #other fields
         for name,alias in [
-                            [Fields.WellRole.name,Fields.WellRole.alias              ]
-                            ,[Fields.WellStatus.name,Fields.WellStatus.alias         ]
-                            ,[Fields.WellStatusInfo.name,Fields.WellStatusInfo.alias ]
-                            ,[Fields.WellStatusReason.name,Fields.WellStatusReason.alias]
-                            ,[Fields.WellInitRole.name,Fields.WellInitRole.alias     ]
+                            [Fields.WellRole.name           ,Fields.WellRole.alias        ]
+                            ,[Fields.WellStatus.name        ,Fields.WellStatus.alias      ]
+                            ,[Fields.WellStatusInfo.name    ,Fields.WellStatusInfo.alias  ]
+                            ,[Fields.WellStatusReason.name  ,Fields.WellStatusReason.alias]
+                            ,[Fields.WellInitRole.name      ,Fields.WellInitRole.alias    ]
                              #[u'wellrole'  ,u'назначение'           ]
                             #,[u'wellstatus',u'статус'               ]
                             #,[u'wsinfo'    ,u'уточнение статуса'    ]

@@ -433,8 +433,16 @@ PROJCS["Transverse_Mercator",
 # +proj=tmerc +lat_0={lat_0} +lon_0={lon_0} +k={k} +x_0={x_0} +y_0={y_0} +ellps=krass +towgs84=24.47,-130.89,-81.56,-0,-0,0.13,-0.22 +units=m +no_defs
 # '''.strip()
     _qgis = '''
-    +a={a} +lon_0={lon_0} +to_meter={to_meter} +k={k} +y_0={y_0} +b={b} +proj={proj} +x_0={x_0} +lat_0={lat_0} +no_defs
+    +a={a} +lon_0={lon_0} +to_meter={to_meter} +k={k} +y_0={y_0} +b={b}  +ellps=krass +proj={proj} +x_0={x_0} +lat_0={lat_0} +no_defs
 '''.strip()
+    #@TODO: Need set elipsoid using parametrs @see:https://en.wikibooks.org/wiki/PROJ.4
+    # +a-, +es-, +e-, +f-, +b- and +rf
+    # a     1     58     +a=6378137     EquatorialRadius ; Semimajor radius of the ellipsoid axis; BUG: No Difference between WGS84 and GRS80 Elli     pj_ell_set.c, pj_init.c, pj_utils.c 
+    # e     1     36     +e=0     Eccentricity of the ellipsoid = sqrt(1 - b^2/a^2) = sqrt( f*(2-f) ) ; es = e * e; precedes rf, f, b     pj_ell_set.c 
+    # es     1     66     +es=.006768657997291094     Eccentricity of the ellipsoid squared ; precedes e, rf, f, b; must be >0     pj_ell_set.c, pj_utils.c 
+    # f     1     76     +f=0     Flattening of the ellipsoid (often presented as an inverse, e.g. 1/298) ; Sets es = f * (2 - f) ; precedes b     pj_ell_set.c, pj_init.c, pj_utils.c
+    # b     1     76     +b=6378137     PolarRadius ; Semiminor radius of the ellipsoid axis ; Sets es = 1 - (b * b) / (a * a)     pj_ell_set.c, pj_init.c, pj_utils.c 
+    # rf     1     46     +rf=300.8017     Reciprocal of the ellipsoid flattening term (e.g. 298) ; Sets es = 1/rf * (2 - 1/rf); precedes f, b     pj_ell_set.c, pj_init.c 
 
     @cached_property
     def qgis_string(self):

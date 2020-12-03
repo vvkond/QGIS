@@ -7,7 +7,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>387</width>
+    <width>429</width>
     <height>169</height>
    </rect>
   </property>
@@ -75,7 +75,14 @@
      <item>
       <widget class="QCheckBox" name="chkBoxClearOldMark">
        <property name="text">
-        <string>Очистить текущие метки</string>
+        <string>Очистить для выбранных</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="chkBoxClearAllMark">
+       <property name="text">
+        <string>Очистить все</string>
        </property>
       </widget>
      </item>
