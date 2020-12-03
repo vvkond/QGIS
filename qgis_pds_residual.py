@@ -661,6 +661,7 @@ class QgisPDSResidualDialog(QtGui.QDialog, FORM_CLASS):
         self.progress.setFormat( self.tr('Loading wells...') )
         QCoreApplication.processEvents();time.sleep(0.02)
         all_wells = self.get_all_wells()
+        print('count wells', len(all_wells))
         
         self.progress.setFormat( self.tr('Copying wells to temp feature class...') )
         QCoreApplication.processEvents();time.sleep(0.02)
